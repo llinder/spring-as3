@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.objectdefinition {
+	import flash.system.ApplicationDomain;
 
 	/**
 	 * Defines the interface for an object definition registry. This interface contains add methods
@@ -35,7 +36,7 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @return an array with all registered object definition names, or an empty array if no definitions are
 		 * registered
 		 */
-		function get objectDefinitionNames():Array;
+		function get objectDefinitionNames():Vector.<String>;
 
 		/**
 		 * The number of object definitions in this registry.
@@ -49,6 +50,50 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		// Methods
 		//
 		// --------------------------------------------------------------------
+
+		/**
+		 * Determines if the object factory contains a definition with the given name.
+		 *
+		 * @param objectName  The name/id  of the object definition
+		 *
+		 * @return true if a definition with that name exists
+		 *
+		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
+		 */
+		function containsObject(objectName:String):Boolean;
+
+		/**
+		 * Determines if the definition with the given name is a singleton.
+		 *
+		 * @param objectName  The name/id  of the object definition
+		 *
+		 * @return true if the definitions is defined as a singleton
+		 *
+		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
+		 */
+		function isSingleton(objectName:String):Boolean;
+
+		/**
+		 * Determines if the definition with the given name is a prototype.
+		 *
+		 * @param objectName  The name/id  of the object definition
+		 *
+		 * @return true if the definitions is defined as a prototype
+		 *
+		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
+		 */
+		function isPrototype(objectName:String):Boolean;
+
+		/**
+		 * Returns the type that is defined on the object definition.
+		 *
+		 * @param objectName  The name/id  of the object definition
+		 *
+		 * @return the class that is used to construct the object
+		 *
+		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
+		 */
+		function getType(objectName:String):Class;
 
 		/**
 		 * Registers the given objectDefinition under the given name.
@@ -90,16 +135,26 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @param type The specified <code>Class</code> that is searched for.
 		 * @return an array containing definitions that implement the specified <code>Class</code>.
 		 */
-		function getObjectDefinitionsOfType(type:Class):Array;
+		function getObjectDefinitionsOfType(type:Class):Vector.<IObjectDefinition>;
 
+		/**
+		 * @param type
+		 * @return
+		 */
+		function getObjectNamesForType(type:Class):Vector.<String>;
 
 		/**
 		 * Returns a unique list of all <code>Classes</code> that are used by the <code>IObjectDefinitions</code>
 		 * in the current <code>IObjectDefinitionRegistry</code>.
 		 * @return A unique list of all <code>Classes</code>.
 		 */
-		function getUsedTypes():Array;
+		function getUsedTypes():Vector.<Class>;
 
-		function getObjectDefinitionsWithMetadata(metadataName:String):Array;
+		/**
+		 *
+		 * @param metadataNames
+		 * @return
+		 */
+		function getObjectDefinitionsWithMetadata(metadataNames:Vector.<String>):Vector.<IObjectDefinition>;
 	}
 }

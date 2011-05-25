@@ -14,6 +14,9 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.context {
+
+	import flash.display.DisplayObject;
+
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -43,5 +46,7 @@ package org.springextensions.actionscript.context {
 		 * @private
 		 */
 		function set definitionRegistry(value:IObjectDefinitionRegistry):void;
+
+		function get rootView():DisplayObject;
 	}
 }

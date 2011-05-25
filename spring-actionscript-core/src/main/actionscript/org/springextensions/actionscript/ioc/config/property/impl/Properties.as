@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springextensions.actionscript.ioc.config.property {
+package org.springextensions.actionscript.ioc.config.property.impl {
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -22,18 +22,21 @@ package org.springextensions.actionscript.ioc.config.property {
 	import flash.net.URLRequest;
 
 	import org.as3commons.lang.ObjectUtils;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+
 
 	/**
 	 * Dispatched when an error occured while loading the external property file.
 	* @eventType flash.events.IOErrorEvent.IO_ERROR
 	*/
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event(name = "ioError", type = "flash.events.IOErrorEvent")]
 
 	/**
 	 * Dispatched when the external properties file has been loaded and the contents have been parsed.
 	* @eventType flash.events.Event.COMPLETE
 	*/
-	[Event(name="complete", type="flash.events.Event")]
+	[Event(name = "complete", type = "flash.events.Event")]
 
 	/**
 	 * The <code>Properties</code> class represents a collection of properties
@@ -46,7 +49,7 @@ package org.springextensions.actionscript.ioc.config.property {
 	 * <b>Since:</b> 0.1
 	 * </p>
 	 */
-	public class Properties extends EventDispatcher {
+	public class Properties extends EventDispatcher implements IPropertiesProvider {
 
 		private var _loader:URLLoader;
 
@@ -112,9 +115,9 @@ package org.springextensions.actionscript.ioc.config.property {
 		}
 
 		/**
-		 * Adds all content of the given properties object to this Properties.
+		 * Adds all conIPropertiese given properties object to this Properties.
 		 */
-		public function merge(properties:Properties, overrideProperty:Boolean = false):void {
+		public function merge(properties:IPropertiesProvider, overrideProperty:Boolean = false):void {
 			if (!properties) {
 				return;
 			}
@@ -190,8 +193,8 @@ package org.springextensions.actionscript.ioc.config.property {
 		 * @see org.springextensions.actionscript.collections.PropertiesParser PropertiesParser
 		 */
 		protected function LoaderComplete_handler(event:Event):void {
-			var parser:PropertiesParser = new PropertiesParser();
-			var parsedProperties:Properties = parser.parseProperties(String(_loader.data));
+			var parser:IPropertiesParser = new KeyValuePropertiesParser();
+			var parsedProperties:IPropertiesProvider = parser.parseProperties(String(_loader.data));
 			var keys:Array = parsedProperties.propertyNames;
 
 			for each (var key:String in keys) {

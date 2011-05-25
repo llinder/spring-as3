@@ -20,15 +20,14 @@ package org.springextensions.actionscript.ioc.factory {
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
-	import org.springextensions.actionscript.ioc.config.property.Properties;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectPostProcessor;
 
 	/**
-	 * Defines the most basic object factory. Most object factories will implement the
-	 * <code>IConfigurableObjectFactory</code> interface.
+	 * Describes an object that is capable of creating instances of other classes..
 	 *
 	 * @author Christophe Herreman
-	 * @author Erik Westra
-	 * @see org.springextensions.actionscript.ioc.factory.config.IConfigurableObjectFactory IConfigurableObjectFactory
+	 * @author Roland Zwaga
 	 */
 	public interface IObjectFactory extends IDependencyInjector, IEventBusAware, IApplicationDomainAware {
 
@@ -47,6 +46,12 @@ package org.springextensions.actionscript.ioc.factory {
 		 * create and configure objects.
 		 */
 		function get objectDefinitions():Object;
+
+		/**
+		 *
+		 * @return
+		 */
+		function get applicationDomain():ApplicationDomain;
 
 		/**
 		 * Will retrieve an object by it's name/id If the definition is a singleton it will be retrieved from
@@ -104,17 +109,6 @@ package org.springextensions.actionscript.ioc.factory {
 		function createInstance(clazz:Class, constructorArguments:Array = null):*;
 
 		/**
-		 * Determines if the object factory contains a definition with the given name.
-		 *
-		 * @param objectName  The name/id  of the object definition
-		 *
-		 * @return true if a definition with that name exists
-		 *
-		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
-		 */
-		function containsObject(objectName:String):Boolean;
-
-		/**
 		 * Determines if the object factory is able to create the object with the given name.
 		 * This does not necesarrily mean that the current <code>IObjectFactory</code> contains an
 		 * object definition for the given name. If a parent factory is assigned this will be checked
@@ -129,40 +123,7 @@ package org.springextensions.actionscript.ioc.factory {
 		function canCreate(objectName:String):Boolean;
 
 		/**
-		 * Determines if the definition with the given name is a singleton.
-		 *
-		 * @param objectName  The name/id  of the object definition
-		 *
-		 * @return true if the definitions is defined as a singleton
-		 *
-		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
-		 */
-		function isSingleton(objectName:String):Boolean;
-
-		/**
-		 * Determines if the definition with the given name is a prototype.
-		 *
-		 * @param objectName  The name/id  of the object definition
-		 *
-		 * @return true if the definitions is defined as a prototype
-		 *
-		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
-		 */
-		function isPrototype(objectName:String):Boolean;
-
-		/**
-		 * Returns the type that is defined on the object definition.
-		 *
-		 * @param objectName  The name/id  of the object definition
-		 *
-		 * @return the class that is used to construct the object
-		 *
-		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
-		 */
-		function getType(objectName:String):Class;
-
-		/**
-		 * Removes an object from the internal object definition cache. This cache is used
+		 * Removes an object from the internal object instance cache. This cache is used
 		 * to cache singletons.
 		 *
 		 * @param name     The name/id  of the object to remove
@@ -172,51 +133,10 @@ package org.springextensions.actionscript.ioc.factory {
 		function clearObjectFromInternalCache(name:String):Object;
 
 		/**
-		 * Resolves a property in an object definition. If the property could not
-		 * be resolved, the given property is returned. This means that the property
-		 * will be checked against all reference resolvers. If a reference resolver
-		 * can process it, it will do so.
-		 * <p />
-		 * This method is used to resolve implementations of IObjectReference. In
-		 * order to capture nested references container types like Array and
-		 * Dictionary are checked as well.
 		 *
-		 * @param property     the property that possibly that might contain references
-		 *
-		 * @returns       the property with all its references resolved
-		 *
-		 * @see org.springextensions.actionscript.ioc.factory.config.IObjectReference
+		 * @return
 		 */
-		function resolveReference(property:Object):Object;
-
-		/**
-		 * This method adds a reference resolver that will be used to resolve property
-		 * references.
-		 *
-		 * @param referenceResolver    The implementation of IReferenceResolver that should be added
-		 *
-		 * @see #resolveReference()
-		 */
-		function addReferenceResolver(referenceResolver:IReferenceResolver):void;
-
-		function getClassForName(className:String):Class;
-
-		function getClassForInstance(object:Object):Class;
-
-		function get properties():Properties;
-
-		/**
-		 * Returns the names of the explicit singleton objects registered in the factory. These are objects directly
-		 * created and managed by the factory that don't have an object definition.
-		 *
-		 * @return the names of the explicit singleton objects registered in the factory
-		 */
-		function get explicitSingletonNames():Array;
-
-		/**
-		 * The <code>ApplicationDomain</code> associated with the current <code>IObjectFactory</code>.
-		 */
-		function get applicationDomain():ApplicationDomain;
+		function get properties():IPropertiesProvider;
 
 		/**
 		 * Returns <code>true</code> when the current <code>IObjectFactory</code> is ready for use.

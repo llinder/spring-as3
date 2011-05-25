@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springextensions.actionscript.ioc.config.property {
+package org.springextensions.actionscript.ioc.config.property.impl {
 
 	import org.as3commons.lang.StringUtils;
 	import org.springextensions.actionscript.util.MultilineString;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 
 	/**
-	 * <p><code>PropertiesParser</code> parses a properties source string into a <code>Properties</code>
+	 * <p><code>KeyValuePropertiesParser</code> parses a properties source string into a <code>IPropertiesProvider</code>
 	 * instance.</p>
 	 *
 	 * <p>The source string contains simple key-value pairs. Multiple pairs are
@@ -48,7 +50,7 @@ package org.springextensions.actionscript.ioc.config.property {
 	 * @author Christophe Herreman
 	 * @version 1.0
 	 */
-	public class PropertiesParser {
+	public class KeyValuePropertiesParser implements IPropertiesParser {
 
 		private static const HASH:String = "#";
 		private static const EXCLAMATION_MARK:String = "!";
@@ -56,7 +58,7 @@ package org.springextensions.actionscript.ioc.config.property {
 		/**
 		 * Constructs a new <code>PropertiesParser</code> instance.
 		 */
-		public function PropertiesParser() {
+		public function KeyValuePropertiesParser() {
 			super();
 		}
 
@@ -66,9 +68,9 @@ package org.springextensions.actionscript.ioc.config.property {
 		 * @param source the source to parse
 		 * @return the properties defined by the given <code>source</code>
 		 */
-		public function parseProperties(source:String):Properties {
-			var result:Properties = new Properties();
-			var lines:MultilineString = new MultilineString(source);
+		public function parseProperties(source:*):IPropertiesProvider {
+			var result:IPropertiesProvider = new Properties();
+			var lines:MultilineString = new MultilineString(String(source));
 			var numLines:Number = lines.numLines;
 			var key:String;
 			var value:String;

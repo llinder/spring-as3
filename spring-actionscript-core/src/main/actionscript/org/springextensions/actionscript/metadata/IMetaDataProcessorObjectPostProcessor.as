@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.metadata {
+	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectPostProcessor;
 
-	import org.springextensions.actionscript.ioc.factory.config.IObjectPostProcessor;
 
 	/**
 	 * Describes and object that acts as a registry for <code>IMetaDataProcessors</code> and is able

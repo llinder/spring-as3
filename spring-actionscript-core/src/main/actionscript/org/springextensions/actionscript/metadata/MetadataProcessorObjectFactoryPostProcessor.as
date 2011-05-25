@@ -17,8 +17,10 @@ package org.springextensions.actionscript.metadata {
 	import org.as3commons.lang.Assert;
 	import org.as3commons.logging.ILogger;
 	import org.as3commons.logging.LoggerFactory;
-	import org.springextensions.actionscript.ioc.factory.config.IConfigurableListableObjectFactory;
-	import org.springextensions.actionscript.ioc.factory.config.IObjectFactoryPostProcessor;
+	import org.springextensions.actionscript.ioc.config.postprocess.IObjectDefinitionRegistryPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
+	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
 	/**
 	 * <code>IObjectFactoryPostProcessor</code> implementation that checks if the specified <code>objectFactory</code>
@@ -28,7 +30,9 @@ package org.springextensions.actionscript.metadata {
 	 * @docref annotations.html
 	 * @sampleref metadataprocessor
 	 */
-	public class MetadataProcessorObjectFactoryPostProcessor implements IObjectFactoryPostProcessor {
+	public class MetadataProcessorObjectFactoryPostProcessor implements IObjectDefinitionRegistryPostProcessor, IObjectFactoryAware {
+
+		private var _objectFactory:IObjectFactory;
 
 		// --------------------------------------------------------------------
 		//
@@ -57,19 +61,24 @@ package org.springextensions.actionscript.metadata {
 		//
 		// --------------------------------------------------------------------
 
+
+		public function set objectFactory(objectFactory:IObjectFactory):void {
+			_objectFactory = objectFactory;
+		}
+
 		/**
 		 * Registers an <code>ObjectDefinition</code> for a <code>MetadataProcessorObjectPostProcessor</code> instance
 		 * with the specified <code>IConfigurableListableObjectFactory</code>.
 		 * @param objectFactory The specified <code>IConfigurableListableObjectFactory</code>.
 		 */
-		public function postProcessObjectFactory(objectFactory:IConfigurableListableObjectFactory):void {
-			Assert.notNull(objectFactory, "objectFactory argument must not be null");
+		public function postProcessObjectDefinitionRegistry(objectDefinitionRegistry:IObjectDefinitionRegistry):void {
+			Assert.notNull(objectDefinitionRegistry, "objectDefinitionRegistry argument must not be null");
 
-			var noMetadataProcessorObjectPostProcessorRegistered:Boolean = (objectFactory.getObjectNamesForType(IMetaDataProcessorObjectPostProcessor).length == 0);
+			var noMetadataProcessorObjectPostProcessorRegistered:Boolean = (objectDefinitionRegistry.getObjectNamesForType(IMetaDataProcessorObjectPostProcessor).length == 0);
 
 			if (noMetadataProcessorObjectPostProcessorRegistered) {
 				logger.debug("No MetadataProcessorObjectPostProcessor found in the object factory, registering MetadataProcessorObjectPostProcessor");
-				objectFactory.addObjectPostProcessor(objectFactory.createInstance(MetadataProcessorObjectPostProcessor));
+				_objectFactory.addObjectPostProcessor(_objectFactory.createInstance(MetadataProcessorObjectPostProcessor));
 			}
 		}
 	}

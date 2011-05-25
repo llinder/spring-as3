@@ -16,18 +16,16 @@
 package org.springextensions.actionscript.metadata {
 	import flash.utils.Dictionary;
 
+	import org.as3commons.lang.util.OrderedUtils;
 	import org.as3commons.logging.ILogger;
 	import org.as3commons.logging.LoggerFactory;
 	import org.as3commons.reflect.IMetadataContainer;
 	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.ioc.factory.IInitializingObject;
-	import org.springextensions.actionscript.ioc.factory.IListableObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
-	import org.springextensions.actionscript.ioc.factory.config.IConfigurableObjectFactory;
-	import org.springextensions.actionscript.ioc.factory.config.IObjectPostProcessor;
-	import org.springextensions.actionscript.utils.OrderedUtils;
-	import org.springextensions.actionscript.utils.TypeUtils;
+	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectPostProcessor;
+	import org.springextensions.actionscript.util.TypeUtils;
 
 	/**
 	 * Default implementation of the <code>IMetaDataProcessorObjectPostProcessor</code> which acts as the main
@@ -180,16 +178,14 @@ package org.springextensions.actionscript.metadata {
 		// --------------------------------------------------------------------
 
 		private function addMetadataProcessorsFromObjectPostProcessors():void {
-			if (_objectFactory is IConfigurableObjectFactory) {
-				var metadataProcessors:Array = getMetadataProcessors(IConfigurableObjectFactory(_objectFactory).objectPostProcessors);
-				var numMetadataProcessors:int = metadataProcessors.length;
+			var metadataProcessors:Array = getMetadataProcessors(IConfigurableObjectFactory(_objectFactory).objectPostProcessors);
+			var numMetadataProcessors:int = metadataProcessors.length;
 
-				if (numMetadataProcessors > 0) {
-					LOGGER.debug("{0} IMetadataProcessor found in object post processors, adding them to the current MetadataProcessorObjectPostProcessor.", numMetadataProcessors);
+			if (numMetadataProcessors > 0) {
+				LOGGER.debug("{0} IMetadataProcessor found in object post processors, adding them to the current MetadataProcessorObjectPostProcessor.", numMetadataProcessors);
 
-					for each (var metadataProcessor:IMetadataProcessor in metadataProcessors) {
-						registerMetadataProcessor(metadataProcessor);
-					}
+				for each (var metadataProcessor:IMetadataProcessor in metadataProcessors) {
+					registerMetadataProcessor(metadataProcessor);
 				}
 			}
 		}
