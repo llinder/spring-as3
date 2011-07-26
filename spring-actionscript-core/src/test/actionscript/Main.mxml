@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   applicationComplete="runTests()"
+			   xmlns:adobe="http://www.adobe.com/2009/flexUnitUIRunner"
+			   xmlns:mx="library://ns.adobe.com/flex/halo"
+			   width="100%"
+			   height="100%">
+	<fx:Script>
+		<![CDATA[
+			import org.flexunit.listeners.UIListener;
+			import org.flexunit.runner.FlexUnitCore;
+			import org.springextensions.actionscript.test.SpringTestSuite;
+
+			private var core:FlexUnitCore;
+
+			public function runTests():void {
+				core = new FlexUnitCore();
+				core.addListener(new UIListener(mainRunner));
+				core.run(SpringTestSuite);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<adobe:TestRunnerBase id="mainRunner"
+						  width="100%"
+						  height="100%"/>
+</s:Application>

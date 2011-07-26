@@ -16,7 +16,6 @@
 package org.springextensions.actionscript.ioc.objectdefinition {
 	import org.springextensions.actionscript.ioc.AutowireMode;
 	import org.springextensions.actionscript.ioc.DependencyCheckMode;
-	import org.springextensions.actionscript.ioc.ObjectDefinitionScope;
 
 	/**
 	 * Represents an object definition.

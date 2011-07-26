@@ -17,7 +17,7 @@ package org.springextensions.actionscript.context {
 
 	import flash.display.DisplayObject;
 
-	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
+	import org.springextensions.actionscript.ioc.definition.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 

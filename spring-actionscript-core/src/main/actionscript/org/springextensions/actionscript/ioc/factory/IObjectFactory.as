@@ -17,11 +17,13 @@ package org.springextensions.actionscript.ioc.factory {
 
 	import flash.system.ApplicationDomain;
 
+	import org.as3commons.collections.LinkedList;
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.lang.IApplicationDomainAware;
-	import org.springextensions.actionscript.ioc.IDependencyInjector;
-	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.definition.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
 
 	/**
 	 * Describes an object that is capable of creating instances of other classes..
@@ -29,7 +31,7 @@ package org.springextensions.actionscript.ioc.factory {
 	 * @author Christophe Herreman
 	 * @author Roland Zwaga
 	 */
-	public interface IObjectFactory extends IDependencyInjector, IEventBusAware, IApplicationDomainAware {
+	public interface IObjectFactory extends IDependencyInjector, IEventBusAware, IApplicationDomainAware, IObjectDefinitionRegistryAware {
 
 		/**
 		 * Optional parent factory that can be used to create objects that can't be created by the current instance.
@@ -49,7 +51,6 @@ package org.springextensions.actionscript.ioc.factory {
 
 		/**
 		 *
-		 * @return
 		 */
 		function get applicationDomain():ApplicationDomain;
 
@@ -82,7 +83,7 @@ package org.springextensions.actionscript.ioc.factory {
 		 *
 		 * @throws org.springextensions.actionscript.ioc.ObjectDefinitionNotFoundError    The name of the given object should be
 		 *                                   present as an object definition
-		 * @throws flash.errors.IllegalOperationError            An object definition that is not lazy
+		 * @throws flash.errors.IllegalOperationError            A singleton object definition that is not lazy
 		 *                                   can not be given constructor arguments
 		 * @throws org.springextensions.actionscript.errors.PropertyTypeError        The type of a property definition should
 		 *                                   match the type of property on the instance
@@ -109,39 +110,38 @@ package org.springextensions.actionscript.ioc.factory {
 		function createInstance(clazz:Class, constructorArguments:Array = null):*;
 
 		/**
-		 * Determines if the object factory is able to create the object with the given name.
-		 * This does not necesarrily mean that the current <code>IObjectFactory</code> contains an
-		 * object definition for the given name. If a parent factory is assigned this will be checked
-		 * as well if the current factory does not contain the necessary object definition.
 		 *
-		 * @param objectName  The name/id  of the object definition
-		 *
-		 * @return true if the current <code>IObjectFactory</code> is able to create the object with the given name
-		 *
-		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
 		 */
-		function canCreate(objectName:String):Boolean;
+		function get propertyProviders():Vector.<IPropertiesProvider>;
 
 		/**
-		 * Removes an object from the internal object instance cache. This cache is used
-		 * to cache singletons.
-		 *
-		 * @param name     The name/id  of the object to remove
-		 *
-		 * @return       the removed object
-		 */
-		function clearObjectFromInternalCache(name:String):Object;
-
-		/**
-		 *
-		 * @return
-		 */
-		function get properties():IPropertiesProvider;
-
-		/**
-		 * Returns <code>true</code> when the current <code>IObjectFactory</code> is ready for use.
+		 * Returns <code>true</code> when the current <code>IObjectFactory</code> is fully initialized and ready for use.
 		 */
 		function get isReady():Boolean;
+
+		/**
+		 *
+		 * @param objectPostProcessor
+		 */
+		function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void;
+
+		/**
+		 *
+		 * @param objectFactoryPostProcessor
+		 */
+		function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void;
+
+		/**
+		 *
+		 */
+		function get objectPostProcessors():LinkedList;
+
+		/**
+		 *
+		 */
+		function get objectFactoryPostProcessors():LinkedList;
+
+		function get cache():IInstanceCache;
 
 	}
 }

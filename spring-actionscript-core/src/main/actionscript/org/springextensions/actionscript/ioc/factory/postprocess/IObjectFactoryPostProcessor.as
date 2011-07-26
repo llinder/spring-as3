@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springextensions.actionscript.operation.mvc {
-	import org.springextensions.actionscript.ioc.factory.config.IObjectPostProcessor;
+package org.springextensions.actionscript.ioc.factory.postprocess {
+	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 
 	/**
-	 * Marker interface for an object postprocessor that processes [RouteEvent] metadata
-	 * used by an <code>IController</code> interface.
+	 * @author Christophe Herreman
 	 * @author Roland Zwaga
-	 * @sampleref cafe-townsend-mvc
 	 */
-	public interface IMVCEventObjectPostProcessor extends IObjectPostProcessor {
-
+	public interface IObjectFactoryPostProcessor {
+		/**
+		 *
+		 * @param objectFactory
+		 */
+		function postProcessObjectFactory(objectFactory:IObjectFactory):void;
 	}
 }
