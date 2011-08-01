@@ -13,31 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springextensions.actionscript.ioc.factory {
-
-	import flash.events.IEventDispatcher;
-
-	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+package org.springextensions.actionscript.ioc {
 
 	/**
-	 * Defines the most basic service used to implement dependency injection.
+	 * Thrown to indicate that a reference could not be resolved.
 	 *
 	 * <p>
-	 * <b>Authors:</b> Martino Piccinato<br/>
+	 * <b>Author:</b> Erik Westra<br/>
 	 * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
 	 * <b>Since:</b> 0.1
 	 * </p>
 	 */
-	public interface IDependencyInjector extends IEventDispatcher {
+	public class ResolveReferenceError extends ReferenceError {
 
 		/**
+		 * Constructs a new <code>ResolveReferenceError</code>
 		 *
-		 * @param object
-		 * @param objectDefinition
-		 * @param objectName
-		 *
+		 * @param message      The message describing the reference error
 		 */
-		function wire(object:*, objectDefinition:IObjectDefinition = null, objectName:String = null):void
-
+		public function ResolveReferenceError(message:String = "") {
+			super(message);
+		}
 	}
 }

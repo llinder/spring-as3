@@ -31,6 +31,12 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		// --------------------------------------------------------------------
 
 		/**
+		 * A registry of object definitions that describe the way an <code>IObjectFactory</code> will have to
+		 * create and configure objects.
+		 */
+		function get objectDefinitions():Object;
+
+		/**
 		 * The names of the registered object definitions.
 		 *
 		 * @return an array with all registered object definition names, or an empty array if no definitions are

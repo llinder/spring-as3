@@ -31,24 +31,37 @@ package org.springextensions.actionscript.util {
 	 */
 	public final class TypeUtils {
 
+		private static const NUMBER_CLASS_NAME:String = "Number";
+		private static const STRING_CLASS_NAME:String = "String";
+		private static const UINT_CLASS_NAME:String = "uint";
+		private static const INT_CLASS_NAME:String = "int";
+		private static const BOOLEAN_CLASS_NAME:String = "Boolean";
+		private static const ARRAY_CLASS_NAME:String = "Array";
+		private static const DATE_CLASS_NAME:String = "Date";
+
 		/**
 		 * @return <code>true</code> in case the Class is a "simple" property
 		 * (String, Number, int, uint, Boolean, Date, Class), <code>false</code>
 		 * otherwise.
 		 */
 		public static function isSimpleProperty(type:Type):Boolean {
-
-			if (type == null || type == Type.UNTYPED || type == Type.VOID)
+			if (type == null || type == Type.UNTYPED || type == Type.VOID) {
 				return false;
-
-			var clazz:Class = type.clazz;
-
-			if (ClassUtils.isSubclassOf(clazz, String, type.applicationDomain) || clazz === String || ClassUtils.isSubclassOf(clazz, int, type.applicationDomain) || clazz === int || ClassUtils.isSubclassOf(clazz, uint, type.applicationDomain) || clazz === uint || ClassUtils.isSubclassOf(clazz, Number, type.applicationDomain) || clazz === Number || ClassUtils.isSubclassOf(clazz, Boolean, type.applicationDomain) || clazz === Boolean || ClassUtils.isSubclassOf(clazz, Date, type.applicationDomain) || clazz === Date || ClassUtils.isSubclassOf(clazz, Class, type.applicationDomain) || clazz === Class) {
-				return true;
 			}
-
-			return false;
-
+			switch (type.fullName) {
+				case NUMBER_CLASS_NAME:
+				case UINT_CLASS_NAME:
+				case INT_CLASS_NAME:
+				case STRING_CLASS_NAME:
+				case BOOLEAN_CLASS_NAME:
+				case ARRAY_CLASS_NAME:
+				case DATE_CLASS_NAME:
+					return true;
+					break;
+				default:
+					return false;
+					break;
+			}
 		}
 
 	}

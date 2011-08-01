@@ -25,6 +25,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	 */
 	public class DefaultInstanceCache implements IInstanceCache {
 
+		private var _preparedCache:Object;
 		private var _cache:Object;
 		private var _count:uint;
 
@@ -34,6 +35,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 		protected function initDefaultInstanceCache():void {
+			_preparedCache = {};
 			_cache = {};
 			_count = 0;
 		}
@@ -67,6 +69,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				_count++;
 			}
 			_cache[name] = instance;
+			removePreparedInstance(name);
 		}
 
 		public function removeInstance(name:String):void {
@@ -79,5 +82,20 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		public function hasInstance(name:String):Boolean {
 			return _cache.hasOwnProperty(name);
 		}
+
+		public function isPrepared(name:String):Boolean {
+			return _preparedCache.hasOwnProperty(name);
+		}
+
+		public function prepareInstance(name:String, instance:*):void {
+			_preparedCache[name] = instance;
+		}
+
+		protected function removePreparedInstance(name:String):void {
+			if (isPrepared(name)) {
+				delete _preparedCache[name];
+			}
+		}
+
 	}
 }

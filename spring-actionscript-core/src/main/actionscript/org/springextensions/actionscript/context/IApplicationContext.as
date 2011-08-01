@@ -21,15 +21,11 @@ package org.springextensions.actionscript.context {
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
-	public interface IApplicationContext {
-		/**
-		 *
-		 */
-		function get factory():IObjectFactory;
-		/**
-		 * @private
-		 */
-		function set factory(value:IObjectFactory):void;
+	/**
+	 *
+	 * @author Roland Zwaga
+	 */
+	public interface IApplicationContext extends IObjectFactory {
 		/**
 		 *
 		 */
@@ -47,6 +43,9 @@ package org.springextensions.actionscript.context {
 		 */
 		function set definitionRegistry(value:IObjectDefinitionRegistry):void;
 
+		/**
+		 *
+		 */
 		function get rootView():DisplayObject;
 	}
 }

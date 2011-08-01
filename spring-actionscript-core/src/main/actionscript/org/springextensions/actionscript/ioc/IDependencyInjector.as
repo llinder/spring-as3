@@ -17,6 +17,9 @@ package org.springextensions.actionscript.ioc {
 
 	import flash.events.IEventDispatcher;
 
+	import org.as3commons.collections.LinkedList;
+	import org.springextensions.actionscript.ioc.config.IAutowireProcessor;
+	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 
 	/**
@@ -34,12 +37,22 @@ package org.springextensions.actionscript.ioc {
 
 		/**
 		 *
-		 * @param object
+		 * @param instance
 		 * @param objectDefinition
 		 * @param objectName
+		 * @param objectPostProcessors
+		 * @param referenceResolvers
+		 */
+		function wire(instance:*, cache:IInstanceCache, objectDefinition:IObjectDefinition = null, objectName:String = null, objectPostProcessors:LinkedList = null, referenceResolvers:LinkedList = null):void;
+
+		/**
 		 *
 		 */
-		function wire(object:*, objectDefinition:IObjectDefinition = null, objectName:String = null):void
+		function get autowireProcessor():IAutowireProcessor;
+		/**
+		 * @private
+		 */
+		function set autowireProcessor(value:IAutowireProcessor):void;
 
 	}
 }

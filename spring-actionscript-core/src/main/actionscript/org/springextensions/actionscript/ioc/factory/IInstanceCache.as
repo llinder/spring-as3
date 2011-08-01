@@ -20,6 +20,16 @@ package org.springextensions.actionscript.ioc.factory {
 	 * @author Roland Zwaga
 	 */
 	public interface IInstanceCache {
+
+		function isPrepared(name:String):Boolean;
+
+		/**
+		 *
+		 * @param name
+		 * @param instance
+		 */
+		function prepareInstance(name:String, instance:*):void;
+
 		/**
 		 * Adds the specified instance using the specified name.
 		 * @param name The specified name

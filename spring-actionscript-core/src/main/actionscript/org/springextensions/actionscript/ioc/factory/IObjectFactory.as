@@ -20,18 +20,19 @@ package org.springextensions.actionscript.ioc.factory {
 	import org.as3commons.collections.LinkedList;
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.lang.IApplicationDomainAware;
+	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.definition.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
 
 	/**
-	 * Describes an object that is capable of creating instances of other classes..
+	 * Describes an object that is capable of creating and configuring instances of other classes.
 	 *
 	 * @author Christophe Herreman
 	 * @author Roland Zwaga
 	 */
-	public interface IObjectFactory extends IDependencyInjector, IEventBusAware, IApplicationDomainAware, IObjectDefinitionRegistryAware {
+	public interface IObjectFactory extends IEventBusAware, IApplicationDomainAware, IObjectDefinitionRegistryAware {
 
 		/**
 		 * Optional parent factory that can be used to create objects that can't be created by the current instance.
@@ -44,13 +45,7 @@ package org.springextensions.actionscript.ioc.factory {
 		function set parent(value:IObjectFactory):void;
 
 		/**
-		 * A registry of object definitions that describe the way an <code>IObjectFactory</code> will have to
-		 * create and configure objects.
-		 */
-		function get objectDefinitions():Object;
-
-		/**
-		 *
+		 * The <code>ApplicationDomain</code> that is associated with the current <code>IObjectFactory</code>
 		 */
 		function get applicationDomain():ApplicationDomain;
 
@@ -141,7 +136,20 @@ package org.springextensions.actionscript.ioc.factory {
 		 */
 		function get objectFactoryPostProcessors():LinkedList;
 
+		/**
+		 * An <code>IInstanceCache</code> instance used to hold the singletons created by the current <code>IObjectFactory</code>.
+		 */
 		function get cache():IInstanceCache;
+
+		/**
+		 *
+		 */
+		function get dependencyInjector():IDependencyInjector;
+
+		/**
+		 * @private
+		 */
+		function set dependencyInjector(value:IDependencyInjector):void
 
 	}
 }
