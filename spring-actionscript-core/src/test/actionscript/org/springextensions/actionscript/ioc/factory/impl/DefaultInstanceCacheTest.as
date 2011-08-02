@@ -110,5 +110,19 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			mockRepository.verify(disposable);
 		}
 
+		[Test]
+		public function testIsPreparedWithObjectThatIsNotPrepared():void {
+			var result:Boolean = _cache.isPrepared("test");
+			assertFalse(result);
+		}
+
+		[Test]
+		public function testIsPreparedWithObjectThatIsPrepared():void {
+			var obj:Object = {};
+			_cache.prepareInstance("test", obj);
+			var result:Boolean = _cache.isPrepared("test");
+			assertTrue(result);
+		}
+
 	}
 }

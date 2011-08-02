@@ -34,8 +34,8 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _applicationDomain:ApplicationDomain;
 		private var _propertyProviders:Vector.<IPropertiesProvider>;
 		private var _isReady:Boolean;
-		private var _objectPostProcessors:LinkedList;
-		private var _objectFactoryPostProcessors:LinkedList;
+		private var _objectPostProcessors:Vector.<IObjectPostProcessor>;
+		private var _objectFactoryPostProcessors:Vector.<IObjectFactoryPostProcessor>;
 		private var _cache:IInstanceCache;
 		private var _eventBus:IEventBus;
 		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
@@ -82,23 +82,23 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void {
-			objectPostProcessors.add(objectPostProcessor);
+			objectPostProcessors[objectPostProcessors.length] = objectPostProcessor;
 		}
 
 		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void {
-			objectFactoryPostProcessors.add(objectFactoryPostProcessor);
+			objectFactoryPostProcessors[objectFactoryPostProcessors.length] = objectFactoryPostProcessor;
 		}
 
-		public function get objectPostProcessors():LinkedList {
+		public function get objectPostProcessors():Vector.<IObjectPostProcessor> {
 			if (_objectPostProcessors == null) {
-				_objectPostProcessors = new LinkedList();
+				_objectPostProcessors = new Vector.<IObjectPostProcessor>();
 			}
 			return _objectPostProcessors;
 		}
 
-		public function get objectFactoryPostProcessors():LinkedList {
+		public function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor> {
 			if (_objectFactoryPostProcessors == null) {
-				_objectFactoryPostProcessors = new LinkedList();
+				_objectFactoryPostProcessors = new Vector.<IObjectFactoryPostProcessor>();
 			}
 			return _objectFactoryPostProcessors;
 		}

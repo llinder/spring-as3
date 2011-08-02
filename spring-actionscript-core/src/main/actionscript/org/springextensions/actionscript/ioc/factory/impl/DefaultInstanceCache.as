@@ -49,15 +49,21 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 		public function clearCache():void {
-			for (var name:String in _cache) {
-				var inst:IDisposable = getInstance(name) as IDisposable;
+			clearCacheObject(_cache);
+			clearCacheObject(_preparedCache);
+			initDefaultInstanceCache();
+		}
+
+		private function clearCacheObject(cacheObject:Object):void {
+			for (var name:String in cacheObject) {
+				var inst:IDisposable = cacheObject[name] as IDisposable;
 				if (inst != null) {
 					if (!inst.isDisposed) {
 						inst.dispose();
 					}
 				}
+				delete cacheObject[name];
 			}
-			initDefaultInstanceCache();
 		}
 
 		public function numInstances():uint {

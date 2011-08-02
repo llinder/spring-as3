@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.util {
 	import org.as3commons.reflect.Type;
 	import org.flexunit.asserts.assertFalse;
+	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.flexunit.asserts.assertTrue;
 
 	public class TypeUtilsTest {
@@ -72,5 +73,48 @@ package org.springextensions.actionscript.util {
 			var result:Boolean = TypeUtils.isSimpleProperty(type);
 			assertFalse(result);
 		}
+
+		[Test]
+		public function testResolveTypeForTrueValueLowerCase():void {
+			var result:Class = TypeUtils.resolveType("true");
+			assertStrictlyEquals(Boolean, result);
+		}
+
+		[Test]
+		public function testResolveTypeForTrueValueUpperCase():void {
+			var result:Class = TypeUtils.resolveType("TRUE");
+			assertStrictlyEquals(Boolean, result);
+		}
+
+		[Test]
+		public function testResolveTypeForFalseValueLowerCase():void {
+			var result:Class = TypeUtils.resolveType("false");
+			assertStrictlyEquals(Boolean, result);
+		}
+
+		[Test]
+		public function testResolveTypeForFalseValueUpperCase():void {
+			var result:Class = TypeUtils.resolveType("FALSE");
+			assertStrictlyEquals(Boolean, result);
+		}
+
+		[Test]
+		public function testResolveTypeForNumber():void {
+			var result:Class = TypeUtils.resolveType("100");
+			assertStrictlyEquals(Number, result);
+		}
+
+		[Test]
+		public function testResolveTypeForFloat():void {
+			var result:Class = TypeUtils.resolveType("100.00");
+			assertStrictlyEquals(Number, result);
+		}
+
+		[Test]
+		public function testResolveTypeForString():void {
+			var result:Class = TypeUtils.resolveType("test");
+			assertStrictlyEquals(String, result);
+		}
+
 	}
 }

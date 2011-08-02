@@ -13,18 +13,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.factory.impl {
+package org.springextensions.actionscript.ioc.impl {
 
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
 
-	import org.as3commons.collections.LinkedList;
-	import org.as3commons.collections.framework.IIterator;
-	import org.as3commons.collections.framework.core.LinkedListIterator;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
-	import org.as3commons.lang.ObjectUtils;
 	import org.as3commons.lang.StringUtils;
 	import org.as3commons.reflect.Field;
 	import org.as3commons.reflect.MethodInvoker;
@@ -38,7 +33,10 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.springextensions.actionscript.ioc.factory.IInitializingObject;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
+	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.object.ITypeConverter;
+	import org.springextensions.actionscript.object.SimpleTypeConverter;
 	import org.springextensions.actionscript.util.TypeUtils;
 
 	/**
@@ -46,11 +44,14 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	 * @author Roland Zwaga
 	 */
 	public class DefaultDependencyInjector extends EventDispatcher implements IDependencyInjector, IApplicationDomainAware {
+
 		private static const ID_FIELD_NAME:String = "id";
-		private static const NO_NAME_OBJECTNAME:String = "(no name)";
+		private static const DEFAULT_OBJECTNAME:String = "(no name)";
 		private static const PROTOTYPE_FIELD_NAME:String = 'prototype';
+
 		private var _applicationDomain:ApplicationDomain;
 		private var _autowireProcessor:IAutowireProcessor;
+		private var _typeConverter:ITypeConverter;
 
 		/**
 		 * Creates a new <code>DefaultDependencyInjector</code> instance.
@@ -59,7 +60,22 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			super();
 		}
 
-		public function wire(instance:*, cache:IInstanceCache, objectDefinition:IObjectDefinition = null, objectName:String = null, objectPostProcessors:LinkedList = null, referenceResolvers:LinkedList = null):void {
+
+		public function get typeConverter():ITypeConverter {
+			if (_typeConverter == null) {
+				_typeConverter = new SimpleTypeConverter(_applicationDomain);
+			}
+			return _typeConverter;
+		}
+
+		public function set typeConverter(value:ITypeConverter):void {
+			_typeConverter = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function wire(instance:*, cache:IInstanceCache, objectDefinition:IObjectDefinition = null, objectName:String = null, objectPostProcessors:Vector.<IObjectPostProcessor> = null, referenceResolvers:Vector.<IReferenceResolver> = null):void {
 			if (objectDefinition == null) {
 				wireWithoutObjectDefinition(instance, objectName, objectPostProcessors);
 			} else {
@@ -113,12 +129,16 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
-		protected function postProcessingBeforeInitialization(instance:*, objectName:String, objectPostProcessors:LinkedList):void {
-
+		protected function postProcessingBeforeInitialization(instance:*, objectName:String, objectPostProcessors:Vector.<IObjectPostProcessor>):void {
+			for each (var processor:IObjectPostProcessor in objectPostProcessors) {
+				processor.postProcessBeforeInitialization(instance, objectName);
+			}
 		}
 
-		protected function postProcessingAfterInitialization(instance:*, objectName:String, objectProcessors:LinkedList):void {
-
+		protected function postProcessingAfterInitialization(instance:*, objectName:String, objectPostProcessors:Vector.<IObjectPostProcessor>):void {
+			for each (var processor:IObjectPostProcessor in objectPostProcessors) {
+				processor.postProcessAfterInitialization(instance, objectName);
+			}
 		}
 
 		protected function checkDependencies(instance:*, objectDefinition:IObjectDefinition, name:String):void {
@@ -140,7 +160,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
-		protected function resolveReferences(properties:Array, referenceResolvers:LinkedList):Array {
+		protected function resolveReferences(properties:Array, referenceResolvers:Vector.<IReferenceResolver>):Array {
 			var result:Array = [];
 
 			for each (var p:Object in properties) {
@@ -150,7 +170,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return result;
 		}
 
-		protected function setPropertiesFromObjectDefinition(instance:*, objectDefinition:IObjectDefinition, objectName:String, referenceResolvers:LinkedList):void {
+		protected function setPropertiesFromObjectDefinition(instance:*, objectDefinition:IObjectDefinition, objectName:String, referenceResolvers:Vector.<IReferenceResolver>):void {
 			// set the properties on the newly created object
 			var newValue:*;
 			var clazz:Class;
@@ -161,7 +181,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				try {
 					newValue = resolveReference(objectDefinition.properties[property], referenceResolvers);
 				} catch (e:Error) {
-					throw new ResolveReferenceError("The property '" + property + "' on the definition of '" + objectName + "' could not be resolved. Original error: \n" + e.message);
+					throw new ResolveReferenceError(StringUtils.substitute("The property '{0}' on the definition of '{1}' could not be resolved. Original error: {2}\n", property, objectName, e.message));
 				}
 
 				// set the property on the created instance
@@ -170,7 +190,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 					var field:Field = type.getField(property);
 
 					if (newValue && field && field.type.clazz) {
-						//newValue = typeConverter.convertIfNecessary(newValue, field.type.clazz);
+						newValue = typeConverter.convertIfNecessary(newValue, field.type.clazz);
 					}
 
 					// do the actual property setting
@@ -186,13 +206,11 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
-		protected function resolveReference(property:*, referenceResolvers:LinkedList):* {
+		protected function resolveReference(property:*, referenceResolvers:Vector.<IReferenceResolver>):* {
 			if (property == null) { // note: don't change this to !property since we might pass in empty strings here
 				return null;
 			}
-			var iterator:IIterator = referenceResolvers.iterator();
-			while (iterator.hasNext()) {
-				var referenceResolver:IReferenceResolver = IReferenceResolver(iterator.next()); // 6,4,1,3,5,2,7
+			for each (var referenceResolver:IReferenceResolver in referenceResolvers) {
 				if (referenceResolver.canResolve(property)) {
 					return referenceResolver.resolve(property);
 				}
@@ -215,7 +233,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 
-		protected function wireWithoutObjectDefinition(instance:*, objectName:String, objectProcessors:LinkedList):void {
+		protected function wireWithoutObjectDefinition(instance:*, objectName:String, objectProcessors:Vector.<IObjectPostProcessor>):void {
 			if (_autowireProcessor) {
 				_autowireProcessor.autoWire(instance);
 			}
@@ -225,7 +243,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				if (instance.hasOwnProperty(ID_FIELD_NAME)) {
 					objectName = instance[ID_FIELD_NAME];
 				} else {
-					objectName = NO_NAME_OBJECTNAME;
+					objectName = DEFAULT_OBJECTNAME;
 				}
 			}
 
@@ -238,6 +256,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 		public function set applicationDomain(value:ApplicationDomain):void {
 			_applicationDomain = value;
+			if (_typeConverter != null) {
+				_typeConverter = new SimpleTypeConverter(_applicationDomain);
+			}
 		}
 
 		public function get autowireProcessor():IAutowireProcessor {

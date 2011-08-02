@@ -38,6 +38,8 @@ package org.springextensions.actionscript.util {
 		private static const BOOLEAN_CLASS_NAME:String = "Boolean";
 		private static const ARRAY_CLASS_NAME:String = "Array";
 		private static const DATE_CLASS_NAME:String = "Date";
+		private static const TRUE_VALUE:String = "true";
+		private static const FALSE_VALUE:String = "false";
 
 		/**
 		 * @return <code>true</code> in case the Class is a "simple" property
@@ -62,6 +64,31 @@ package org.springextensions.actionscript.util {
 					return false;
 					break;
 			}
+		}
+
+		/**
+		 *
+		 * @param value
+		 * @return
+		 */
+		public static function resolveType(value:String):Class {
+			var result:Class;
+
+			switch (true) {
+				case TRUE_VALUE == value.toLowerCase():
+					result = Boolean;
+					break;
+				case FALSE_VALUE == value.toLowerCase():
+					result = Boolean;
+					break;
+				case !isNaN(Number(value)):
+					result = Number;
+					break;
+				default:
+					result = String;
+			}
+
+			return result;
 		}
 
 	}

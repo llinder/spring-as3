@@ -129,12 +129,12 @@ package org.springextensions.actionscript.ioc.factory {
 		/**
 		 *
 		 */
-		function get objectPostProcessors():LinkedList;
+		function get objectPostProcessors():Vector.<IObjectPostProcessor>;
 
 		/**
 		 *
 		 */
-		function get objectFactoryPostProcessors():LinkedList;
+		function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor>;
 
 		/**
 		 * An <code>IInstanceCache</code> instance used to hold the singletons created by the current <code>IObjectFactory</code>.

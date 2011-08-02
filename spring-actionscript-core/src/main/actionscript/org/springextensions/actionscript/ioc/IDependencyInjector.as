@@ -20,6 +20,8 @@ package org.springextensions.actionscript.ioc {
 	import org.as3commons.collections.LinkedList;
 	import org.springextensions.actionscript.ioc.config.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
+	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
+	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 
 	/**
@@ -43,7 +45,7 @@ package org.springextensions.actionscript.ioc {
 		 * @param objectPostProcessors
 		 * @param referenceResolvers
 		 */
-		function wire(instance:*, cache:IInstanceCache, objectDefinition:IObjectDefinition = null, objectName:String = null, objectPostProcessors:LinkedList = null, referenceResolvers:LinkedList = null):void;
+		function wire(instance:*, cache:IInstanceCache, objectDefinition:IObjectDefinition = null, objectName:String = null, objectPostProcessors:Vector.<IObjectPostProcessor> = null, referenceResolvers:Vector.<IReferenceResolver> = null):void;
 
 		/**
 		 *
