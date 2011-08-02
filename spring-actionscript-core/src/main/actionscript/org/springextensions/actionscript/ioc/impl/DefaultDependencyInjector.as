@@ -93,38 +93,57 @@ package org.springextensions.actionscript.ioc.impl {
 					postProcessingBeforeInitialization(instance, objectName, objectPostProcessors);
 				}
 
-				if (objectDefinition.dependencyCheck !== DependencyCheckMode.NONE) {
-					checkDependencies(instance, objectDefinition, objectName);
-				}
+				checkDependencies(objectDefinition, instance, objectName);
 
-				if (instance is IInitializingObject) {
-					IInitializingObject(instance).afterPropertiesSet();
-				}
+				initializeInstance(instance, objectDefinition);
 
-				if (objectDefinition.initMethod) {
-					instance[objectDefinition.initMethod]();
-				}
-
-				// execute all method invocations if any
-				if (objectDefinition.methodInvocations) {
-					for each (var methodInvocation:MethodInvocation in objectDefinition.methodInvocations) {
-						var methodInvoker:MethodInvoker = new MethodInvoker();
-						methodInvoker.target = instance;
-						methodInvoker.method = methodInvocation.methodName;
-						methodInvoker.arguments = resolveReferences(methodInvocation.arguments, referenceResolvers);
-						methodInvoker.invoke();
-					}
-				}
+				executeMethodInvocations(objectDefinition, instance, referenceResolvers);
 
 				if (!objectDefinition.skipPostProcessors) {
 					postProcessingAfterInitialization(instance, objectName, objectPostProcessors);
 				}
 
-				if (objectDefinition.isSingleton) {
-					// cache the object if its definition is a singleton
-					// note: if the object is an object factory, the object factory is cached and not the
-					// object it creates
-					cache.addInstance(objectName, instance);
+				cacheSingleton(objectDefinition, cache, objectName, instance);
+			}
+		}
+
+		protected function initializeInstance(instance:*, objectDefinition:IObjectDefinition):void {
+			if (instance is IInitializingObject) {
+				IInitializingObject(instance).afterPropertiesSet();
+			}
+
+			if (objectDefinition.initMethod) {
+				instance[objectDefinition.initMethod]();
+			}
+		}
+
+
+		protected function checkDependencies(objectDefinition:IObjectDefinition, instance:*, objectName:String):void {
+			if (objectDefinition.dependencyCheck !== DependencyCheckMode.NONE) {
+				performDependencyCheck(instance, objectDefinition, objectName);
+			}
+		}
+
+
+		protected function cacheSingleton(objectDefinition:IObjectDefinition, cache:IInstanceCache, objectName:String, instance:*):void {
+			if (objectDefinition.isSingleton) {
+				// cache the object if its definition is a singleton
+				// note: if the object is an object factory, the object factory is cached and not the
+				// object it creates
+				cache.addInstance(objectName, instance);
+			}
+		}
+
+
+		protected function executeMethodInvocations(objectDefinition:IObjectDefinition, instance:*, referenceResolvers:Vector.<IReferenceResolver>):void {
+			// execute all method invocations if any
+			if (objectDefinition.methodInvocations) {
+				for each (var methodInvocation:MethodInvocation in objectDefinition.methodInvocations) {
+					var methodInvoker:MethodInvoker = new MethodInvoker();
+					methodInvoker.target = instance;
+					methodInvoker.method = methodInvocation.methodName;
+					methodInvoker.arguments = resolveReferences(methodInvocation.arguments, referenceResolvers);
+					methodInvoker.invoke();
 				}
 			}
 		}
@@ -141,19 +160,18 @@ package org.springextensions.actionscript.ioc.impl {
 			}
 		}
 
-		protected function checkDependencies(instance:*, objectDefinition:IObjectDefinition, name:String):void {
+		protected function performDependencyCheck(instance:*, objectDefinition:IObjectDefinition, name:String):void {
 			var type:Type = Type.forInstance(instance, _applicationDomain);
 			for each (var field:Field in type.properties) {
-
 				if (field.name == PROTOTYPE_FIELD_NAME) {
 					continue;
 				}
-
-				//TODO M: take a decision on which "isSimple" to use...
-
 				var isSimple:Boolean = TypeUtils.isSimpleProperty(field.type);
 				var isNull:Boolean = (field.getValue(instance) == null);
-				var unSatisfied:Boolean = (isNull && (isSimple && objectDefinition.dependencyCheck.checkSimpleProperties() || (!isSimple && objectDefinition.dependencyCheck.checkObjectProperties())));
+				var unSatisfied:Boolean = (isNull && //
+					(isSimple && objectDefinition.dependencyCheck.checkSimpleProperties() || //
+					(!isSimple && objectDefinition.dependencyCheck.checkObjectProperties())) //
+					);
 				if (unSatisfied) {
 					throw new UnsatisfiedDependencyError(name, field.name);
 				}
@@ -170,8 +188,14 @@ package org.springextensions.actionscript.ioc.impl {
 			return result;
 		}
 
+		/**
+		 * Set the properties on the newly created object as defined by the specified <code>IObjectDefinition</code>.
+		 * @param instance The newly created object
+		 * @param objectDefinition The specified <code>IObjectDefinition</code>
+		 * @param objectName The name of the newly created object as known by the object factory
+		 * @param referenceResolvers A collection of <code>IReferenceResolver</code> used to resolve the property values as defined by the specified <code>IObjectDefinition</code>.
+		 */
 		protected function setPropertiesFromObjectDefinition(instance:*, objectDefinition:IObjectDefinition, objectName:String, referenceResolvers:Vector.<IReferenceResolver>):void {
-			// set the properties on the newly created object
 			var newValue:*;
 			var clazz:Class;
 			for (var property:String in objectDefinition.properties) {

@@ -33,6 +33,16 @@ package org.springextensions.actionscript.ioc {
 		 */
 		public function MethodInvocation(methodName:String, args:Array = null) {
 			super();
+			initMethodInvocation(methodName, args);
+		}
+
+		/**
+		 * Initializes the current <code>MethodInvocation</code>.
+		 * @param methodName The name of the method that needs to be invoked.
+		 * @param args Optional array of arguments for the method invocation.
+		 *
+		 */
+		protected function initMethodInvocation(methodName:String, args:Array):void {
 			_methodName = methodName;
 			_arguments = args;
 		}

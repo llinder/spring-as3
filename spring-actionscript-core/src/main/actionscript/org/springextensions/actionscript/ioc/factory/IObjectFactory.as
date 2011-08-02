@@ -128,6 +128,12 @@ package org.springextensions.actionscript.ioc.factory {
 
 		/**
 		 *
+		 * @param referenceResolver
+		 */
+		function addReferenceResolver(referenceResolver:IReferenceResolver):void;
+
+		/**
+		 *
 		 */
 		function get objectPostProcessors():Vector.<IObjectPostProcessor>;
 
@@ -135,6 +141,10 @@ package org.springextensions.actionscript.ioc.factory {
 		 *
 		 */
 		function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor>;
+
+		/**
+		 */
+		function get referenceResolvers():Vector.<IReferenceResolver>;
 
 		/**
 		 * An <code>IInstanceCache</code> instance used to hold the singletons created by the current <code>IObjectFactory</code>.
@@ -149,7 +159,15 @@ package org.springextensions.actionscript.ioc.factory {
 		/**
 		 * @private
 		 */
-		function set dependencyInjector(value:IDependencyInjector):void
+		function set dependencyInjector(value:IDependencyInjector):void;
+
+		/**
+		 *
+		 * @param property
+		 * @return
+		 *
+		 */
+		function resolveReference(property:*):*;
 
 	}
 }

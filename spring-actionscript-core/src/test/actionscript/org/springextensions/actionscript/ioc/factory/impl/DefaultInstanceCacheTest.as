@@ -124,5 +124,14 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			assertTrue(result);
 		}
 
+		[Test]
+		public function testPreparedObjectIsRemovedFromPreparedCacheAfterAddInstance():void {
+			var obj:Object = {};
+			_cache.prepareInstance("test", obj);
+			_cache.addInstance("test", obj);
+			var result:Boolean = _cache.isPrepared("test");
+			assertFalse(result);
+		}
+
 	}
 }

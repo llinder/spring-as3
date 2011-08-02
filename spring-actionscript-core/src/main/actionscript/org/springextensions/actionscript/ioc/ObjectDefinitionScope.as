@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc {
-	
+
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.StringUtils;
-	
+
 	/**
 	 * Enumeration for the scopes of an object definition.
 	 *
@@ -29,27 +29,22 @@ package org.springextensions.actionscript.ioc {
 	 * @docref container-documentation.html#object_scopes
 	 */
 	public final class ObjectDefinitionScope {
-		
+
 		public static const PROTOTYPE:ObjectDefinitionScope = new ObjectDefinitionScope(PROTOTYPE_NAME);
-		
+
 		public static const SINGLETON:ObjectDefinitionScope = new ObjectDefinitionScope(SINGLETON_NAME);
-		
-		//TODO: RZ: stage scope is no longer relevant, please confirm
-		//public static const STAGE:ObjectDefinitionScope = new ObjectDefinitionScope(STAGE_NAME);
-		
+
 		public static const PROTOTYPE_NAME:String = "prototype";
-		
+
 		public static const SINGLETON_NAME:String = "singleton";
-		
-		//public static const STAGE_NAME:String = "stage";
-		
+
 		private static var _enumCreated:Boolean = false;
-		
+
 		private var _name:String;
 		{
 			_enumCreated = true;
 		}
-		
+
 		/**
 		 * Creates a new ObjectDefintionScope object.
 		 * This constructor is only used internally to set up the enum and all
@@ -61,13 +56,13 @@ package org.springextensions.actionscript.ioc {
 			Assert.state(!_enumCreated, "The ObjectDefinitionScope enum has already been created.");
 			_name = name;
 		}
-		
+
 		/**
 		 *
 		 */
 		public static function fromName(name:String):ObjectDefinitionScope {
 			var result:ObjectDefinitionScope;
-			
+
 			// check if the name is a valid value in the enum
 			switch (StringUtils.trim(name.toLowerCase())) {
 				case PROTOTYPE_NAME:
@@ -76,15 +71,12 @@ package org.springextensions.actionscript.ioc {
 				case SINGLETON_NAME:
 					result = SINGLETON;
 					break;
-				/*case STAGE_NAME:
-					result = STAGE;
-					break;*/
 				default:
 					result = SINGLETON;
 			}
 			return result;
 		}
-		
+
 		/**
 		 * Returns the name of the scope.
 		 *
@@ -93,7 +85,7 @@ package org.springextensions.actionscript.ioc {
 		public function get name():String {
 			return _name;
 		}
-		
+
 		public function toString():String {
 			return _name;
 		}

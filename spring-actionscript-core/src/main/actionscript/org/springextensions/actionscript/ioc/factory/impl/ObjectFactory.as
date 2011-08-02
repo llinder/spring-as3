@@ -20,10 +20,12 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 	import org.as3commons.collections.LinkedList;
 	import org.as3commons.eventbus.IEventBus;
+	import org.as3commons.lang.util.OrderedUtils;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.definition.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
+	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
 	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -36,6 +38,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _isReady:Boolean;
 		private var _objectPostProcessors:Vector.<IObjectPostProcessor>;
 		private var _objectFactoryPostProcessors:Vector.<IObjectFactoryPostProcessor>;
+		private var _referenceResolvers:Vector.<IReferenceResolver>;
 		private var _cache:IInstanceCache;
 		private var _eventBus:IEventBus;
 		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
@@ -47,6 +50,19 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		public function ObjectFactory() {
 			super();
 			initObjectFactory();
+		}
+
+
+		public function get referenceResolvers():Vector.<IReferenceResolver> {
+			if (_referenceResolvers == null) {
+				_referenceResolvers = new Vector.<IReferenceResolver>();
+			}
+			return _referenceResolvers;
+		}
+
+		public function addReferenceResolver(referenceResolver:IReferenceResolver):void {
+			referenceResolvers[referenceResolvers.length] = referenceResolver;
+			_referenceResolvers.sort(OrderedUtils.orderedCompareFunction);
 		}
 
 		protected function initObjectFactory():void {
@@ -83,10 +99,12 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void {
 			objectPostProcessors[objectPostProcessors.length] = objectPostProcessor;
+			_objectPostProcessors.sort(OrderedUtils.orderedCompareFunction);
 		}
 
 		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void {
 			objectFactoryPostProcessors[objectFactoryPostProcessors.length] = objectFactoryPostProcessor;
+			_objectFactoryPostProcessors.sort(OrderedUtils.orderedCompareFunction);
 		}
 
 		public function get objectPostProcessors():Vector.<IObjectPostProcessor> {
@@ -133,6 +151,18 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 		public function set dependencyInjector(value:IDependencyInjector):void {
 			_dependencyInjector = value;
+		}
+
+		public function resolveReference(property:*):* {
+			if (property == null) { // note: don't change this to !property since we might pass in empty strings here
+				return null;
+			}
+			for each (var referenceResolver:IReferenceResolver in referenceResolvers) {
+				if (referenceResolver.canResolve(property)) {
+					return referenceResolver.resolve(property);
+				}
+			}
+			return property;
 		}
 	}
 }

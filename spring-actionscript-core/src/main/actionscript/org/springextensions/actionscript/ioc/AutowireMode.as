@@ -15,6 +15,8 @@
  */
 package org.springextensions.actionscript.ioc {
 
+	import flash.utils.Dictionary;
+
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.StringUtils;
 
@@ -25,6 +27,8 @@ package org.springextensions.actionscript.ioc {
 	 * @docref container-documentation.html#autowiring_objects
 	 */
 	public class AutowireMode {
+
+		private static const TYPES:Dictionary = new Dictionary();
 
 		/** No autowire on the object */
 		public static const NO:AutowireMode = new AutowireMode(NO_NAME);
@@ -72,6 +76,7 @@ package org.springextensions.actionscript.ioc {
 		public function AutowireMode(name:String) {
 			Assert.state(!_enumCreated, ALREADY_CREATED_ERROR);
 			_name = name;
+			TYPES[_name] = this;
 		}
 
 		/**
@@ -81,31 +86,7 @@ package org.springextensions.actionscript.ioc {
 			if (!name) {
 				return NO;
 			}
-
-			var result:AutowireMode;
-
-			// check if the name is a valid value in the enum
-			switch (StringUtils.trim(name.toUpperCase())) {
-				case NO_NAME.toUpperCase():
-					result = NO;
-					break;
-				case BYNAME_NAME.toUpperCase():
-					result = BYNAME;
-					break;
-				case BYTYPE_NAME.toUpperCase():
-					result = BYTYPE;
-					break;
-				case CONSTRUCTOR_NAME.toUpperCase():
-					result = CONSTRUCTOR;
-					break;
-				case AUTODETECT_NAME.toUpperCase():
-					result = AUTODETECT;
-					break;
-				default:
-					result = NO;
-			}
-
-			return result;
+			return TYPES[name] as AutowireMode;
 		}
 
 		/**
