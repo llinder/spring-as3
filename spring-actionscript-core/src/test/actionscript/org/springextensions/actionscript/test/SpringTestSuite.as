@@ -15,6 +15,10 @@
 */
 package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultInstanceCacheTest;
+	import org.springextensions.actionscript.object.SimpleTypeConverterTest;
+	import org.springextensions.actionscript.object.propertyeditor.BooleanPropertyEditorTest;
+	import org.springextensions.actionscript.object.propertyeditor.ClassPropertyEditorTest;
+	import org.springextensions.actionscript.object.propertyeditor.NumberPropertyEditorTest;
 	import org.springextensions.actionscript.util.TypeUtilsTest;
 
 	[Suite]
@@ -22,5 +26,9 @@ package org.springextensions.actionscript.test {
 	public class SpringTestSuite {
 		public var t1:DefaultInstanceCacheTest;
 		public var t2:TypeUtilsTest;
+		public var t3:SimpleTypeConverterTest;
+		public var t4:BooleanPropertyEditorTest;
+		public var t5:NumberPropertyEditorTest;
+		public var t6:ClassPropertyEditorTest;
 	}
 }
