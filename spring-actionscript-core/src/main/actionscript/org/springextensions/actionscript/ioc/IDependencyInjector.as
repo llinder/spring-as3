@@ -14,38 +14,19 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc {
-
 	import flash.events.IEventDispatcher;
-
-	import org.as3commons.collections.LinkedList;
-	import org.springextensions.actionscript.ioc.config.IAutowireProcessor;
+	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
-	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 
 	/**
 	 * Defines the most basic service used to implement dependency injection.
-	 *
-	 * <p>
-	 * <b>Authors:</b> Martino Piccinato<br/>
-	 * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
-	 * <b>Since:</b> 0.1
-	 * </p>
-	 *
-	 * @see org.springextensions.actionscript.ioc.factory.config.IConfigurableObjectFactory
+	 * @author Martino Piccinato
+	 * @author Roland Zwaga
 	 */
 	public interface IDependencyInjector extends IEventDispatcher {
-
-		/**
-		 *
-		 * @param instance
-		 * @param objectDefinition
-		 * @param objectName
-		 * @param objectPostProcessors
-		 * @param referenceResolvers
-		 */
-		function wire(instance:*, cache:IInstanceCache, objectDefinition:IObjectDefinition = null, objectName:String = null, objectPostProcessors:Vector.<IObjectPostProcessor> = null, referenceResolvers:Vector.<IReferenceResolver> = null):void;
 
 		/**
 		 *
@@ -56,5 +37,14 @@ package org.springextensions.actionscript.ioc {
 		 */
 		function set autowireProcessor(value:IAutowireProcessor):void;
 
+		/**
+		 *
+		 * @param instance
+		 * @param objectDefinition
+		 * @param objectName
+		 * @param objectPostProcessors
+		 * @param referenceResolvers
+		 */
+		function wire(instance:*, cache:IInstanceCache, objectDefinition:IObjectDefinition = null, objectName:String = null, objectPostProcessors:Vector.<IObjectPostProcessor> = null, referenceResolvers:Vector.<IReferenceResolver> = null):void;
 	}
 }
