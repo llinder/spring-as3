@@ -14,7 +14,6 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl {
-
 	import org.as3commons.lang.IDisposable;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.objectdefinition.error.ObjectDefinitionNotFoundError;
@@ -25,19 +24,31 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	 */
 	public class DefaultInstanceCache implements IInstanceCache {
 
-		private var _preparedCache:Object;
-		private var _cache:Object;
-		private var _count:uint;
-
 		public function DefaultInstanceCache() {
 			super();
 			initDefaultInstanceCache();
 		}
 
-		protected function initDefaultInstanceCache():void {
-			_preparedCache = {};
-			_cache = {};
-			_count = 0;
+		private var _cache:Object;
+		private var _cachedNames:Array;
+		private var _preparedCache:Object;
+
+		public function addInstance(name:String, instance:*):void {
+			if (!hasInstance(name)) {
+				_cachedNames[_cachedNames.length] = name;
+			}
+			_cache[name] = instance;
+			removePreparedInstance(name);
+		}
+
+		public function clearCache():void {
+			clearCacheObject(_cache);
+			clearCacheObject(_preparedCache);
+			initDefaultInstanceCache();
+		}
+
+		public function getCachedNames():Array {
+			return _cachedNames.concat([]);
 		}
 
 		public function getInstance(name:String):* {
@@ -48,10 +59,42 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
-		public function clearCache():void {
-			clearCacheObject(_cache);
-			clearCacheObject(_preparedCache);
-			initDefaultInstanceCache();
+		public function hasInstance(name:String):Boolean {
+			return _cache.hasOwnProperty(name);
+		}
+
+		public function isPrepared(name:String):Boolean {
+			return _preparedCache.hasOwnProperty(name);
+		}
+
+		public function numInstances():uint {
+			return _cachedNames.length;
+		}
+
+		public function prepareInstance(name:String, instance:*):void {
+			_preparedCache[name] = instance;
+		}
+
+		public function removeInstance(name:String):void {
+			if (hasInstance(name)) {
+				delete _cache[name];
+				var idx:int = _cachedNames.indexOf(name);
+				if (idx > -1) {
+					_cachedNames.splice(idx, 1);
+				}
+			}
+		}
+
+		protected function initDefaultInstanceCache():void {
+			_preparedCache = {};
+			_cache = {};
+			_cachedNames = [];
+		}
+
+		protected function removePreparedInstance(name:String):void {
+			if (isPrepared(name)) {
+				delete _preparedCache[name];
+			}
 		}
 
 		private function clearCacheObject(cacheObject:Object):void {
@@ -65,43 +108,5 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				delete cacheObject[name];
 			}
 		}
-
-		public function numInstances():uint {
-			return _count;
-		}
-
-		public function addInstance(name:String, instance:*):void {
-			if (!hasInstance(name)) {
-				_count++;
-			}
-			_cache[name] = instance;
-			removePreparedInstance(name);
-		}
-
-		public function removeInstance(name:String):void {
-			if (hasInstance(name)) {
-				delete _cache[name];
-				_count--;
-			}
-		}
-
-		public function hasInstance(name:String):Boolean {
-			return _cache.hasOwnProperty(name);
-		}
-
-		public function isPrepared(name:String):Boolean {
-			return _preparedCache.hasOwnProperty(name);
-		}
-
-		public function prepareInstance(name:String, instance:*):void {
-			_preparedCache[name] = instance;
-		}
-
-		protected function removePreparedInstance(name:String):void {
-			if (isPrepared(name)) {
-				delete _preparedCache[name];
-			}
-		}
-
 	}
 }

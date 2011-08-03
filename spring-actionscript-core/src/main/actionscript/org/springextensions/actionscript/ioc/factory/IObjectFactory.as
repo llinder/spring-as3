@@ -14,41 +14,72 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.factory {
-
 	import flash.system.ApplicationDomain;
 
-	import org.as3commons.collections.LinkedList;
-	import org.as3commons.eventbus.IEventBusAware;
-	import org.as3commons.lang.IApplicationDomainAware;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
-	import org.springextensions.actionscript.ioc.definition.property.IPropertiesProvider;
-	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectFactoryPostProcessor;
-	import org.springextensions.actionscript.ioc.factory.postprocess.IObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
 
 	/**
 	 * Describes an object that is capable of creating and configuring instances of other classes.
-	 *
 	 * @author Christophe Herreman
 	 * @author Roland Zwaga
 	 */
-	public interface IObjectFactory extends IEventBusAware, IApplicationDomainAware, IObjectDefinitionRegistryAware {
+	public interface IObjectFactory extends IObjectDefinitionRegistryAware {
 
 		/**
-		 * Optional parent factory that can be used to create objects that can't be created by the current instance.
+		 *
+		 * @param objectFactoryPostProcessor
 		 */
-		function get parent():IObjectFactory;
+		function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void;
 
 		/**
-		 * @private
+		 *
+		 * @param objectPostProcessor
 		 */
-		function set parent(value:IObjectFactory):void;
+		function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void;
+
+		/**
+		 *
+		 * @param referenceResolver
+		 */
+		function addReferenceResolver(referenceResolver:IReferenceResolver):void;
 
 		/**
 		 * The <code>ApplicationDomain</code> that is associated with the current <code>IObjectFactory</code>
 		 */
 		function get applicationDomain():ApplicationDomain;
+		/**
+		 * @private
+		 */
+		function set applicationDomain(value:ApplicationDomain):void;
 
+		/**
+		 * An <code>IInstanceCache</code> instance used to hold the singletons created by the current <code>IObjectFactory</code>.
+		 */
+		function get cache():IInstanceCache;
+
+		/**
+		 * Creates an instance of the specified <code>Class</code>, wires the instance and returns it.
+		 * Useful for creating objects that have only been annotated with [Autowired] metadata and need
+		 * no object definition.
+		 * @param clazz The specified <code>Class</code>.
+		 * @param constructorArguments Optional <code>Array</code> of constructor arguments to be used for the instance.
+		 * @return The created and wired instance of the specified <code>Class</code>.
+		 */
+		function createInstance(clazz:Class, constructorArguments:Array = null):*;
+
+		/**
+		 *
+		 */
+		function get dependencyInjector():IDependencyInjector;
+
+		/**
+		 * @private
+		 */
+		function set dependencyInjector(value:IDependencyInjector):void;
 		/**
 		 * Will retrieve an object by it's name/id If the definition is a singleton it will be retrieved from
 		 * cache if possible. If the definition defines an init method, the init method will be called after
@@ -95,47 +126,14 @@ package org.springextensions.actionscript.ioc.factory {
 		function getObject(name:String, constructorArguments:Array = null):*;
 
 		/**
-		 * Creates an instance of the specified <code>Class</code>, wires the instance and returns it.
-		 * Useful for creating objects that have only been annotated with [Autowired] metadata and need
-		 * no object definition.
-		 * @param clazz The specified <code>Class</code>.
-		 * @param constructorArguments Optional <code>Array</code> of constructor arguments to be used for the instance.
-		 * @return The created and wired instance of the specified <code>Class</code>.
-		 */
-		function createInstance(clazz:Class, constructorArguments:Array = null):*;
-
-		/**
-		 *
-		 */
-		function get propertyProviders():Vector.<IPropertiesProvider>;
-
-		/**
 		 * Returns <code>true</code> when the current <code>IObjectFactory</code> is fully initialized and ready for use.
 		 */
 		function get isReady():Boolean;
 
 		/**
 		 *
-		 * @param objectPostProcessor
 		 */
-		function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void;
-
-		/**
-		 *
-		 * @param objectFactoryPostProcessor
-		 */
-		function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void;
-
-		/**
-		 *
-		 * @param referenceResolver
-		 */
-		function addReferenceResolver(referenceResolver:IReferenceResolver):void;
-
-		/**
-		 *
-		 */
-		function get objectPostProcessors():Vector.<IObjectPostProcessor>;
+		function get objectDefinitions():Object;
 
 		/**
 		 *
@@ -143,23 +141,28 @@ package org.springextensions.actionscript.ioc.factory {
 		function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor>;
 
 		/**
-		 */
-		function get referenceResolvers():Vector.<IReferenceResolver>;
-
-		/**
-		 * An <code>IInstanceCache</code> instance used to hold the singletons created by the current <code>IObjectFactory</code>.
-		 */
-		function get cache():IInstanceCache;
-
-		/**
 		 *
 		 */
-		function get dependencyInjector():IDependencyInjector;
+		function get objectPostProcessors():Vector.<IObjectPostProcessor>;
+
+		/**
+		 * Optional parent factory that can be used to create objects that can't be created by the current instance.
+		 */
+		function get parent():IObjectFactory;
 
 		/**
 		 * @private
 		 */
-		function set dependencyInjector(value:IDependencyInjector):void;
+		function set parent(value:IObjectFactory):void;
+
+		/**
+		 *
+		 */
+		function get propertyProviders():Vector.<IPropertiesProvider>;
+
+		/**
+		 */
+		function get referenceResolvers():Vector.<IReferenceResolver>;
 
 		/**
 		 *
@@ -168,6 +171,5 @@ package org.springextensions.actionscript.ioc.factory {
 		 *
 		 */
 		function resolveReference(property:*):*;
-
 	}
 }

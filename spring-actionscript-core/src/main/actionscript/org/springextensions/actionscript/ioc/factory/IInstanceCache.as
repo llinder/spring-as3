@@ -21,15 +21,6 @@ package org.springextensions.actionscript.ioc.factory {
 	 */
 	public interface IInstanceCache {
 
-		function isPrepared(name:String):Boolean;
-
-		/**
-		 *
-		 * @param name
-		 * @param instance
-		 */
-		function prepareInstance(name:String, instance:*):void;
-
 		/**
 		 * Adds the specified instance using the specified name.
 		 * @param name The specified name
@@ -39,16 +30,14 @@ package org.springextensions.actionscript.ioc.factory {
 		 */
 		function addInstance(name:String, instance:*):void;
 		/**
-		 * Removes the instance that was associated with the specified name.
-		 * @param name The specified name
+		 * Removes all the instances from the cache.
 		 */
-		function removeInstance(name:String):void;
+		function clearCache():void;
+
 		/**
-		 * Returns <code>true</true> if an instance has been associated with the specified name
-		 * @param name The specified name
-		 * @return <code>true</true> if an instance has been associated with the specified name
+		 * Returns an <code>Array</code> of all the names of the cached objects in the current <code>IInstanceCache</code>.
 		 */
-		function hasInstance(name:String):Boolean;
+		function getCachedNames():Array;
 		/**
 		 * Returns the instance that was associated with the specified name.
 		 * @param name The specified name
@@ -57,13 +46,29 @@ package org.springextensions.actionscript.ioc.factory {
 		 */
 		function getInstance(name:String):*;
 		/**
-		 * Removes all the instances from the cache.
+		 * Returns <code>true</true> if an instance has been associated with the specified name
+		 * @param name The specified name
+		 * @return <code>true</true> if an instance has been associated with the specified name
 		 */
-		function clearCache():void;
+		function hasInstance(name:String):Boolean;
+
+		function isPrepared(name:String):Boolean;
 		/**
 		 * Returns the number of instances that have been added to the cache.
 		 * @return The number of instances that have been added to the cache.
 		 */
 		function numInstances():uint;
+
+		/**
+		 *
+		 * @param name
+		 * @param instance
+		 */
+		function prepareInstance(name:String, instance:*):void;
+		/**
+		 * Removes the instance that was associated with the specified name.
+		 * @param name The specified name
+		 */
+		function removeInstance(name:String):void;
 	}
 }
