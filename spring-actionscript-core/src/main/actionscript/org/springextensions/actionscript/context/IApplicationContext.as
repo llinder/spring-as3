@@ -17,7 +17,8 @@ package org.springextensions.actionscript.context {
 
 	import flash.display.DisplayObject;
 
-	import org.springextensions.actionscript.ioc.definition.IObjectDefinitionsProvider;
+	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
+	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
@@ -25,15 +26,13 @@ package org.springextensions.actionscript.context {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public interface IApplicationContext extends IObjectFactory {
+	public interface IApplicationContext extends IObjectFactory, IStageObjectProcessorRegistryAware {
+
+		function addDefinitionProvider(provider:IObjectDefinitionsProvider):void;
 		/**
 		 *
 		 */
 		function get definitionProviders():Vector.<IObjectDefinitionsProvider>;
-		/**
-		 * @private
-		 */
-		function set definitionProviders(value:Vector.<IObjectDefinitionsProvider>):void;
 		/**
 		 *
 		 */
@@ -47,5 +46,10 @@ package org.springextensions.actionscript.context {
 		 *
 		 */
 		function get rootView():DisplayObject;
+
+		/**
+		 *
+		 */
+		function load():void;
 	}
 }
