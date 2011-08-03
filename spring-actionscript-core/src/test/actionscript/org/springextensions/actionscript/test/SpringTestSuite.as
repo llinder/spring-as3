@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.test {
+	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultInstanceCacheTest;
 	import org.springextensions.actionscript.object.SimpleTypeConverterTest;
 	import org.springextensions.actionscript.object.propertyeditor.BooleanPropertyEditorTest;
@@ -30,5 +31,6 @@ package org.springextensions.actionscript.test {
 		public var t4:BooleanPropertyEditorTest;
 		public var t5:NumberPropertyEditorTest;
 		public var t6:ClassPropertyEditorTest;
+		public var t7:DefaultAutowireProcessorTest;
 	}
 }

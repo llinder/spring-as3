@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.ioc.autowire.impl {
 
 	import flash.system.ApplicationDomain;
+
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
@@ -202,7 +203,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		 * @inheritDoc
 		 */
 		public function findAutowireCandidateName(clazz:Class):String {
-			var candidateNames:Array = findAutowireCandidateNames(clazz);
+			var candidateNames:Vector.<String> = findAutowireCandidateNames(clazz);
 			if (candidateNames.length < 1) {
 				var proc:IAutowireProcessorAware = (_objectFactory.parent as IAutowireProcessorAware);
 				if ((proc != null) && (proc.autowireProcessor != null)) {
@@ -261,10 +262,8 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			// explicitly set in the object definition
 			if ((!objectDefinition.constructorArguments || objectDefinition.constructorArguments.length == 0) && objectDefinition.autoWireMode == AutowireMode.CONSTRUCTOR) {
 				for each (var parameter:Parameter in type.constructor.parameters) {
-					objectDefinition.constructorArguments.push(_objectFactory.getObject(findAutowireCandidateName(parameter.type.clazz)));
+					objectDefinition.constructorArguments[objectDefinition.constructorArguments.length] = findAutowireCandidateName(parameter.type.clazz);
 				}
-					//throw new Error("Arguments: " + type.constructor.parameters);
-
 			}
 		}
 
@@ -418,7 +417,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		/**
 		 *
 		 */
-		protected function determinePrimaryCandidate(candidateNames:Array):String {
+		protected function determinePrimaryCandidate(candidateNames:Vector.<String>):String {
 			var result:String;
 			var definition:IObjectDefinition;
 			var numCandidates:uint = candidateNames.length;
@@ -448,8 +447,8 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		 *
 		 * @see #autoWireByType(Object, IObjectDefinition)
 		 */
-		protected function findAutowireCandidateNames(clazz:Class):Array {
-			var result:Array = [];
+		protected function findAutowireCandidateNames(clazz:Class):Vector.<String> {
+			var result:Vector.<String> = new Vector.<String>();
 			var objectDefinition:IObjectDefinition;
 			var objectClass:Class;
 			var autowiredClassName:String = ClassUtils.getFullyQualifiedName(clazz, true);

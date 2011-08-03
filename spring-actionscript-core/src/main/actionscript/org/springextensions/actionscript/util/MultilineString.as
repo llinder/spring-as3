@@ -35,6 +35,8 @@ package org.springextensions.actionscript.util {
 
 		/** Character code for the APPLE line break. */
 		private static const MAC_BREAK:String = String.fromCharCode(13);
+		/** Character used internally for line breaks. */
+		private static const NEWLINE_CHAR:String = "\n";
 
 		/** Original content without standardized line breaks. */
 		private var _original:String;
@@ -46,9 +48,15 @@ package org.springextensions.actionscript.util {
 		 * Constructs a new MultilineString.
 		 */
 		public function MultilineString(string:String) {
-			_original = string;
-			_lines = string.split(WIN_BREAK).join("\n").split(MAC_BREAK).join("\n").split("\n");
+			super();
+			initMultiString(string);
 		}
+
+		protected function initMultiString(string:String):void {
+			_original = string;
+			_lines = string.split(WIN_BREAK).join(NEWLINE_CHAR).split(MAC_BREAK).join(NEWLINE_CHAR).split(NEWLINE_CHAR);
+		}
+
 
 		/**
 		 * Returns the original used string (without line break standarisation).
