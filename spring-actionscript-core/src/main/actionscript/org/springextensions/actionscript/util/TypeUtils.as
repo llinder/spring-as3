@@ -47,7 +47,7 @@ package org.springextensions.actionscript.util {
 		 * otherwise.
 		 */
 		public static function isSimpleProperty(type:Type):Boolean {
-			if (type == null || type == Type.UNTYPED || type == Type.VOID) {
+			if (type == null || type === Type.UNTYPED || type === Type.VOID) {
 				return false;
 			}
 			switch (type.fullName) {
