@@ -24,6 +24,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.springextensions.actionscript.ioc.AutowireMode;
+	import org.springextensions.actionscript.ioc.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactory;
@@ -113,7 +114,69 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			processor.preprocessObjectDefinition(definition);
 			assertStrictlyEquals(AutowireMode.CONSTRUCTOR, definition.autoWireMode);
 			assertEquals(1, definition.constructorArguments.length);
-			assertEquals("objectFactory", definition.constructorArguments);
+			assertEquals("objectFactory", definition.constructorArguments[0]);
+		}
+
+		[Test(expects = "org.springextensions.actionscript.ioc.UnsatisfiedDependencyError")]
+		public function testPreprocessObjectDefinitionWithAutoDetectAndUnsatisfiedDependency():void {
+
+			var definition:IObjectDefinition = new ObjectDefinition();
+			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
+			definition.autoWireMode = AutowireMode.AUTODETECT;
+			definition.dependencyCheck = DependencyCheckMode.ALL;
+			_objectDefinitions["testName"] = definition;
+
+			mockRepository.replayAll();
+			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(_factory);
+			processor.preprocessObjectDefinition(definition);
+		}
+
+		[Test(expects = "org.springextensions.actionscript.ioc.UnsatisfiedDependencyError")]
+		public function testPreprocessObjectDefinitionWithAutoDetectAndUnsatisfiedDependencyAndObjectsCheck():void {
+
+			var definition:IObjectDefinition = new ObjectDefinition();
+			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
+			definition.autoWireMode = AutowireMode.AUTODETECT;
+			definition.dependencyCheck = DependencyCheckMode.OBJECTS;
+			_objectDefinitions["testName"] = definition;
+
+			mockRepository.replayAll();
+			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(_factory);
+			processor.preprocessObjectDefinition(definition);
+		}
+
+		[Test]
+		public function testPreprocessObjectDefinitionWithAutoDetectAndIgnoredUnsatisfiedDependency():void {
+
+			var definition:IObjectDefinition = new ObjectDefinition();
+			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
+			definition.autoWireMode = AutowireMode.AUTODETECT;
+			definition.dependencyCheck = DependencyCheckMode.SIMPLE;
+			_objectDefinitions["testName"] = definition;
+
+			mockRepository.replayAll();
+			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(_factory);
+			processor.preprocessObjectDefinition(definition);
+			assertStrictlyEquals(AutowireMode.CONSTRUCTOR, definition.autoWireMode);
+			assertEquals(1, definition.constructorArguments.length);
+			assertNull(definition.constructorArguments[0]);
+		}
+
+		[Test]
+		public function testPreprocessObjectDefinitionWithAutoDetectAndWithoutDependencyCheck():void {
+
+			var definition:IObjectDefinition = new ObjectDefinition();
+			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
+			definition.autoWireMode = AutowireMode.AUTODETECT;
+			definition.dependencyCheck = DependencyCheckMode.NONE;
+			_objectDefinitions["testName"] = definition;
+
+			mockRepository.replayAll();
+			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(_factory);
+			processor.preprocessObjectDefinition(definition);
+			assertStrictlyEquals(AutowireMode.CONSTRUCTOR, definition.autoWireMode);
+			assertEquals(1, definition.constructorArguments.length);
+			assertNull(definition.constructorArguments[0]);
 		}
 
 	}

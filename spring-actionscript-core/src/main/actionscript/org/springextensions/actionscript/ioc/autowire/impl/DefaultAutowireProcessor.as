@@ -32,6 +32,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.as3commons.reflect.Variable;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.AutowireMode;
+	import org.springextensions.actionscript.ioc.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.UnsatisfiedDependencyError;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
@@ -41,6 +42,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.springextensions.actionscript.ioc.factory.NoSuchObjectDefinitionError;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.util.TypeUtils;
 
 	/**
 	 * <p>Default <code>IAutowireProcessor</code> implementation used by the <code>AbstractObjectFactory</code>.</p>
@@ -261,8 +263,16 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			// arguments are passed to the method and no constructor parameter are
 			// explicitly set in the object definition
 			if ((!objectDefinition.constructorArguments || objectDefinition.constructorArguments.length == 0) && objectDefinition.autoWireMode == AutowireMode.CONSTRUCTOR) {
+				var idx:uint = 0;
 				for each (var parameter:Parameter in type.constructor.parameters) {
-					objectDefinition.constructorArguments[objectDefinition.constructorArguments.length] = findAutowireCandidateName(parameter.type.clazz);
+					var isSimple:Boolean = TypeUtils.isSimpleProperty(parameter.type);
+					var candidateName:String = findAutowireCandidateName(parameter.type.clazz);
+					if (((isSimple) && (candidateName == null) && ((objectDefinition.dependencyCheck === DependencyCheckMode.ALL) || (objectDefinition.dependencyCheck === DependencyCheckMode.SIMPLE))) || //
+						((!isSimple) && (candidateName == null) && ((objectDefinition.dependencyCheck === DependencyCheckMode.ALL) || (objectDefinition.dependencyCheck === DependencyCheckMode.OBJECTS)))) {
+						throw new UnsatisfiedDependencyError("(autowired object)", "constructor argument #" + idx, "Constructor argument could not be resolved during autowiring");
+					}
+					objectDefinition.constructorArguments[objectDefinition.constructorArguments.length] = candidateName;
+					idx++;
 				}
 			}
 		}
@@ -549,6 +559,10 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			return result;
 		}
 
+		/**
+		 * Initializes the current <code>DefaultAutowireProcessor</code>.
+		 * @param objectFactory the specified <code>IObjectFactory</code>
+		 */
 		protected function initDefaultAutowireProcessor(objectFactory:IObjectFactory):void {
 			Assert.notNull(objectFactory, "The objectFactory parameter must not be null");
 			_objectFactory = objectFactory;
