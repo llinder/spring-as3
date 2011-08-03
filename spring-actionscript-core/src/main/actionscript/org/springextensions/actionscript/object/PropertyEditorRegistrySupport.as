@@ -17,12 +17,11 @@ package org.springextensions.actionscript.object {
 
 	import flash.system.ApplicationDomain;
 	import flash.utils.Dictionary;
-
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.IApplicationDomainAware;
-	import org.springextensions.actionscript.object.propertyeditors.BooleanPropertyEditor;
-	import org.springextensions.actionscript.object.propertyeditors.ClassPropertyEditor;
-	import org.springextensions.actionscript.object.propertyeditors.NumberPropertyEditor;
+	import org.springextensions.actionscript.object.propertyeditor.BooleanPropertyEditor;
+	import org.springextensions.actionscript.object.propertyeditor.ClassPropertyEditor;
+	import org.springextensions.actionscript.object.propertyeditor.NumberPropertyEditor;
 
 	/**
 	 * Default implementation of a property editor registry.
@@ -35,25 +34,30 @@ package org.springextensions.actionscript.object {
 	 */
 	public class PropertyEditorRegistrySupport implements IPropertyEditorRegistry, IApplicationDomainAware {
 
-		private var _customEditors:Dictionary = new Dictionary();
-
 		/**
 		 * Creates a new <code>PropertyEditorRegistrySupport</code> instance.
 		 *
 		 */
 		public function PropertyEditorRegistrySupport(applicationDomain:ApplicationDomain) {
 			super();
-			_applicationDomain = applicationDomain;
-			registerDefaultEditors();
+			initPropertyEditorRegistrySupport(applicationDomain);
 		}
 
 		private var _applicationDomain:ApplicationDomain;
+		private var _customEditors:Dictionary;
 
 		/**
 		 * @inheritDoc
 		 */
 		public function set applicationDomain(value:ApplicationDomain):void {
 			_applicationDomain = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function findCustomEditor(requiredType:Class):IPropertyEditor {
+			return _customEditors[requiredType];
 		}
 
 		/**
@@ -69,13 +73,19 @@ package org.springextensions.actionscript.object {
 		}
 
 		/**
-		 * @inheritDoc
+		 * Initializes the current <code>PropertyEditorRegistrySupport</code>.
+		 * @param applicationDomain The specified <code>ApplicationDomain</code>.
 		 */
-		public function findCustomEditor(requiredType:Class):IPropertyEditor {
-			return _customEditors[requiredType];
+		protected function initPropertyEditorRegistrySupport(applicationDomain:ApplicationDomain):void {
+			_applicationDomain = applicationDomain;
+			_customEditors = new Dictionary()
+			registerDefaultEditors();
 		}
 
-		private function registerDefaultEditors():void {
+		/**
+		 *
+		 */
+		protected function registerDefaultEditors():void {
 			registerCustomEditor(Boolean, new BooleanPropertyEditor());
 			registerCustomEditor(Number, new NumberPropertyEditor());
 			registerCustomEditor(Class, new ClassPropertyEditor());
