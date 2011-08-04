@@ -15,9 +15,9 @@
 */
 package org.springextensions.actionscript.ioc.factory.impl {
 
-	public class DefaulObjectFactoryTest {
+	public class DefaultObjectFactoryTest {
 
-		public function DefaulObjectFactoryTest() {
+		public function DefaultObjectFactoryTest() {
 			super();
 		}
 
