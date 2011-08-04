@@ -15,9 +15,9 @@
  */
 package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
-	import mx.collections.ArrayCollection;
-	import mx.collections.IViewCursor;
+	import flash.system.ApplicationDomain;
 
+	import org.as3commons.lang.ClassUtils;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.impl.AbstractReferenceResolver;
 
@@ -32,6 +32,9 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 	 */
 	public class ArrayCollectionReferenceResolver extends AbstractReferenceResolver {
 
+		private static const MXCOLLECTIONS_ARRAY_COLLECTION_CLASSNAME:String = "mx.collections.ArrayCollection";
+		private var _arrayCollectionClass:Class;
+
 		/**
 		 * Constructs <code>ArrayCollectionReferenceResolver</code>.
 		 *
@@ -39,28 +42,41 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 		 */
 		public function ArrayCollectionReferenceResolver(factory:IObjectFactory) {
 			super(factory);
+			initArrayCollectionReferenceResolver(factory.applicationDomain);
+		}
+
+		protected function initArrayCollectionReferenceResolver(applicationDomain:ApplicationDomain):void {
+			_arrayCollectionClass = ClassUtils.forName(MXCOLLECTIONS_ARRAY_COLLECTION_CLASSNAME, applicationDomain);
 		}
 
 		/**
-		 * Checks if the object is an ArrayCollection
+		 * Checks if the object is an <code>ArrayCollection</code>.
 		 * <p />
 		 * @inheritDoc
 		 */
 		override public function canResolve(property:Object):Boolean {
-			return (property is ArrayCollection);
+			return (property is _arrayCollectionClass);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		override public function resolve(property:Object):Object {
-			for (var c:IViewCursor = ArrayCollection(property).createCursor(); !c.afterLast; c.moveNext()) {
+			for (var c:* = property.createCursor(); !c.afterLast; c.moveNext()) {
 				c.insert(factory.resolveReference(c.current));
 				c.remove();
 				c.movePrevious();
 			}
-
 			return property;
+		}
+
+		public static function canCreate(applicationDomain:ApplicationDomain):Boolean {
+			try {
+				ClassUtils.forName(MXCOLLECTIONS_ARRAY_COLLECTION_CLASSNAME, applicationDomain);
+			} catch (e:Error) {
+				return false;
+			}
+			return true;
 		}
 	}
 }
