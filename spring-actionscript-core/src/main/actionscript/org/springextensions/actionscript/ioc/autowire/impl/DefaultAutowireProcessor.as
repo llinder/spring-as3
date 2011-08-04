@@ -515,8 +515,8 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		protected function getAutowireSpecificMetadata(field:Field):Array {
 			for each (var metaDataName:String in autowireMetadataNames) {
 				var result:Array = field.getMetadata(metaDataName);
-				if (result || (result.length > 0)) {
-					return field.getMetadata(metaDataName);
+				if (result && (result.length > 0)) {
+					return result;
 				}
 			}
 			return null;

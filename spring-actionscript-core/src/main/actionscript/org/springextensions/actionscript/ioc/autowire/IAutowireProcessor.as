@@ -41,6 +41,11 @@ package org.springextensions.actionscript.ioc.autowire {
 		 */
 		function preprocessObjectDefinition(objectDefinition:IObjectDefinition):void;
 
+		/**
+		 *
+		 * @param clazz
+		 * @return
+		 */
 		function findAutowireCandidateName(clazz:Class):String;
 	}
 }
