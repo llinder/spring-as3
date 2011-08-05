@@ -15,6 +15,8 @@
 */
 package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 	import org.as3commons.lang.IOrdered;
+	import org.as3commons.lang.ObjectUtils;
+	import org.as3commons.lang.StringUtils;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.config.IObjectReference;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
@@ -26,6 +28,7 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 	public class ThisReferenceResolver implements IReferenceResolver, IOrdered {
 
 		public static const THIS_PROPERTY_VALUE:String = "this";
+		private static const DOT:String = '.';
 
 		private var _applicationContext:IApplicationContext;
 		private var _order:int;
@@ -54,10 +57,9 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 		 * @return <code>True</code> when the specified property is a <code>String</code> and its value is 'this'.
 		 */
 		public function canResolve(property:Object):Boolean {
-			if (property is String) {
-				return (String(property).toLowerCase() == THIS_PROPERTY_VALUE);
-			} else if (property is IObjectReference) {
-				return (IObjectReference(property).objectName.toLowerCase() == THIS_PROPERTY_VALUE);
+			if (property is IObjectReference) {
+				var objectName:String = IObjectReference(property).objectName.toLowerCase();
+				return StringUtils.startsWith(objectName, THIS_PROPERTY_VALUE);
 			}
 			return false;
 		}
@@ -68,7 +70,14 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 		 * @return The <code>IApplicationContext</code> instance.
 		 */
 		public function resolve(property:Object):Object {
-			return _applicationContext;
+			var objectRef:IObjectReference = IObjectReference(property);
+			var idx:int = objectRef.objectName.indexOf(DOT);
+			if (idx < 0) {
+				return _applicationContext;
+			} else {
+				var chain:String = objectRef.objectName.substr(idx + 1, objectRef.objectName.length);
+				return ObjectUtils.resolvePropertyChain(chain, _applicationContext);
+			}
 		}
 
 		public function get order():int {

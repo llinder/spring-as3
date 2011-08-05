@@ -186,7 +186,7 @@ package org.springextensions.actionscript.context.impl {
 				_objectFactory = new DefaultObjectFactory(parent);
 				_objectFactory.dependencyInjector = new DefaultDependencyInjector();
 				var autowireProcessor:DefaultAutowireProcessor = new DefaultAutowireProcessor(this);
-				_objectFactory.dependencyInjector.autowireProcessor = autowireProcessor;
+				DefaultObjectFactory(_objectFactory).autowireProcessor = autowireProcessor;
 			} else {
 				_objectFactory = objFactory;
 			}

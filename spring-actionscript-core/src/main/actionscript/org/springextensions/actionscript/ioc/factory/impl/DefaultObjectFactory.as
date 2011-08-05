@@ -62,6 +62,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _parent:IObjectFactory;
 		private var _propertyProviders:Vector.<IPropertiesProvider>;
 		private var _referenceResolvers:Vector.<IReferenceResolver>;
+		private var _autowireProcessor:IAutowireProcessor;
 
 		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void {
 			objectFactoryPostProcessors[objectFactoryPostProcessors.length] = objectFactoryPostProcessor;
@@ -84,17 +85,14 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 		public function set applicationDomain(value:ApplicationDomain):void {
 			_applicationDomain = value;
-			if ((_dependencyInjector != null) && (_dependencyInjector.autowireProcessor != null) && (_dependencyInjector.autowireProcessor is IApplicationDomainAware)) {
-				IApplicationDomainAware(_dependencyInjector.autowireProcessor).applicationDomain = value;
-			}
 		}
 
 		public function get autowireProcessor():IAutowireProcessor {
-			return _dependencyInjector.autowireProcessor;
+			return _autowireProcessor;
 		}
 
 		public function set autowireProcessor(value:IAutowireProcessor):void {
-			_dependencyInjector.autowireProcessor = value;
+			_autowireProcessor = value;
 		}
 
 		public function get cache():IInstanceCache {
@@ -111,9 +109,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 		public function set dependencyInjector(value:IDependencyInjector):void {
 			_dependencyInjector = value;
-			if ((_dependencyInjector != null) && (_dependencyInjector.autowireProcessor != null) && (_dependencyInjector.autowireProcessor is IApplicationDomainAware)) {
-				IApplicationDomainAware(_dependencyInjector.autowireProcessor).applicationDomain = _applicationDomain;
-			}
 		}
 
 		public function get eventBus():IEventBus {

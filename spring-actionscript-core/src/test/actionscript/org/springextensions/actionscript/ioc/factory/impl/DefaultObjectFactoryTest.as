@@ -14,8 +14,9 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl {
+	import org.springextensions.actionscript.test.AbstractTestWithMockRepository;
 
-	public class DefaultObjectFactoryTest {
+	public class DefaultObjectFactoryTest extends AbstractTestWithMockRepository {
 
 		public function DefaultObjectFactoryTest() {
 			super();

@@ -51,7 +51,8 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 		 * @inheritDoc
 		 */
 		override public function resolve(property:Object):Object {
-			for (var i:int = 0; i < property.length; i++) {
+			var len:int = property.length;
+			for (var i:int = 0; i < len; ++i) {
 				property[i] = factory.resolveReference(property[i]);
 			}
 			return property;

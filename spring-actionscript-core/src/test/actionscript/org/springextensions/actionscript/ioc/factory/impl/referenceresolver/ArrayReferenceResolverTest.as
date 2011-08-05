@@ -20,8 +20,6 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
 	import flash.system.ApplicationDomain;
 
-	import mx.collections.ArrayCollection;
-
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertTrue;
@@ -29,32 +27,25 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.test.AbstractTestWithMockRepository;
 
-	public class ArrayCollectionReferenceResolverTest extends AbstractReferenceResolverTest {
 
-		public function ArrayCollectionReferenceResolverTest() {
+	public class ArrayReferenceResolverTest extends AbstractReferenceResolverTest {
+
+		public function ArrayReferenceResolverTest() {
 			super();
 		}
 
 		[Test]
-		public function testCanResolveWithArrayCollection():void {
-			mockRepository.replayAll();
-			var resolver:ArrayCollectionReferenceResolver = new ArrayCollectionReferenceResolver(factory);
-			var result:Boolean = resolver.canResolve(new ArrayCollection());
-			assertTrue(result);
-		}
-
-		[Test]
 		public function testCanResolveWithArray():void {
-			mockRepository.replayAll();
-			var resolver:ArrayCollectionReferenceResolver = new ArrayCollectionReferenceResolver(factory);
+			var resolver:ArrayReferenceResolver = new ArrayReferenceResolver(factory);
 			var result:Boolean = resolver.canResolve([]);
-			assertFalse(result);
+			assertTrue(result);
 		}
 
 		[Test]
-		public function testCanCreate():void {
-			var result:Boolean = ArrayCollectionReferenceResolver.canCreate(applicationDomain);
-			assertTrue(result);
+		public function testCanResolveWithObject():void {
+			var resolver:ArrayReferenceResolver = new ArrayReferenceResolver(factory);
+			var result:Boolean = resolver.canResolve({});
+			assertFalse(result);
 		}
 
 		[Test]
@@ -62,13 +53,14 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 			Expect.call(factory.resolveReference("testProperty")).returnValue("resolved");
 			mockRepository.replayAll();
 
-			var col:ArrayCollection = new ArrayCollection(["testProperty"]);
-			var resolver:ArrayCollectionReferenceResolver = new ArrayCollectionReferenceResolver(factory);
+			var col:Array = ["testProperty"];
+			var resolver:ArrayReferenceResolver = new ArrayReferenceResolver(factory);
 
-			col = resolver.resolve(col) as ArrayCollection;
+			col = resolver.resolve(col) as Array;
 			mockRepository.verifyAll();
 			assertEquals(1, col.length);
-			assertEquals("resolved", col.getItemAt(0));
+			assertEquals("resolved", col[0]);
 		}
+
 	}
 }

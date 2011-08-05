@@ -22,7 +22,6 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import flash.system.ApplicationDomain;
 
 	import org.flexunit.asserts.assertEquals;
-	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.springextensions.actionscript.ioc.AutowireMode;
@@ -33,7 +32,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.test.AbstractTestWithMockRepository;
-	import org.springextensions.actionscript.test.testclasses.AutowiredAnnotatedClass;
+	import org.springextensions.actionscript.test.testtypes.AutowiredAnnotatedClass;
 
 
 	public class DefaultAutowireProcessorTest extends AbstractTestWithMockRepository {
@@ -71,6 +70,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			definition.className = "flash.events.Event";
 			_objectDefinitions["testName"] = definition;
 			mockRepository.replayAll();
+
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(_factory);
 			var name:String = processor.findAutowireCandidateName(Event);
 			assertEquals("testName", name);

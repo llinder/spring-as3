@@ -15,6 +15,8 @@
  */
 package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
+	import flash.errors.IllegalOperationError;
+
 	import org.as3commons.lang.ObjectUtils;
 	import org.springextensions.actionscript.ioc.config.IObjectReference;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
@@ -34,6 +36,7 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 		// --------------------------------------------------------------------
 
 		private static const GENERATED_NAME_REGEXP:RegExp = new RegExp("#\\d+");
+		private static const PARENT_HOST_PART:String = "parent";
 
 		// --------------------------------------------------------------------
 		//
@@ -92,7 +95,15 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 		protected function resolveSubReference(objectName:String):Object {
 			var nameParts:Array = objectName.split(ObjectUtils.DOT);
 			var hostName:String = nameParts.shift();
-			return ObjectUtils.resolvePropertyChain(nameParts.join(ObjectUtils.DOT), factory.getObject(hostName));
+			if (hostName != PARENT_HOST_PART) {
+				return ObjectUtils.resolvePropertyChain(nameParts.join(ObjectUtils.DOT), factory.getObject(hostName));
+			} else {
+				if (factory.parent != null) {
+					return factory.parent.resolveReference(nameParts.join(ObjectUtils.DOT));
+				} else {
+					throw new IllegalOperationError("Current object factory doesn't have a valid parent property, cannot resolve " + nameParts.join(ObjectUtils.DOT));
+				}
+			}
 		}
 	}
 }
