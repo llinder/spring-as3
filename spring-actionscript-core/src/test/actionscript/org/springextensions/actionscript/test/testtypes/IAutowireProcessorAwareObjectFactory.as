@@ -14,16 +14,12 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.test.testtypes {
-	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor;
-
-
-	public class AutowiredAnnotatedClass {
-
-		public function AutowiredAnnotatedClass() {
-			super();
-		}
-
-		[Autowired]
-		public var autowiredProperty:String;
+	
+	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
+	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
+	
+	
+	public interface IAutowireProcessorAwareObjectFactory extends IObjectFactory, IAutowireProcessorAware {
+		
 	}
 }
