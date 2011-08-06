@@ -54,6 +54,13 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 
 		private static const HASH:String = "#";
 		private static const EXCLAMATION_MARK:String = "!";
+		private static const DOUBLE_BACKWARD_SLASH:String = "\\";
+		private static const NEWLINE_CHAR:String = "\n";
+		private static const NEWLINE_REGEX:RegExp = /\\n/gm;
+		private static const SINGLE_QUOTE:String = "'";
+		private static const COLON:String = ":";
+		private static const EQUALS:String = "=";
+		private static const TAB_CHAR:String = "	";
 
 		/**
 		 * Constructs a new <code>PropertiesParser</code> instance.
@@ -83,8 +90,8 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 				// Trim the line
 				line = StringUtils.trim(line);
 
-				// Ignore Comments
-				if (line.indexOf(HASH) != 0 && line.indexOf(EXCLAMATION_MARK) != 0 && line.length != 0) {
+				// Ignore Comments and empty lines
+				if (line.charAt(0) != HASH && line.charAt(0) != EXCLAMATION_MARK && line.length != 0) {
 					// Line break processing
 					if (useNextLine) {
 						key = formerKey;
@@ -101,12 +108,12 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 					value = StringUtils.leftTrim(value);
 
 					// Allow normal lines
-					if (value.charAt(value.length - 1) == "\\") {
+					if (value.charAt(value.length - 1) == DOUBLE_BACKWARD_SLASH) {
 						formerValue = value = value.substr(0, value.length - 1);
 						useNextLine = true;
 					} else {
 						// restore newlines since these were escaped when loaded
-						value = value.replace(/\\n/gm, "\n");
+						value = value.replace(NEWLINE_REGEX, NEWLINE_CHAR);
 						result.setProperty(key, value);
 					}
 				}
@@ -126,10 +133,10 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 			for (var i:int = 0; i < len; i++) {
 				var char:String = line.charAt(i);
 
-				if (char == "'") {
+				if (char == SINGLE_QUOTE) {
 					i++;
 				} else {
-					if (char == ":" || char == "=" || char == "	") {
+					if (char == COLON || char == EQUALS || char == TAB_CHAR) {
 						break;
 					}
 				}

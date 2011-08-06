@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springextensions.actionscript.ioc {
+package org.springextensions.actionscript.ioc.error {
 
 	import org.as3commons.lang.ClassNotFoundError;
 
 	/**
    * This error is thrown when a needed dependency can't be found.
-		*
+		   *
 	 * @author Martino Piccinato
 	 * @see org.springextensions.actionscript.ioc.DependencyCheckMode
 	 * @docref

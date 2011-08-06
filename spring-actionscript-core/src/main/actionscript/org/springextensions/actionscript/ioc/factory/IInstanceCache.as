@@ -35,9 +35,9 @@ package org.springextensions.actionscript.ioc.factory {
 		function clearCache():void;
 
 		/**
-		 * Returns an <code>Array</code> of all the names of the cached objects in the current <code>IInstanceCache</code>.
+		 * Returns a <code>Vector.<String></code> of all the names of the cached objects in the current <code>IInstanceCache</code>.
 		 */
-		function getCachedNames():Array;
+		function getCachedNames():Vector.<String>;
 		/**
 		 * Returns the instance that was associated with the specified name.
 		 * @param name The specified name

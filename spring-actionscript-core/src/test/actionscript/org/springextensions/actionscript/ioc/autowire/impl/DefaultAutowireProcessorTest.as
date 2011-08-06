@@ -33,6 +33,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.test.AbstractTestWithMockRepository;
 	import org.springextensions.actionscript.test.testtypes.AutowiredAnnotatedClass;
+	import org.springextensions.actionscript.test.testtypes.AutowiredExternalPropertyAnnotatedClass;
 
 
 	public class DefaultAutowireProcessorTest extends AbstractTestWithMockRepository {
@@ -303,11 +304,25 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			mockRepository.replayAll();
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(_factory);
-			processor.autowireMetadataNames = [DefaultAutowireProcessor.INJECT_ANNOTATION];
+			processor.autowireMetadataNames = new Vector.<String>();
+			processor.autowireMetadataNames[processor.autowireMetadataNames.length] = DefaultAutowireProcessor.INJECT_ANNOTATION;
 
 			var instance:AutowiredAnnotatedClass = new AutowiredAnnotatedClass();
 			processor.autoWire(instance);
 			assertNull(instance.autowiredProperty);
+		}
+
+		[Test]
+		public function testAutowireWithExternalProperty():void {
+			mockRepository.replayAll();
+
+			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(_factory);
+			processor.autowireMetadataNames = new Vector.<String>();
+			processor.autowireMetadataNames[processor.autowireMetadataNames.length] = DefaultAutowireProcessor.AUTOWIRED_ANNOTATION;
+
+			var instance:AutowiredExternalPropertyAnnotatedClass = new AutowiredExternalPropertyAnnotatedClass();
+			processor.autoWire(instance);
+			assertEquals("testExternalPropertyValue", instance.injectedExternalProperty);
 		}
 
 	}

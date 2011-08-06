@@ -19,6 +19,7 @@ package org.springextensions.actionscript.test.testtypes {
 
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
@@ -94,8 +95,11 @@ package org.springextensions.actionscript.test.testtypes {
 		public function set parent(value:IObjectFactory):void {
 		}
 
-		public function get propertyProviders():Vector.<IPropertiesProvider> {
+		public function get propertiesProvider():IPropertiesProvider {
 			return null;
+		}
+
+		public function set propertiesProvider(value:IPropertiesProvider):void {
 		}
 
 		public function get referenceResolvers():Vector.<IReferenceResolver> {
@@ -112,5 +116,6 @@ package org.springextensions.actionscript.test.testtypes {
 
 		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
 		}
+
 	}
 }

@@ -25,6 +25,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
@@ -157,10 +158,6 @@ package org.springextensions.actionscript.context.impl {
 			_objectFactory.parent = value;
 		}
 
-		public function get propertyProviders():Vector.<IPropertiesProvider> {
-			return _objectFactory.propertyProviders;
-		}
-
 		public function get referenceResolvers():Vector.<IReferenceResolver> {
 			return _objectFactory.referenceResolvers;
 		}
@@ -191,5 +188,14 @@ package org.springextensions.actionscript.context.impl {
 				_objectFactory = objFactory;
 			}
 		}
+
+		public function get propertiesProvider():IPropertiesProvider {
+			return _objectFactory.propertiesProvider;
+		}
+
+		public function set propertiesProvider(value:IPropertiesProvider):void {
+			_objectFactory.propertiesProvider = value;
+		}
+
 	}
 }

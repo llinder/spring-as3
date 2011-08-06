@@ -33,9 +33,9 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.AutowireMode;
 	import org.springextensions.actionscript.ioc.DependencyCheckMode;
-	import org.springextensions.actionscript.ioc.UnsatisfiedDependencyError;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
+	import org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError;
 	import org.springextensions.actionscript.ioc.factory.IFactoryObject;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
@@ -123,7 +123,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		}
 
 		private var _applicationDomain:ApplicationDomain;
-		private var _autowireMetadataNames:Array;
+		private var _autowireMetadataNames:Vector.<String>;
 
 		// --------------------------------------------------------------------
 		//
@@ -176,7 +176,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 
 			if ((objectDefinition == null) || (!objectDefinition.skipMetadata)) {
 				// Process autowire annotations
-				var unclaimedProperties:Array = getUnclaimedSimpleObjectProperties(object, objectDefinition);
+				var unclaimedProperties:Vector.<Field> = getUnclaimedSimpleObjectProperties(object, objectDefinition);
 				for each (var field:Field in unclaimedProperties) {
 					if ((field.hasMetadata(AUTOWIRED_ANNOTATION)) || (field.hasMetadata(INJECT_ANNOTATION))) {
 						try {
@@ -193,11 +193,16 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			}
 		}
 
-		public function get autowireMetadataNames():Array {
+		public function get autowireMetadataNames():Vector.<String> {
+			if (_autowireMetadataNames == null) {
+				_autowireMetadataNames = new Vector.<String>();
+				_autowireMetadataNames[_autowireMetadataNames.length] = AUTOWIRED_ANNOTATION;
+				_autowireMetadataNames[_autowireMetadataNames.length] = INJECT_ANNOTATION;
+			}
 			return _autowireMetadataNames;
 		}
 
-		public function set autowireMetadataNames(value:Array):void {
+		public function set autowireMetadataNames(value:Vector.<String>):void {
 			_autowireMetadataNames = value;
 		}
 
@@ -283,7 +288,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		 * @see #autoWire(Object, IObjectDefinition)
 		 */
 		protected function autoWireByName(object:Object, objectDefinition:IObjectDefinition):void {
-			var fields:Array = getUnclaimedSimpleObjectProperties(object, objectDefinition);
+			var fields:Vector.<Field> = getUnclaimedSimpleObjectProperties(object, objectDefinition);
 			var numFields:int = fields.length;
 			var fieldName:String;
 
@@ -302,7 +307,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		 * @see #autoWire(Object, IObjectDefinition)
 		 */
 		protected function autoWireByType(object:Object, objectDefinition:IObjectDefinition):void {
-			var properties:Array = getUnclaimedSimpleObjectProperties(object, objectDefinition);
+			var properties:Vector.<Field> = getUnclaimedSimpleObjectProperties(object, objectDefinition);
 			var numProperties:int = properties.length;
 			var finalCandidateName:String;
 			var property:Field;
@@ -391,14 +396,14 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			var key:String = metadata.getArgument(AUTOWIRED_ARGUMENT_EXTERNALPROPERTY).value;
 			logger.debug("Autowiring by propertyName '{0}.{1}' with property '{2}'", [objectName, field.name, key]);
 
-			throw new Error("not fully implemented yet!");
+			throw new Error("Not fully implemented yet");
 
-		/*var property:String = _objectFactory.properties.getProperty(key);
-		if (property) {
-			object[field.name] = property;
-		} else {
-			throw new UnsatisfiedDependencyError(objectName, field.name, "Can't find property referenced in Autowired " + AUTOWIRED_ARGUMENT_EXTERNALPROPERTY + "argument: ");
-		}*/
+		/*			var property:String = _objectFactory.properties.getProperty(key);
+					if (property) {
+						object[field.name] = property;
+					} else {
+						throw new UnsatisfiedDependencyError(objectName, field.name, "Can't find property referenced in Autowired " + AUTOWIRED_ARGUMENT_EXTERNALPROPERTY + "argument: ");
+					}*/
 		}
 
 		/**
@@ -485,7 +490,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			}
 
 			// explicit singletons
-			var cachedNames:Array = _objectFactory.cache.getCachedNames();
+			var cachedNames:Vector.<String> = _objectFactory.cache.getCachedNames();
 			for each (var singletonName:String in cachedNames) {
 				if (_objectFactory.objectDefinitions.hasOwnProperty(singletonName) == false) {
 					objectClass = ClassUtils.forInstance(_objectFactory.getObject(singletonName));
@@ -512,6 +517,11 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			return _objectFactory.applicationDomain;
 		}
 
+		/**
+		 * Checks if any of the metadata names defined by the <code>autowireMetadataNames</code> are present in the specified <code>Field</code>.
+		 * @param field
+		 * @return
+		 */
 		protected function getAutowireSpecificMetadata(field:Field):Array {
 			for each (var metaDataName:String in autowireMetadataNames) {
 				var result:Array = field.getMetadata(metaDataName);
@@ -537,22 +547,22 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		 * Used by autowire system in order to find fields eligible for autowiring
 		 * @return An <code>Array</code> containing the names of all public variables and readwrite / writeonly accessors.
 		 */
-		protected function getUnclaimedSimpleObjectProperties(object:Object, objectDefinition:IObjectDefinition):Array {
+		protected function getUnclaimedSimpleObjectProperties(object:Object, objectDefinition:IObjectDefinition):Vector.<Field> {
 			var cls:Class = ClassUtils.forInstance(object, _applicationDomain);
 			var appDomain:ApplicationDomain = getApplicationDomain(object);
 			var type:Type = Type.forClass(cls, appDomain);
-			var result:Array = [];
+			var result:Vector.<Field> = new Vector.<Field>();
 
 			for each (var variable:Variable in type.variables) {
 				if (!variable.isStatic && isPropertyUnclaimed(objectDefinition, variable)) {
-					result[result.length] = variable;
+					result[result.length] = Field(variable);
 				}
 			}
 
 
 			for each (var accessor:Accessor in type.accessors.length) {
 				if ((accessor.access === AccessorAccess.WRITE_ONLY || accessor.access === AccessorAccess.READ_WRITE) && !accessor.isStatic && isPropertyUnclaimed(objectDefinition, accessor)) {
-					result[result.length] = accessor;
+					result[result.length] = Field(accessor);
 				}
 			}
 
@@ -566,7 +576,6 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		protected function initDefaultAutowireProcessor(objectFactory:IObjectFactory):void {
 			Assert.notNull(objectFactory, "The objectFactory parameter must not be null");
 			_objectFactory = objectFactory;
-			_autowireMetadataNames = [AUTOWIRED_ANNOTATION, INJECT_ANNOTATION];
 		}
 
 		/**

@@ -26,14 +26,12 @@ package org.springextensions.actionscript.ioc.impl {
 	import org.springextensions.actionscript.ioc.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.MethodInvocation;
-	import org.springextensions.actionscript.ioc.ResolveReferenceError;
-	import org.springextensions.actionscript.ioc.UnsatisfiedDependencyError;
-	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
+	import org.springextensions.actionscript.ioc.error.ResolveReferenceError;
+	import org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError;
 	import org.springextensions.actionscript.ioc.factory.IInitializingObject;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
-	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.object.ITypeConverter;

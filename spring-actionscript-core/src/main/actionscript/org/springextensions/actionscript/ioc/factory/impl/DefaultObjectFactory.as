@@ -25,6 +25,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
@@ -60,9 +61,10 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _objectFactoryPostProcessors:Vector.<IObjectFactoryPostProcessor>;
 		private var _objectPostProcessors:Vector.<IObjectPostProcessor>;
 		private var _parent:IObjectFactory;
-		private var _propertyProviders:Vector.<IPropertiesProvider>;
+		private var _propertiesProvider:IPropertiesProvider;
 		private var _referenceResolvers:Vector.<IReferenceResolver>;
 		private var _autowireProcessor:IAutowireProcessor;
+		private var _properties:Properties;
 
 		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void {
 			objectFactoryPostProcessors[objectFactoryPostProcessors.length] = objectFactoryPostProcessor;
@@ -161,8 +163,12 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			_parent = value;
 		}
 
-		public function get propertyProviders():Vector.<IPropertiesProvider> {
-			return _propertyProviders;
+		public function get propertiesProvider():IPropertiesProvider {
+			return _propertiesProvider;
+		}
+
+		public function set propertiesProvider(value:IPropertiesProvider):void {
+			_propertiesProvider = value;
 		}
 
 		public function get referenceResolvers():Vector.<IReferenceResolver> {
@@ -194,5 +200,15 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				_parent = parent;
 			}
 		}
+
+		public function resolveProperty(key:String):* {
+			for each (var provider:IPropertiesProvider in _propertiesProvider) {
+				if (provider.hasProperty(key)) {
+					return provider.getProperty(key);
+				}
+			}
+			return null;
+		}
+
 	}
 }

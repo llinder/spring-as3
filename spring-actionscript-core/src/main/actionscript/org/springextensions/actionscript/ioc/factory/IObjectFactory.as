@@ -18,6 +18,7 @@ package org.springextensions.actionscript.ioc.factory {
 
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
@@ -158,7 +159,11 @@ package org.springextensions.actionscript.ioc.factory {
 		/**
 		 *
 		 */
-		function get propertyProviders():Vector.<IPropertiesProvider>;
+		function get propertiesProvider():IPropertiesProvider;
+		/**
+		 * @private
+		 */
+		function set propertiesProvider(value:IPropertiesProvider):void;
 
 		/**
 		 */

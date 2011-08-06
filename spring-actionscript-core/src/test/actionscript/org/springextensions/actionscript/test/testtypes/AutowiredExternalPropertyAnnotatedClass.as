@@ -13,26 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.property {
-	import flash.events.IEventDispatcher;
-	import flash.net.URLLoader;
+package org.springextensions.actionscript.test.testtypes {
 
-	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
 
-	public interface IPropertiesProvider {
+	public class AutowiredExternalPropertyAnnotatedClass {
 
-		function get content():Object;
+		public function AutowiredExternalPropertyAnnotatedClass() {
+			super();
+		}
 
-		function get propertyNames():Vector.<String>;
-
-		function get length():uint;
-
-		function hasProperty(key:String):Boolean;
-
-		function getProperty(key:String):*;
-
-		function merge(properties:IPropertiesProvider, overrideProperty:Boolean = false):void;
-
-		function setProperty(key:String, value:String):void;
+		[Autowired(externalProperty = 'testProperty')]
+		public var injectedExternalProperty:String;
 	}
 }

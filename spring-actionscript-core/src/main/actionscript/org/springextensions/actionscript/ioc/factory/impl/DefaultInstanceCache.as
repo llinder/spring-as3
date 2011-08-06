@@ -30,7 +30,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 		private var _cache:Object;
-		private var _cachedNames:Array;
+		private var _cachedNames:Vector.<String>;
 		private var _preparedCache:Object;
 
 		public function addInstance(name:String, instance:*):void {
@@ -47,8 +47,8 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			initDefaultInstanceCache();
 		}
 
-		public function getCachedNames():Array {
-			return _cachedNames.concat([]);
+		public function getCachedNames():Vector.<String> {
+			return _cachedNames.concat.apply(this);
 		}
 
 		public function getInstance(name:String):* {
@@ -88,7 +88,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		protected function initDefaultInstanceCache():void {
 			_preparedCache = {};
 			_cache = {};
-			_cachedNames = [];
+			_cachedNames = new Vector.<String>();
 		}
 
 		protected function removePreparedInstance(name:String):void {
