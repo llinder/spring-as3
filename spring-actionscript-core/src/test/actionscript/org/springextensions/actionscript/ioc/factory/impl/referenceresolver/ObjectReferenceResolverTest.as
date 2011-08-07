@@ -15,14 +15,16 @@
 */
 package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
-	import asmock.framework.Expect;
+	import mockolate.mock;
+	import mockolate.nice;
+	import mockolate.verify;
 
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.flexunit.asserts.assertTrue;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
-	import org.springextensions.actionscript.test.testtypes.MockObjectFactory;
+	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 
 	public class ObjectReferenceResolverTest extends AbstractReferenceResolverTest {
 
@@ -47,11 +49,11 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 		[Test]
 		public function testResolveWithSimpleName():void {
 			var obj:Object = {};
-			Expect.call(factory.getObject("testName")).returnValue(obj);
-			mockRepository.replayAll();
+			mock(factory).method("getObject").args("testName").returns(obj).once();
 
 			var resolver:ObjectReferenceResolver = new ObjectReferenceResolver(factory);
 			var result:* = resolver.resolve(new RuntimeObjectReference("testName"));
+			verify(factory);
 			assertNotNull(result);
 			assertStrictlyEquals(obj, result);
 		}
@@ -61,12 +63,11 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 			var obj:Object = {};
 			var obj2:Object = {};
 			obj.myProperty = obj2;
-			Expect.call(factory.getObject("testName")).returnValue(obj);
-			mockRepository.replayAll();
+			mock(factory).method("getObject").args("testName").returns(obj).once();
 
 			var resolver:ObjectReferenceResolver = new ObjectReferenceResolver(factory);
 			var result:* = resolver.resolve(new RuntimeObjectReference("testName.myProperty"));
-			mockRepository.verifyAll();
+			verify(factory);
 			assertNotNull(result);
 			assertStrictlyEquals(obj2, result);
 		}
@@ -74,20 +75,20 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 		[Test]
 		public function testResolveWithParentName():void {
 			var obj:Object = {};
-			factory.parent = new MockObjectFactory(obj);
-			mockRepository.replayAll();
+			var parentFactory:IObjectFactory = nice(IObjectFactory);
+			mock(parentFactory).method("resolveReference").args("testName").returns(obj).once();
+			mock(factory).getter("parent").returns(parentFactory);
 
 			var resolver:ObjectReferenceResolver = new ObjectReferenceResolver(factory);
 			var result:* = resolver.resolve(new RuntimeObjectReference("parent.testName"));
-			mockRepository.verifyAll();
+			verify(parentFactory);
+			verify(factory);
 			assertNotNull(result);
 			assertStrictlyEquals(obj, result);
 		}
 
 		[Test(expects = "flash.errors.IllegalOperationError")]
 		public function testResolveWithParentNameAndInvalidParent():void {
-			mockRepository.replayAll();
-
 			var resolver:ObjectReferenceResolver = new ObjectReferenceResolver(factory);
 			var result:* = resolver.resolve(new RuntimeObjectReference("parent.testName"));
 		}

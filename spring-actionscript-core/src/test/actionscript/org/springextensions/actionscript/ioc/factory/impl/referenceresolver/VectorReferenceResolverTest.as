@@ -14,7 +14,8 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
-	import asmock.framework.Expect;
+	import mockolate.mock;
+	import mockolate.verify;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
@@ -44,14 +45,13 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
 		[Test]
 		public function testResolve():void {
-			Expect.call(factory.resolveReference("testProperty")).returnValue("resolved");
-			mockRepository.replayAll();
+			mock(factory).method("resolveReference").args("testProperty").returns("resolved");
 
 			var col:Array = [Vector.<String>, "testProperty"];
 			var resolver:VectorReferenceResolver = new VectorReferenceResolver(factory);
 
 			var vec:Vector.<String> = resolver.resolve(col) as Vector.<String>;
-			mockRepository.verifyAll();
+			verify(factory);
 			assertNotNull(vec);
 			assertEquals(1, vec.length);
 			assertEquals("resolved", vec[0]);

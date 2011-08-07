@@ -15,34 +15,36 @@
 */
 package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
-	import asmock.framework.SetupResult;
-	import asmock.integration.flexunit.IncludeMocksRule;
-
 	import flash.system.ApplicationDomain;
+
+	import mockolate.nice;
+	import mockolate.runner.MockolateRule;
+	import mockolate.stub;
 
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
-	import org.springextensions.actionscript.test.AbstractTestWithMockRepository;
 
-	public class AbstractReferenceResolverTest extends AbstractTestWithMockRepository {
+	public class AbstractReferenceResolverTest {
 
 		[Rule]
-		public var includeMocks:IncludeMocksRule = new IncludeMocksRule([IObjectFactory, IInstanceCache]);
+		public var mocks:MockolateRule = new MockolateRule();
 
 		protected var applicationDomain:ApplicationDomain = ApplicationDomain.currentDomain;
-		protected var cache:IInstanceCache;
-		protected var factory:IObjectFactory;
-		protected var objectDefinitions:Object;
+		[Mock]
+		public var cache:IInstanceCache;
+		[Mock]
+		public var factory:IObjectFactory;
+		[Mock]
+		public var objectDefinitions:Object;
 
 		[Before]
 		public function setUp():void {
 			objectDefinitions = {};
-			cache = IInstanceCache(mockRepository.createStub(IInstanceCache));
-			factory = IObjectFactory(mockRepository.createStub(IObjectFactory));
-			mockRepository.stubAllProperties(factory);
-			SetupResult.forCall(factory.cache).ignoreArguments().returnValue(cache);
-			SetupResult.forCall(factory.objectDefinitions).ignoreArguments().returnValue(objectDefinitions);
-			factory.applicationDomain = applicationDomain;
+			cache = nice(IInstanceCache);
+			factory = nice(IObjectFactory);
+			stub(factory).getter("cache").returns(cache);
+			stub(factory).getter("objectDefinitions").returns(objectDefinitions);
+			stub(factory).getter("applicationDomain").returns(applicationDomain);
 		}
 
 		public function AbstractReferenceResolverTest() {

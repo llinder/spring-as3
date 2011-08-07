@@ -14,10 +14,11 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
-	import asmock.framework.SetupResult;
-	import asmock.integration.flexunit.IncludeMocksRule;
-
 	import flash.system.ApplicationDomain;
+
+	import mockolate.nice;
+	import mockolate.runner.MockolateRule;
+	import mockolate.stub;
 
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertStrictlyEquals;
@@ -26,27 +27,28 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 	import org.springextensions.actionscript.ioc.config.IObjectReference;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
-	import org.springextensions.actionscript.test.AbstractTestWithMockRepository;
 
-	public class ThisReferenceResolverTest extends AbstractTestWithMockRepository {
+	public class ThisReferenceResolverTest {
 
 		[Rule]
-		public var includeMocks:IncludeMocksRule = new IncludeMocksRule([IApplicationContext]);
+		public var mocks:MockolateRule = new MockolateRule();
 
 		protected var applicationDomain:ApplicationDomain = ApplicationDomain.currentDomain;
-		protected var cache:IInstanceCache;
-		protected var context:IApplicationContext;
-		protected var objectDefinitions:Object;
+		[Mock]
+		public var cache:IInstanceCache;
+		[Mock]
+		public var context:IApplicationContext;
+		[Mock]
+		public var objectDefinitions:Object;
 
 		[Before]
 		public function setUp():void {
 			objectDefinitions = {};
-			cache = IInstanceCache(mockRepository.createStub(IInstanceCache));
-			context = IApplicationContext(mockRepository.createStub(IApplicationContext));
-			mockRepository.stubAllProperties(context);
-			SetupResult.forCall(context.cache).ignoreArguments().returnValue(cache);
-			SetupResult.forCall(context.objectDefinitions).ignoreArguments().returnValue(objectDefinitions);
-			SetupResult.forCall(context.applicationDomain).ignoreArguments().returnValue(applicationDomain);
+			cache = nice(IInstanceCache);
+			context = nice(IApplicationContext);
+			stub(context).getter("cache").returns(cache);
+			stub(context).getter("objectDefinitions").returns(objectDefinitions);
+			stub(context).getter("applicationDomain").returns(applicationDomain);
 		}
 
 		public function ThisReferenceResolverTest() {
@@ -85,7 +87,6 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
 		[Test]
 		public function testResolveWithCompoundName():void {
-			mockRepository.replayAll();
 			var ref:IObjectReference = new RuntimeObjectReference("this.applicationDomain");
 			var resolver:ThisReferenceResolver = new ThisReferenceResolver(context);
 			var result:Object = resolver.resolve(ref);

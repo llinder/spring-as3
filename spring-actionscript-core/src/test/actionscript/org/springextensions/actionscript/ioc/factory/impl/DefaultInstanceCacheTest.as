@@ -14,20 +14,24 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl {
-	import asmock.framework.Expect;
-	import asmock.integration.flexunit.IncludeMocksRule;
+	import mockolate.mock;
+	import mockolate.nice;
+	import mockolate.runner.MockolateRule;
+	import mockolate.verify;
 
 	import org.as3commons.lang.IDisposable;
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.flexunit.asserts.assertTrue;
-	import org.springextensions.actionscript.test.AbstractTestWithMockRepository;
 
-	public class DefaultInstanceCacheTest extends AbstractTestWithMockRepository {
+	public class DefaultInstanceCacheTest {
 
 		[Rule]
-		public var includeMocks:IncludeMocksRule = new IncludeMocksRule([IDisposable]);
+		public var mocks:MockolateRule = new MockolateRule();
+
+		[Mock]
+		public var disposable:IDisposable;
 
 		private var _cache:DefaultInstanceCache;
 
@@ -98,16 +102,14 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 		[Test]
 		public function testClearCacheWithIDisposableImplementation():void {
-			var disposable:IDisposable = IDisposable(mockRepository.createStrict(IDisposable));
-			mockRepository.stubAllProperties(disposable);
-			Expect.call(disposable.isDisposed).returnValue(false);
-			Expect.call(disposable.dispose());
-			mockRepository.replay(disposable);
+			disposable = nice(IDisposable);
+			mock(disposable).getter("isDisposed").returns(false);
+			mock(disposable).method("dispose").once();
 
 			_cache.addInstance("test", disposable);
 			_cache.clearCache();
 
-			mockRepository.verify(disposable);
+			verify(disposable);
 		}
 
 		[Test]

@@ -14,9 +14,10 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
-	import asmock.framework.Expect;
-
 	import flash.utils.Dictionary;
+
+	import mockolate.stub;
+	import mockolate.verify;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
@@ -44,16 +45,15 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
 		[Test]
 		public function testResolve():void {
-			Expect.call(factory.resolveReference("testKey")).returnValue("resolvedKey");
-			Expect.call(factory.resolveReference("testValue")).returnValue("resolvedValue");
-			mockRepository.replayAll();
+			stub(factory).method("resolveReference").args("testKey").returns("resolvedKey").once();
+			stub(factory).method("resolveReference").args("testValue").returns("resolvedValue").once();
 
 			var dict:Dictionary = new Dictionary();
 			dict["testKey"] = "testValue";
 			var resolver:DictionaryReferenceResolver = new DictionaryReferenceResolver(factory);
 
 			dict = resolver.resolve(dict) as Dictionary;
-			mockRepository.verifyAll();
+			verify(factory);
 			for (var key:String in dict) {
 				assertEquals(key, "resolvedKey");
 				assertEquals(dict[key], "resolvedValue");

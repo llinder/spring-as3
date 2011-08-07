@@ -14,18 +14,12 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
-	import asmock.framework.Expect;
-	import asmock.framework.SetupResult;
-	import asmock.integration.flexunit.IncludeMocksRule;
-
-	import flash.system.ApplicationDomain;
+	import mockolate.stub;
+	import mockolate.verify;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertTrue;
-	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
-	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
-	import org.springextensions.actionscript.test.AbstractTestWithMockRepository;
 
 
 	public class ArrayReferenceResolverTest extends AbstractReferenceResolverTest {
@@ -50,14 +44,13 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
 		[Test]
 		public function testResolve():void {
-			Expect.call(factory.resolveReference("testProperty")).returnValue("resolved");
-			mockRepository.replayAll();
+			stub(factory).method("resolveReference").args("testProperty").returns("resolved").once();
 
 			var col:Array = ["testProperty"];
 			var resolver:ArrayReferenceResolver = new ArrayReferenceResolver(factory);
 
 			col = resolver.resolve(col) as Array;
-			mockRepository.verifyAll();
+			verify(factory);
 			assertEquals(1, col.length);
 			assertEquals("resolved", col[0]);
 		}

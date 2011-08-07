@@ -262,11 +262,13 @@ package org.springextensions.actionscript.ioc.impl {
 
 			autowireInstance(instance, objectName, objectFactory);
 
-			postProcessingBeforeInitialization(instance, objectName, objectFactory.objectPostProcessors);
+			var processors:Vector.<IObjectPostProcessor> = objectFactory.objectPostProcessors;
+
+			postProcessingBeforeInitialization(instance, objectName, processors);
 			if (instance is IInitializingObject) {
 				IInitializingObject(instance).afterPropertiesSet();
 			}
-			postProcessingAfterInitialization(instance, objectName, objectFactory.objectPostProcessors);
+			postProcessingAfterInitialization(instance, objectName, processors);
 		}
 	}
 }

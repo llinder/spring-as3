@@ -15,83 +15,89 @@
 */
 package org.springextensions.actionscript.ioc.impl {
 
-	import asmock.framework.Expect;
-	import asmock.framework.SetupResult;
-	import asmock.integration.flexunit.IncludeMocksRule;
+	import mockolate.mock;
+	import mockolate.nice;
+	import mockolate.runner.MockolateRule;
+	import mockolate.stub;
+	import mockolate.verify;
 
+	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.factory.IInitializingObject;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
-	import org.springextensions.actionscript.test.AbstractTestWithMockRepository;
 	import org.springextensions.actionscript.test.testtypes.AutowiredAnnotatedClass;
+	import org.springextensions.actionscript.test.testtypes.IAutowireProcessorAwareObjectFactory;
 
-	public class DefaultDependencyInjectorTest extends AbstractTestWithMockRepository {
+	public class DefaultDependencyInjectorTest {
 
 		[Rule]
-		public var includeMockRule:IncludeMocksRule = new IncludeMocksRule([IAutowireProcessor, IObjectPostProcessor, IReferenceResolver, IInstanceCache, IInitializingObject, IObjectFactory]);
+		public var mocks:MockolateRule = new MockolateRule();
 
 		public function DefaultDependencyInjectorTest() {
 			super();
 		}
 
-		private var _injector:DefaultDependencyInjector;
-		private var _cache:IInstanceCache;
-		private var _processor:IObjectPostProcessor;
-		private var _resolver:IReferenceResolver;
-		private var _factory:IObjectFactory;
+		public var injector:DefaultDependencyInjector;
+		[Mock]
+		public var cache:IInstanceCache;
+		[Mock]
+		public var processor:IObjectPostProcessor;
+		[Mock]
+		public var resolver:IReferenceResolver;
+		[Mock]
+		public var factory:IAutowireProcessorAwareObjectFactory;
+		[Mock]
+		public var initializingObject:IInitializingObject;
+		[Mock]
+		public var autowireProcessor:IAutowireProcessor;
 
 		[Before]
 		public function setUp():void {
-			_injector = new DefaultDependencyInjector();
-			_cache = IInstanceCache(mockRepository.createStub(IInstanceCache));
-			_processor = IObjectPostProcessor(mockRepository.createStub(IObjectPostProcessor));
-			_resolver = IReferenceResolver(mockRepository.createStub(IReferenceResolver));
-			_factory = IObjectFactory(mockRepository.createStub(IObjectFactory));
-			//	_factory.
+			injector = new DefaultDependencyInjector();
+			cache = nice(IInstanceCache);
+			processor = nice(IObjectPostProcessor);
+			resolver = nice(IReferenceResolver);
+			factory = nice(IAutowireProcessorAwareObjectFactory);
 		}
 
 		[Test]
 		public function testWireWithoutDefinition():void {
 			var instance:AutowiredAnnotatedClass = new AutowiredAnnotatedClass();
-			var autowire:IAutowireProcessor = IAutowireProcessor(mockRepository.create(IAutowireProcessor));
-			Expect.call(autowire.autoWire(instance)).ignoreArguments();
-			//SetupResult.forCall(_factory.
-			mockRepository.replayAll();
-
-			//_injector.autowireProcessor = autowire;
-			_injector.wire(instance, _factory);
-			mockRepository.verifyAll();
+			var autowire:IAutowireProcessor = nice(IAutowireProcessor);
+			stub(autowire).method("autoWire").args(anything());
+			mock(factory).getter("autowireProcessor").returns(autowire);
+			injector.wire(instance, factory);
+			verify(factory);
+			verify(autowire);
 		}
 
 		[Test]
 		public function testWireWithoutDefinitionAndWithObjectPostProcessor():void {
-			var instance:AutowiredAnnotatedClass = new AutowiredAnnotatedClass();
-			var autowire:IAutowireProcessor = IAutowireProcessor(mockRepository.create(IAutowireProcessor));
-			Expect.call(autowire.autoWire(instance)).ignoreArguments();
-			Expect.call(_processor.postProcessAfterInitialization(null, null)).ignoreArguments().returnValue(null).repeat.once();
-			Expect.call(_processor.postProcessBeforeInitialization(null, null)).ignoreArguments().returnValue(null).repeat.once();
+		/*var instance:AutowiredAnnotatedClass = new AutowiredAnnotatedClass();
+		var autowire:IAutowireProcessor = nice(IAutowireProcessor);
+		stub(autowire).method("autoWire").args(instance);
+		mock(processor).method("postProcessAfterInitialization").args(instance, null).returns(instance).once();
+		mock(processor).method("postProcessBeforeInitialization").args(instance, null).returns(instance).once();
+		stub(factory).getter("autowireProcessor").returns(autowire);
+		var procs:Vector.<IObjectPostProcessor> = new Vector.<IObjectPostProcessor>();
+		procs.push(IObjectPostProcessor(processor));
+		mock(factory).getter("objectPostProcessors").returns(procs);
 
-			mockRepository.replayAll();
-
-			var procs:Vector.<IObjectPostProcessor> = new Vector.<IObjectPostProcessor>();
-			procs.push(_processor);
-
-			//_injector.autowireProcessor = autowire;
-			//_injector.wire(instance, _cache, null, null, procs);
-			mockRepository.verifyAll();
+		injector.wire(instance, factory);
+		verify(autowire);
+		verify(processor);
+		verify(factory);*/
 		}
 
 		[Test]
 		public function testWireWithoutDefinitionAndWithInitializingObject():void {
-			var initializing:IInitializingObject = IInitializingObject(mockRepository.create(IInitializingObject));
-			Expect.call(initializing.afterPropertiesSet()).ignoreArguments().repeat.once();
-
-			mockRepository.replayAll();
-			//_injector.wire(initializing,);
-			mockRepository.verifyAll();
+			initializingObject = nice(IInitializingObject);
+			mock(initializingObject).method("afterPropertiesSet").once();
+			injector.wire(initializingObject, factory);
+			verify(initializingObject);
 		}
 	}
 }

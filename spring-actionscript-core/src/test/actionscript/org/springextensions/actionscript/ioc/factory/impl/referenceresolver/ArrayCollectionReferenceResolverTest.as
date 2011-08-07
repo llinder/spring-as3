@@ -14,20 +14,14 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
-	import asmock.framework.Expect;
-	import asmock.framework.SetupResult;
-	import asmock.integration.flexunit.IncludeMocksRule;
-
-	import flash.system.ApplicationDomain;
+	import mockolate.stub;
+	import mockolate.verify;
 
 	import mx.collections.ArrayCollection;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertTrue;
-	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
-	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
-	import org.springextensions.actionscript.test.AbstractTestWithMockRepository;
 
 	public class ArrayCollectionReferenceResolverTest extends AbstractReferenceResolverTest {
 
@@ -37,7 +31,6 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
 		[Test]
 		public function testCanResolveWithArrayCollection():void {
-			mockRepository.replayAll();
 			var resolver:ArrayCollectionReferenceResolver = new ArrayCollectionReferenceResolver(factory);
 			var result:Boolean = resolver.canResolve(new ArrayCollection());
 			assertTrue(result);
@@ -45,7 +38,6 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
 		[Test]
 		public function testCanResolveWithArray():void {
-			mockRepository.replayAll();
 			var resolver:ArrayCollectionReferenceResolver = new ArrayCollectionReferenceResolver(factory);
 			var result:Boolean = resolver.canResolve([]);
 			assertFalse(result);
@@ -59,14 +51,13 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
 		[Test]
 		public function testResolve():void {
-			Expect.call(factory.resolveReference("testProperty")).returnValue("resolved");
-			mockRepository.replayAll();
+			stub(factory).method("resolveReference").args("testProperty").returns("resolved").once();
 
 			var col:ArrayCollection = new ArrayCollection(["testProperty"]);
 			var resolver:ArrayCollectionReferenceResolver = new ArrayCollectionReferenceResolver(factory);
 
 			col = resolver.resolve(col) as ArrayCollection;
-			mockRepository.verifyAll();
+			verify(factory);
 			assertEquals(1, col.length);
 			assertEquals("resolved", col.getItemAt(0));
 		}
