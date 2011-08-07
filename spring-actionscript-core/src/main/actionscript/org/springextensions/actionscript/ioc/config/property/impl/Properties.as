@@ -101,7 +101,7 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 		 * Adds all conIPropertiese given properties object to this Properties.
 		 */
 		public function merge(properties:IPropertiesProvider, overrideProperty:Boolean = false):void {
-			if (!properties) {
+			if ((!properties) || (properties === this)) {
 				return;
 			}
 
@@ -143,6 +143,7 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 
 		protected function initProperties():void {
 			_content = {};
+			_propertyNames = new Vector.<String>();
 		}
 	}
 }

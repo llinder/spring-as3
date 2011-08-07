@@ -15,6 +15,7 @@
 */
 package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
+	import org.springextensions.actionscript.ioc.config.property.impl.PropertiesTest;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultInstanceCacheTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayCollectionReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayReferenceResolverTest;
@@ -46,5 +47,6 @@ package org.springextensions.actionscript.test {
 		public var t4:BooleanPropertyEditorTest;
 		public var t5:NumberPropertyEditorTest;
 		public var t6:ClassPropertyEditorTest;
+		public var t15:PropertiesTest;
 	}
 }
