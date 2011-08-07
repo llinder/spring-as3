@@ -15,36 +15,23 @@
 */
 package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
-	import org.springextensions.actionscript.ioc.factory.impl.DefaultInstanceCacheTest;
-	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayCollectionReferenceResolverTest;
-	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayReferenceResolverTest;
-	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.DictionaryReferenceResolverTest;
-	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ObjectReferenceResolverTest;
-	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ThisReferenceResolverTest;
-	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.VectorReferenceResolverTest;
-	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjectorTest;
-	import org.springextensions.actionscript.object.SimpleTypeConverterTest;
-	import org.springextensions.actionscript.object.propertyeditor.BooleanPropertyEditorTest;
-	import org.springextensions.actionscript.object.propertyeditor.ClassPropertyEditorTest;
-	import org.springextensions.actionscript.object.propertyeditor.NumberPropertyEditorTest;
-	import org.springextensions.actionscript.util.TypeUtilsTest;
 
 	[Suite]
 	[RunWith("org.flexunit.runners.Suite")]
 	public final class SpringTestSuite {
 		public var t7:DefaultAutowireProcessorTest;
-		public var t14:DefaultDependencyInjectorTest;
-		public var t1:DefaultInstanceCacheTest;
-		public var t2:TypeUtilsTest;
-		public var t3:SimpleTypeConverterTest;
-		public var t4:BooleanPropertyEditorTest;
-		public var t5:NumberPropertyEditorTest;
-		public var t6:ClassPropertyEditorTest;
-		public var t8:ArrayCollectionReferenceResolverTest;
-		public var t9:ArrayReferenceResolverTest;
-		public var t10:DictionaryReferenceResolverTest;
-		public var t11:ThisReferenceResolverTest;
-		public var t12:VectorReferenceResolverTest;
-		public var t13:ObjectReferenceResolverTest;
+	/*public var t14:DefaultDependencyInjectorTest;
+	public var t1:DefaultInstanceCacheTest;
+	public var t2:TypeUtilsTest;
+	public var t3:SimpleTypeConverterTest;
+	public var t4:BooleanPropertyEditorTest;
+	public var t5:NumberPropertyEditorTest;
+	public var t6:ClassPropertyEditorTest;
+	public var t8:ArrayCollectionReferenceResolverTest;
+	public var t9:ArrayReferenceResolverTest;
+	public var t10:DictionaryReferenceResolverTest;
+	public var t11:ThisReferenceResolverTest;
+	public var t12:VectorReferenceResolverTest;
+	public var t13:ObjectReferenceResolverTest;*/
 	}
 }

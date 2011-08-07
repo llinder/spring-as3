@@ -396,14 +396,15 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			var key:String = metadata.getArgument(AUTOWIRED_ARGUMENT_EXTERNALPROPERTY).value;
 			logger.debug("Autowiring by propertyName '{0}.{1}' with property '{2}'", [objectName, field.name, key]);
 
-			throw new Error("Not fully implemented yet");
-
-		/*			var property:String = _objectFactory.properties.getProperty(key);
-					if (property) {
-						object[field.name] = property;
-					} else {
-						throw new UnsatisfiedDependencyError(objectName, field.name, "Can't find property referenced in Autowired " + AUTOWIRED_ARGUMENT_EXTERNALPROPERTY + "argument: ");
-					}*/
+			if (_objectFactory.propertiesProvider != null) {
+				if (_objectFactory.propertiesProvider.hasProperty(key)) {
+					object[field.name] = _objectFactory.propertiesProvider.getProperty(key);
+				} else {
+					throw new UnsatisfiedDependencyError(objectName, field.name, "Can't find property referenced in Autowired " + AUTOWIRED_ARGUMENT_EXTERNALPROPERTY + "argument: ");
+				}
+			} else {
+				throw new UnsatisfiedDependencyError(objectName, field.name, "Current IObjectFactory instance doesn't have a valid propertiesProvider property assigned");
+			}
 		}
 
 		/**
