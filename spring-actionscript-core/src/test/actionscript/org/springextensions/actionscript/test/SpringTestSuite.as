@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.test {
+	import org.springextensions.actionscript.context.impl.ApplicationContextTest;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
 	import org.springextensions.actionscript.ioc.config.property.impl.KeyValuePropertiesParserTest;
 	import org.springextensions.actionscript.ioc.config.property.impl.PropertiesTest;
@@ -50,7 +51,8 @@ package org.springextensions.actionscript.test {
 		public var t5:NumberPropertyEditorTest;
 		public var t6:ClassPropertyEditorTest;
 		public var t15:PropertiesTest;
-		public var t16:KeyValuePropertiesParserTest;*/
-		public var t17:DefaultObjectFactoryTest;
+		public var t16:KeyValuePropertiesParserTest;
+		public var t17:DefaultObjectFactoryTest;*/
+		public var t18:ApplicationContextTest;
 	}
 }

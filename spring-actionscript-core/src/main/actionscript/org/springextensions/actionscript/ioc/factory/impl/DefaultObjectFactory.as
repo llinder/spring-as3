@@ -181,7 +181,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return _isReady;
 		}
 
-		spring_actionscript_internal function setIsReady(value:Boolean):void {
+		public function set isReady(value:Boolean):void {
 			_isReady = value;
 		}
 
@@ -284,16 +284,19 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			if (!result) {
 				try {
 					result = instantiateClass(objectDefinition, constructorArguments);
+					var evt1:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_CREATED, result, name, constructorArguments);
+					dispatchEvent(evt1);
+					dispatchEventThroughEventBus(evt1);
 					if (dependencyInjector != null) {
 						dependencyInjector.wire(result, this, objectDefinition, objectName);
+						var evt2:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_WIRED, result, name, constructorArguments);
+						dispatchEvent(evt2);
+						dispatchEventThroughEventBus(evt2);
 					}
 				} catch (e:ClassNotFoundError) {
 					throw new ObjectContainerError(e.message, objectName);
 				}
 			}
-			var evt:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_CREATED, result, name, constructorArguments);
-			dispatchEvent(evt);
-			dispatchEventThroughEventBus(evt);
 			return result;
 		}
 

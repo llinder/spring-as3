@@ -132,6 +132,11 @@ package org.springextensions.actionscript.ioc.factory {
 		function get isReady():Boolean;
 
 		/**
+		 * @private
+		 */
+		function set isReady(value:Boolean):void;
+
+		/**
 		 *
 		 */
 		function get objectDefinitions():Object;
