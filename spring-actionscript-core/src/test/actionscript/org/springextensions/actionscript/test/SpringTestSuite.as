@@ -18,6 +18,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.property.impl.KeyValuePropertiesParserTest;
 	import org.springextensions.actionscript.ioc.config.property.impl.PropertiesTest;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultInstanceCacheTest;
+	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactoryTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayCollectionReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.DictionaryReferenceResolverTest;
@@ -50,5 +51,6 @@ package org.springextensions.actionscript.test {
 		public var t6:ClassPropertyEditorTest;
 		public var t15:PropertiesTest;
 		public var t16:KeyValuePropertiesParserTest;
+		public var t17:DefaultObjectFactoryTest;
 	}
 }

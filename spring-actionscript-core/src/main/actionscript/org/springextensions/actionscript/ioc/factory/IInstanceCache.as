@@ -46,6 +46,13 @@ package org.springextensions.actionscript.ioc.factory {
 		 */
 		function getInstance(name:String):*;
 		/**
+		 * Returns the prepared instance that was associated with the specified name.
+		 * @param name The specified name
+		 * @return The prepared instance associated with the specified name
+		 * @throws org.springextensions.actionscript.ioc.objectdefinition.error.ObjectDefinitionNotFoundError Thrown when a prepared object with the specified name does not exist
+		 */
+		function getPreparedInstance(name:String):*;
+		/**
 		 * Returns <code>true</true> if an instance has been associated with the specified name
 		 * @param name The specified name
 		 * @return <code>true</true> if an instance has been associated with the specified name

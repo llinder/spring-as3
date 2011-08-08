@@ -14,24 +14,36 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl {
+	import flash.errors.IllegalOperationError;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
 
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
+	import org.as3commons.lang.Assert;
+	import org.as3commons.lang.ClassNotFoundError;
+	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.util.OrderedUtils;
+	import org.as3commons.reflect.Method;
+	import org.as3commons.reflect.MethodInvoker;
+	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
+	import org.springextensions.actionscript.ioc.error.ObjectContainerError;
+	import org.springextensions.actionscript.ioc.factory.IFactoryObject;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
+	import org.springextensions.actionscript.ioc.factory.event.ObjectFactoryEvent;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
+	import org.springextensions.actionscript.ioc.objectdefinition.error.ObjectDefinitionNotFoundError;
 
 	/**
 	 *
@@ -101,6 +113,10 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return _cache;
 		}
 
+		public function set cache(value:IInstanceCache):void {
+			_cache = value;
+		}
+
 		public function createInstance(clazz:Class, constructorArguments:Array = null):* {
 			return null;
 		}
@@ -122,7 +138,166 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 		public function getObject(name:String, constructorArguments:Array = null):* {
-			throw new Error("Not implemented yet");
+			Assert.hasText(name, "name parameter must not be empty");
+			var result:*;
+			var isFactoryDereference:Boolean = (name.charAt(0) == OBJECT_FACTORY_PREFIX);
+			var objectName:String = (isFactoryDereference ? name.substring(1) : name);
+
+			// try to get the object from the explicit singleton cache
+			if (_cache.isPrepared(objectName)) {
+				result = _cache.getPreparedInstance(objectName);
+			} else {
+				// we don't have an object in the cache, so create it
+				result = buildObject(name, constructorArguments);
+			}
+
+			// if we have an object factory and we don't ask for the object factory,
+			// replace the result with the object the factory creates
+			if ((result is IFactoryObject) && !isFactoryDereference) {
+				result = IFactoryObject(result).getObject();
+			}
+
+			var evt:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_RETRIEVED, result, name, constructorArguments);
+			dispatchEvent(evt);
+			dispatchEventThroughEventBus(evt);
+			return result;
+		}
+
+		protected function buildObject(name:String, constructorArguments:Array):* {
+			var result:*;
+			var isFactoryDereference:Boolean = (name.charAt(0) == OBJECT_FACTORY_PREFIX);
+			var objectName:String = (isFactoryDereference ? name.substring(1) : name);
+			var objectDefinition:IObjectDefinition = objectDefinitions[objectName];
+
+			if (!objectDefinition) {
+				return getObjectFromParentFactories(name, constructorArguments);
+			}
+
+			if (objectDefinition.isSingleton && (constructorArguments && !objectDefinition.isLazyInit)) {
+				throw new IllegalOperationError("The object definition for '" + objectName + "' is not lazy. Constructor arguments can only be " + "supplied for lazy instantiating objects.");
+			}
+
+			if (objectDefinition.isSingleton) {
+				result = getInstanceFromCache(objectName);
+			}
+
+			// Only do dependency guarantee loop when the object hasn't been retrieved from
+			// the cache, when the object is in the early cache, do the dependency check. (Not sure if this is necessary though).
+			checkDependencies(result, objectName, objectDefinition);
+
+			// the object was not found in the cache or in the prepared cache
+			// create a new object from its definition
+			if (!result) {
+				try {
+					result = instantiateClass(objectDefinition, constructorArguments);
+					if (dependencyInjector != null) {
+						dependencyInjector.wire(result, this, objectDefinition, objectName);
+					}
+				} catch (e:ClassNotFoundError) {
+					throw new ObjectContainerError(e.message, objectName);
+				}
+			}
+			var evt:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_CREATED, result, name, constructorArguments);
+			dispatchEvent(evt);
+			dispatchEventThroughEventBus(evt);
+			return result;
+		}
+
+		protected function checkDependencies(result:*, objectName:String, objectDefinition:IObjectDefinition):void {
+			if ((!result) || (_cache.isPrepared(objectName))) {
+				// guarantee creation of objects that the current object depends on
+				var dependsOn:Array = objectDefinition.dependsOn;
+
+				if (dependsOn) {
+					for each (var dependsOnObject:String in dependsOn) {
+						getObject(dependsOnObject);
+					}
+				}
+			}
+		}
+
+
+		protected function getInstanceFromCache(objectName:String):* {
+			var result:*;
+			if (_cache.hasInstance(objectName)) {
+				result = _cache.getInstance(objectName);
+			}
+
+			// not in cache -> perhaps it is early cached as a circular reference
+			if ((!result) && (_cache.isPrepared(objectName))) {
+				result = _cache.getPreparedInstance(objectName);
+			}
+			return result;
+		}
+
+		protected function getObjectFromParentFactories(objectName:String, constructorArguments):* {
+			if (_parent) {
+				var objectDefinition:IObjectDefinition = getObjectDefinitionFromParent(objectName, _parent);
+				if (objectDefinition && objectDefinition.isSingleton) {
+					return _parent.getObject(objectName, constructorArguments);
+				}
+			}
+			if (!objectDefinition) {
+				throw new ObjectDefinitionNotFoundError("An object definition for '" + objectName + "' was not found.");
+			}
+		}
+
+		protected function dispatchEventThroughEventBus(evt:ObjectFactoryEvent):void {
+			if (_eventBus != null) {
+				_eventBus.dispatchEvent(evt);
+			}
+		}
+
+		protected function instantiateClass(objectDefinition:IObjectDefinition, constructorArguments:Array):* {
+			var clazz:Class = ClassUtils.forName(objectDefinition.className, _applicationDomain);
+
+			if (constructorArguments) {
+				objectDefinition.constructorArguments = constructorArguments;
+			}
+
+			if (_autowireProcessor) {
+				_autowireProcessor.preprocessObjectDefinition(objectDefinition);
+			}
+
+			// create the object
+			var resolvedConstructorArgs:Array = resolveReferences(objectDefinition.constructorArguments);
+
+			if (objectDefinition.factoryMethod) {
+				if (objectDefinition.factoryObjectName) {
+					return createObjectViaInstanceFactoryMethod(objectDefinition.factoryObjectName, objectDefinition.factoryMethod, resolvedConstructorArgs);
+				} else {
+					return createObjectViaStaticFactoryMethod(clazz, applicationDomain, objectDefinition.factoryMethod, resolvedConstructorArgs);
+				}
+			} else {
+				return ClassUtils.newInstance(clazz, resolvedConstructorArgs);
+			}
+		}
+
+
+		protected function createObjectViaInstanceFactoryMethod(objectName:String, methodName:String, args:Array = null):* {
+			var factoryObject:Object = getObject(objectName);
+			var factoryObjectMethodInvoker:MethodInvoker = new MethodInvoker();
+			factoryObjectMethodInvoker.target = factoryObject;
+			factoryObjectMethodInvoker.method = methodName;
+			factoryObjectMethodInvoker.arguments = args;
+			return factoryObjectMethodInvoker.invoke();
+		}
+
+		protected function createObjectViaStaticFactoryMethod(clazz:Class, applicationDomain:ApplicationDomain, factoryMethodName:String, args:Array = null):* {
+			var type:Type = Type.forClass(clazz, applicationDomain);
+			var factoryMethod:Method = type.getMethod(factoryMethodName);
+			return factoryMethod.invoke(clazz, args);
+		}
+
+		protected function getObjectDefinitionFromParent(objectName:String, _parent:IObjectFactory):IObjectDefinition {
+			var objectDefinition:IObjectDefinition = parent.objectDefinitions[objectName];
+			if (objectDefinition != null) {
+				return objectDefinition;
+			} else if (objectDefinition == null && parent.parent != null) {
+				return getObjectDefinitionFromParent(objectName, parent.parent);
+			} else {
+				return null;
+			}
 		}
 
 		public function get isReady():Boolean {
@@ -178,6 +353,17 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return _referenceResolvers;
 		}
 
+		public function resolveReferences(properties:Array):Array {
+			if (properties.length == 0) {
+				return null;
+			}
+			var result:Array = [];
+			for each (var prop:* in properties) {
+				result[result.length] = resolveReference(prop);
+			}
+			return result;
+		}
+
 		public function resolveReference(property:*):* {
 			if (property == null) { // note: don't change this to !property since we might pass in empty strings here
 				return null;
@@ -199,15 +385,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			if (parent !== _parent) {
 				_parent = parent;
 			}
-		}
-
-		public function resolveProperty(key:String):* {
-			for each (var provider:IPropertiesProvider in _propertiesProvider) {
-				if (provider.hasProperty(key)) {
-					return provider.getProperty(key);
-				}
-			}
-			return null;
 		}
 
 	}

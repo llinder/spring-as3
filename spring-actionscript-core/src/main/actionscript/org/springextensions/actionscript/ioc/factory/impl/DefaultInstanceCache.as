@@ -24,6 +24,10 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	 */
 	public class DefaultInstanceCache implements IInstanceCache {
 
+		/**
+		 * Creates a new <code>DefaultInstanceCache</code> instance.
+		 *
+		 */
 		public function DefaultInstanceCache() {
 			super();
 			initDefaultInstanceCache();
@@ -33,6 +37,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _cachedNames:Vector.<String>;
 		private var _preparedCache:Object;
 
+		/**
+		 * @inheritDoc
+		 */
 		public function addInstance(name:String, instance:*):void {
 			if (!hasInstance(name)) {
 				_cachedNames[_cachedNames.length] = name;
@@ -41,16 +48,25 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			removePreparedInstance(name);
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function clearCache():void {
 			clearCacheObject(_cache);
 			clearCacheObject(_preparedCache);
 			initDefaultInstanceCache();
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function getCachedNames():Vector.<String> {
 			return _cachedNames.concat.apply(this);
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function getInstance(name:String):* {
 			if (hasInstance(name)) {
 				return _cache[name];
@@ -59,22 +75,48 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function getPreparedInstance(name:String):* {
+			if (isPrepared(name)) {
+				return _preparedCache[name];
+			} else {
+				throw new ObjectDefinitionNotFoundError(name);
+			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function hasInstance(name:String):Boolean {
 			return _cache.hasOwnProperty(name);
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function isPrepared(name:String):Boolean {
 			return _preparedCache.hasOwnProperty(name);
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function numInstances():uint {
 			return _cachedNames.length;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function prepareInstance(name:String, instance:*):void {
 			_preparedCache[name] = instance;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function removeInstance(name:String):void {
 			if (hasInstance(name)) {
 				delete _cache[name];
@@ -85,6 +127,10 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
+		/**
+		 * Initializes the current <code>DefaultInstanceCache</code>.
+		 *
+		 */
 		protected function initDefaultInstanceCache():void {
 			_preparedCache = {};
 			_cache = {};
@@ -97,7 +143,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
-		private function clearCacheObject(cacheObject:Object):void {
+		protected function clearCacheObject(cacheObject:Object):void {
 			for (var name:String in cacheObject) {
 				var inst:IDisposable = cacheObject[name] as IDisposable;
 				if (inst != null) {

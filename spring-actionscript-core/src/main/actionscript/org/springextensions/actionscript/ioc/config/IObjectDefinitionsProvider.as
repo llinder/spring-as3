@@ -18,11 +18,11 @@ package org.springextensions.actionscript.ioc.config {
 	import org.as3commons.async.operation.IOperation;
 
 	/**
-	 * Describes an object that can create a collection of <code>ObjectDefinitions</code>.
+	 * Describes an object that can create a collection of <code>ObjectDefinitions</code>, either synchronously or asynchronously.
 	 * @author Roland Zwaga
 	 */
 	public interface IObjectDefinitionsProvider {
 		function createDefinitions():IOperation;
-		function get objectDefinitions():Array;
+		function get objectDefinitions():Object;
 	}
 }

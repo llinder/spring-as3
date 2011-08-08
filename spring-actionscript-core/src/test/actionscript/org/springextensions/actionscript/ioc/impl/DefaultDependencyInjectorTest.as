@@ -76,20 +76,18 @@ package org.springextensions.actionscript.ioc.impl {
 
 		[Test]
 		public function testWireWithoutDefinitionAndWithObjectPostProcessor():void {
-		/*var instance:AutowiredAnnotatedClass = new AutowiredAnnotatedClass();
-		var autowire:IAutowireProcessor = nice(IAutowireProcessor);
-		stub(autowire).method("autoWire").args(instance);
-		mock(processor).method("postProcessAfterInitialization").args(instance, null).returns(instance).once();
-		mock(processor).method("postProcessBeforeInitialization").args(instance, null).returns(instance).once();
-		stub(factory).getter("autowireProcessor").returns(autowire);
-		var procs:Vector.<IObjectPostProcessor> = new Vector.<IObjectPostProcessor>();
-		procs.push(IObjectPostProcessor(processor));
-		mock(factory).getter("objectPostProcessors").returns(procs);
+			var instance:AutowiredAnnotatedClass = new AutowiredAnnotatedClass();
+			var autowire:IAutowireProcessor = nice(IAutowireProcessor);
+			stub(autowire).method("autoWire").args(anything()).once();
+			stub(processor).method("postProcessBeforeInitialization").args(anything()).returns(instance).once();
+			stub(processor).method("postProcessAfterInitialization").args(anything()).returns(instance).once();
+			mock(factory).getter("autowireProcessor").returns(autowire);
+			var procs:Vector.<IObjectPostProcessor> = new Vector.<IObjectPostProcessor>();
+			procs.push(IObjectPostProcessor(processor));
+			mock(factory).getter("objectPostProcessors").returns(procs);
 
-		injector.wire(instance, factory);
-		verify(autowire);
-		verify(processor);
-		verify(factory);*/
+			injector.wire(instance, factory);
+			verify(factory);
 		}
 
 		[Test]
