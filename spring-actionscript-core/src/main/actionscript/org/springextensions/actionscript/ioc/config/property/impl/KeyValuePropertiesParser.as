@@ -15,10 +15,13 @@
  */
 package org.springextensions.actionscript.ioc.config.property.impl {
 
+	import flash.errors.IllegalOperationError;
+
+	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.StringUtils;
-	import org.springextensions.actionscript.util.MultilineString;
-	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.util.MultilineString;
 
 	/**
 	 * <p><code>KeyValuePropertiesParser</code> parses a properties source string into a <code>IPropertiesProvider</code>
@@ -52,15 +55,15 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 	 */
 	public class KeyValuePropertiesParser implements IPropertiesParser {
 
-		private static const HASH:String = "#";
-		private static const EXCLAMATION_MARK:String = "!";
-		private static const DOUBLE_BACKWARD_SLASH:String = "\\";
+		private static const HASH_CHARCODE:uint = 35; //= "#";
+		private static const EXCLAMATION_MARK_CHARCODE:uint = 33; //= "!";
+		private static const DOUBLE_BACKWARD_SLASH:String = '\\';
 		private static const NEWLINE_CHAR:String = "\n";
 		private static const NEWLINE_REGEX:RegExp = /\\n/gm;
-		private static const SINGLE_QUOTE:String = "'";
-		private static const COLON:String = ":";
-		private static const EQUALS:String = "=";
-		private static const TAB_CHAR:String = "	";
+		private static const SINGLE_QUOTE_CHARCODE:uint = 39; // = "'";
+		private static const COLON_CHARCODE:uint = 58; //:
+		private static const EQUALS_CHARCODE:uint = 61; //=
+		private static const TAB_CHARCODE:uint = 9;
 
 		/**
 		 * Constructs a new <code>PropertiesParser</code> instance.
@@ -75,8 +78,11 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 		 * @param source the source to parse
 		 * @return the properties defined by the given <code>source</code>
 		 */
-		public function parseProperties(source:*):IPropertiesProvider {
-			var result:IPropertiesProvider = new Properties();
+		public function parseProperties(source:*, clazz:Class):IPropertiesProvider {
+			if (!ClassUtils.isImplementationOf(clazz, IPropertiesProvider)) {
+				throw new IllegalOperationError("The specified class needs to implement the IPropertiesProvider interface");
+			}
+			var result:IPropertiesProvider = new clazz();
 			var lines:MultilineString = new MultilineString(String(source));
 			var numLines:Number = lines.numLines;
 			var key:String;
@@ -91,14 +97,14 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 				line = StringUtils.trim(line);
 
 				// Ignore Comments and empty lines
-				if (line.charAt(0) != HASH && line.charAt(0) != EXCLAMATION_MARK && line.length != 0) {
+				if (isPropertyLine(line)) {
 					// Line break processing
 					if (useNextLine) {
 						key = formerKey;
 						value = formerValue + line;
 						useNextLine = false;
 					} else {
-						var sep:Number = getSeparation(line);
+						var sep:int = getSeparation(line);
 						key = StringUtils.rightTrim(line.substr(0, sep));
 						value = line.substring(sep + 1);
 						formerKey = key;
@@ -108,7 +114,8 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 					value = StringUtils.leftTrim(value);
 
 					// Allow normal lines
-					if (value.charAt(value.length - 1) == DOUBLE_BACKWARD_SLASH) {
+					var end:String = value.substring(value.length - 1);
+					if (end == DOUBLE_BACKWARD_SLASH) {
 						formerValue = value = value.substr(0, value.length - 1);
 						useNextLine = true;
 					} else {
@@ -121,6 +128,10 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 			return result;
 		}
 
+		public function isPropertyLine(line:String):Boolean {
+			return (line.charCodeAt(0) != HASH_CHARCODE && line.charCodeAt(0) != EXCLAMATION_MARK_CHARCODE && line.length != 0);
+		}
+
 		/**
 		 * Returns the position at which key and value are separated.
 		 *
@@ -131,12 +142,12 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 			var len:int = line.length;
 
 			for (var i:int = 0; i < len; i++) {
-				var char:String = line.charAt(i);
+				var char:uint = line.charCodeAt(i);
 
-				if (char == SINGLE_QUOTE) {
+				if (char == SINGLE_QUOTE_CHARCODE) {
 					i++;
 				} else {
-					if (char == COLON || char == EQUALS || char == TAB_CHAR) {
+					if (char == COLON_CHARCODE || char == EQUALS_CHARCODE || char == TAB_CHARCODE) {
 						break;
 					}
 				}

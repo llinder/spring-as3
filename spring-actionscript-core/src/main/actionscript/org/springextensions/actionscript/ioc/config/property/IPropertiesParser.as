@@ -20,6 +20,6 @@ package org.springextensions.actionscript.ioc.config.property {
 	 * @author Roland Zwaga
 	 */
 	public interface IPropertiesParser {
-		function parseProperties(source:*):IPropertiesProvider;
+		function parseProperties(source:*, clazz:Class):IPropertiesProvider;
 	}
 }
