@@ -70,7 +70,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		public function setUp():void {
 			_objectFactory = new DefaultObjectFactory();
 			_objectFactory.cache = nice(IInstanceCache);
-			_objectFactory.spring_actionscript_internal::setIsReady(true);
+			_objectFactory.isReady = true;
 		}
 
 		[Test]
