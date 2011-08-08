@@ -17,18 +17,34 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import mockolate.mock;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
+	import mockolate.stub;
 	import mockolate.verify;
 
+	import org.as3commons.eventbus.IEventBus;
 	import org.flexunit.asserts.assertEquals;
+	import org.flexunit.asserts.assertFalse;
+	import org.flexunit.asserts.assertNotNull;
+	import org.flexunit.asserts.assertTrue;
+	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
+	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
+	import org.springextensions.actionscript.ioc.spring_actionscript_internal;
+	import org.springextensions.actionscript.test.testtypes.ClassWithStaticFactoryMethod;
+	import org.springextensions.actionscript.test.testtypes.TestClassFactory;
+
 
 
 	public class DefaultObjectFactoryTest {
+
+		{
+			ClassWithStaticFactoryMethod;
+			TestClassFactory;
+		}
 
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
@@ -41,6 +57,8 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		public var cache:IInstanceCache;
 		[Mock]
 		public var injector:IDependencyInjector;
+		[Mock]
+		public var eventBus:IEventBus;
 
 		private var _objectFactory:DefaultObjectFactory;
 
@@ -52,6 +70,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		public function setUp():void {
 			_objectFactory = new DefaultObjectFactory();
 			_objectFactory.cache = nice(IInstanceCache);
+			_objectFactory.spring_actionscript_internal::setIsReady(true);
 		}
 
 		[Test]
@@ -98,6 +117,69 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			var result:String = _objectFactory.getObject("testName");
 			verify(cache);
 			assertEquals("test", result);
+		}
+
+		[Test]
+		public function testgetObjectWithSimpleDefinitionWithConstructorArgumentAndDependencyInjectionVerification():void {
+			var objectDefinition:IObjectDefinition = new ObjectDefinition("String");
+			objectDefinition.constructorArguments = ["test"];
+			mock(_objectFactory.cache).method("isPrepared").returns(false).twice();
+			mock(_objectFactory.cache).method("hasInstance").returns(false).once();
+			_objectFactory.objectDefinitions["testName"] = objectDefinition;
+			_objectFactory.dependencyInjector = nice(IDependencyInjector);
+			stub(_objectFactory.dependencyInjector).method("wire").args(anything()).once();
+			var result:String = _objectFactory.getObject("testName");
+			verify(cache);
+			assertEquals("test", result);
+		}
+
+		[Test]
+		public function testCreateInstance():void {
+			var result:String = _objectFactory.createInstance(String, ["test"]);
+			assertEquals("test", result);
+		}
+
+		[Test]
+		public function testgetObjectWithEventBusDispatch():void {
+			var objectDefinition:IObjectDefinition = new ObjectDefinition("int");
+			mock(_objectFactory.cache).method("isPrepared").returns(false).twice();
+			mock(_objectFactory.cache).method("hasInstance").returns(false).once();
+			_objectFactory.objectDefinitions["testName"] = objectDefinition;
+			_objectFactory.eventBus = nice(IEventBus);
+			mock(_objectFactory.eventBus).method("dispatchEvent").args(anything());
+			var result:int = _objectFactory.getObject("testName");
+			verify(cache);
+			verify(_objectFactory.eventBus);
+			assertEquals(0, result);
+		}
+
+		[Test]
+		public function testgetObjectWithStaticFactoryMethod():void {
+			var objectDefinition:IObjectDefinition = new ObjectDefinition("org.springextensions.actionscript.test.testtypes.ClassWithStaticFactoryMethod");
+			objectDefinition.factoryMethod = "newInstance";
+			mock(_objectFactory.cache).method("isPrepared").returns(false).twice();
+			mock(_objectFactory.cache).method("hasInstance").returns(false).once();
+			_objectFactory.objectDefinitions["testName"] = objectDefinition;
+			var result:ClassWithStaticFactoryMethod = _objectFactory.getObject("testName");
+			verify(cache);
+			assertNotNull(result);
+			assertTrue(result.createdByStaticMethod);
+		}
+
+		[Test]
+		public function testgetObjectWithFactoryObjectName():void {
+			var objectDefinition:IObjectDefinition = new ObjectDefinition("org.springextensions.actionscript.test.testtypes.ClassWithStaticFactoryMethod");
+			objectDefinition.factoryMethod = "newInstance";
+			objectDefinition.factoryObjectName = "factoryObject";
+			mock(_objectFactory.cache).method("isPrepared").returns(false).twice();
+			mock(_objectFactory.cache).method("hasInstance").returns(false).once();
+			_objectFactory.objectDefinitions["testName"] = objectDefinition;
+			objectDefinition = new ObjectDefinition("org.springextensions.actionscript.test.testtypes.TestClassFactory");
+			_objectFactory.objectDefinitions["factoryObject"] = objectDefinition;
+			var result:ClassWithStaticFactoryMethod = _objectFactory.getObject("testName");
+			verify(cache);
+			assertNotNull(result);
+			assertFalse(result.createdByStaticMethod);
 		}
 
 	}

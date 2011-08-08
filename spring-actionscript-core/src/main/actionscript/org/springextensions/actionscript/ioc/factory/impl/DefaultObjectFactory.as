@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl {
+
 	import flash.errors.IllegalOperationError;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
@@ -34,6 +35,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
 	import org.springextensions.actionscript.ioc.error.ObjectContainerError;
+	import org.springextensions.actionscript.ioc.error.ObjectFactoryError;
 	import org.springextensions.actionscript.ioc.factory.IFactoryObject;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
@@ -44,6 +46,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.error.ObjectDefinitionNotFoundError;
+	import org.springextensions.actionscript.ioc.spring_actionscript_internal;
 
 	/**
 	 *
@@ -64,6 +67,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 		private var _applicationDomain:ApplicationDomain;
+		private var _autowireProcessor:IAutowireProcessor;
 		private var _cache:IInstanceCache;
 		private var _dependencyInjector:IDependencyInjector;
 		private var _eventBus:IEventBus;
@@ -73,10 +77,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _objectFactoryPostProcessors:Vector.<IObjectFactoryPostProcessor>;
 		private var _objectPostProcessors:Vector.<IObjectPostProcessor>;
 		private var _parent:IObjectFactory;
+		private var _properties:Properties;
 		private var _propertiesProvider:IPropertiesProvider;
 		private var _referenceResolvers:Vector.<IReferenceResolver>;
-		private var _autowireProcessor:IAutowireProcessor;
-		private var _properties:Properties;
 
 		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void {
 			objectFactoryPostProcessors[objectFactoryPostProcessors.length] = objectFactoryPostProcessor;
@@ -118,7 +121,15 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 		public function createInstance(clazz:Class, constructorArguments:Array = null):* {
-			return null;
+			Assert.notNull(clazz, "The clazz arguments must not be null");
+			if (!_isReady) {
+				throw new ObjectFactoryError(ObjectFactoryError.FACTORY_NOT_READY, "Object factory isn't fully initialized yet");
+			}
+			var result:* = ClassUtils.newInstance(clazz, constructorArguments);
+			if (dependencyInjector != null) {
+				dependencyInjector.wire(result, this);
+			}
+			return result;
 		}
 
 		public function get dependencyInjector():IDependencyInjector {
@@ -139,6 +150,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 		public function getObject(name:String, constructorArguments:Array = null):* {
 			Assert.hasText(name, "name parameter must not be empty");
+			if (!_isReady) {
+				throw new ObjectFactoryError(ObjectFactoryError.FACTORY_NOT_READY, "Object factory isn't fully initialized yet");
+			}
 			var result:*;
 			var isFactoryDereference:Boolean = (name.charAt(0) == OBJECT_FACTORY_PREFIX);
 			var objectName:String = (isFactoryDereference ? name.substring(1) : name);
@@ -160,6 +174,86 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			var evt:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_RETRIEVED, result, name, constructorArguments);
 			dispatchEvent(evt);
 			dispatchEventThroughEventBus(evt);
+			return result;
+		}
+
+		public function get isReady():Boolean {
+			return _isReady;
+		}
+
+		spring_actionscript_internal function setIsReady(value:Boolean):void {
+			_isReady = value;
+		}
+
+		public function get objectDefinitionRegistry():IObjectDefinitionRegistry {
+			return _objectDefinitionRegistry;
+		}
+
+		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
+			_objectDefinitionRegistry = value;
+		}
+
+		public function get objectDefinitions():Object {
+			return _objectDefinitions;
+		}
+
+		public function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor> {
+			if (_objectFactoryPostProcessors == null) {
+				_objectFactoryPostProcessors = new Vector.<IObjectFactoryPostProcessor>();
+			}
+			return _objectFactoryPostProcessors;
+		}
+
+		public function get objectPostProcessors():Vector.<IObjectPostProcessor> {
+			if (_objectPostProcessors == null) {
+				_objectPostProcessors = new Vector.<IObjectPostProcessor>();
+			}
+			return _objectPostProcessors;
+		}
+
+		public function get parent():IObjectFactory {
+			return _parent;
+		}
+
+		public function set parent(value:IObjectFactory):void {
+			_parent = value;
+		}
+
+		public function get propertiesProvider():IPropertiesProvider {
+			return _propertiesProvider;
+		}
+
+		public function set propertiesProvider(value:IPropertiesProvider):void {
+			_propertiesProvider = value;
+		}
+
+		public function get referenceResolvers():Vector.<IReferenceResolver> {
+			if (_referenceResolvers == null) {
+				_referenceResolvers = new Vector.<IReferenceResolver>();
+			}
+			return _referenceResolvers;
+		}
+
+		public function resolveReference(property:*):* {
+			if (property == null) { // note: don't change this to !property since we might pass in empty strings here
+				return null;
+			}
+			for each (var referenceResolver:IReferenceResolver in referenceResolvers) {
+				if (referenceResolver.canResolve(property)) {
+					return referenceResolver.resolve(property);
+				}
+			}
+			return property;
+		}
+
+		public function resolveReferences(properties:Array):Array {
+			if (properties.length == 0) {
+				return null;
+			}
+			var result:Array = [];
+			for each (var prop:* in properties) {
+				result[result.length] = resolveReference(prop);
+			}
 			return result;
 		}
 
@@ -217,6 +311,28 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 
+		protected function createObjectViaInstanceFactoryMethod(objectName:String, methodName:String, args:Array = null):* {
+			var factoryObject:Object = getObject(objectName);
+			var factoryObjectMethodInvoker:MethodInvoker = new MethodInvoker();
+			factoryObjectMethodInvoker.target = factoryObject;
+			factoryObjectMethodInvoker.method = methodName;
+			factoryObjectMethodInvoker.arguments = args;
+			return factoryObjectMethodInvoker.invoke();
+		}
+
+		protected function createObjectViaStaticFactoryMethod(clazz:Class, applicationDomain:ApplicationDomain, factoryMethodName:String, args:Array = null):* {
+			var type:Type = Type.forClass(clazz, applicationDomain);
+			var factoryMethod:Method = type.getMethod(factoryMethodName);
+			return factoryMethod.invoke(clazz, args);
+		}
+
+		protected function dispatchEventThroughEventBus(evt:ObjectFactoryEvent):void {
+			if (_eventBus != null) {
+				_eventBus.dispatchEvent(evt);
+			}
+		}
+
+
 		protected function getInstanceFromCache(objectName:String):* {
 			var result:*;
 			if (_cache.hasInstance(objectName)) {
@@ -230,7 +346,18 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return result;
 		}
 
-		protected function getObjectFromParentFactories(objectName:String, constructorArguments):* {
+		protected function getObjectDefinitionFromParent(objectName:String, _parent:IObjectFactory):IObjectDefinition {
+			var objectDefinition:IObjectDefinition = parent.objectDefinitions[objectName];
+			if (objectDefinition != null) {
+				return objectDefinition;
+			} else if (objectDefinition == null && parent.parent != null) {
+				return getObjectDefinitionFromParent(objectName, parent.parent);
+			} else {
+				return null;
+			}
+		}
+
+		protected function getObjectFromParentFactories(objectName:String, constructorArguments:Array):* {
 			if (_parent) {
 				var objectDefinition:IObjectDefinition = getObjectDefinitionFromParent(objectName, _parent);
 				if (objectDefinition && objectDefinition.isSingleton) {
@@ -242,9 +369,14 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
-		protected function dispatchEventThroughEventBus(evt:ObjectFactoryEvent):void {
-			if (_eventBus != null) {
-				_eventBus.dispatchEvent(evt);
+		/**
+		 * Initializes the current <code>DefaultObjectFactory</code>.
+		 * @param parent
+		 */
+		protected function initObjectFactory(parent:IObjectFactory):void {
+			_objectDefinitions = {};
+			if (parent !== _parent) {
+				_parent = parent;
 			}
 		}
 
@@ -272,120 +404,5 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				return ClassUtils.newInstance(clazz, resolvedConstructorArgs);
 			}
 		}
-
-
-		protected function createObjectViaInstanceFactoryMethod(objectName:String, methodName:String, args:Array = null):* {
-			var factoryObject:Object = getObject(objectName);
-			var factoryObjectMethodInvoker:MethodInvoker = new MethodInvoker();
-			factoryObjectMethodInvoker.target = factoryObject;
-			factoryObjectMethodInvoker.method = methodName;
-			factoryObjectMethodInvoker.arguments = args;
-			return factoryObjectMethodInvoker.invoke();
-		}
-
-		protected function createObjectViaStaticFactoryMethod(clazz:Class, applicationDomain:ApplicationDomain, factoryMethodName:String, args:Array = null):* {
-			var type:Type = Type.forClass(clazz, applicationDomain);
-			var factoryMethod:Method = type.getMethod(factoryMethodName);
-			return factoryMethod.invoke(clazz, args);
-		}
-
-		protected function getObjectDefinitionFromParent(objectName:String, _parent:IObjectFactory):IObjectDefinition {
-			var objectDefinition:IObjectDefinition = parent.objectDefinitions[objectName];
-			if (objectDefinition != null) {
-				return objectDefinition;
-			} else if (objectDefinition == null && parent.parent != null) {
-				return getObjectDefinitionFromParent(objectName, parent.parent);
-			} else {
-				return null;
-			}
-		}
-
-		public function get isReady():Boolean {
-			return _isReady;
-		}
-
-		public function get objectDefinitionRegistry():IObjectDefinitionRegistry {
-			return _objectDefinitionRegistry;
-		}
-
-		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
-			_objectDefinitionRegistry = value;
-		}
-
-		public function get objectDefinitions():Object {
-			return _objectDefinitions;
-		}
-
-		public function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor> {
-			if (_objectFactoryPostProcessors == null) {
-				_objectFactoryPostProcessors = new Vector.<IObjectFactoryPostProcessor>();
-			}
-			return _objectFactoryPostProcessors;
-		}
-
-		public function get objectPostProcessors():Vector.<IObjectPostProcessor> {
-			if (_objectPostProcessors == null) {
-				_objectPostProcessors = new Vector.<IObjectPostProcessor>();
-			}
-			return _objectPostProcessors;
-		}
-
-		public function get parent():IObjectFactory {
-			return _parent;
-		}
-
-		public function set parent(value:IObjectFactory):void {
-			_parent = value;
-		}
-
-		public function get propertiesProvider():IPropertiesProvider {
-			return _propertiesProvider;
-		}
-
-		public function set propertiesProvider(value:IPropertiesProvider):void {
-			_propertiesProvider = value;
-		}
-
-		public function get referenceResolvers():Vector.<IReferenceResolver> {
-			if (_referenceResolvers == null) {
-				_referenceResolvers = new Vector.<IReferenceResolver>();
-			}
-			return _referenceResolvers;
-		}
-
-		public function resolveReferences(properties:Array):Array {
-			if (properties.length == 0) {
-				return null;
-			}
-			var result:Array = [];
-			for each (var prop:* in properties) {
-				result[result.length] = resolveReference(prop);
-			}
-			return result;
-		}
-
-		public function resolveReference(property:*):* {
-			if (property == null) { // note: don't change this to !property since we might pass in empty strings here
-				return null;
-			}
-			for each (var referenceResolver:IReferenceResolver in referenceResolvers) {
-				if (referenceResolver.canResolve(property)) {
-					return referenceResolver.resolve(property);
-				}
-			}
-			return property;
-		}
-
-		/**
-		 * Initializes the current <code>DefaultObjectFactory</code>.
-		 * @param parent
-		 */
-		protected function initObjectFactory(parent:IObjectFactory):void {
-			_objectDefinitions = {};
-			if (parent !== _parent) {
-				_parent = parent;
-			}
-		}
-
 	}
 }
