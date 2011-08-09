@@ -19,7 +19,6 @@ package org.springextensions.actionscript.context.impl {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
-
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.OperationEvent;
 	import org.as3commons.async.operation.OperationQueue;
@@ -43,7 +42,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.spring_actionscript_internal;
 
-	[Event(name = "complete", type = "flash.events.Event")]
+	[Event(name="complete", type="flash.events.Event")]
 	/**
 	 *
 	 * @author Roland Zwaga
@@ -55,20 +54,18 @@ package org.springextensions.actionscript.context.impl {
 		 * @param parent
 		 * @param objFactory
 		 */
-		public function ApplicationContext(parent:IApplicationContext = null, objFactory:IObjectFactory = null) {
+		public function ApplicationContext(parent:IApplicationContext=null, objFactory:IObjectFactory=null) {
 			super();
 			initApplicationContext(parent, objFactory);
 		}
 
 		private var _definitionProviders:Vector.<IObjectDefinitionsProvider>;
-		private var _definitionRegistry:IObjectDefinitionRegistry;
 		private var _eventBus:IEventBus;
-		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
+		private var _isDisposed:Boolean;
 		private var _objectFactory:IObjectFactory;
+		private var _operationQueue:OperationQueue;
 		private var _rootView:DisplayObject;
 		private var _stageProcessorRegistry:IStageObjectProcessorRegistry;
-		private var _isDisposed:Boolean;
-		private var _operationQueue:OperationQueue;
 
 		public function addDefinitionProvider(provider:IObjectDefinitionsProvider):void {
 			definitionProviders[definitionProviders.length] = provider;
@@ -98,7 +95,7 @@ package org.springextensions.actionscript.context.impl {
 			return _objectFactory.cache;
 		}
 
-		public function createInstance(clazz:Class, constructorArguments:Array = null):* {
+		public function createInstance(clazz:Class, constructorArguments:Array=null):* {
 			return _objectFactory.createInstance(clazz, constructorArguments);
 		}
 
@@ -109,20 +106,24 @@ package org.springextensions.actionscript.context.impl {
 			return _definitionProviders;
 		}
 
-		public function get definitionRegistry():IObjectDefinitionRegistry {
-			return _definitionRegistry;
-		}
-
-		public function set definitionRegistry(value:IObjectDefinitionRegistry):void {
-			_definitionRegistry = value;
-		}
-
 		public function get dependencyInjector():IDependencyInjector {
 			return _objectFactory.dependencyInjector;
 		}
 
 		public function set dependencyInjector(value:IDependencyInjector):void {
 			_objectFactory.dependencyInjector = value;
+		}
+
+		public function dispose():void {
+			if (!_isDisposed) {
+				try {
+					if (_objectFactory is IDisposable) {
+						IDisposable(_objectFactory).dispose();
+					}
+				} finally {
+					_isDisposed = true;
+				}
+			}
 		}
 
 		public function get eventBus():IEventBus {
@@ -133,8 +134,12 @@ package org.springextensions.actionscript.context.impl {
 			_eventBus = value;
 		}
 
-		public function getObject(name:String, constructorArguments:Array = null):* {
+		public function getObject(name:String, constructorArguments:Array=null):* {
 			return _objectFactory.getObject(name, constructorArguments);
+		}
+
+		public function get isDisposed():Boolean {
+			return _isDisposed;
 		}
 
 		public function get isReady():Boolean {
@@ -151,8 +156,8 @@ package org.springextensions.actionscript.context.impl {
 				for each (var provider:IObjectDefinitionsProvider in definitionProviders) {
 					var operation:IOperation = provider.createDefinitions();
 					if (operation != null) {
+						operation.addCompleteListener(providerCompleteHander);
 						_operationQueue.addOperation(operation);
-						operation.addCompleteListener(mergeObjectDefinition);
 					} else {
 						mergeObjectDefinition(provider.objectDefinitions);
 					}
@@ -165,40 +170,6 @@ package org.springextensions.actionscript.context.impl {
 					completeContextLoading();
 				}
 			}
-		}
-
-		private function completeContextLoading():void {
-			_objectFactory.isReady = true;
-			dispatchEvent(new Event(Event.COMPLETE));
-		}
-
-		protected function providersLoadErrorHandler(error:*):void {
-			cleanQueue(_operationQueue);
-			throw new Error("Not implemented yet");
-		}
-
-		protected function cleanQueue(_operationQueue:OperationQueue):void {
-			_operationQueue.removeCompleteListener(providersLoadedHandler);
-			_operationQueue.removeErrorListener(providersLoadErrorHandler);
-		}
-
-		protected function providersLoadedHandler(operationEvent:OperationEvent):void {
-			cleanQueue(_operationQueue);
-			completeContextLoading();
-		}
-
-		protected function mergeObjectDefinition(newObjectDefinitions:Object):void {
-			for (var name:String in newObjectDefinitions) {
-				this.objectDefinitions[name] = newObjectDefinitions[name];
-			}
-		}
-
-		public function get objectDefinitionRegistry():IObjectDefinitionRegistry {
-			return _objectDefinitionRegistry;
-		}
-
-		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
-			_objectDefinitionRegistry = value;
 		}
 
 		public function get objectDefinitions():Object {
@@ -249,6 +220,15 @@ package org.springextensions.actionscript.context.impl {
 			_stageProcessorRegistry = value;
 		}
 
+		protected function cleanOperation(operation:IOperation):void {
+			operation.removeCompleteListener(providerCompleteHander);
+		}
+
+		protected function cleanQueue(_operationQueue:OperationQueue):void {
+			_operationQueue.removeCompleteListener(providersLoadedHandler);
+			_operationQueue.removeErrorListener(providersLoadErrorHandler);
+		}
+
 		protected function initApplicationContext(parent:IApplicationContext, objFactory:IObjectFactory):void {
 			if (objFactory == null) {
 				_objectFactory = new DefaultObjectFactory(parent);
@@ -261,20 +241,40 @@ package org.springextensions.actionscript.context.impl {
 			}
 		}
 
-		public function get isDisposed():Boolean {
-			return _isDisposed;
-		}
-
-		public function dispose():void {
-			if (!_isDisposed) {
-				try {
-					if (_objectFactory is IDisposable) {
-						IDisposable(_objectFactory).dispose();
-					}
-				} finally {
-					_isDisposed = true;
+		protected function mergeObjectDefinition(newObjectDefinitions:Object):void {
+			if (objectDefinitionRegistry != null) {
+				for (var name:String in newObjectDefinitions) {
+					objectDefinitionRegistry.registerObjectDefinition(name, newObjectDefinitions[name]);
 				}
 			}
+		}
+
+		protected function providerCompleteHander(event:OperationEvent):void {
+			cleanOperation(event.operation);
+			mergeObjectDefinition(Object(event.result));
+		}
+
+		protected function providersLoadErrorHandler(error:*):void {
+			cleanQueue(_operationQueue);
+			throw new Error("Not implemented yet");
+		}
+
+		protected function providersLoadedHandler(operationEvent:OperationEvent):void {
+			cleanQueue(_operationQueue);
+			completeContextLoading();
+		}
+
+		private function completeContextLoading():void {
+			_objectFactory.isReady = true;
+			dispatchEvent(new Event(Event.COMPLETE));
+		}
+
+		public function get objectDefinitionRegistry():IObjectDefinitionRegistry {
+			return _objectFactory.objectDefinitionRegistry;
+		}
+
+		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
+			_objectFactory.objectDefinitionRegistry = value;
 		}
 	}
 }

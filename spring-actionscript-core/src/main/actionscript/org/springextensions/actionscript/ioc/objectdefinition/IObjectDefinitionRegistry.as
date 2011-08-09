@@ -16,13 +16,15 @@
 package org.springextensions.actionscript.ioc.objectdefinition {
 	import flash.system.ApplicationDomain;
 
+	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
+
 	/**
 	 * Defines the interface for an object definition registry. This interface contains add methods
 	 * needed to work with object definitions.
 	 *
 	 * @author Christophe Herreman
 	 */
-	public interface IObjectDefinitionRegistry {
+	public interface IObjectDefinitionRegistry extends IObjectFactoryAware {
 
 		// --------------------------------------------------------------------
 		//
@@ -31,8 +33,7 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		// --------------------------------------------------------------------
 
 		/**
-		 * A registry of object definitions that describe the way an <code>IObjectFactory</code> will have to
-		 * create and configure objects.
+		 * The main registry of name-&gt;IObjectdefinitions.
 		 */
 		function get objectDefinitions():Object;
 

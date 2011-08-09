@@ -33,14 +33,6 @@ package org.springextensions.actionscript.context {
 		 *
 		 */
 		function get definitionProviders():Vector.<IObjectDefinitionsProvider>;
-		/**
-		 *
-		 */
-		function get definitionRegistry():IObjectDefinitionRegistry;
-		/**
-		 * @private
-		 */
-		function set definitionRegistry(value:IObjectDefinitionRegistry):void;
 
 		/**
 		 *

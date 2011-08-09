@@ -61,7 +61,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @param parent optional other <code>IObjectFactory</code> to be used as this <code>ObjectFactory's</code> parent.
 		 *
 		 */
-		public function DefaultObjectFactory(parent:IObjectFactory = null) {
+		public function DefaultObjectFactory(parent:IObjectFactory=null) {
 			super();
 			initObjectFactory(parent);
 		}
@@ -120,7 +120,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			_cache = value;
 		}
 
-		public function createInstance(clazz:Class, constructorArguments:Array = null):* {
+		public function createInstance(clazz:Class, constructorArguments:Array=null):* {
 			Assert.notNull(clazz, "The clazz arguments must not be null");
 			if (!_isReady) {
 				throw new ObjectFactoryError(ObjectFactoryError.FACTORY_NOT_READY, "Object factory isn't fully initialized yet");
@@ -148,7 +148,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			_eventBus = value;
 		}
 
-		public function getObject(name:String, constructorArguments:Array = null):* {
+		public function getObject(name:String, constructorArguments:Array=null):* {
 			Assert.hasText(name, "name parameter must not be empty");
 			if (!_isReady) {
 				throw new ObjectFactoryError(ObjectFactoryError.FACTORY_NOT_READY, "Object factory isn't fully initialized yet");
@@ -191,10 +191,16 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
 			_objectDefinitionRegistry = value;
+			if (_objectDefinitionRegistry != null) {
+				_objectDefinitionRegistry.objectFactory = this;
+			}
 		}
 
 		public function get objectDefinitions():Object {
-			return _objectDefinitions;
+			if (_objectDefinitionRegistry != null) {
+				return _objectDefinitionRegistry.objectDefinitions;
+			}
+			return null;
 		}
 
 		public function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor> {
@@ -314,7 +320,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 
-		protected function createObjectViaInstanceFactoryMethod(objectName:String, methodName:String, args:Array = null):* {
+		protected function createObjectViaInstanceFactoryMethod(objectName:String, methodName:String, args:Array=null):* {
 			var factoryObject:Object = getObject(objectName);
 			var factoryObjectMethodInvoker:MethodInvoker = new MethodInvoker();
 			factoryObjectMethodInvoker.target = factoryObject;
@@ -323,7 +329,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return factoryObjectMethodInvoker.invoke();
 		}
 
-		protected function createObjectViaStaticFactoryMethod(clazz:Class, applicationDomain:ApplicationDomain, factoryMethodName:String, args:Array = null):* {
+		protected function createObjectViaStaticFactoryMethod(clazz:Class, applicationDomain:ApplicationDomain, factoryMethodName:String, args:Array=null):* {
 			var type:Type = Type.forClass(clazz, applicationDomain);
 			var factoryMethod:Method = type.getMethod(factoryMethodName);
 			return factoryMethod.invoke(clazz, args);
