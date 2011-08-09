@@ -130,7 +130,7 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @param type The specified <code>Class</code> that is searched for.
 		 * @return an array containing definitions that implement the specified <code>Class</code>.
 		 */
-		function getObjectDefinitionsOfType(type:Class):Vector.<IObjectDefinition>;
+		function getObjectDefinitionsForType(type:Class):Vector.<IObjectDefinition>;
 
 		/**
 		 * @param type
@@ -151,5 +151,7 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @return
 		 */
 		function getObjectDefinitionsWithMetadata(metadataNames:Vector.<String>):Vector.<IObjectDefinition>;
+
+		function getObjectDefinitionName(objectDefinition:IObjectDefinition):String;
 	}
 }

@@ -40,7 +40,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		 * Creates a new <code>ObjectDefinition</code> instance.
 		 * @param className The fully qualified class name for the object that this definition describes
 		 */
-		public function ObjectDefinition(className:String = null) {
+		public function ObjectDefinition(className:String=null) {
 			initObjectDefinition(className);
 		}
 
@@ -413,6 +413,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		// ----------------------------
 
 		private var _dependencyCheck:DependencyCheckMode = DependencyCheckMode.NONE;
+		private var _clazz:Class;
 
 		/**
 		 * @default <code>ObjectDefinitionDependencyCheck.NONE</code>
@@ -458,6 +459,14 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		 */
 		public function toString():String {
 			return "[ObjectDefinition('" + className + "', factoryMethod: " + factoryMethod + ", constructorArguments: '" + constructorArguments + "', properties: " + properties + ")]";
+		}
+
+		public function get clazz():Class {
+			return _clazz;
+		}
+
+		public function set clazz(value:Class):void {
+			_clazz = value;
 		}
 
 	}

@@ -30,6 +30,15 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	public interface IObjectDefinition {
 
 		/**
+		 * The <code>Class</code> of the object that the current <code>IObjectDefinition</code> describes.
+		 */
+		function get clazz():Class;
+		/**
+		 * @private
+		 */
+		function set clazz(value:Class):void;
+
+		/**
 		 * The classname of the object that the current <code>IObjectDefinition</code> describes.
 		 */
 		function get className():String;

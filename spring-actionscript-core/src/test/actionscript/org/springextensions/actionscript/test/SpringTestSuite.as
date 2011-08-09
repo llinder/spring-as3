@@ -27,6 +27,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ThisReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.VectorReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjectorTest;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistryTest;
 	import org.springextensions.actionscript.object.SimpleTypeConverterTest;
 	import org.springextensions.actionscript.object.propertyeditor.BooleanPropertyEditorTest;
 	import org.springextensions.actionscript.object.propertyeditor.ClassPropertyEditorTest;
@@ -52,7 +53,8 @@ package org.springextensions.actionscript.test {
 		public var t6:ClassPropertyEditorTest;
 		public var t15:PropertiesTest;
 		public var t16:KeyValuePropertiesParserTest;
-		public var t17:DefaultObjectFactoryTest;*/
-		public var t18:ApplicationContextTest;
+		public var t17:DefaultObjectFactoryTest;
+		public var t18:ApplicationContextTest;*/
+		public var t19:DefaultObjectDefinitionRegistryTest;
 	}
 }
