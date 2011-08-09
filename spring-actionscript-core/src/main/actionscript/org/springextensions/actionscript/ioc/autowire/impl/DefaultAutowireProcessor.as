@@ -154,7 +154,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		 * @see org.springextensions.actionscript.ioc.AutowireMode AutowireMode
 		 * @inheritDoc
 		 */
-		public function autoWire(object:Object, objectDefinition:IObjectDefinition = null, objectName:String = null):void {
+		public function autoWire(object:Object, objectDefinition:IObjectDefinition=null, objectName:String=null):void {
 			Assert.notNull(object, "The object parameter must not be null");
 			Assert.notNull(_objectFactory, "The objectFactory property must not be null");
 
@@ -427,7 +427,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		}
 
 		protected function containsObject(objectName:String):Boolean {
-			return (_objectFactory.objectDefinitions[objectName] != null);
+			return _objectFactory.objectDefinitionRegistry.containsObjectDefinition(objectName);
 		}
 
 		/**
@@ -474,8 +474,8 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			// - have its isAutowireCandidate property set to true
 			// - have its class equal to the given class, be a subclass, or implement its interface, or be a factory object that creates the given class
 
-			for (var objectName:String in _objectFactory.objectDefinitions) {
-				objectDefinition = _objectFactory.objectDefinitions[objectName];
+			for (var objectName:String in _objectFactory.objectDefinitionRegistry.objectDefinitionNames) {
+				objectDefinition = _objectFactory.getObjectDefinition(objectName);
 				objectClass = ClassUtils.forName(objectDefinition.className, _applicationDomain);
 
 				if (ClassUtils.isImplementationOf(objectClass, IFactoryObject, _objectFactory.applicationDomain)) {
@@ -493,7 +493,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			// explicit singletons
 			var cachedNames:Vector.<String> = _objectFactory.cache.getCachedNames();
 			for each (var singletonName:String in cachedNames) {
-				if (_objectFactory.objectDefinitions.hasOwnProperty(singletonName) == false) {
+				if (_objectFactory.objectDefinitionRegistry.containsObjectDefinition(singletonName) == false) {
 					objectClass = ClassUtils.forInstance(_objectFactory.getObject(singletonName));
 
 					if ((objectClass === clazz) || //
@@ -536,8 +536,8 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		protected function getObjectDefinition(objectName:String):IObjectDefinition {
 			Assert.hasText(objectName, "The object name must have text");
 
-			if (_objectFactory.objectDefinitions.hasOwnProperty(objectName)) {
-				return IObjectDefinition(_objectFactory.objectDefinitions[objectName]);
+			if (_objectFactory.objectDefinitionRegistry.containsObjectDefinition(objectName)) {
+				return _objectFactory.getObjectDefinition(objectName);
 			} else {
 				throw new NoSuchObjectDefinitionError(objectName);
 			}

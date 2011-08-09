@@ -15,12 +15,12 @@
  */
 package org.springextensions.actionscript.ioc.factory {
 	import flash.system.ApplicationDomain;
-
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
 
 	/**
@@ -70,7 +70,7 @@ package org.springextensions.actionscript.ioc.factory {
 		 * @param constructorArguments Optional <code>Array</code> of constructor arguments to be used for the instance.
 		 * @return The created and wired instance of the specified <code>Class</code>.
 		 */
-		function createInstance(clazz:Class, constructorArguments:Array = null):*;
+		function createInstance(clazz:Class, constructorArguments:Array=null):*;
 
 		/**
 		 *
@@ -124,7 +124,12 @@ package org.springextensions.actionscript.ioc.factory {
 		 *   var myPerson:Person = objectFactory.getObject("myPerson");
 		 * </listing>
 		 */
-		function getObject(name:String, constructorArguments:Array = null):*;
+		function getObject(name:String, constructorArguments:Array=null):*;
+
+		/**
+		 *
+		 */
+		function getObjectDefinition(objectName:String):IObjectDefinition;
 
 		/**
 		 * Returns <code>true</code> when the current <code>IObjectFactory</code> is fully initialized and ready for use.
@@ -135,11 +140,6 @@ package org.springextensions.actionscript.ioc.factory {
 		 * @private
 		 */
 		function set isReady(value:Boolean):void;
-
-		/**
-		 *
-		 */
-		function get objectDefinitions():Object;
 
 		/**
 		 *

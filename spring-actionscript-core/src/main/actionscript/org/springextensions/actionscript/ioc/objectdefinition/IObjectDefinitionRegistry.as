@@ -24,18 +24,13 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	 *
 	 * @author Christophe Herreman
 	 */
-	public interface IObjectDefinitionRegistry extends IObjectFactoryAware {
+	public interface IObjectDefinitionRegistry {
 
 		// --------------------------------------------------------------------
 		//
 		// Properties
 		//
 		// --------------------------------------------------------------------
-
-		/**
-		 * The main registry of name-&gt;IObjectdefinitions.
-		 */
-		function get objectDefinitions():Object;
 
 		/**
 		 * The names of the registered object definitions.
@@ -67,7 +62,7 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 *
 		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
 		 */
-		function containsObject(objectName:String):Boolean;
+		function containsObjectDefinition(objectName:String):Boolean;
 
 		/**
 		 * Determines if the definition with the given name is a singleton.
@@ -128,13 +123,6 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @return the registered object definition
 		 */
 		function getObjectDefinition(objectName:String):IObjectDefinition;
-
-		/**
-		 * Determines if an object definition with the given name exists
-		 *
-		 * @param objectName  The name/id of the object definition
-		 */
-		function containsObjectDefinition(objectName:String):Boolean;
 
 		/**
 		 * Returns the object definitions in this registry that are of

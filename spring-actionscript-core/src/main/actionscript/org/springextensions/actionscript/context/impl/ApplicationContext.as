@@ -19,6 +19,7 @@ package org.springextensions.actionscript.context.impl {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
+
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.OperationEvent;
 	import org.as3commons.async.operation.OperationQueue;
@@ -39,6 +40,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjector;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.spring_actionscript_internal;
 
@@ -172,8 +174,8 @@ package org.springextensions.actionscript.context.impl {
 			}
 		}
 
-		public function get objectDefinitions():Object {
-			return _objectFactory.objectDefinitions;
+		public function getObjectDefinition(objectName:String):IObjectDefinition {
+			return _objectFactory.getObjectDefinition(objectName);
 		}
 
 		public function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor> {

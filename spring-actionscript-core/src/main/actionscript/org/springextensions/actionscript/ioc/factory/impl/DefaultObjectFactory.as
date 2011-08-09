@@ -73,7 +73,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _eventBus:IEventBus;
 		private var _isReady:Boolean;
 		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
-		private var _objectDefinitions:Object;
 		private var _objectFactoryPostProcessors:Vector.<IObjectFactoryPostProcessor>;
 		private var _objectPostProcessors:Vector.<IObjectPostProcessor>;
 		private var _parent:IObjectFactory;
@@ -101,7 +100,12 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 		public function set applicationDomain(value:ApplicationDomain):void {
+			value ||= ApplicationDomain.currentDomain;
 			_applicationDomain = value;
+			var appDomainAware:IApplicationDomainAware = (_objectDefinitionRegistry as IApplicationDomainAware);
+			if (appDomainAware != null) {
+				appDomainAware.applicationDomain = this.applicationDomain;
+			}
 		}
 
 		public function get autowireProcessor():IAutowireProcessor {
@@ -191,14 +195,15 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
 			_objectDefinitionRegistry = value;
-			if (_objectDefinitionRegistry != null) {
-				_objectDefinitionRegistry.objectFactory = this;
+			var appDomainAware:IApplicationDomainAware = (_objectDefinitionRegistry as IApplicationDomainAware);
+			if (appDomainAware != null) {
+				appDomainAware.applicationDomain = this.applicationDomain;
 			}
 		}
 
-		public function get objectDefinitions():Object {
+		public function getObjectDefinition(objectName:String):IObjectDefinition {
 			if (_objectDefinitionRegistry != null) {
-				return _objectDefinitionRegistry.objectDefinitions;
+				return _objectDefinitionRegistry.getObjectDefinition(objectName);
 			}
 			return null;
 		}
@@ -267,7 +272,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			var result:*;
 			var isFactoryDereference:Boolean = (name.charAt(0) == OBJECT_FACTORY_PREFIX);
 			var objectName:String = (isFactoryDereference ? name.substring(1) : name);
-			var objectDefinition:IObjectDefinition = objectDefinitions[objectName];
+			var objectDefinition:IObjectDefinition = getObjectDefinition(objectName);
 
 			if (!objectDefinition) {
 				return getObjectFromParentFactories(name, constructorArguments);
@@ -356,7 +361,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 		protected function getObjectDefinitionFromParent(objectName:String, _parent:IObjectFactory):IObjectDefinition {
-			var objectDefinition:IObjectDefinition = parent.objectDefinitions[objectName];
+			var objectDefinition:IObjectDefinition = parent.getObjectDefinition(objectName);
 			if (objectDefinition != null) {
 				return objectDefinition;
 			} else if (objectDefinition == null && parent.parent != null) {
@@ -383,7 +388,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @param parent
 		 */
 		protected function initObjectFactory(parent:IObjectFactory):void {
-			_objectDefinitions = {};
 			if (parent !== _parent) {
 				_parent = parent;
 			}

@@ -29,6 +29,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.as3commons.async.operation.OperationEvent;
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertStrictlyEquals;
+	import org.flexunit.asserts.assertTrue;
 	import org.flexunit.async.Async;
 	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
@@ -99,7 +100,6 @@ package org.springextensions.actionscript.context.impl {
 			mock(objectFactory).setter("dependencyInjector").arg(null).once();
 			stub(objectFactory).method("getObject").args(anything());
 			mock(objectFactory).getter("isReady").returns(true).once();
-			mock(objectFactory).getter("objectDefinitions").returns({}).once();
 			mock(objectFactory).getter("objectFactoryPostProcessors").returns(null).once();
 			mock(objectFactory).getter("objectPostProcessors").returns(null).once();
 			mock(objectFactory).getter("parent").returns(null).once();
@@ -120,7 +120,6 @@ package org.springextensions.actionscript.context.impl {
 			context.dependencyInjector = dependencyInjector;
 			context.getObject("testName");
 			var b:Boolean = context.isReady;
-			var definitions:Object = context.objectDefinitions;
 			var factoryPostProcessors:Vector.<IObjectFactoryPostProcessor> = context.objectFactoryPostProcessors;
 			var postProcessors:Vector.<IObjectPostProcessor> = context.objectPostProcessors;
 			var parent:IObjectFactory = context.parent;
@@ -142,19 +141,20 @@ package org.springextensions.actionscript.context.impl {
 			mock(objectDefinitionProvider).method("createDefinitions").returns(null).once();
 			mock(objectDefinitionProvider).getter("objectDefinitions").returns(defs).once();
 			stub(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
+			stub(objectFactory).method("getObjectDefinition").args("testName").callsWithInvocation(function():IObjectDefinition {
+				var result:IObjectDefinition = objectFactory.objectDefinitionRegistry.getObjectDefinition("testName");
+				return result;
+			}, ["testName"]);
 			stub(objectDefinitionsRegistry).getter("objectDefinitions").returns({});
-			stub(objectFactory).getter("objectDefinitions").returns(objectDefinitionsRegistry.objectDefinitions);
 			var reg:Function = function(name:String, def:IObjectDefinition):void {
-				objectDefinitionsRegistry.objectDefinitions[name] = def;
+				mock(objectDefinitionsRegistry).method("getObjectDefinition").args("testName").returns(def);
 			};
 			stub(objectDefinitionsRegistry).method("registerObjectDefinition").args("testName", def).calls(reg, ["testName", def]);
 			mock(objectFactory).setter("isReady").arg(true).once();
 			var context:ApplicationContext = new ApplicationContext(null, objectFactory);
 			context.addDefinitionProvider(objectDefinitionProvider);
 			context.load();
-			verify(objectFactory);
-			verify(objectDefinitionProvider);
-			assertStrictlyEquals(def, context.objectDefinitions["testName"]);
+			assertStrictlyEquals(def, context.getObjectDefinition("testName"));
 		}
 
 		[Test(async, timeout="1000")]
@@ -170,13 +170,16 @@ package org.springextensions.actionscript.context.impl {
 			mock(operation).getter("result").returns(defs);
 			mock(operation).method("addCompleteListener").args(anything()).dispatches(new OperationEvent(OperationEvent.COMPLETE, operation), 50);*/
 			objectDefinitionProvider = nice(IObjectDefinitionsProvider);
-			mock(objectDefinitionProvider).method("createDefinitions").returns(mockOperation).once();
-			mock(objectDefinitionProvider).getter("objectDefinitions").returns(defs).once();
+			stub(objectDefinitionProvider).method("createDefinitions").returns(mockOperation).once();
+			stub(objectDefinitionProvider).getter("objectDefinitions").returns(defs).once();
 			stub(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
+			stub(objectFactory).method("getObjectDefinition").args("testName").callsWithInvocation(function():IObjectDefinition {
+				var result:IObjectDefinition = objectFactory.objectDefinitionRegistry.getObjectDefinition("testName");
+				return result;
+			}, ["testName"]);
 			stub(objectDefinitionsRegistry).getter("objectDefinitions").returns({});
-			stub(objectFactory).getter("objectDefinitions").returns(objectDefinitionsRegistry.objectDefinitions);
 			var reg:Function = function(name:String, def:IObjectDefinition):void {
-				objectDefinitionsRegistry.objectDefinitions[name] = def;
+				stub(objectDefinitionsRegistry).method("getObjectDefinition").args("testName").returns(def);
 			};
 			stub(objectDefinitionsRegistry).method("registerObjectDefinition").args("testName", def).calls(reg, ["testName", def]);
 			mock(objectFactory).setter("isReady").arg(true).once();
@@ -189,9 +192,8 @@ package org.springextensions.actionscript.context.impl {
 		}
 
 		protected function handleAsyncProvider(event:Event, passThroughData:Object):void {
-			//verify(objectFactory);
-			//verify(objectDefinitionProvider);
-			assertStrictlyEquals(passThroughData, _context.objectDefinitions["testName"]);
+			verify(objectFactory);
+			assertStrictlyEquals(passThroughData, _context.getObjectDefinition("testName"));
 		}
 
 		protected function handleAsyncProviderTimeOut(passThroughData:Object):void {
