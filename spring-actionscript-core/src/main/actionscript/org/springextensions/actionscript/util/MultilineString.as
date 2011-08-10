@@ -31,12 +31,12 @@ package org.springextensions.actionscript.util {
 	public class MultilineString {
 
 		/** Character code for the WINDOWS line break. */
-		private static const WIN_BREAK:String = String.fromCharCode(13) + String.fromCharCode(10);
+		public static const WIN_BREAK:String = String.fromCharCode(13) + String.fromCharCode(10);
 
 		/** Character code for the APPLE line break. */
-		private static const MAC_BREAK:String = String.fromCharCode(13);
+		public static const MAC_BREAK:String = String.fromCharCode(13);
 		/** Character used internally for line breaks. */
-		private static const NEWLINE_CHAR:String = "\n";
+		public static const NEWLINE_CHAR:String = "\n";
 
 		/** Original content without standardized line breaks. */
 		private var _original:String;
