@@ -19,6 +19,7 @@ package org.springextensions.actionscript.context {
 
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesLoader;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -48,6 +49,15 @@ package org.springextensions.actionscript.context {
 		 * @private
 		 */
 		function set propertiesParser(value:IPropertiesParser):void;
+
+		/**
+		 *
+		 */
+		function get propertiesLoader():IPropertiesLoader;
+		/**
+		 * @private
+		 */
+		function set propertiesLoader(value:IPropertiesLoader):void;
 
 		/**
 		 *

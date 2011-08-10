@@ -227,6 +227,14 @@ package org.springextensions.actionscript.context.impl {
 			_objectFactory.parent = value;
 		}
 
+		public function get propertiesLoader():IPropertiesLoader {
+			return _propertiesLoader;
+		}
+
+		public function set propertiesLoader(value:IPropertiesLoader):void {
+			_propertiesLoader = value;
+		}
+
 		public function get propertiesParser():IPropertiesParser {
 			return _propertiesParser;
 		}
@@ -324,6 +332,16 @@ package org.springextensions.actionscript.context.impl {
 			if ((propertiesProvider != null) && (propertiesProvider.length > 0)) {
 				//addObjectFactoryPostProcessor(
 			}
+			propertiesParser = null;
+			for each (var definitionProvider:IObjectDefinitionsProvider in definitionProviders) {
+				if (definitionProvider is IDisposable) {
+					IDisposable(definitionProvider).dispose();
+				}
+			}
+			_operationQueue = null;
+			_propertiesLoader = null;
+			definitionProviders.length = 0;
+			_definitionProviders = null;
 			_objectFactory.isReady = true;
 			dispatchEvent(new Event(Event.COMPLETE));
 		}
