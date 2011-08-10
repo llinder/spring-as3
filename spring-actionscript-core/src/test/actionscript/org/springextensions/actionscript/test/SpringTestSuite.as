@@ -32,6 +32,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.object.propertyeditor.BooleanPropertyEditorTest;
 	import org.springextensions.actionscript.object.propertyeditor.ClassPropertyEditorTest;
 	import org.springextensions.actionscript.object.propertyeditor.NumberPropertyEditorTest;
+	import org.springextensions.actionscript.util.ContextUtilsTest;
 	import org.springextensions.actionscript.util.TypeUtilsTest;
 
 	[Suite]
@@ -56,5 +57,6 @@ package org.springextensions.actionscript.test {
 		public var t17:DefaultObjectFactoryTest;
 		public var t18:ApplicationContextTest;
 		public var t19:DefaultObjectDefinitionRegistryTest;
+		public var t20:ContextUtilsTest;
 	}
 }

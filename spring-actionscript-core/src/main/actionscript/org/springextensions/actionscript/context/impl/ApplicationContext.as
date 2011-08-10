@@ -14,7 +14,6 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.context.impl {
-
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -49,6 +48,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.spring_actionscript_internal;
+	import org.springextensions.actionscript.util.ContextUtils;
 
 	[Event(name="complete", type="flash.events.Event")]
 	/**
@@ -280,6 +280,35 @@ package org.springextensions.actionscript.context.impl {
 			_operationQueue.removeErrorListener(providersLoadErrorHandler);
 		}
 
+		protected function completeContextLoading():void {
+			if ((propertiesProvider != null) && (propertiesProvider.length > 0)) {
+				//addObjectFactoryPostProcessor(
+			}
+			ContextUtils.disposeInstance(_propertiesParser);
+			_propertiesParser = null;
+			for each (var definitionProvider:IObjectDefinitionsProvider in definitionProviders) {
+				if (definitionProvider is IDisposable) {
+					ContextUtils.disposeInstance(definitionProvider);
+				}
+			}
+			_operationQueue = null;
+			ContextUtils.disposeInstance(_propertiesLoader);
+			_propertiesLoader = null;
+			definitionProviders.length = 0;
+			_definitionProviders = null;
+			_objectFactory.isReady = true;
+			dispatchEvent(new Event(Event.COMPLETE));
+		}
+
+		protected function createDefaultObjectFactory(parent:IApplicationContext):IObjectFactory {
+			var defaultObjectFactory:DefaultObjectFactory = new DefaultObjectFactory(parent);
+			defaultObjectFactory.eventBus = new EventBus();
+			defaultObjectFactory.dependencyInjector = new DefaultDependencyInjector();
+			var autowireProcessor:DefaultAutowireProcessor = new DefaultAutowireProcessor(this);
+			defaultObjectFactory.autowireProcessor = autowireProcessor;
+			return defaultObjectFactory;
+		}
+
 		protected function initApplicationContext(parent:IApplicationContext, objFactory:IObjectFactory):void {
 			_objectFactory = objFactory ||= createDefaultObjectFactory(parent);
 		}
@@ -297,7 +326,7 @@ package org.springextensions.actionscript.context.impl {
 		protected function propertiesLoaderComplete(propertySources:Vector.<String>):void {
 			var source:String = propertySources.join(NEWLINE_CHAR);
 			propertiesParser ||= new KeyValuePropertiesParser();
-			propertiesProvider = new Properties();
+			propertiesProvider ||= new Properties();
 			propertiesParser.parseProperties(source, propertiesProvider);
 		}
 
@@ -326,33 +355,6 @@ package org.springextensions.actionscript.context.impl {
 					objectDefinitionRegistry.registerObjectDefinition(name, newObjectDefinitions[name]);
 				}
 			}
-		}
-
-		private function completeContextLoading():void {
-			if ((propertiesProvider != null) && (propertiesProvider.length > 0)) {
-				//addObjectFactoryPostProcessor(
-			}
-			propertiesParser = null;
-			for each (var definitionProvider:IObjectDefinitionsProvider in definitionProviders) {
-				if (definitionProvider is IDisposable) {
-					IDisposable(definitionProvider).dispose();
-				}
-			}
-			_operationQueue = null;
-			_propertiesLoader = null;
-			definitionProviders.length = 0;
-			_definitionProviders = null;
-			_objectFactory.isReady = true;
-			dispatchEvent(new Event(Event.COMPLETE));
-		}
-
-		private function createDefaultObjectFactory(parent:IApplicationContext):IObjectFactory {
-			var defaultObjectFactory:DefaultObjectFactory = new DefaultObjectFactory(parent);
-			defaultObjectFactory.eventBus = new EventBus();
-			defaultObjectFactory.dependencyInjector = new DefaultDependencyInjector();
-			var autowireProcessor:DefaultAutowireProcessor = new DefaultAutowireProcessor(this);
-			defaultObjectFactory.autowireProcessor = autowireProcessor;
-			return defaultObjectFactory;
 		}
 	}
 }
