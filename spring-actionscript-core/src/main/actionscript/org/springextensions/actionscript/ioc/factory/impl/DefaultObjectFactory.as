@@ -25,6 +25,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.as3commons.lang.ClassNotFoundError;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
+	import org.as3commons.lang.StringUtils;
 	import org.as3commons.lang.util.OrderedUtils;
 	import org.as3commons.reflect.Method;
 	import org.as3commons.reflect.MethodInvoker;
@@ -55,6 +56,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	public class DefaultObjectFactory extends EventDispatcher implements IObjectFactory, IEventBusAware, IAutowireProcessorAware {
 
 		public static const OBJECT_FACTORY_PREFIX:String = "&";
+		private static const NON_LAZY_SINGLETON_CTOR_ARGS_ERROR:String = "The object definition for '{0}' is not lazy. Constructor arguments can only be supplied for lazy instantiating objects.";
 
 		/**
 		 * Creates a new <code>DefaultObjectFactory</code> instance.
@@ -279,7 +281,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 
 			if (objectDefinition.isSingleton && (constructorArguments && !objectDefinition.isLazyInit)) {
-				throw new IllegalOperationError("The object definition for '" + objectName + "' is not lazy. Constructor arguments can only be " + "supplied for lazy instantiating objects.");
+				throw new IllegalOperationError(StringUtils.substitute(NON_LAZY_SINGLETON_CTOR_ARGS_ERROR, objectName));
 			}
 
 			if (objectDefinition.isSingleton) {

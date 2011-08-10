@@ -112,9 +112,6 @@ package org.springextensions.actionscript.context.impl {
 		}
 
 		public function get definitionProviders():Vector.<IObjectDefinitionsProvider> {
-			if (_definitionProviders == null) {
-				_definitionProviders = new Vector.<IObjectDefinitionsProvider>();
-			}
 			return _definitionProviders;
 		}
 
@@ -286,16 +283,16 @@ package org.springextensions.actionscript.context.impl {
 			}
 			ContextUtils.disposeInstance(_propertiesParser);
 			_propertiesParser = null;
-			for each (var definitionProvider:IObjectDefinitionsProvider in definitionProviders) {
+			for each (var definitionProvider:IObjectDefinitionsProvider in _definitionProviders) {
 				if (definitionProvider is IDisposable) {
 					ContextUtils.disposeInstance(definitionProvider);
 				}
 			}
+			_definitionProviders.length = 0;
+			_definitionProviders = null;
 			_operationQueue = null;
 			ContextUtils.disposeInstance(_propertiesLoader);
 			_propertiesLoader = null;
-			definitionProviders.length = 0;
-			_definitionProviders = null;
 			_objectFactory.isReady = true;
 			dispatchEvent(new Event(Event.COMPLETE));
 		}
@@ -310,9 +307,9 @@ package org.springextensions.actionscript.context.impl {
 		}
 
 		protected function initApplicationContext(parent:IApplicationContext, objFactory:IObjectFactory):void {
+			_definitionProviders = new Vector.<IObjectDefinitionsProvider>();
 			_objectFactory = objFactory ||= createDefaultObjectFactory(parent);
 		}
-
 
 		protected function loadPropertyURIs(propertyURIs:Vector.<PropertyURI>):void {
 			if (_propertiesLoader == null) {

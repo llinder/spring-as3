@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.ioc.objectdefinition {
 	import org.springextensions.actionscript.ioc.AutowireMode;
 	import org.springextensions.actionscript.ioc.DependencyCheckMode;
+	import org.springextensions.actionscript.ioc.MethodInvocation;
 
 	/**
 	 * Represents an object definition.
@@ -180,12 +181,12 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		/**
 		 * Defines the method invocations executed after an object from this definition is created.
 		 */
-		function get methodInvocations():Array;
+		function get methodInvocations():Vector.<MethodInvocation>;
 
 		/**
 		 * @private
 		 */
-		function set methodInvocations(value:Array):void;
+		function set methodInvocations(value:Vector.<MethodInvocation>):void;
 
 		/**
 		 * Determines whether the object factory will send the created object through its list of <code>IObjectProcessors</code>.

@@ -28,6 +28,8 @@ package org.springextensions.actionscript.context.impl {
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.OperationEvent;
 	import org.flexunit.asserts.assertEquals;
+	import org.flexunit.asserts.assertNotNull;
+	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.flexunit.asserts.assertTrue;
 	import org.flexunit.async.Async;
@@ -35,7 +37,10 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResult;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesLoader;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.config.property.PropertyURI;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
@@ -61,15 +66,11 @@ package org.springextensions.actionscript.context.impl {
 		public var objectDefinitionProvider:IObjectDefinitionsProvider;
 		[Mock]
 		public var objectDefinitionsRegistry:IObjectDefinitionRegistry;
+		[Mock]
+		public var propertiesLoader:IPropertiesLoader;
+		[Mock]
+		public var propertiesParser:IPropertiesParser;
 
-		/*[Mock]
-		public var operation:IOperation;
-		[Mock]
-		public var objectPostProcessor:IObjectPostProcessor;
-		[Mock]
-		public var objectFactoryPostProcessor:IObjectFactoryPostProcessor;
-		[Mock]
-		public var referenceResolver:IReferenceResolver;*/
 		private var _context:ApplicationContext;
 
 		public function ApplicationContextTest() {
@@ -87,9 +88,6 @@ package org.springextensions.actionscript.context.impl {
 		[Test]
 		public function testCompositedMembers():void {
 			objectFactory = nice(IAutowireProcessorAwareObjectFactory);
-			//objectPostProcessor = nice(IObjectPostProcessor);
-			//objectFactoryPostProcessor = nice(IObjectFactoryPostProcessor);
-			//referenceResolver = nice(IReferenceResolver);
 
 			mock(objectFactory).method("addObjectFactoryPostProcessor").args(null).once();
 			mock(objectFactory).method("addObjectPostProcessor").args(null).once();
@@ -158,6 +156,44 @@ package org.springextensions.actionscript.context.impl {
 			assertStrictlyEquals(def, context.getObjectDefinition("testName"));
 		}
 
+		[Test]
+		public function testLoadWithSynchronousProviderThatReturnsPropertyURLS():void {
+			objectDefinitionsRegistry = nice(IObjectDefinitionRegistry);
+
+			objectDefinitionProvider = nice(IObjectDefinitionsProvider);
+			propertiesLoader = nice(IPropertiesLoader);
+			propertiesParser = nice(IPropertiesParser);
+
+			var uris:Vector.<PropertyURI> = new Vector.<PropertyURI>();
+			uris[uris.length] = new PropertyURI("properties.txt");
+			var defs:Object = {};
+			var def:IObjectDefinition = new ObjectDefinition();
+			defs["testName"] = def;
+
+			mock(propertiesLoader).getter("result").returns("property=value");
+			mock(propertiesLoader).method("addURIs").args(uris).dispatches(new OperationEvent(OperationEvent.COMPLETE, propertiesLoader));
+
+			mock(objectDefinitionProvider).method("createDefinitions").returns(null).once();
+			mock(objectDefinitionProvider).getter("objectDefinitions").returns(defs).once();
+			mock(objectDefinitionProvider).getter("propertyURIs").returns(uris);
+
+			mock(objectFactory).setter("isReady").arg(true).once();
+			stub(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
+			stub(objectDefinitionsRegistry).getter("objectDefinitions").returns(defs);
+
+			var context:ApplicationContext = new ApplicationContext(null, objectFactory);
+			context.addDefinitionProvider(objectDefinitionProvider);
+			context.propertiesLoader = propertiesLoader;
+			context.propertiesParser = propertiesParser;
+			context.load();
+
+			verify(objectFactory);
+
+			assertNull(context.propertiesLoader);
+			assertNull(context.propertiesParser);
+			assertNull(context.definitionProviders);
+		}
+
 		[Test(async, timeout="1000")]
 		public function testLoadWithASynchronousProvider():void {
 			objectDefinitionsRegistry = nice(IObjectDefinitionRegistry);
@@ -168,9 +204,6 @@ package org.springextensions.actionscript.context.impl {
 
 			var mockOperation:MockDefinitionProviderResultOperation = new MockDefinitionProviderResultOperation();
 			mockOperation.result = result;
-			/*operation = nice(IOperation);
-			mock(operation).getter("result").returns(defs);
-			mock(operation).method("addCompleteListener").args(anything()).dispatches(new OperationEvent(OperationEvent.COMPLETE, operation), 50);*/
 			objectDefinitionProvider = nice(IObjectDefinitionsProvider);
 			stub(objectDefinitionProvider).method("createDefinitions").returns(mockOperation).once();
 			stub(objectDefinitionProvider).getter("objectDefinitions").returns(defs).once();

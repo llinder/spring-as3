@@ -20,6 +20,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	import org.as3commons.lang.builder.EqualsBuilder;
 	import org.springextensions.actionscript.ioc.AutowireMode;
 	import org.springextensions.actionscript.ioc.DependencyCheckMode;
+	import org.springextensions.actionscript.ioc.MethodInvocation;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.ObjectDefinitionScope;
 
@@ -54,7 +55,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			this.autoWireMode = AutowireMode.NO;
 			this.isAutoWireCandidate = true;
 			this.primary = false;
-			this.methodInvocations = [];
+			this.methodInvocations = new Vector.<MethodInvocation>();
 			this.dependencyCheck = DependencyCheckMode.NONE;
 		}
 
@@ -350,19 +351,19 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		// methodInvocations
 		// ----------------------------
 
-		private var _methodInvocations:Array;
+		private var _methodInvocations:Vector.<MethodInvocation>;
 
 		/**
 		 * @inheritDoc
 		 */
-		public function get methodInvocations():Array {
+		public function get methodInvocations():Vector.<MethodInvocation> {
 			return _methodInvocations;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set methodInvocations(value:Array):void {
+		public function set methodInvocations(value:Vector.<MethodInvocation>):void {
 			_methodInvocations = value;
 		}
 
