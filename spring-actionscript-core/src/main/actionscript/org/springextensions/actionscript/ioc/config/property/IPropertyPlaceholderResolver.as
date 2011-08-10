@@ -15,11 +15,34 @@
 */
 package org.springextensions.actionscript.ioc.config.property {
 
+
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public interface IPropertiesParser {
-		function parseProperties(source:*, provider:IPropertiesProvider):void;
+	public interface IPropertyPlaceholderResolver {
+
+		function get ignoreUnresolvablePlaceholders():Boolean;
+
+		/**
+		 * @private
+		 */
+		function set ignoreUnresolvablePlaceholders(value:Boolean):void;
+
+		function get propertiesProvider():IPropertiesProvider;
+
+		/**
+		 * @private
+		 */
+		function set propertiesProvider(value:IPropertiesProvider):void;
+
+		function get regExp():RegExp;
+
+		/**
+		 * @private
+		 */
+		function set regExp(value:RegExp):void;
+
+		function resolvePropertyPlaceholders(value:String, regExp:RegExp=null, properties:IPropertiesProvider=null):String;
 	}
 }

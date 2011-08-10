@@ -13,13 +13,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.property {
+package org.springextensions.actionscript.ioc.config.property.error {
 
-	/**
-	 *
-	 * @author Roland Zwaga
-	 */
-	public interface IPropertiesParser {
-		function parseProperties(source:*, provider:IPropertiesProvider):void;
+
+	public class PropertyPlaceholderResolverError extends Error {
+
+		public function PropertyPlaceholderResolverError(message:*="", id:*=0) {
+			super(message, id);
+		}
 	}
 }

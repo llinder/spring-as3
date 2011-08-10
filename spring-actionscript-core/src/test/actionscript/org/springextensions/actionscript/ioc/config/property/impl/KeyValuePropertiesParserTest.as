@@ -55,14 +55,10 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 			assertFalse(_parser.isPropertyLine(_exclamationCommentLine));
 		}
 
-		[Test(expects = "flash.errors.IllegalOperationError")]
-		public function testParsePropertiesWithIllegalClass():void {
-			_parser.parseProperties(_testLinesWithEqualSign.join("\n"), Event);
-		}
-
 		[Test]
 		public function testParsePropertiesWithEqualsSignSeparator():void {
-			var result:IPropertiesProvider = _parser.parseProperties(_testLinesWithEqualSign.join("\n"), Properties);
+			var result:IPropertiesProvider = new Properties();
+			_parser.parseProperties(_testLinesWithEqualSign.join("\n"), result);
 			assertNotNull(result);
 			assertTrue(result is Properties);
 			assertEquals(2, result.length);
@@ -72,7 +68,8 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 
 		[Test]
 		public function testParsePropertiesWithEqualsSignSeparatorAndCommentWithLeadingSpaces():void {
-			var result:IPropertiesProvider = _parser.parseProperties(_testLinesWithEqualSignAndCommentWithLeadingSpaces.join("\n"), Properties);
+			var result:IPropertiesProvider = new Properties();
+			_parser.parseProperties(_testLinesWithEqualSignAndCommentWithLeadingSpaces.join("\n"), result);
 			assertNotNull(result);
 			assertTrue(result is Properties);
 			assertEquals(2, result.length);
@@ -82,7 +79,8 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 
 		[Test]
 		public function testParsePropertiesWithColonSeparator():void {
-			var result:IPropertiesProvider = _parser.parseProperties(_testLinesWithColon.join("\n"), Properties);
+			var result:IPropertiesProvider = new Properties();
+			_parser.parseProperties(_testLinesWithColon.join("\n"), result);
 			assertNotNull(result);
 			assertTrue(result is Properties);
 			assertEquals(2, result.length);
@@ -92,7 +90,8 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 
 		[Test]
 		public function testParsePropertiesWithTabSeparator():void {
-			var result:IPropertiesProvider = _parser.parseProperties(_testLinesWithTab.join("\n"), Properties);
+			var result:IPropertiesProvider = new Properties();
+			_parser.parseProperties(_testLinesWithTab.join("\n"), result);
 			assertNotNull(result);
 			assertTrue(result is Properties);
 			assertEquals(2, result.length);
@@ -102,7 +101,8 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 
 		[Test]
 		public function testParsePropertiesWithEqualsSeparatorAndLineWithTrailingBackslahes():void {
-			var result:IPropertiesProvider = _parser.parseProperties(_testLinesWithEqualSignAndCommentWithTrailingBackSlashes.join("\n"), Properties);
+			var result:IPropertiesProvider = new Properties();
+			_parser.parseProperties(_testLinesWithEqualSignAndCommentWithTrailingBackSlashes.join("\n"), result);
 			assertNotNull(result);
 			assertTrue(result is Properties);
 			assertEquals(2, result.length);

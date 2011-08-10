@@ -465,6 +465,9 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		 */
 		protected function findAutowireCandidateNames(clazz:Class):Vector.<String> {
 			var result:Vector.<String> = new Vector.<String>();
+			if (_objectFactory.objectDefinitionRegistry == null) {
+				return result;
+			}
 			var objectDefinition:IObjectDefinition;
 			var objectClass:Class;
 			var autowiredClassName:String = ClassUtils.getFullyQualifiedName(clazz, true);
@@ -474,7 +477,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			// - have its isAutowireCandidate property set to true
 			// - have its class equal to the given class, be a subclass, or implement its interface, or be a factory object that creates the given class
 
-			for (var objectName:String in _objectFactory.objectDefinitionRegistry.objectDefinitionNames) {
+			for each (var objectName:String in _objectFactory.objectDefinitionRegistry.objectDefinitionNames) {
 				objectDefinition = _objectFactory.getObjectDefinition(objectName);
 				objectClass = ClassUtils.forName(objectDefinition.className, _applicationDomain);
 

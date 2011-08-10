@@ -32,6 +32,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.ioc.spring_actionscript_internal;
 	import org.springextensions.actionscript.test.testtypes.ClassWithStaticFactoryMethod;
@@ -59,6 +60,8 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		public var injector:IDependencyInjector;
 		[Mock]
 		public var eventBus:IEventBus;
+		[Mock]
+		public var objectDefinitionRegistry:IObjectDefinitionRegistry;
 
 		private var _objectFactory:DefaultObjectFactory;
 
@@ -70,6 +73,8 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		public function setUp():void {
 			_objectFactory = new DefaultObjectFactory();
 			_objectFactory.cache = nice(IInstanceCache);
+			objectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			_objectFactory.objectDefinitionRegistry = objectDefinitionRegistry;
 			_objectFactory.isReady = true;
 		}
 
@@ -89,7 +94,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			assertEquals(1, _objectFactory.objectFactoryPostProcessors.length);
 		}
 
-		[Test(expects = "org.springextensions.actionscript.ioc.objectdefinition.error.ObjectDefinitionNotFoundError")]
+		[Test(expects="org.springextensions.actionscript.ioc.objectdefinition.error.ObjectDefinitionNotFoundError")]
 		public function testgetObjectWithMissingDefinition():void {
 			mock(_objectFactory.cache).method("isPrepared").returns(false).twice();
 			mock(_objectFactory.cache).method("hasInstance").returns(false).once();
@@ -101,7 +106,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			var objectDefinition:IObjectDefinition = new ObjectDefinition("int");
 			mock(_objectFactory.cache).method("isPrepared").returns(false).twice();
 			mock(_objectFactory.cache).method("hasInstance").returns(false).once();
-			_objectFactory.objectDefinitions["testName"] = objectDefinition;
+			mock(_objectFactory.objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(objectDefinition);
 			var result:int = _objectFactory.getObject("testName");
 			verify(cache);
 			assertEquals(0, result);
@@ -113,9 +118,10 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			objectDefinition.constructorArguments = ["test"];
 			mock(_objectFactory.cache).method("isPrepared").returns(false).twice();
 			mock(_objectFactory.cache).method("hasInstance").returns(false).once();
-			_objectFactory.objectDefinitions["testName"] = objectDefinition;
+			mock(_objectFactory.objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(objectDefinition);
 			var result:String = _objectFactory.getObject("testName");
 			verify(cache);
+			verify(objectDefinitionRegistry);
 			assertEquals("test", result);
 		}
 
@@ -125,7 +131,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			objectDefinition.constructorArguments = ["test"];
 			mock(_objectFactory.cache).method("isPrepared").returns(false).twice();
 			mock(_objectFactory.cache).method("hasInstance").returns(false).once();
-			_objectFactory.objectDefinitions["testName"] = objectDefinition;
+			mock(_objectFactory.objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(objectDefinition);
 			_objectFactory.dependencyInjector = nice(IDependencyInjector);
 			stub(_objectFactory.dependencyInjector).method("wire").args(anything()).once();
 			var result:String = _objectFactory.getObject("testName");
@@ -144,7 +150,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			var objectDefinition:IObjectDefinition = new ObjectDefinition("int");
 			mock(_objectFactory.cache).method("isPrepared").returns(false).twice();
 			mock(_objectFactory.cache).method("hasInstance").returns(false).once();
-			_objectFactory.objectDefinitions["testName"] = objectDefinition;
+			mock(_objectFactory.objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(objectDefinition);
 			_objectFactory.eventBus = nice(IEventBus);
 			mock(_objectFactory.eventBus).method("dispatchEvent").args(anything());
 			var result:int = _objectFactory.getObject("testName");
@@ -159,7 +165,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			objectDefinition.factoryMethod = "newInstance";
 			mock(_objectFactory.cache).method("isPrepared").returns(false).twice();
 			mock(_objectFactory.cache).method("hasInstance").returns(false).once();
-			_objectFactory.objectDefinitions["testName"] = objectDefinition;
+			mock(_objectFactory.objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(objectDefinition);
 			var result:ClassWithStaticFactoryMethod = _objectFactory.getObject("testName");
 			verify(cache);
 			assertNotNull(result);
@@ -173,9 +179,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			objectDefinition.factoryObjectName = "factoryObject";
 			mock(_objectFactory.cache).method("isPrepared").returns(false).twice();
 			mock(_objectFactory.cache).method("hasInstance").returns(false).once();
-			_objectFactory.objectDefinitions["testName"] = objectDefinition;
-			objectDefinition = new ObjectDefinition("org.springextensions.actionscript.test.testtypes.TestClassFactory");
-			_objectFactory.objectDefinitions["factoryObject"] = objectDefinition;
+			mock(_objectFactory.objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(objectDefinition);
+			var objectDefinition2:IObjectDefinition = new ObjectDefinition("org.springextensions.actionscript.test.testtypes.TestClassFactory");
+			mock(_objectFactory.objectDefinitionRegistry).method("getObjectDefinition").args("factoryObject").returns(objectDefinition2);
 			var result:ClassWithStaticFactoryMethod = _objectFactory.getObject("testName");
 			verify(cache);
 			assertNotNull(result);

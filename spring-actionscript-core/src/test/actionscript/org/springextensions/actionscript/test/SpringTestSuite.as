@@ -37,7 +37,7 @@ package org.springextensions.actionscript.test {
 	[Suite]
 	[RunWith("org.flexunit.runners.Suite")]
 	public final class SpringTestSuite {
-		/*public var t7:DefaultAutowireProcessorTest;
+		public var t7:DefaultAutowireProcessorTest;
 		public var t14:DefaultDependencyInjectorTest;
 		public var t8:ArrayCollectionReferenceResolverTest;
 		public var t9:ArrayReferenceResolverTest;
@@ -54,7 +54,7 @@ package org.springextensions.actionscript.test {
 		public var t15:PropertiesTest;
 		public var t16:KeyValuePropertiesParserTest;
 		public var t17:DefaultObjectFactoryTest;
-		public var t18:ApplicationContextTest;*/
+		public var t18:ApplicationContextTest;
 		public var t19:DefaultObjectDefinitionRegistryTest;
 	}
 }

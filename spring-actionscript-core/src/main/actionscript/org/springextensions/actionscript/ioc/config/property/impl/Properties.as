@@ -29,8 +29,6 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 	 * @author Roland Zwaga
 	 */
 	public class Properties implements IPropertiesProvider {
-		private static const QUESTION_MARK:String = '?';
-		private static const AMPERSAND:String = "&";
 
 		// --------------------------------------------------------------------
 		//
@@ -55,21 +53,6 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 		 */
 		public function get content():Object {
 			return _content;
-		}
-
-		/**
-		 * Adds a random number to the url, checks if a '?' character is already part of the string
-		 * than suffixes a '&amp;' character
-		 * @param url The url that will be processed
-		 * @param preventCache
-		 * @return The formatted URL
-		 */
-		public function formatURL(url:String, preventCache:Boolean):String {
-			if (preventCache) {
-				var parameterAppendChar:String = (url.indexOf(QUESTION_MARK) < 0) ? QUESTION_MARK : AMPERSAND;
-				url += (parameterAppendChar + Math.round(Math.random() * 1000000));
-			}
-			return url;
 		}
 
 		// --------------------------------------------------------------------
@@ -100,7 +83,7 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 		/**
 		 * Adds all conIPropertiese given properties object to this Properties.
 		 */
-		public function merge(properties:IPropertiesProvider, overrideProperty:Boolean = false):void {
+		public function merge(properties:IPropertiesProvider, overrideProperty:Boolean=false):void {
 			if ((!properties) || (properties === this)) {
 				return;
 			}

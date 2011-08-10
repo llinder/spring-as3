@@ -34,6 +34,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
+	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResult;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
@@ -163,9 +164,10 @@ package org.springextensions.actionscript.context.impl {
 			var defs:Object = {};
 			var def:IObjectDefinition = new ObjectDefinition();
 			defs["testName"] = def;
+			var result:AsyncObjectDefinitionProviderResult = new AsyncObjectDefinitionProviderResult(defs);
 
 			var mockOperation:MockDefinitionProviderResultOperation = new MockDefinitionProviderResultOperation();
-			mockOperation.result = defs;
+			mockOperation.result = result;
 			/*operation = nice(IOperation);
 			mock(operation).getter("result").returns(defs);
 			mock(operation).method("addCompleteListener").args(anything()).dispatches(new OperationEvent(OperationEvent.COMPLETE, operation), 50);*/

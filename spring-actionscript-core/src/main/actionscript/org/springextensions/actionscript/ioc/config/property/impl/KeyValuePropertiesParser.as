@@ -78,11 +78,7 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 		 * @param source the source to parse
 		 * @return the properties defined by the given <code>source</code>
 		 */
-		public function parseProperties(source:*, clazz:Class):IPropertiesProvider {
-			if (!ClassUtils.isImplementationOf(clazz, IPropertiesProvider)) {
-				throw new IllegalOperationError("The specified class needs to implement the IPropertiesProvider interface");
-			}
-			var result:IPropertiesProvider = new clazz();
+		public function parseProperties(source:*, provider:IPropertiesProvider):void {
 			var lines:MultilineString = new MultilineString(String(source));
 			var numLines:Number = lines.numLines;
 			var key:String;
@@ -121,11 +117,10 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 					} else {
 						// restore newlines since these were escaped when loaded
 						value = value.replace(NEWLINE_REGEX, NEWLINE_CHAR);
-						result.setProperty(key, value);
+						provider.setProperty(key, value);
 					}
 				}
 			}
-			return result;
 		}
 
 		public function isPropertyLine(line:String):Boolean {

@@ -15,11 +15,13 @@
 */
 package org.springextensions.actionscript.ioc.config.property {
 
-	/**
-	 *
-	 * @author Roland Zwaga
-	 */
-	public interface IPropertiesParser {
-		function parseProperties(source:*, provider:IPropertiesProvider):void;
+	import org.as3commons.async.operation.IOperation;
+
+	public interface IPropertiesLoader extends IOperation {
+
+		function addURIs(URIs:Vector.<PropertyURI>):void;
+
+		function addURI(URI:String, preventCache:Boolean=true):void;
+
 	}
 }

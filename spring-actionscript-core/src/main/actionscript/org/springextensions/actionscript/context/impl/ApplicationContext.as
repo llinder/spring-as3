@@ -19,10 +19,10 @@ package org.springextensions.actionscript.context.impl {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
-
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.OperationEvent;
 	import org.as3commons.async.operation.OperationQueue;
+	import org.as3commons.async.operation.impl.LoadURLOperation;
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.impl.EventBus;
 	import org.as3commons.lang.IDisposable;
@@ -31,8 +31,14 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
+	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResult;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesLoader;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.config.property.PropertyURI;
+	import org.springextensions.actionscript.ioc.config.property.impl.KeyValuePropertiesParser;
 	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
+	import org.springextensions.actionscript.ioc.config.property.impl.PropertiesLoader;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
@@ -50,6 +56,8 @@ package org.springextensions.actionscript.context.impl {
 	 * @author Roland Zwaga
 	 */
 	public class ApplicationContext extends EventDispatcher implements IApplicationContext, IDisposable {
+		private static const APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME:String = "applicationContextPropertiesLoader";
+		private static const NEWLINE_CHAR:String = "\n";
 
 		/**
 		 * Creates a new <code>ApplicationContext</code> instance.
@@ -66,6 +74,8 @@ package org.springextensions.actionscript.context.impl {
 		private var _isDisposed:Boolean;
 		private var _objectFactory:IObjectFactory;
 		private var _operationQueue:OperationQueue;
+		private var _propertiesLoader:IPropertiesLoader;
+		private var _propertiesParser:IPropertiesParser;
 		private var _rootView:DisplayObject;
 		private var _stageProcessorRegistry:IStageObjectProcessorRegistry;
 
@@ -119,8 +129,20 @@ package org.springextensions.actionscript.context.impl {
 		public function dispose():void {
 			if (!_isDisposed) {
 				try {
+					_propertiesLoader = null;
 					if (_objectFactory is IDisposable) {
 						IDisposable(_objectFactory).dispose();
+					}
+					_definitionProviders = null;
+					_eventBus.clear();
+					if (_eventBus is IDisposable) {
+						IDisposable(_eventBus).dispose();
+					}
+					_operationQueue = null;
+					_rootView = null;
+					_stageProcessorRegistry.clear();
+					if (_stageProcessorRegistry is IDisposable) {
+						IDisposable(_stageProcessorRegistry).dispose();
 					}
 				} finally {
 					_isDisposed = true;
@@ -138,6 +160,10 @@ package org.springextensions.actionscript.context.impl {
 
 		public function getObject(name:String, constructorArguments:Array=null):* {
 			return _objectFactory.getObject(name, constructorArguments);
+		}
+
+		public function getObjectDefinition(objectName:String):IObjectDefinition {
+			return _objectFactory.getObjectDefinition(objectName);
 		}
 
 		public function get isDisposed():Boolean {
@@ -158,10 +184,13 @@ package org.springextensions.actionscript.context.impl {
 				for each (var provider:IObjectDefinitionsProvider in definitionProviders) {
 					var operation:IOperation = provider.createDefinitions();
 					if (operation != null) {
-						operation.addCompleteListener(providerCompleteHander);
+						operation.addCompleteListener(providerCompleteHandler);
 						_operationQueue.addOperation(operation);
 					} else {
-						mergeObjectDefinition(provider.objectDefinitions);
+						registerObjectDefinitions(provider.objectDefinitions);
+						if (provider.propertyURIs != null) {
+							loadPropertyURIs(provider.propertyURIs);
+						}
 					}
 				}
 				if (_operationQueue.total > 0) {
@@ -174,8 +203,12 @@ package org.springextensions.actionscript.context.impl {
 			}
 		}
 
-		public function getObjectDefinition(objectName:String):IObjectDefinition {
-			return _objectFactory.getObjectDefinition(objectName);
+		public function get objectDefinitionRegistry():IObjectDefinitionRegistry {
+			return _objectFactory.objectDefinitionRegistry;
+		}
+
+		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
+			_objectFactory.objectDefinitionRegistry = value;
 		}
 
 		public function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor> {
@@ -192,6 +225,14 @@ package org.springextensions.actionscript.context.impl {
 
 		public function set parent(value:IObjectFactory):void {
 			_objectFactory.parent = value;
+		}
+
+		public function get propertiesParser():IPropertiesParser {
+			return _propertiesParser;
+		}
+
+		public function set propertiesParser(value:IPropertiesParser):void {
+			_propertiesParser = value;
 		}
 
 		public function get propertiesProvider():IPropertiesProvider {
@@ -223,7 +264,7 @@ package org.springextensions.actionscript.context.impl {
 		}
 
 		protected function cleanOperation(operation:IOperation):void {
-			operation.removeCompleteListener(providerCompleteHander);
+			operation.removeCompleteListener(providerCompleteHandler);
 		}
 
 		protected function cleanQueue(_operationQueue:OperationQueue):void {
@@ -232,28 +273,33 @@ package org.springextensions.actionscript.context.impl {
 		}
 
 		protected function initApplicationContext(parent:IApplicationContext, objFactory:IObjectFactory):void {
-			if (objFactory == null) {
-				_objectFactory = new DefaultObjectFactory(parent);
-				DefaultObjectFactory(_objectFactory).eventBus = new EventBus();
-				_objectFactory.dependencyInjector = new DefaultDependencyInjector();
-				var autowireProcessor:DefaultAutowireProcessor = new DefaultAutowireProcessor(this);
-				DefaultObjectFactory(_objectFactory).autowireProcessor = autowireProcessor;
-			} else {
-				_objectFactory = objFactory;
-			}
+			_objectFactory = objFactory ||= createDefaultObjectFactory(parent);
 		}
 
-		protected function mergeObjectDefinition(newObjectDefinitions:Object):void {
-			if (objectDefinitionRegistry != null) {
-				for (var name:String in newObjectDefinitions) {
-					objectDefinitionRegistry.registerObjectDefinition(name, newObjectDefinitions[name]);
-				}
+
+		protected function loadPropertyURIs(propertyURIs:Vector.<PropertyURI>):void {
+			if (_propertiesLoader == null) {
+				_propertiesLoader = new PropertiesLoader(APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME);
+				_propertiesLoader.addCompleteListener(propertiesLoaderComplete, false, 0, true);
+				_operationQueue.addOperation(_propertiesLoader);
 			}
+			_propertiesLoader.addURIs(propertyURIs);
 		}
 
-		protected function providerCompleteHander(event:OperationEvent):void {
+		protected function propertiesLoaderComplete(propertySources:Vector.<String>):void {
+			var source:String = propertySources.join(NEWLINE_CHAR);
+			propertiesParser ||= new KeyValuePropertiesParser();
+			propertiesProvider = new Properties();
+			propertiesParser.parseProperties(source, propertiesProvider);
+		}
+
+		protected function providerCompleteHandler(event:OperationEvent):void {
 			cleanOperation(event.operation);
-			mergeObjectDefinition(Object(event.result));
+			var result:AsyncObjectDefinitionProviderResult = AsyncObjectDefinitionProviderResult(event.result);
+			registerObjectDefinitions(result.objectDefinitions);
+			if (result.propertyURIs != null) {
+				loadPropertyURIs(result.propertyURIs);
+			}
 		}
 
 		protected function providersLoadErrorHandler(error:*):void {
@@ -266,17 +312,29 @@ package org.springextensions.actionscript.context.impl {
 			completeContextLoading();
 		}
 
+		protected function registerObjectDefinitions(newObjectDefinitions:Object):void {
+			if (objectDefinitionRegistry != null) {
+				for (var name:String in newObjectDefinitions) {
+					objectDefinitionRegistry.registerObjectDefinition(name, newObjectDefinitions[name]);
+				}
+			}
+		}
+
 		private function completeContextLoading():void {
+			if ((propertiesProvider != null) && (propertiesProvider.length > 0)) {
+				//addObjectFactoryPostProcessor(
+			}
 			_objectFactory.isReady = true;
 			dispatchEvent(new Event(Event.COMPLETE));
 		}
 
-		public function get objectDefinitionRegistry():IObjectDefinitionRegistry {
-			return _objectFactory.objectDefinitionRegistry;
-		}
-
-		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
-			_objectFactory.objectDefinitionRegistry = value;
+		private function createDefaultObjectFactory(parent:IApplicationContext):IObjectFactory {
+			var defaultObjectFactory:DefaultObjectFactory = new DefaultObjectFactory(parent);
+			defaultObjectFactory.eventBus = new EventBus();
+			defaultObjectFactory.dependencyInjector = new DefaultDependencyInjector();
+			var autowireProcessor:DefaultAutowireProcessor = new DefaultAutowireProcessor(this);
+			defaultObjectFactory.autowireProcessor = autowireProcessor;
+			return defaultObjectFactory;
 		}
 	}
 }

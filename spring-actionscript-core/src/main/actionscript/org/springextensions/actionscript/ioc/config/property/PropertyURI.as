@@ -15,11 +15,27 @@
 */
 package org.springextensions.actionscript.ioc.config.property {
 
-	/**
-	 *
-	 * @author Roland Zwaga
-	 */
-	public interface IPropertiesParser {
-		function parseProperties(source:*, provider:IPropertiesProvider):void;
+	public class PropertyURI {
+
+		public function PropertyURI(URI:String, prevent:Boolean=true) {
+			super();
+			initPropertyURI(URI, prevent);
+		}
+
+		private var _preventCache:Boolean;
+		private var _propertyURI:String;
+
+		public function get preventCache():Boolean {
+			return _preventCache;
+		}
+
+		public function get propertyURI():String {
+			return _propertyURI;
+		}
+
+		protected function initPropertyURI(URI:String, prevent:Boolean):void {
+			_propertyURI = URI;
+			_preventCache = prevent;
+		}
 	}
 }

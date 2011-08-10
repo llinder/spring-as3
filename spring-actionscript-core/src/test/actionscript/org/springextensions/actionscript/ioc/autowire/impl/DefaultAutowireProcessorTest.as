@@ -15,6 +15,7 @@
 */
 package org.springextensions.actionscript.ioc.autowire.impl {
 	import flash.events.Event;
+	import flash.net.ObjectEncoding;
 	import flash.system.ApplicationDomain;
 
 	import mockolate.mock;
@@ -34,6 +35,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.test.testtypes.AutowiredAnnotatedClass;
 	import org.springextensions.actionscript.test.testtypes.AutowiredExternalPropertyAnnotatedClass;
@@ -44,7 +46,6 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		public var mocks:MockolateRule = new MockolateRule();
 
 		public var applicationDomain:ApplicationDomain = ApplicationDomain.currentDomain;
-		public var objectDefinitions:Object;
 
 		[Mock]
 		public var cache:IInstanceCache;
@@ -52,6 +53,10 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		public var factory:IObjectFactory;
 		[Mock]
 		public var propertiesProvider:IPropertiesProvider;
+		[Mock]
+		public var objectDefinitionRegistry:IObjectDefinitionRegistry;
+
+		protected var objectDefinitionNames:Vector.<String>;
 
 		{
 			DefaultObjectFactory;
@@ -60,76 +65,83 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 
 		[Before]
 		public function setUp():void {
-			objectDefinitions = {};
-
 			cache = nice(IInstanceCache);
 			factory = nice(IObjectFactory);
+			objectDefinitionRegistry = nice(IObjectDefinitionRegistry);
 
 			stub(factory).getter("cache").returns(cache);
-			stub(factory).getter("objectDefinitions").returns(objectDefinitions);
 			stub(factory).getter("applicationDomain").returns(applicationDomain);
+			stub(factory).getter("objectDefinitionRegistry").returns(objectDefinitionRegistry);
+			objectDefinitionNames = new Vector.<String>();
+			stub(objectDefinitionRegistry).getter("objectDefinitionNames").returns(objectDefinitionNames);
 		}
 
-		[Test(expects = "org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError")]
+		[Test(expects="org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError")]
 		public function testPreprocessObjectDefinitionWithAutoDetectAndUnsatisfiedDependencyAndObjectsCheck():void {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
 			definition.autoWireMode = AutowireMode.AUTODETECT;
 			definition.dependencyCheck = DependencyCheckMode.OBJECTS;
-			objectDefinitions["testName"] = definition;
+			mock(objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(definition);
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
 			processor.preprocessObjectDefinition(definition);
+			verify(objectDefinitionRegistry);
 		}
 
-		[Test(expects = "org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError")]
+		[Test(expects="org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError")]
 		public function testPreprocessObjectDefinitionWithAutoDetectAndUnsatisfiedDependency():void {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
 			definition.autoWireMode = AutowireMode.AUTODETECT;
 			definition.dependencyCheck = DependencyCheckMode.ALL;
-			objectDefinitions["testName"] = definition;
+			mock(objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(definition);
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
 			processor.preprocessObjectDefinition(definition);
+			verify(objectDefinitionRegistry);
 		}
 
-		[Test(expects = "org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError")]
+		[Test(expects="org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError")]
 		public function testAutowireWithCandidateSetToFalse():void {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "String";
 			definition.isAutoWireCandidate = false;
 			definition.dependencyCheck = DependencyCheckMode.NONE;
-			objectDefinitions["testName"] = definition;
+			mock(factory).method("getObjectDefinition").args("testName").returns(definition);
 
 			stub(factory).method("getObject").args("testName").returns("testValue");
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
 			var instance:AutowiredAnnotatedClass = new AutowiredAnnotatedClass();
 			processor.autoWire(instance);
+			verify(objectDefinitionRegistry);
 		}
 
 		[Test]
 		public function testFindAutowireCandidateName():void {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "flash.events.Event";
-			objectDefinitions["testName"] = definition;
-
+			mock(factory).method("getObjectDefinition").args("testName").returns(definition);
+			objectDefinitionNames[objectDefinitionNames.length] = "testName";
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
 			var name:String = processor.findAutowireCandidateName(Event);
 			assertEquals("testName", name);
+			verify(factory);
 		}
 
 		[Test]
 		public function testFindAutowireCandidateNameWithNonExistingCandidate():void {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "flash.events.Event";
-			objectDefinitions["testName"] = definition;
+			mock(factory).method("getObjectDefinition").args("testName").returns(definition);
+			objectDefinitionNames[objectDefinitionNames.length] = "testName";
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
 			var name:String = processor.findAutowireCandidateName(String);
 			assertNull(name);
+			verify(factory);
 		}
 
 		[Test]
@@ -137,7 +149,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "Function";
 			definition.autoWireMode = AutowireMode.AUTODETECT;
-			objectDefinitions["testName"] = definition;
+			mock(objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(definition);
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
 			processor.preprocessObjectDefinition(definition);
@@ -146,23 +158,24 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 
 		[Test]
 		public function testPreprocessObjectDefinitionWithAutoDetectAndClassWithConstructorArgs():void {
-
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
 			definition.autoWireMode = AutowireMode.AUTODETECT;
-			objectDefinitions["testName"] = definition;
+			mock(factory).method("getObjectDefinition").args("testName").returns(definition);
 
 			var definition2:IObjectDefinition = new ObjectDefinition();
 			definition2.className = "org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactory";
 			definition2.autoWireMode = AutowireMode.NO;
-			objectDefinitions["objectFactory"] = definition2;
-
+			mock(factory).method("getObjectDefinition").args("objectFactory").returns(definition2);
+			objectDefinitionNames[objectDefinitionNames.length] = "testName";
+			objectDefinitionNames[objectDefinitionNames.length] = "objectFactory";
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
 			processor.preprocessObjectDefinition(definition);
 			assertStrictlyEquals(AutowireMode.CONSTRUCTOR, definition.autoWireMode);
 			assertEquals(1, definition.constructorArguments.length);
 			assertEquals("objectFactory", definition.constructorArguments[0]);
+			verify(factory);
 		}
 
 		[Test]
@@ -172,7 +185,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
 			definition.autoWireMode = AutowireMode.AUTODETECT;
 			definition.dependencyCheck = DependencyCheckMode.SIMPLE;
-			objectDefinitions["testName"] = definition;
+			mock(objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(definition);
 
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
@@ -189,7 +202,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
 			definition.autoWireMode = AutowireMode.AUTODETECT;
 			definition.dependencyCheck = DependencyCheckMode.NONE;
-			objectDefinitions["testName"] = definition;
+			mock(objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(definition);
 
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
@@ -203,12 +216,13 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		public function testFindAutowireCandidate():void {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
-			objectDefinitions["testName"] = definition;
-
+			mock(factory).method("getObjectDefinition").args("testName").returns(definition);
+			objectDefinitionNames[objectDefinitionNames.length] = "testName";
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
 			var result:String = processor.findAutowireCandidateName(DefaultAutowireProcessor);
 			assertEquals("testName", result);
+			verify(factory);
 		}
 
 		[Test]
@@ -216,7 +230,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
 			definition.isAutoWireCandidate = false;
-			objectDefinitions["testName"] = definition;
+			mock(objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(definition);
 
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
@@ -228,11 +242,11 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		public function testFindAutowireCandidateWithTwoCandidates():void {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
-			objectDefinitions["testName"] = definition;
+			mock(objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(definition);
 
 			definition = new ObjectDefinition();
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
-			objectDefinitions["testName2"] = definition;
+			mock(objectDefinitionRegistry).method("getObjectDefinition").args("testName2").returns(definition);
 
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
@@ -244,31 +258,43 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		public function testFindAutowireCandidateWithTwoCandidatesAndOneIsPrimary():void {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
-			objectDefinitions["testName"] = definition;
+			mock(factory).method("getObjectDefinition").args("testName").returns(definition);
 
 			definition = new ObjectDefinition();
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
 			definition.primary = true;
-			objectDefinitions["testName2"] = definition;
+			mock(factory).method("getObjectDefinition").args("testName2").returns(definition);
 
+			objectDefinitionNames[objectDefinitionNames.length] = "testName";
+			objectDefinitionNames[objectDefinitionNames.length] = "testName2";
+
+			mock(objectDefinitionRegistry).method("containsObjectDefinition").args("testName").returns(true);
+			mock(objectDefinitionRegistry).method("containsObjectDefinition").args("testName2").returns(true);
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
 			var result:String = processor.findAutowireCandidateName(DefaultAutowireProcessor);
 			assertEquals("testName2", result);
+			verify(factory);
+			verify(objectDefinitionRegistry);
 		}
 
-		[Test(expects = "org.springextensions.actionscript.ioc.factory.NoSuchObjectDefinitionError")]
+		[Test(expects="org.springextensions.actionscript.ioc.factory.NoSuchObjectDefinitionError")]
 		public function testFindAutowireCandidateWithTwoCandidatesAndBothArePrimary():void {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
 			definition.primary = true;
-			objectDefinitions["testName"] = definition;
+			mock(factory).method("getObjectDefinition").args("testName").returns(definition);
 
 			definition = new ObjectDefinition();
 			definition.className = "org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor";
 			definition.primary = true;
-			objectDefinitions["testName2"] = definition;
+			mock(factory).method("getObjectDefinition").args("testName2").returns(definition);
 
+			objectDefinitionNames[objectDefinitionNames.length] = "testName";
+			objectDefinitionNames[objectDefinitionNames.length] = "testName2";
+
+			mock(objectDefinitionRegistry).method("containsObjectDefinition").args("testName").returns(true);
+			mock(objectDefinitionRegistry).method("containsObjectDefinition").args("testName2").returns(true);
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
 			var result:String = processor.findAutowireCandidateName(DefaultAutowireProcessor);
@@ -278,8 +304,9 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		public function testAutowire():void {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "String";
-			objectDefinitions["testName"] = definition;
+			objectDefinitionNames[objectDefinitionNames.length] = "testName";
 
+			mock(factory).method("getObjectDefinition").args("testName").returns(definition);
 			mock(factory).method("getObject").args("testName").returns("testValue");
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
@@ -294,9 +321,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		public function testAutowireWithCheckForOnlyInjectMetadata():void {
 			var definition:IObjectDefinition = new ObjectDefinition();
 			definition.className = "String";
-			objectDefinitions["testName"] = definition;
-
-			//stub(factory).method("getObject").args("testName").returns("testValue");
+			mock(objectDefinitionRegistry).method("getObjectDefinition").args("testName").returns(definition);
 
 			var processor:DefaultAutowireProcessor = new DefaultAutowireProcessor(factory);
 			processor.autowireMetadataNames = new Vector.<String>();
