@@ -33,7 +33,7 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 	public class ArrayCollectionReferenceResolver extends AbstractReferenceResolver {
 
 		private static const MXCOLLECTIONS_ARRAY_COLLECTION_CLASSNAME:String = "mx.collections.ArrayCollection";
-		private var _arrayCollectionClass:Class;
+		private static var _arrayCollectionClass:Class;
 
 		/**
 		 * Constructs <code>ArrayCollectionReferenceResolver</code>.
@@ -42,11 +42,6 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 		 */
 		public function ArrayCollectionReferenceResolver(factory:IObjectFactory) {
 			super(factory);
-			initArrayCollectionReferenceResolver(factory.applicationDomain);
-		}
-
-		protected function initArrayCollectionReferenceResolver(applicationDomain:ApplicationDomain):void {
-			_arrayCollectionClass = ClassUtils.forName(MXCOLLECTIONS_ARRAY_COLLECTION_CLASSNAME, applicationDomain);
 		}
 
 		/**
@@ -70,13 +65,23 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 			return property;
 		}
 
+		/**
+		 * Return <code>true</code> if the <code>ArrayCollectionReferenceResolver</code> is able to be instantiated. This method determines this
+		 * by trying to retrieve the <code>Class</code> object for the <code>mx.collections.ArrayCollection</code> class name.
+		 * @param applicationDomain
+		 * @return
+		 */
 		public static function canCreate(applicationDomain:ApplicationDomain):Boolean {
-			try {
-				ClassUtils.forName(MXCOLLECTIONS_ARRAY_COLLECTION_CLASSNAME, applicationDomain);
-			} catch (e:Error) {
-				return false;
+			if (_arrayCollectionClass == null) {
+				try {
+					_arrayCollectionClass = ClassUtils.forName(MXCOLLECTIONS_ARRAY_COLLECTION_CLASSNAME, applicationDomain);
+				} catch (e:Error) {
+					return false;
+				}
+				return true;
+			} else {
+				return true;
 			}
-			return true;
 		}
 	}
 }

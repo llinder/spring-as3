@@ -15,9 +15,7 @@
 */
 package org.springextensions.actionscript.context.impl {
 	import flash.events.Event;
-	import flash.events.TimerEvent;
 	import flash.system.ApplicationDomain;
-	import flash.utils.Timer;
 	import flash.utils.setTimeout;
 
 	import mockolate.mock;
@@ -26,13 +24,10 @@ package org.springextensions.actionscript.context.impl {
 	import mockolate.stub;
 	import mockolate.verify;
 
-	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.OperationEvent;
 	import org.flexunit.asserts.assertEquals;
-	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertStrictlyEquals;
-	import org.flexunit.asserts.assertTrue;
 	import org.flexunit.async.Async;
 	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
@@ -78,18 +73,23 @@ package org.springextensions.actionscript.context.impl {
 			super();
 		}
 
+		[Before]
+		public function setUp():void {
+			objectFactory = nice(IAutowireProcessorAwareObjectFactory);
+			stub(objectFactory).method("addObjectFactoryPostProcessor").args(anything());
+			stub(objectFactory).method("addReferenceResolver").args(anything());
+		}
+
 		[Test]
 		public function testAddDefinitionProvider():void {
-			objectFactory = nice(IAutowireProcessorAwareObjectFactory);
 			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
 			context.addDefinitionProvider(objectDefinitionProvider);
 			assertEquals(1, context.definitionProviders.length);
+			verify(objectFactory);
 		}
 
 		[Test]
 		public function testCompositedMembers():void {
-			objectFactory = nice(IAutowireProcessorAwareObjectFactory);
-
 			mock(objectFactory).method("addObjectFactoryPostProcessor").args(null).once();
 			mock(objectFactory).method("addObjectPostProcessor").args(null).once();
 			mock(objectFactory).method("addReferenceResolver").args(null).once();

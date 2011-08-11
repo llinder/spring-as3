@@ -16,7 +16,6 @@
 package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	import flash.system.ApplicationDomain;
 	import flash.utils.Dictionary;
-
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
@@ -31,15 +30,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	 * @author Roland Zwaga
 	 */
 	public class DefaultObjectDefinitionRegistry implements IObjectDefinitionRegistry, IDisposable, IApplicationDomainAware {
-
-		private var _objectDefinitions:Object;
-		private var _objectDefinitionNameLookup:Dictionary;
-		private var _objectDefinitionList:Vector.<IObjectDefinition>;
-		private var _objectDefinitionMetadataLookup:Dictionary;
-		private var _objectDefinitionNames:Vector.<String>;
-		private var _objectDefinitionClasses:Vector.<Class>;
-		private var _isDisposed:Boolean;
-		private var _applicationDomain:ApplicationDomain;
+		private static const IS_SINGLETON_FIELD_NAME:String = "isSingleton";
 
 		/**
 		 * Creates a new <code>DefaultObjectDefinitionRegistry</code> instance.
@@ -50,23 +41,97 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			initDefaultObjectDefinitionRegistry();
 		}
 
-		protected function initDefaultObjectDefinitionRegistry():void {
-			_objectDefinitions = {};
-			_objectDefinitionList = new Vector.<IObjectDefinition>();
-			_objectDefinitionNames = new Vector.<String>();
-			_objectDefinitionClasses = new Vector.<Class>();
-			_objectDefinitionMetadataLookup = new Dictionary();
-			_objectDefinitionNameLookup = new Dictionary();
+		private var _applicationDomain:ApplicationDomain;
+		private var _isDisposed:Boolean;
+		private var _objectDefinitionClasses:Vector.<Class>;
+		private var _objectDefinitionList:Vector.<IObjectDefinition>;
+		private var _objectDefinitionMetadataLookup:Dictionary;
+		private var _objectDefinitionNameLookup:Dictionary;
+		private var _objectDefinitionNames:Vector.<String>;
+		private var _objectDefinitions:Object;
+
+		/**
+		 * @inheritDoc
+		 */
+		public function set applicationDomain(value:ApplicationDomain):void {
+			_applicationDomain = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function get isDisposed():Boolean {
+			return _isDisposed;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get numObjectDefinitions():uint {
+			return _objectDefinitionNames.length;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get objectDefinitionNames():Vector.<String> {
+			return _objectDefinitionNames;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function containsObjectDefinition(objectName:String):Boolean {
 			return _objectDefinitions.hasOwnProperty(objectName);
 		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function dispose():void {
+			if (!_isDisposed) {
+				_objectDefinitions = null;
+				_objectDefinitionNames = null;
+				_objectDefinitionClasses = null;
+				_objectDefinitionMetadataLookup = null;
+				_objectDefinitionList = null;
+				_objectDefinitionNames = null;
+				_isDisposed = true;
+			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function getDefinitionNamesWithPropertyValue(propertyName:String, propertyValue:*):Vector.<String> {
+			var result:Vector.<String>;
+			for each (var name:String in _objectDefinitionNames) {
+				var definition:IObjectDefinition = getObjectDefinition(name);
+				if (definition[propertyName] == propertyValue) {
+					result ||= Vector.<String>();
+					result[result.length] = name;
+				}
+			}
+			return result;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function getObjectDefinition(objectName:String):IObjectDefinition {
 			return _objectDefinitions[objectName] as IObjectDefinition;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function getObjectDefinitionName(objectDefinition:IObjectDefinition):String {
+			return _objectDefinitionNameLookup[objectDefinition] as String;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function getObjectDefinitionsForType(type:Class):Vector.<IObjectDefinition> {
 			var result:Vector.<IObjectDefinition>;
 			for each (var definition:IObjectDefinition in _objectDefinitionList) {
@@ -78,6 +143,9 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			return result;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function getObjectDefinitionsWithMetadata(metadataNames:Vector.<String>):Vector.<IObjectDefinition> {
 			var result:Vector.<IObjectDefinition>;
 			for each (var name:String in metadataNames) {
@@ -91,6 +159,9 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			return result;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function getObjectNamesForType(type:Class):Vector.<String> {
 			var result:Vector.<String>;
 			for each (var name:String in _objectDefinitionNames) {
@@ -103,6 +174,31 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			return result;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function getPrototypes():Vector.<String> {
+			return getDefinitionNamesWithPropertyValue(IS_SINGLETON_FIELD_NAME, false);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function getSingletons(lazyInit:Boolean=false):Vector.<String> {
+			var result:Vector.<String>;
+			for each (var name:String in _objectDefinitionNames) {
+				var definition:IObjectDefinition = getObjectDefinition(name);
+				if ((definition.isSingleton) && (definition.isLazyInit == lazyInit)) {
+					result ||= Vector.<String>();
+					result[result.length] = name;
+				}
+			}
+			return result;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function getType(objectName:String):Class {
 			var objectDefinition:IObjectDefinition = getObjectDefinition(objectName);
 			if (objectDefinition != null) {
@@ -112,27 +208,31 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			}
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function getUsedTypes():Vector.<Class> {
 			return _objectDefinitionClasses;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function isPrototype(objectName:String):Boolean {
 			var objectDefinition:IObjectDefinition = getObjectDefinition(objectName);
 			return (objectDefinition != null) ? !objectDefinition.isSingleton : false;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function isSingleton(objectName:String):Boolean {
 			return !(isPrototype(objectName));
 		}
 
-		public function get numObjectDefinitions():uint {
-			return _objectDefinitionNames.length;
-		}
-
-		public function get objectDefinitionNames():Vector.<String> {
-			return _objectDefinitionNames;
-		}
-
+		/**
+		 * @inheritDoc
+		 */
 		public function registerObjectDefinition(objectName:String, objectDefinition:IObjectDefinition):void {
 			if (!containsObjectDefinition(objectName)) {
 				_objectDefinitionNameLookup[objectDefinition] = objectName;
@@ -150,6 +250,13 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			}
 		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function removeObjectDefinition(objectName:String):void {
+			throw new Error("Not implemented yet!");
+		}
+
 		protected function addToMetadataLookup(objectDefinition:IObjectDefinition):void {
 			var type:Type = Type.forName(objectDefinition.className, _applicationDomain);
 			for each (var metadata:Metadata in type.metadata) {
@@ -159,56 +266,13 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			}
 		}
 
-		public function removeObjectDefinition(objectName:String):void {
-			throw new Error("Not implemented yet!");
+		protected function initDefaultObjectDefinitionRegistry():void {
+			_objectDefinitions = {};
+			_objectDefinitionList = new Vector.<IObjectDefinition>();
+			_objectDefinitionNames = new Vector.<String>();
+			_objectDefinitionClasses = new Vector.<Class>();
+			_objectDefinitionMetadataLookup = new Dictionary();
+			_objectDefinitionNameLookup = new Dictionary();
 		}
-
-		public function get isDisposed():Boolean {
-			return _isDisposed;
-		}
-
-		public function dispose():void {
-			if (!_isDisposed) {
-				_objectDefinitions = null;
-				_objectDefinitionNames = null;
-				_objectDefinitionClasses = null;
-				_objectDefinitionMetadataLookup = null;
-				_objectDefinitionList = null;
-				_objectDefinitionNames = null;
-				_isDisposed = true;
-			}
-		}
-
-		public function set applicationDomain(value:ApplicationDomain):void {
-			_applicationDomain = value;
-		}
-
-		public function getObjectDefinitionName(objectDefinition:IObjectDefinition):String {
-			return _objectDefinitionNameLookup[objectDefinition] as String;
-		}
-
-		public function getSingletons(lazyInit:Boolean=false):Vector.<String> {
-			var result:Vector.<String>;
-			for each (var name:String in _objectDefinitionNames) {
-				var definition:IObjectDefinition = getObjectDefinition(name);
-				if ((definition.isSingleton) && (definition.isLazyInit == lazyInit)) {
-					result ||= Vector.<String>();
-					result[result.length] = name;
-				}
-			}
-			return result;
-		}
-
-		public function getPrototypes():Vector.<String> {
-			var result:Vector.<String>;
-			for each (var name:String in _objectDefinitionNames) {
-				if (!getObjectDefinition(name).isSingleton) {
-					result ||= Vector.<String>();
-					result[result.length] = name;
-				}
-			}
-			return result;
-		}
-
 	}
 }

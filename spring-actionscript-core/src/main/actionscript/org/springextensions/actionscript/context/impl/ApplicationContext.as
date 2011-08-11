@@ -43,8 +43,18 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactory;
+	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayCollectionReferenceResolver;
+	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayReferenceResolver;
+	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.DictionaryReferenceResolver;
+	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ObjectReferenceResolver;
+	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ThisReferenceResolver;
+	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.VectorReferenceResolver;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.process.impl.object.ApplicationDomainAwarePostProcessor;
+	import org.springextensions.actionscript.ioc.factory.process.impl.object.EventBusAwareObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.process.impl.object.ObjectFactoryAwarePostProcessor;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjector;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -56,6 +66,7 @@ package org.springextensions.actionscript.context.impl {
 	 * @author Roland Zwaga
 	 */
 	public class ApplicationContext extends EventDispatcher implements IApplicationContext, IDisposable {
+
 		private static const APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME:String = "applicationContextPropertiesLoader";
 		private static const DEFINITION_PROVIDER_QUEUE_NAME:String = "definitionProviderQueue";
 		private static const NEWLINE_CHAR:String = "\n";
@@ -84,34 +95,6 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function addDefinitionProvider(provider:IObjectDefinitionsProvider):void {
-			definitionProviders[definitionProviders.length] = provider;
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void {
-			_objectFactory.addObjectFactoryPostProcessor(objectFactoryPostProcessor);
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void {
-			_objectFactory.addObjectPostProcessor(objectPostProcessor);
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function addReferenceResolver(referenceResolver:IReferenceResolver):void {
-			_objectFactory.addReferenceResolver(referenceResolver);
-		}
-
-		/**
-		 * @inheritDoc
-		 */
 		public function get applicationDomain():ApplicationDomain {
 			return _objectFactory.applicationDomain;
 		}
@@ -128,13 +111,6 @@ package org.springextensions.actionscript.context.impl {
 		 */
 		public function get cache():IInstanceCache {
 			return _objectFactory.cache;
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function createInstance(clazz:Class, constructorArguments:Array=null):* {
-			return _objectFactory.createInstance(clazz, constructorArguments);
 		}
 
 		/**
@@ -159,40 +135,6 @@ package org.springextensions.actionscript.context.impl {
 		}
 
 		/**
-		 * Clears, disposes and nulls out every member of the current <code>ApplicationContext</code>.
-		 */
-		public function dispose():void {
-			if (!_isDisposed) {
-				try {
-					ContextUtils.disposeInstance(_propertiesLoader);
-					_propertiesLoader = null;
-
-					ContextUtils.disposeInstance(_objectFactory);
-					_objectFactory = null;
-
-					_definitionProviders = null;
-
-					if (_eventBus != null) {
-						_eventBus.clear();
-					}
-					ContextUtils.disposeInstance(_eventBus);
-					_eventBus = null;
-
-					_operationQueue = null;
-					_rootView = null;
-
-					if (_stageProcessorRegistry != null) {
-						_stageProcessorRegistry.clear();
-					}
-					ContextUtils.disposeInstance(_stageProcessorRegistry);
-					_stageProcessorRegistry = null;
-				} finally {
-					_isDisposed = true;
-				}
-			}
-		}
-
-		/**
 		 * @inheritDoc
 		 */
 		public function get eventBus():IEventBus {
@@ -208,20 +150,6 @@ package org.springextensions.actionscript.context.impl {
 			} else {
 				_eventBus = value;
 			}
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function getObject(name:String, constructorArguments:Array=null):* {
-			return _objectFactory.getObject(name, constructorArguments);
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function getObjectDefinition(objectName:String):IObjectDefinition {
-			return _objectFactory.getObjectDefinition(objectName);
 		}
 
 		/**
@@ -243,31 +171,6 @@ package org.springextensions.actionscript.context.impl {
 		 */
 		public function set isReady(value:Boolean):void {
 			_objectFactory.isReady = true;
-		}
-
-		public function load():void {
-			if (!isReady) {
-				_operationQueue = new OperationQueue(DEFINITION_PROVIDER_QUEUE_NAME);
-				for each (var provider:IObjectDefinitionsProvider in definitionProviders) {
-					var operation:IOperation = provider.createDefinitions();
-					if (operation != null) {
-						operation.addCompleteListener(providerCompleteHandler, false, 0, true);
-						_operationQueue.addOperation(operation);
-					} else {
-						registerObjectDefinitions(provider.objectDefinitions);
-						if (provider.propertyURIs != null) {
-							loadPropertyURIs(provider.propertyURIs);
-						}
-					}
-				}
-				if (_operationQueue.total > 0) {
-					_operationQueue.addCompleteListener(providersLoadedHandler);
-					_operationQueue.addErrorListener(providersLoadErrorHandler);
-				} else {
-					_operationQueue = null;
-					cleanUpObjectDefinitionCreation();
-				}
-			}
 		}
 
 		/**
@@ -362,13 +265,6 @@ package org.springextensions.actionscript.context.impl {
 		}
 
 		/**
-		 * @private
-		 */
-		public function resolveReference(property:*):* {
-			return _objectFactory.resolveReference(property);
-		}
-
-		/**
 		 * @inheritDoc
 		 */
 		public function get rootView():DisplayObject {
@@ -387,6 +283,124 @@ package org.springextensions.actionscript.context.impl {
 		 */
 		public function set stageProcessorRegistry(value:IStageObjectProcessorRegistry):void {
 			_stageProcessorRegistry = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function addDefinitionProvider(provider:IObjectDefinitionsProvider):void {
+			definitionProviders[definitionProviders.length] = provider;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void {
+			_objectFactory.addObjectFactoryPostProcessor(objectFactoryPostProcessor);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void {
+			_objectFactory.addObjectPostProcessor(objectPostProcessor);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function addReferenceResolver(referenceResolver:IReferenceResolver):void {
+			_objectFactory.addReferenceResolver(referenceResolver);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function createInstance(clazz:Class, constructorArguments:Array=null):* {
+			return _objectFactory.createInstance(clazz, constructorArguments);
+		}
+
+		/**
+		 * Clears, disposes and nulls out every member of the current <code>ApplicationContext</code>.
+		 */
+		public function dispose():void {
+			if (!_isDisposed) {
+				try {
+					ContextUtils.disposeInstance(_propertiesLoader);
+					_propertiesLoader = null;
+
+					ContextUtils.disposeInstance(_objectFactory);
+					_objectFactory = null;
+
+					_definitionProviders = null;
+
+					if (_eventBus != null) {
+						_eventBus.clear();
+					}
+					ContextUtils.disposeInstance(_eventBus);
+					_eventBus = null;
+
+					_operationQueue = null;
+					_rootView = null;
+
+					if (_stageProcessorRegistry != null) {
+						_stageProcessorRegistry.clear();
+					}
+					ContextUtils.disposeInstance(_stageProcessorRegistry);
+					_stageProcessorRegistry = null;
+				} finally {
+					_isDisposed = true;
+				}
+			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function getObject(name:String, constructorArguments:Array=null):* {
+			return _objectFactory.getObject(name, constructorArguments);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function getObjectDefinition(objectName:String):IObjectDefinition {
+			return _objectFactory.getObjectDefinition(objectName);
+		}
+
+		/**
+		 *
+		 */
+		public function load():void {
+			if (!isReady) {
+				_operationQueue = new OperationQueue(DEFINITION_PROVIDER_QUEUE_NAME);
+				for each (var provider:IObjectDefinitionsProvider in definitionProviders) {
+					var operation:IOperation = provider.createDefinitions();
+					if (operation != null) {
+						operation.addCompleteListener(providerCompleteHandler, false, 0, true);
+						_operationQueue.addOperation(operation);
+					} else {
+						registerObjectDefinitions(provider.objectDefinitions);
+						if (provider.propertyURIs != null) {
+							loadPropertyURIs(provider.propertyURIs);
+						}
+					}
+				}
+				if (_operationQueue.total > 0) {
+					_operationQueue.addCompleteListener(providersLoadedHandler);
+					_operationQueue.addErrorListener(providersLoadErrorHandler);
+				} else {
+					_operationQueue = null;
+					cleanUpObjectDefinitionCreation();
+				}
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		public function resolveReference(property:*):* {
+			return _objectFactory.resolveReference(property);
 		}
 
 		/**
@@ -418,7 +432,6 @@ package org.springextensions.actionscript.context.impl {
 			ContextUtils.disposeInstance(_propertiesLoader);
 			_propertiesLoader = null;
 			_objectFactory.isReady = true;
-			instantiateSingletons();
 			executeObjectFactoryPostProcessors();
 		}
 
@@ -509,6 +522,17 @@ package org.springextensions.actionscript.context.impl {
 			_definitionProviders = new Vector.<IObjectDefinitionsProvider>();
 			_objectFactory = objFactory ||= createDefaultObjectFactory(parent);
 			_rootView = rootView;
+
+			_objectFactory.addObjectFactoryPostProcessor(new RegisterObjectPostProcessorsFactoryPostProcessor());
+
+			_objectFactory.addReferenceResolver(new ThisReferenceResolver(this));
+			_objectFactory.addReferenceResolver(new ObjectReferenceResolver(this));
+			_objectFactory.addReferenceResolver(new ArrayReferenceResolver(this));
+			_objectFactory.addReferenceResolver(new DictionaryReferenceResolver(this));
+			_objectFactory.addReferenceResolver(new VectorReferenceResolver(this));
+			if (ArrayCollectionReferenceResolver.canCreate(applicationDomain)) {
+				_objectFactory.addReferenceResolver(new ArrayCollectionReferenceResolver(this));
+			}
 		}
 
 		/**

@@ -15,7 +15,6 @@
  */
 package org.springextensions.actionscript.ioc.objectdefinition {
 	import flash.system.ApplicationDomain;
-
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
 
 	/**
@@ -33,19 +32,19 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		// --------------------------------------------------------------------
 
 		/**
+		 * The number of object definitions in this registry.
+		 *
+		 * @return the number of object definitions in this registry
+		 */
+		function get numObjectDefinitions():uint;
+
+		/**
 		 * The names of the registered object definitions.
 		 *
 		 * @return an array with all registered object definition names, or an empty array if no definitions are
 		 * registered
 		 */
 		function get objectDefinitionNames():Vector.<String>;
-
-		/**
-		 * The number of object definitions in this registry.
-		 *
-		 * @return the number of object definitions in this registry
-		 */
-		function get numObjectDefinitions():uint;
 
 		// --------------------------------------------------------------------
 		//
@@ -65,15 +64,81 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		function containsObjectDefinition(objectName:String):Boolean;
 
 		/**
-		 * Determines if the definition with the given name is a singleton.
+		 *
+		 * @return
+		 *
+		 */
+		function getDefinitionNamesWithPropertyValue(propertyName:String, propertyValue:*):Vector.<String>;
+
+		/**
+		 * Returns the object definition registered with the given name. If the object
+		 * definition does not exist <code>undefined</code> will be returned.
+		 *
+		 * @throws org.springextensions.actionscript.ioc.factory.NoSuchObjectDefinitionError if the object definition was not found in the registry
+		 *
+		 * @param objectName the name/id of the definition to retrieve
+		 *
+		 * @return the registered object definition
+		 */
+		function getObjectDefinition(objectName:String):IObjectDefinition;
+
+		/**
+		 *
+		 * @param objectDefinition
+		 * @return
+		 *
+		 */
+		function getObjectDefinitionName(objectDefinition:IObjectDefinition):String;
+
+		/**
+		 * Returns the object definitions in this registry that are of
+		 * the specified <code>Class</code>.
+		 * @param type The specified <code>Class</code> that is searched for.
+		 * @return an array containing definitions that implement the specified <code>Class</code>.
+		 */
+		function getObjectDefinitionsForType(type:Class):Vector.<IObjectDefinition>;
+
+		/**
+		 *
+		 * @param metadataNames
+		 * @return
+		 */
+		function getObjectDefinitionsWithMetadata(metadataNames:Vector.<String>):Vector.<IObjectDefinition>;
+
+		/**
+		 * @param type
+		 * @return
+		 */
+		function getObjectNamesForType(type:Class):Vector.<String>;
+		/**
+		 *
+		 * @return
+		 */
+		function getPrototypes():Vector.<String>;
+
+		/**
+		 *
+		 * @return
+		 */
+		function getSingletons(lazyInit:Boolean=false):Vector.<String>;
+
+		/**
+		 * Returns the type that is defined on the object definition.
 		 *
 		 * @param objectName  The name/id  of the object definition
 		 *
-		 * @return true if the definitions is defined as a singleton
+		 * @return the class that is used to construct the object
 		 *
 		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
 		 */
-		function isSingleton(objectName:String):Boolean;
+		function getType(objectName:String):Class;
+
+		/**
+		 * Returns a unique list of all <code>Classes</code> that are used by the <code>IObjectDefinitions</code>
+		 * in the current <code>IObjectDefinitionRegistry</code>.
+		 * @return A unique list of all <code>Classes</code>.
+		 */
+		function getUsedTypes():Vector.<Class>;
 
 		/**
 		 * Determines if the definition with the given name is a prototype.
@@ -87,15 +152,15 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		function isPrototype(objectName:String):Boolean;
 
 		/**
-		 * Returns the type that is defined on the object definition.
+		 * Determines if the definition with the given name is a singleton.
 		 *
 		 * @param objectName  The name/id  of the object definition
 		 *
-		 * @return the class that is used to construct the object
+		 * @return true if the definitions is defined as a singleton
 		 *
 		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
 		 */
-		function getType(objectName:String):Class;
+		function isSingleton(objectName:String):Boolean;
 
 		/**
 		 * Registers the given objectDefinition under the given name.
@@ -111,64 +176,5 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @param objectName  The name/id of the definition to remove
 		 */
 		function removeObjectDefinition(objectName:String):void;
-
-		/**
-		 * Returns the object definition registered with the given name. If the object
-		 * definition does not exist <code>undefined</code> will be returned.
-		 *
-		 * @throws org.springextensions.actionscript.ioc.factory.NoSuchObjectDefinitionError if the object definition was not found in the registry
-		 *
-		 * @param objectName the name/id of the definition to retrieve
-		 *
-		 * @return the registered object definition
-		 */
-		function getObjectDefinition(objectName:String):IObjectDefinition;
-
-		/**
-		 * Returns the object definitions in this registry that are of
-		 * the specified <code>Class</code>.
-		 * @param type The specified <code>Class</code> that is searched for.
-		 * @return an array containing definitions that implement the specified <code>Class</code>.
-		 */
-		function getObjectDefinitionsForType(type:Class):Vector.<IObjectDefinition>;
-
-		/**
-		 * @param type
-		 * @return
-		 */
-		function getObjectNamesForType(type:Class):Vector.<String>;
-
-		/**
-		 * Returns a unique list of all <code>Classes</code> that are used by the <code>IObjectDefinitions</code>
-		 * in the current <code>IObjectDefinitionRegistry</code>.
-		 * @return A unique list of all <code>Classes</code>.
-		 */
-		function getUsedTypes():Vector.<Class>;
-
-		/**
-		 *
-		 * @param metadataNames
-		 * @return
-		 */
-		function getObjectDefinitionsWithMetadata(metadataNames:Vector.<String>):Vector.<IObjectDefinition>;
-
-		/**
-		 *
-		 * @param objectDefinition
-		 * @return
-		 *
-		 */
-		function getObjectDefinitionName(objectDefinition:IObjectDefinition):String;
-
-		/**
-		 *
-		 * @return
-		 */
-		function getSingletons(lazyInit:Boolean=false):Vector.<String>;
-		/**
-		 *
-		 * @return
-		 */
-		function getPrototypes():Vector.<String>;
 	}
 }

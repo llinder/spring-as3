@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.object {
-
 	import flash.system.ApplicationDomain;
-
 	import org.springextensions.actionscript.util.TypeUtils;
 
 	/**
 	 * Simple implementation of the <code>ITypeConverter</code> interface.
-	 *
-	 * <p>
-	 * <b>Author:</b> Christophe Herreman<br/>
-	 * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
-	 * <b>Since:</b> 0.1
-	 * </p>
+	 * @author Roland Zwaga
+	 * @author Christophe Herreman
 	 */
 	public class SimpleTypeConverter extends PropertyEditorRegistrySupport implements ITypeConverter {
 
@@ -40,7 +34,7 @@ package org.springextensions.actionscript.object {
 		/**
 		 * @inheritDoc
 		 */
-		public function convertIfNecessary(value:*, requiredType:Class = null):* {
+		public function convertIfNecessary(value:*, requiredType:Class=null):* {
 			if (!requiredType) {
 				requiredType = TypeUtils.resolveType(value.toString());
 			}

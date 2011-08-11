@@ -14,9 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.context {
-
 	import flash.display.DisplayObject;
-
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesLoader;
@@ -29,8 +27,6 @@ package org.springextensions.actionscript.context {
 	 * @author Roland Zwaga
 	 */
 	public interface IApplicationContext extends IObjectFactory, IStageObjectProcessorRegistryAware {
-
-		function addDefinitionProvider(provider:IObjectDefinitionsProvider):void;
 		/**
 		 *
 		 */
@@ -39,7 +35,11 @@ package org.springextensions.actionscript.context {
 		/**
 		 *
 		 */
-		function get rootView():DisplayObject;
+		function get propertiesLoader():IPropertiesLoader;
+		/**
+		 * @private
+		 */
+		function set propertiesLoader(value:IPropertiesLoader):void;
 
 		/**
 		 *
@@ -53,11 +53,13 @@ package org.springextensions.actionscript.context {
 		/**
 		 *
 		 */
-		function get propertiesLoader():IPropertiesLoader;
+		function get rootView():DisplayObject;
+
 		/**
-		 * @private
+		 *
+		 * @param provider
 		 */
-		function set propertiesLoader(value:IPropertiesLoader):void;
+		function addDefinitionProvider(provider:IObjectDefinitionsProvider):void;
 
 		/**
 		 *

@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.test {
+
 	import org.springextensions.actionscript.context.impl.ApplicationContextTest;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
 	import org.springextensions.actionscript.ioc.config.property.impl.KeyValuePropertiesParserTest;
@@ -26,6 +27,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ObjectReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ThisReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.VectorReferenceResolverTest;
+	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessorTest;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjectorTest;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistryTest;
 	import org.springextensions.actionscript.object.SimpleTypeConverterTest;
@@ -60,5 +62,6 @@ package org.springextensions.actionscript.test {
 		public var t19:DefaultObjectDefinitionRegistryTest;
 		public var t20:ContextUtilsTest;
 		public var t21:MultilineStringTest;
+		public var t22:RegisterObjectPostProcessorsFactoryPostProcessorTest;
 	}
 }

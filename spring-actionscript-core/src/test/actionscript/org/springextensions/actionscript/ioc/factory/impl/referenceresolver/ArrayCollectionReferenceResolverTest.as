@@ -29,6 +29,12 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 			super();
 		}
 
+		[Before]
+		override public function setUp():void {
+			ArrayCollectionReferenceResolver.canCreate(applicationDomain);
+			super.setUp();
+		}
+
 		[Test]
 		public function testCanResolveWithArrayCollection():void {
 			var resolver:ArrayCollectionReferenceResolver = new ArrayCollectionReferenceResolver(factory);
