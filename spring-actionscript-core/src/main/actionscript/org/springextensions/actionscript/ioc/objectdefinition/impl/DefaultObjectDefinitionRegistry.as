@@ -187,5 +187,28 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			return _objectDefinitionNameLookup[objectDefinition] as String;
 		}
 
+		public function getSingletons(lazyInit:Boolean=false):Vector.<String> {
+			var result:Vector.<String>;
+			for each (var name:String in _objectDefinitionNames) {
+				var definition:IObjectDefinition = getObjectDefinition(name);
+				if ((definition.isSingleton) && (definition.isLazyInit == lazyInit)) {
+					result ||= Vector.<String>();
+					result[result.length] = name;
+				}
+			}
+			return result;
+		}
+
+		public function getPrototypes():Vector.<String> {
+			var result:Vector.<String>;
+			for each (var name:String in _objectDefinitionNames) {
+				if (!getObjectDefinition(name).isSingleton) {
+					result ||= Vector.<String>();
+					result[result.length] = name;
+				}
+			}
+			return result;
+		}
+
 	}
 }

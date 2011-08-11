@@ -27,14 +27,12 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.flexunit.asserts.assertTrue;
 	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
-	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
-	import org.springextensions.actionscript.ioc.spring_actionscript_internal;
 	import org.springextensions.actionscript.test.testtypes.ClassWithStaticFactoryMethod;
 	import org.springextensions.actionscript.test.testtypes.TestClassFactory;
 

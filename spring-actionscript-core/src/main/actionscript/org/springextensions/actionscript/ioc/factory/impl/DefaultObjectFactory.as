@@ -25,6 +25,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.as3commons.lang.ClassNotFoundError;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
+	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.StringUtils;
 	import org.as3commons.lang.util.OrderedUtils;
 	import org.as3commons.reflect.Method;
@@ -47,16 +48,17 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.error.ObjectDefinitionNotFoundError;
-	import org.springextensions.actionscript.ioc.spring_actionscript_internal;
+	import org.springextensions.actionscript.util.ContextUtils;
 
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class DefaultObjectFactory extends EventDispatcher implements IObjectFactory, IEventBusAware, IAutowireProcessorAware {
+	public class DefaultObjectFactory extends EventDispatcher implements IObjectFactory, IEventBusAware, IAutowireProcessorAware, IDisposable {
 
 		public static const OBJECT_FACTORY_PREFIX:String = "&";
 		private static const NON_LAZY_SINGLETON_CTOR_ARGS_ERROR:String = "The object definition for '{0}' is not lazy. Constructor arguments can only be supplied for lazy instantiating objects.";
+		private static const OBJECT_DEFINITION_NOT_FOUND_ERROR:String = "An object definition for '{0}' was not found.";
 
 		/**
 		 * Creates a new <code>DefaultObjectFactory</code> instance.
@@ -81,26 +83,42 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _properties:Properties;
 		private var _propertiesProvider:IPropertiesProvider;
 		private var _referenceResolvers:Vector.<IReferenceResolver>;
+		private var _isDisposed:Boolean;
 
+		/**
+		 * @inheritDoc
+		 */
 		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void {
 			objectFactoryPostProcessors[objectFactoryPostProcessors.length] = objectFactoryPostProcessor;
 			_objectFactoryPostProcessors.sort(OrderedUtils.orderedCompareFunction);
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void {
 			objectPostProcessors[objectPostProcessors.length] = objectPostProcessor;
 			_objectPostProcessors.sort(OrderedUtils.orderedCompareFunction);
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function addReferenceResolver(referenceResolver:IReferenceResolver):void {
 			referenceResolvers[referenceResolvers.length] = referenceResolver;
 			_referenceResolvers.sort(OrderedUtils.orderedCompareFunction);
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get applicationDomain():ApplicationDomain {
 			return _applicationDomain;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set applicationDomain(value:ApplicationDomain):void {
 			value ||= ApplicationDomain.currentDomain;
 			_applicationDomain = value;
@@ -110,22 +128,37 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get autowireProcessor():IAutowireProcessor {
 			return _autowireProcessor;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set autowireProcessor(value:IAutowireProcessor):void {
 			_autowireProcessor = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get cache():IInstanceCache {
 			return _cache;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set cache(value:IInstanceCache):void {
 			_cache = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function createInstance(clazz:Class, constructorArguments:Array=null):* {
 			Assert.notNull(clazz, "The clazz arguments must not be null");
 			if (!_isReady) {
@@ -138,22 +171,37 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return result;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get dependencyInjector():IDependencyInjector {
 			return _dependencyInjector;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set dependencyInjector(value:IDependencyInjector):void {
 			_dependencyInjector = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get eventBus():IEventBus {
 			return _eventBus;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set eventBus(value:IEventBus):void {
 			_eventBus = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function getObject(name:String, constructorArguments:Array=null):* {
 			Assert.hasText(name, "name parameter must not be empty");
 			if (!_isReady) {
@@ -183,18 +231,30 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return result;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get isReady():Boolean {
 			return _isReady;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set isReady(value:Boolean):void {
 			_isReady = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get objectDefinitionRegistry():IObjectDefinitionRegistry {
 			return _objectDefinitionRegistry;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
 			_objectDefinitionRegistry = value;
 			var appDomainAware:IApplicationDomainAware = (_objectDefinitionRegistry as IApplicationDomainAware);
@@ -203,6 +263,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function getObjectDefinition(objectName:String):IObjectDefinition {
 			if (_objectDefinitionRegistry != null) {
 				return _objectDefinitionRegistry.getObjectDefinition(objectName);
@@ -210,6 +273,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return null;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor> {
 			if (_objectFactoryPostProcessors == null) {
 				_objectFactoryPostProcessors = new Vector.<IObjectFactoryPostProcessor>();
@@ -217,6 +283,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return _objectFactoryPostProcessors;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get objectPostProcessors():Vector.<IObjectPostProcessor> {
 			if (_objectPostProcessors == null) {
 				_objectPostProcessors = new Vector.<IObjectPostProcessor>();
@@ -224,22 +293,37 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return _objectPostProcessors;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get parent():IObjectFactory {
 			return _parent;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set parent(value:IObjectFactory):void {
 			_parent = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get propertiesProvider():IPropertiesProvider {
 			return _propertiesProvider;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set propertiesProvider(value:IPropertiesProvider):void {
 			_propertiesProvider = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get referenceResolvers():Vector.<IReferenceResolver> {
 			if (_referenceResolvers == null) {
 				_referenceResolvers = new Vector.<IReferenceResolver>();
@@ -247,6 +331,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return _referenceResolvers;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function resolveReference(property:*):* {
 			if (property == null) { // note: don't change this to !property since we might pass in empty strings here
 				return null;
@@ -259,6 +346,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return property;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function resolveReferences(properties:Array):Array {
 			if (properties.length == 0) {
 				return null;
@@ -270,6 +360,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return result;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		protected function buildObject(name:String, constructorArguments:Array):* {
 			var result:*;
 			var isFactoryDereference:Boolean = (name.charAt(0) == OBJECT_FACTORY_PREFIX);
@@ -277,7 +370,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			var objectDefinition:IObjectDefinition = getObjectDefinition(objectName);
 
 			if (!objectDefinition) {
-				return getObjectFromParentFactories(name, constructorArguments);
+				return getObjectFromParentFactory(name, constructorArguments);
 			}
 
 			if (objectDefinition.isSingleton && (constructorArguments && !objectDefinition.isLazyInit)) {
@@ -295,28 +388,40 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			// the object was not found in the cache or in the prepared cache
 			// create a new object from its definition
 			if (!result) {
-				try {
-					result = instantiateClass(objectDefinition, constructorArguments);
-					var evt1:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_CREATED, result, name, constructorArguments);
-					dispatchEvent(evt1);
-					dispatchEventThroughEventBus(evt1);
-					if (dependencyInjector != null) {
-						dependencyInjector.wire(result, this, objectDefinition, objectName);
-						var evt2:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_WIRED, result, name, constructorArguments);
-						dispatchEvent(evt2);
-						dispatchEventThroughEventBus(evt2);
-					}
-				} catch (e:ClassNotFoundError) {
-					throw new ObjectContainerError(e.message, objectName);
-				}
+				result = attemptToInstantiate(objectDefinition, constructorArguments, name, objectName);
 			}
 			return result;
 		}
 
+		protected function attemptToInstantiate(objectDefinition:IObjectDefinition, constructorArguments:Array, name:String, objectName:String):* {
+			var result:* = null;
+			try {
+				var result:* = instantiateClass(objectDefinition, constructorArguments);
+				var evt1:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_CREATED, result, name, constructorArguments);
+				dispatchEvent(evt1);
+				dispatchEventThroughEventBus(evt1);
+				if (dependencyInjector != null) {
+					dependencyInjector.wire(result, this, objectDefinition, objectName);
+					var evt2:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_WIRED, result, name, constructorArguments);
+					dispatchEvent(evt2);
+					dispatchEventThroughEventBus(evt2);
+				}
+			} catch (e:ClassNotFoundError) {
+				throw new ObjectContainerError(e.message, objectName);
+			}
+			return result;
+		}
+
+		/**
+		 *
+		 * @param result
+		 * @param objectName
+		 * @param objectDefinition
+		 */
 		protected function checkDependencies(result:*, objectName:String, objectDefinition:IObjectDefinition):void {
 			if ((!result) || (_cache.isPrepared(objectName))) {
 				// guarantee creation of objects that the current object depends on
-				var dependsOn:Array = objectDefinition.dependsOn;
+				var dependsOn:Vector.<String> = objectDefinition.dependsOn;
 
 				if (dependsOn) {
 					for each (var dependsOnObject:String in dependsOn) {
@@ -326,7 +431,13 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
-
+		/**
+		 *
+		 * @param objectName
+		 * @param methodName
+		 * @param args
+		 * @return
+		 */
 		protected function createObjectViaInstanceFactoryMethod(objectName:String, methodName:String, args:Array=null):* {
 			var factoryObject:Object = getObject(objectName);
 			var factoryObjectMethodInvoker:MethodInvoker = new MethodInvoker();
@@ -336,19 +447,36 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return factoryObjectMethodInvoker.invoke();
 		}
 
+		/**
+		 *
+		 * @param clazz
+		 * @param applicationDomain
+		 * @param factoryMethodName
+		 * @param args
+		 * @return
+		 */
 		protected function createObjectViaStaticFactoryMethod(clazz:Class, applicationDomain:ApplicationDomain, factoryMethodName:String, args:Array=null):* {
 			var type:Type = Type.forClass(clazz, applicationDomain);
 			var factoryMethod:Method = type.getMethod(factoryMethodName);
 			return factoryMethod.invoke(clazz, args);
 		}
 
+		/**
+		 *
+		 * @param evt
+		 *
+		 */
 		protected function dispatchEventThroughEventBus(evt:ObjectFactoryEvent):void {
 			if (_eventBus != null) {
 				_eventBus.dispatchEvent(evt);
 			}
 		}
 
-
+		/**
+		 *
+		 * @param objectName
+		 * @return
+		 */
 		protected function getInstanceFromCache(objectName:String):* {
 			var result:*;
 			if (_cache.hasInstance(objectName)) {
@@ -362,6 +490,12 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			return result;
 		}
 
+		/**
+		 *
+		 * @param objectName
+		 * @param _parent
+		 * @return
+		 */
 		protected function getObjectDefinitionFromParent(objectName:String, _parent:IObjectFactory):IObjectDefinition {
 			var objectDefinition:IObjectDefinition = parent.getObjectDefinition(objectName);
 			if (objectDefinition != null) {
@@ -373,7 +507,13 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
-		protected function getObjectFromParentFactories(objectName:String, constructorArguments:Array):* {
+		/**
+		 *
+		 * @param objectName
+		 * @param constructorArguments
+		 * @return
+		 */
+		protected function getObjectFromParentFactory(objectName:String, constructorArguments:Array):* {
 			if (_parent) {
 				var objectDefinition:IObjectDefinition = getObjectDefinitionFromParent(objectName, _parent);
 				if (objectDefinition && objectDefinition.isSingleton) {
@@ -381,7 +521,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				}
 			}
 			if (!objectDefinition) {
-				throw new ObjectDefinitionNotFoundError("An object definition for '" + objectName + "' was not found.");
+				throw new ObjectDefinitionNotFoundError(StringUtils.substitute(OBJECT_DEFINITION_NOT_FOUND_ERROR, objectName));
 			}
 		}
 
@@ -395,6 +535,12 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
+		/**
+		 *
+		 * @param objectDefinition
+		 * @param constructorArguments
+		 * @return
+		 */
 		protected function instantiateClass(objectDefinition:IObjectDefinition, constructorArguments:Array):* {
 			var clazz:Class = ClassUtils.forName(objectDefinition.className, _applicationDomain);
 
@@ -417,6 +563,43 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				}
 			} else {
 				return ClassUtils.newInstance(clazz, resolvedConstructorArgs);
+			}
+		}
+
+		public function get isDisposed():Boolean {
+			return _isDisposed;
+		}
+
+		public function dispose():void {
+			if (!_isDisposed) {
+				_applicationDomain = null;
+				ContextUtils.disposeInstance(_autowireProcessor);
+				_autowireProcessor = null;
+				ContextUtils.disposeInstance(_cache);
+				_cache = null;
+				ContextUtils.disposeInstance(_dependencyInjector);
+				_dependencyInjector = null;
+				_eventBus.clear();
+				ContextUtils.disposeInstance(_eventBus);
+				_eventBus = null;
+				ContextUtils.disposeInstance(_objectDefinitionRegistry);
+				_objectDefinitionRegistry = null;
+				for each (var factoryPostProcessor:IObjectFactoryPostProcessor in _objectFactoryPostProcessors) {
+					ContextUtils.disposeInstance(factoryPostProcessor);
+				}
+				_objectFactoryPostProcessors = null;
+				for each (var postProcessor:IObjectPostProcessor in _objectFactoryPostProcessors) {
+					ContextUtils.disposeInstance(postProcessor);
+				}
+				_objectPostProcessors = null;
+				_parent = null; //Do NOT dispose the parent!
+				ContextUtils.disposeInstance(_propertiesProvider);
+				_propertiesProvider = null;
+				for each (var resolver:IReferenceResolver in _referenceResolvers) {
+					ContextUtils.disposeInstance(resolver);
+				}
+				_referenceResolvers = null;
+				_isDisposed = true;
 			}
 		}
 	}

@@ -51,7 +51,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			this.properties = {};
 			this.scope = ObjectDefinitionScope.SINGLETON;
 			this.isLazyInit = false;
-			this.dependsOn = [];
+			this.dependsOn = new Vector.<String>();
 			this.autoWireMode = AutowireMode.NO;
 			this.isAutoWireCandidate = true;
 			this.primary = false;
@@ -268,19 +268,19 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		// dependsOn
 		// ----------------------------
 
-		private var _dependsOn:Array;
+		private var _dependsOn:Vector.<String>;
 
 		/**
 		 * @inheritDoc
 		 */
-		public function get dependsOn():Array {
+		public function get dependsOn():Vector.<String> {
 			return _dependsOn;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set dependsOn(value:Array):void {
+		public function set dependsOn(value:Vector.<String>):void {
 			_dependsOn = value;
 		}
 

@@ -170,13 +170,13 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		/**
 		 * Returns the object names that this object depends on.
 		 */
-		function get dependsOn():Array;
+		function get dependsOn():Vector.<String>;
 
 		/**
 		 * Sets the object names that this object depends on. The object factory will guarantee that the dependent
 		 * objects will be created before this object gets created.
 		 */
-		function set dependsOn(value:Array):void;
+		function set dependsOn(value:Vector.<String>):void;
 
 		/**
 		 * Defines the method invocations executed after an object from this definition is created.

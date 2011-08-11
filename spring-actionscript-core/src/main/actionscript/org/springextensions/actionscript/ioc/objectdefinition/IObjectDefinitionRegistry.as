@@ -152,6 +152,23 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 */
 		function getObjectDefinitionsWithMetadata(metadataNames:Vector.<String>):Vector.<IObjectDefinition>;
 
+		/**
+		 *
+		 * @param objectDefinition
+		 * @return
+		 *
+		 */
 		function getObjectDefinitionName(objectDefinition:IObjectDefinition):String;
+
+		/**
+		 *
+		 * @return
+		 */
+		function getSingletons(lazyInit:Boolean=false):Vector.<String>;
+		/**
+		 *
+		 * @return
+		 */
+		function getPrototypes():Vector.<String>;
 	}
 }

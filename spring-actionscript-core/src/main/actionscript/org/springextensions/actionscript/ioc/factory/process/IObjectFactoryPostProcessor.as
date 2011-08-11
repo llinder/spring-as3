@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.factory.process {
+	import org.as3commons.async.operation.IOperation;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 
 	/**
@@ -25,6 +26,6 @@ package org.springextensions.actionscript.ioc.factory.process {
 		 *
 		 * @param objectFactory
 		 */
-		function postProcessObjectFactory(objectFactory:IObjectFactory):void;
+		function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation;
 	}
 }

@@ -16,10 +16,12 @@
 package org.springextensions.actionscript.ioc.autowire.impl {
 
 	import flash.system.ApplicationDomain;
+	import flash.utils.Dictionary;
 
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
+	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.StringUtils;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getLogger;
@@ -53,7 +55,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	 * @docref container-documentation.html#autowiring_stage_components
 	 * @inheritDoc
 	 */
-	public class DefaultAutowireProcessor implements IAutowireProcessor, IObjectFactoryAware, IApplicationDomainAware {
+	public class DefaultAutowireProcessor implements IAutowireProcessor, IObjectFactoryAware, IApplicationDomainAware, IDisposable {
 
 		// --------------------------------------------------------------------
 		//
@@ -136,6 +138,8 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		// ----------------------------
 
 		private var _objectFactory:IObjectFactory;
+		private var _processDefinitions:Dictionary;
+		private var _isDisposed:Boolean;
 
 		public function set applicationDomain(value:ApplicationDomain):void {
 			_applicationDomain = value;
@@ -252,6 +256,10 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		 */
 		public function preprocessObjectDefinition(objectDefinition:IObjectDefinition):void {
 			Assert.notNull(objectDefinition, "The objectDefinition parameter must not be null");
+			if (_processDefinitions[objectDefinition] != null) {
+				return;
+			}
+			_processDefinitions[objectDefinition] = true;
 			var type:Type = Type.forName(objectDefinition.className, _objectFactory.applicationDomain);
 
 			// If configured as AUTODETECT we must decide here whether
@@ -580,6 +588,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		protected function initDefaultAutowireProcessor(objectFactory:IObjectFactory):void {
 			Assert.notNull(objectFactory, "The objectFactory parameter must not be null");
 			_objectFactory = objectFactory;
+			_processDefinitions = new Dictionary(true);
 		}
 
 		/**
@@ -636,6 +645,20 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 					objectName = object.toString();
 				}
 				throw new Error(StringUtils.substitute(AUTOWIRING_ERROR, objectName, fieldName, objectDefinitionName, e.message, e.getStackTrace()));
+			}
+		}
+
+		public function get isDisposed():Boolean {
+			return _isDisposed;
+		}
+
+		public function dispose():void {
+			if (!_isDisposed) {
+				_objectFactory = null;
+				_autowireMetadataNames = null;
+				_processDefinitions = null;
+				_applicationDomain = null;
+				_isDisposed = true;
 			}
 		}
 	}

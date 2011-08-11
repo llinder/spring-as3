@@ -15,17 +15,18 @@
  */
 package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 
+	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.lang.IOrdered;
 	import org.as3commons.lang.ObjectUtils;
 	import org.as3commons.reflect.Accessor;
 	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.ioc.MethodInvocation;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.config.property.IPropertyPlaceholderResolver;
 	import org.springextensions.actionscript.ioc.config.property.impl.PropertyPlaceholderResolver;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
-	import org.springextensions.actionscript.ioc.config.property.IPropertyPlaceholderResolver;
 
 	/**
 	 * @author Christophe Herreman
@@ -122,7 +123,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		//
 		// --------------------------------------------------------------------
 
-		public function postProcessObjectFactory(objectFactory:IObjectFactory):void {
+		public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
 			_objectFactory = objectFactory;
 
 			var resolver:IPropertyPlaceholderResolver = new PropertyPlaceholderResolver(null, _properties, _ignoreUnresolvablePlaceholders);
@@ -139,6 +140,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			//	var singleton:Object = objectFactory.getObject(explicitSingletonName);
 			//	resolvePropertyPlaceholdersForInstance(resolver, singleton);
 			//}
+			return null;
 		}
 
 		// --------------------------------------------------------------------
@@ -157,7 +159,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 * @param resolver the property placeholder resolver used
 		 * @param objectName the name of the definition for which to resolve it property placeholders
 		 */
-		private function resolvePropertyPlaceholdersForObjectName(resolver:IPropertyPlaceholderResolver, objectName:String):void {
+		protected function resolvePropertyPlaceholdersForObjectName(resolver:IPropertyPlaceholderResolver, objectName:String):void {
 			//logger.debug("Resolving property placeholders in object definition '{0}'", objectDefinition.className);
 			var objectDefinition:IObjectDefinition = _objectFactory.getObjectDefinition(objectName);
 
@@ -212,7 +214,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 * @param resolver the property placeholder resolver used
 		 * @param instance the instance for which to resolve its property placeholders
 		 */
-		private function resolvePropertyPlaceholdersForInstance(resolver:IPropertyPlaceholderResolver, instance:Object):void {
+		protected function resolvePropertyPlaceholdersForInstance(resolver:IPropertyPlaceholderResolver, instance:Object):void {
 			if (!resolver && !instance) {
 				return;
 			}

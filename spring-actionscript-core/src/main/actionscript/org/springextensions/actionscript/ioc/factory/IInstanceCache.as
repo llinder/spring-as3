@@ -14,12 +14,13 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory {
+	import flash.events.IEventDispatcher;
 
 	/**
 	 * Describes an object that acts as a cache for object instances.
 	 * @author Roland Zwaga
 	 */
-	public interface IInstanceCache {
+	public interface IInstanceCache extends IEventDispatcher {
 
 		/**
 		 * Adds the specified instance using the specified name.
@@ -76,6 +77,6 @@ package org.springextensions.actionscript.ioc.factory {
 		 * Removes the instance that was associated with the specified name.
 		 * @param name The specified name
 		 */
-		function removeInstance(name:String):void;
+		function removeInstance(name:String):*;
 	}
 }
