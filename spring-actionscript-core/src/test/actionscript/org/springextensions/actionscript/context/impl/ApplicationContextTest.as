@@ -24,7 +24,7 @@ package org.springextensions.actionscript.context.impl {
 	import mockolate.stub;
 	import mockolate.verify;
 
-	import org.as3commons.async.operation.OperationEvent;
+	import org.as3commons.async.operation.event.OperationEvent;
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertStrictlyEquals;

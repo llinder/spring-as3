@@ -15,7 +15,6 @@
 */
 package org.springextensions.actionscript.ioc.autowire.impl {
 	import flash.events.Event;
-	import flash.net.ObjectEncoding;
 	import flash.system.ApplicationDomain;
 
 	import mockolate.mock;
@@ -27,13 +26,13 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertStrictlyEquals;
-	import org.springextensions.actionscript.ioc.AutowireMode;
-	import org.springextensions.actionscript.ioc.DependencyCheckMode;
+	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactory;
+	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;

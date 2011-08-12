@@ -18,9 +18,9 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.IEquals;
 	import org.as3commons.lang.builder.EqualsBuilder;
-	import org.springextensions.actionscript.ioc.AutowireMode;
-	import org.springextensions.actionscript.ioc.DependencyCheckMode;
-	import org.springextensions.actionscript.ioc.MethodInvocation;
+	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
+	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
+	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.ObjectDefinitionScope;
 
@@ -413,7 +413,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		// dependencyCheck
 		// ----------------------------
 
-		private var _dependencyCheck:DependencyCheckMode = DependencyCheckMode.NONE;
+		private var _dependencyCheck:DependencyCheckMode;
 		private var _clazz:Class;
 
 		/**

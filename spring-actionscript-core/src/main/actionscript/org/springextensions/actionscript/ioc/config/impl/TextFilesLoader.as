@@ -15,8 +15,8 @@
 */
 package org.springextensions.actionscript.ioc.config.impl {
 
-	import org.as3commons.async.operation.OperationQueue;
 	import org.as3commons.async.operation.impl.LoadURLOperation;
+	import org.as3commons.async.operation.impl.OperationQueue;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 

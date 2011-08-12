@@ -13,13 +13,21 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.impl.xml.parser {
+package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser {
+
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XMLObjectDefinitionsParser;
 
 
-	public class XMLObjectDefinitionsParser {
+	public class NanNodeParser extends AbstractNodeParser {
 
-		public function XMLObjectDefinitionsParser() {
-			super();
+		public function NanNodeParser(xmlObjectDefinitionsParser:IXMLObjectDefinitionsParser) {
+			super(xmlObjectDefinitionsParser, XMLObjectDefinitionsParser.NAN_ELEMENT);
 		}
+
+		override public function parse(node:XML):Object {
+			return NaN;
+		}
+
 	}
 }

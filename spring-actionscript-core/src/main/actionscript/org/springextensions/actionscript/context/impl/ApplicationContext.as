@@ -20,8 +20,9 @@ package org.springextensions.actionscript.context.impl {
 	import flash.system.ApplicationDomain;
 
 	import org.as3commons.async.operation.IOperation;
-	import org.as3commons.async.operation.OperationEvent;
-	import org.as3commons.async.operation.OperationQueue;
+	import org.as3commons.async.operation.IOperationQueue;
+	import org.as3commons.async.operation.event.OperationEvent;
+	import org.as3commons.async.operation.impl.OperationQueue;
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.eventbus.impl.EventBus;
@@ -86,7 +87,7 @@ package org.springextensions.actionscript.context.impl {
 		private var _eventBus:IEventBus;
 		private var _isDisposed:Boolean;
 		private var _objectFactory:IObjectFactory;
-		private var _operationQueue:OperationQueue;
+		private var _operationQueue:IOperationQueue;
 		private var _textFilesLoader:ITextFilesLoader;
 		private var _propertiesParser:IPropertiesParser;
 		private var _rootView:DisplayObject;
@@ -407,9 +408,9 @@ package org.springextensions.actionscript.context.impl {
 		 *
 		 * @param _operationQueue
 		 */
-		protected function cleanQueueAfterDefinitionProviders(_operationQueue:OperationQueue):void {
-			_operationQueue.removeCompleteListener(providersLoadedHandler);
-			_operationQueue.removeErrorListener(providersLoadErrorHandler);
+		protected function cleanQueueAfterDefinitionProviders(queue:IOperationQueue):void {
+			queue.removeCompleteListener(providersLoadedHandler);
+			queue.removeErrorListener(providersLoadErrorHandler);
 		}
 
 		/**

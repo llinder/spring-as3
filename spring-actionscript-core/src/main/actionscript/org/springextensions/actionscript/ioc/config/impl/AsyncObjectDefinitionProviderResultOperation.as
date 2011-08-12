@@ -14,12 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl {
-
-	import flash.events.Event;
-
-	import org.as3commons.async.operation.AbstractOperation;
-	import org.as3commons.async.operation.IOperation;
-
+	import org.as3commons.async.operation.impl.AbstractOperation;
 
 	public class AsyncObjectDefinitionProviderResultOperation extends AbstractOperation {
 

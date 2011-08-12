@@ -14,9 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.test.testtypes {
-
-	import org.as3commons.async.operation.AbstractOperation;
-
+	import org.as3commons.async.operation.impl.AbstractOperation;
 
 	public class MockDefinitionProviderResultOperation extends AbstractOperation {
 

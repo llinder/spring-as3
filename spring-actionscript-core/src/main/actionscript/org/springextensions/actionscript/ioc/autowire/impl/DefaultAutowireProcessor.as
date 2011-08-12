@@ -33,8 +33,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.as3commons.reflect.Type;
 	import org.as3commons.reflect.Variable;
 	import org.springextensions.actionscript.context.IApplicationContext;
-	import org.springextensions.actionscript.ioc.AutowireMode;
-	import org.springextensions.actionscript.ioc.DependencyCheckMode;
+	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
 	import org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError;
@@ -43,6 +42,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
 	import org.springextensions.actionscript.ioc.factory.NoSuchObjectDefinitionError;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactory;
+	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.util.TypeUtils;
 

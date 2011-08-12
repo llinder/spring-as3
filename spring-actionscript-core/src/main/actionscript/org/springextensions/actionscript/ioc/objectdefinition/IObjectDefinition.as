@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.objectdefinition {
-	import org.springextensions.actionscript.ioc.AutowireMode;
-	import org.springextensions.actionscript.ioc.DependencyCheckMode;
-	import org.springextensions.actionscript.ioc.MethodInvocation;
+	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
+	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
 
 	/**
 	 * Represents an object definition.

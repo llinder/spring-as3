@@ -20,12 +20,12 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.as3commons.lang.ObjectUtils;
 	import org.as3commons.reflect.Accessor;
 	import org.as3commons.reflect.Type;
-	import org.springextensions.actionscript.ioc.MethodInvocation;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.IPropertyPlaceholderResolver;
 	import org.springextensions.actionscript.ioc.config.property.impl.PropertyPlaceholderResolver;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
+	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 
 	/**

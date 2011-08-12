@@ -23,9 +23,7 @@ package org.springextensions.actionscript.ioc.impl {
 	import org.as3commons.reflect.Field;
 	import org.as3commons.reflect.MethodInvoker;
 	import org.as3commons.reflect.Type;
-	import org.springextensions.actionscript.ioc.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
-	import org.springextensions.actionscript.ioc.MethodInvocation;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
 	import org.springextensions.actionscript.ioc.error.ResolveReferenceError;
 	import org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError;
@@ -33,6 +31,7 @@ package org.springextensions.actionscript.ioc.impl {
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.object.ITypeConverter;
 	import org.springextensions.actionscript.object.SimpleTypeConverter;
@@ -79,7 +78,7 @@ package org.springextensions.actionscript.ioc.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function wire(instance:*, objectFactory:IObjectFactory, objectDefinition:IObjectDefinition = null, objectName:String = null):void {
+		public function wire(instance:*, objectFactory:IObjectFactory, objectDefinition:IObjectDefinition=null, objectName:String=null):void {
 			if (objectDefinition == null) {
 				wireWithoutObjectDefinition(instance, objectName, objectFactory);
 			} else {
@@ -88,7 +87,7 @@ package org.springextensions.actionscript.ioc.impl {
 		}
 
 
-		protected function autowireInstance(instance:*, objectName:String, objectFactory:IObjectFactory, objectDefinition:IObjectDefinition = null):void {
+		protected function autowireInstance(instance:*, objectName:String, objectFactory:IObjectFactory, objectDefinition:IObjectDefinition=null):void {
 			var autoWireAware:IAutowireProcessorAware = objectFactory as IAutowireProcessorAware;
 			if ((autoWireAware != null) && (autoWireAware.autowireProcessor != null)) {
 				autoWireAware.autowireProcessor.autoWire(instance, objectDefinition, objectName);

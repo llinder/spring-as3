@@ -16,9 +16,10 @@
 package org.springextensions.actionscript.ioc.config {
 
 	import org.as3commons.async.operation.IOperation;
+	import org.as3commons.async.operation.IOperationQueue;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 
-	public interface ITextFilesLoader extends IOperation {
+	public interface ITextFilesLoader extends IOperationQueue {
 
 		function addURIs(URIs:Vector.<TextFileURI>):void;
 
