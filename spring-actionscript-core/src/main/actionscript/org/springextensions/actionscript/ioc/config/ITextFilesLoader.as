@@ -13,16 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.util {
-	import org.as3commons.lang.IDisposable;
+package org.springextensions.actionscript.ioc.config {
 
-	public final class ContextUtils {
+	import org.as3commons.async.operation.IOperation;
+	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 
-		public static function disposeInstance(instance:Object):void {
-			if (instance is IDisposable) {
-				IDisposable(instance).dispose();
-			}
-		}
+	public interface ITextFilesLoader extends IOperation {
+
+		function addURIs(URIs:Vector.<TextFileURI>):void;
+
+		function addURI(URI:String, preventCache:Boolean=true):void;
 
 	}
 }

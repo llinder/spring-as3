@@ -15,12 +15,12 @@
 */
 package org.springextensions.actionscript.context {
 	import flash.display.DisplayObject;
+
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
-	import org.springextensions.actionscript.ioc.config.property.IPropertiesLoader;
+	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
-	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
 	/**
 	 *
@@ -35,11 +35,11 @@ package org.springextensions.actionscript.context {
 		/**
 		 *
 		 */
-		function get propertiesLoader():IPropertiesLoader;
+		function get textFilesLoader():ITextFilesLoader;
 		/**
 		 * @private
 		 */
-		function set propertiesLoader(value:IPropertiesLoader):void;
+		function set textFilesLoader(value:ITextFilesLoader):void;
 
 		/**
 		 *

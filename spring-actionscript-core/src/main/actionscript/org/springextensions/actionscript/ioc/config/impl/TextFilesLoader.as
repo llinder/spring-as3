@@ -13,37 +13,37 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.property.impl {
+package org.springextensions.actionscript.ioc.config.impl {
 
 	import org.as3commons.async.operation.OperationQueue;
 	import org.as3commons.async.operation.impl.LoadURLOperation;
-	import org.springextensions.actionscript.ioc.config.property.IPropertiesLoader;
-	import org.springextensions.actionscript.ioc.config.property.PropertyURI;
+	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
+	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 
-	public class PropertiesLoader extends OperationQueue implements IPropertiesLoader {
+	public class TextFilesLoader extends OperationQueue implements ITextFilesLoader {
 
 		private static const QUESTION_MARK:String = '?';
 		private static const AMPERSAND:String = "&";
 
 		private var _results:Vector.<String>;
 
-		public function PropertiesLoader(name:String="") {
+		public function TextFilesLoader(name:String="") {
 			super(name);
 		}
 
-		public function addURIs(URIs:Vector.<PropertyURI>):void {
-			for each (var propertyURI:PropertyURI in URIs) {
-				addURI(propertyURI.propertyURI, propertyURI.preventCache);
+		public function addURIs(URIs:Vector.<TextFileURI>):void {
+			for each (var propertyURI:TextFileURI in URIs) {
+				addURI(propertyURI.textFileURI, propertyURI.preventCache);
 			}
 		}
 
 		public function addURI(URI:String, preventCache:Boolean=true):void {
 			var loader:LoadURLOperation = new LoadURLOperation(formatURL(URI, preventCache));
-			loader.addCompleteListener(propertiesLoaderComplete, false, 0, true);
+			loader.addCompleteListener(textFileLoaderComplete, false, 0, true);
 			addOperation(loader);
 		}
 
-		protected function propertiesLoaderComplete(source:String):void {
+		protected function textFileLoaderComplete(source:String):void {
 			_results ||= new Vector.<String>();
 			_results[_results.length] = source;
 		}

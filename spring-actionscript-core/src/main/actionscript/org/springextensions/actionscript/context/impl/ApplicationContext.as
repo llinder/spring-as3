@@ -25,20 +25,21 @@ package org.springextensions.actionscript.context.impl {
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.eventbus.impl.EventBus;
+	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistry;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
+	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResult;
-	import org.springextensions.actionscript.ioc.config.property.IPropertiesLoader;
+	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
-	import org.springextensions.actionscript.ioc.config.property.PropertyURI;
+	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 	import org.springextensions.actionscript.ioc.config.property.impl.KeyValuePropertiesParser;
 	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
-	import org.springextensions.actionscript.ioc.config.property.impl.PropertiesLoader;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
@@ -52,9 +53,6 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessor;
-	import org.springextensions.actionscript.ioc.factory.process.impl.object.ApplicationDomainAwarePostProcessor;
-	import org.springextensions.actionscript.ioc.factory.process.impl.object.EventBusAwareObjectPostProcessor;
-	import org.springextensions.actionscript.ioc.factory.process.impl.object.ObjectFactoryAwarePostProcessor;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjector;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -67,10 +65,12 @@ package org.springextensions.actionscript.context.impl {
 	 */
 	public class ApplicationContext extends EventDispatcher implements IApplicationContext, IDisposable {
 
-		private static const APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME:String = "applicationContextPropertiesLoader";
+		private static const APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME:String = "applicationContextTextFilesLoader";
 		private static const DEFINITION_PROVIDER_QUEUE_NAME:String = "definitionProviderQueue";
 		private static const NEWLINE_CHAR:String = "\n";
 		private static const OBJECT_FACTORY_POST_PROCESSOR_QUEUE_NAME:String = "objectFactoryPostProcessorQueue";
+		private static const MXMODULES_MODULE_MANAGER_CLASS_NAME:String = "mx.modules.ModuleManager";
+		private static const GET_ASSOCIATED_FACTORY_METHOD_NAME:String = "getAssociatedFactory";
 
 		/**
 		 * Creates a new <code>ApplicationContext</code> instance.
@@ -87,7 +87,7 @@ package org.springextensions.actionscript.context.impl {
 		private var _isDisposed:Boolean;
 		private var _objectFactory:IObjectFactory;
 		private var _operationQueue:OperationQueue;
-		private var _propertiesLoader:IPropertiesLoader;
+		private var _textFilesLoader:ITextFilesLoader;
 		private var _propertiesParser:IPropertiesParser;
 		private var _rootView:DisplayObject;
 		private var _stageProcessorRegistry:IStageObjectProcessorRegistry;
@@ -218,15 +218,15 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function get propertiesLoader():IPropertiesLoader {
-			return _propertiesLoader;
+		public function get textFilesLoader():ITextFilesLoader {
+			return _textFilesLoader;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set propertiesLoader(value:IPropertiesLoader):void {
-			_propertiesLoader = value;
+		public function set textFilesLoader(value:ITextFilesLoader):void {
+			_textFilesLoader = value;
 		}
 
 		/**
@@ -326,8 +326,8 @@ package org.springextensions.actionscript.context.impl {
 		public function dispose():void {
 			if (!_isDisposed) {
 				try {
-					ContextUtils.disposeInstance(_propertiesLoader);
-					_propertiesLoader = null;
+					ContextUtils.disposeInstance(_textFilesLoader);
+					_textFilesLoader = null;
 
 					ContextUtils.disposeInstance(_objectFactory);
 					_objectFactory = null;
@@ -429,8 +429,8 @@ package org.springextensions.actionscript.context.impl {
 			_definitionProviders.length = 0;
 			_definitionProviders = null;
 			_operationQueue = null;
-			ContextUtils.disposeInstance(_propertiesLoader);
-			_propertiesLoader = null;
+			ContextUtils.disposeInstance(_textFilesLoader);
+			_textFilesLoader = null;
 			_objectFactory.isReady = true;
 			executeObjectFactoryPostProcessors();
 		}
@@ -461,11 +461,11 @@ package org.springextensions.actionscript.context.impl {
 		 *
 		 * @return
 		 */
-		protected function createPropertiesLoader():IPropertiesLoader {
-			var propertiesLoader:IPropertiesLoader = new PropertiesLoader(APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME);
-			propertiesLoader.addCompleteListener(propertiesLoaderComplete, false, 0, true);
-			_operationQueue.addOperation(propertiesLoader);
-			return propertiesLoader;
+		protected function createTextFilesLoader():ITextFilesLoader {
+			var textFilesLoader:ITextFilesLoader = new TextFilesLoader(APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME);
+			textFilesLoader.addCompleteListener(propertyTextFilesLoadComplete, false, 0, true);
+			_operationQueue.addOperation(textFilesLoader);
+			return textFilesLoader;
 		}
 
 		/**
@@ -522,6 +522,7 @@ package org.springextensions.actionscript.context.impl {
 			_definitionProviders = new Vector.<IObjectDefinitionsProvider>();
 			_objectFactory = objFactory ||= createDefaultObjectFactory(parent);
 			_rootView = rootView;
+			resolveRootViewApplicationDomain(_rootView);
 
 			_objectFactory.addObjectFactoryPostProcessor(new RegisterObjectPostProcessorsFactoryPostProcessor());
 
@@ -532,6 +533,17 @@ package org.springextensions.actionscript.context.impl {
 			_objectFactory.addReferenceResolver(new VectorReferenceResolver(this));
 			if (ArrayCollectionReferenceResolver.canCreate(applicationDomain)) {
 				_objectFactory.addReferenceResolver(new ArrayCollectionReferenceResolver(this));
+			}
+		}
+
+		protected function resolveRootViewApplicationDomain(_rootView:DisplayObject):void {
+			try {
+				var cls:Class = ClassUtils.forName(MXMODULES_MODULE_MANAGER_CLASS_NAME, applicationDomain);
+				var factory:Object = cls[GET_ASSOCIATED_FACTORY_METHOD_NAME](_rootView);
+				if (factory != null) {
+					applicationDomain = factory.info().currentDomain as ApplicationDomain;
+				}
+			} catch (e:Error) {
 			}
 		}
 
@@ -551,16 +563,16 @@ package org.springextensions.actionscript.context.impl {
 		 *
 		 * @param propertyURIs
 		 */
-		protected function loadPropertyURIs(propertyURIs:Vector.<PropertyURI>):void {
-			_propertiesLoader ||= createPropertiesLoader();
-			_propertiesLoader.addURIs(propertyURIs);
+		protected function loadPropertyURIs(propertyURIs:Vector.<TextFileURI>):void {
+			_textFilesLoader ||= createTextFilesLoader();
+			_textFilesLoader.addURIs(propertyURIs);
 		}
 
 		/**
 		 *
 		 * @param propertySources
 		 */
-		protected function propertiesLoaderComplete(propertySources:Vector.<String>):void {
+		protected function propertyTextFilesLoadComplete(propertySources:Vector.<String>):void {
 			var source:String = propertySources.join(NEWLINE_CHAR);
 			propertiesParser ||= new KeyValuePropertiesParser();
 			propertiesProvider ||= new Properties();

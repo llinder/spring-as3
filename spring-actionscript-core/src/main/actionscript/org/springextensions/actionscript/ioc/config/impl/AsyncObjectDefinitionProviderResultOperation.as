@@ -13,15 +13,22 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.util {
-	import org.as3commons.lang.IDisposable;
+package org.springextensions.actionscript.ioc.config.impl {
 
-	public final class ContextUtils {
+	import flash.events.Event;
 
-		public static function disposeInstance(instance:Object):void {
-			if (instance is IDisposable) {
-				IDisposable(instance).dispose();
-			}
+	import org.as3commons.async.operation.AbstractOperation;
+	import org.as3commons.async.operation.IOperation;
+
+
+	public class AsyncObjectDefinitionProviderResultOperation extends AbstractOperation {
+
+		public function AsyncObjectDefinitionProviderResultOperation() {
+			super();
+		}
+
+		override public function dispatchCompleteEvent(result:*=null):Boolean {
+			return super.dispatchCompleteEvent(AsyncObjectDefinitionProviderResult(result));
 		}
 
 	}

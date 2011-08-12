@@ -16,7 +16,7 @@
 package org.springextensions.actionscript.ioc.config {
 
 	import org.as3commons.async.operation.IOperation;
-	import org.springextensions.actionscript.ioc.config.property.PropertyURI;
+	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 
 	/**
 	 * Describes an object that can create a collection of <code>ObjectDefinitions</code>, either synchronously or asynchronously.
@@ -25,6 +25,6 @@ package org.springextensions.actionscript.ioc.config {
 	public interface IObjectDefinitionsProvider {
 		function createDefinitions():IOperation;
 		function get objectDefinitions():Object;
-		function get propertyURIs():Vector.<PropertyURI>;
+		function get propertyURIs():Vector.<TextFileURI>;
 	}
 }

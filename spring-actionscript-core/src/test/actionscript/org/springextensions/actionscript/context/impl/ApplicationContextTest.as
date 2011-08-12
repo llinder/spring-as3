@@ -32,11 +32,11 @@ package org.springextensions.actionscript.context.impl {
 	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
+	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResult;
-	import org.springextensions.actionscript.ioc.config.property.IPropertiesLoader;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
-	import org.springextensions.actionscript.ioc.config.property.PropertyURI;
+	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
@@ -63,7 +63,7 @@ package org.springextensions.actionscript.context.impl {
 		[Mock]
 		public var objectDefinitionsRegistry:IObjectDefinitionRegistry;
 		[Mock]
-		public var propertiesLoader:IPropertiesLoader;
+		public var textFilesLoader:ITextFilesLoader;
 		[Mock]
 		public var propertiesParser:IPropertiesParser;
 
@@ -162,17 +162,17 @@ package org.springextensions.actionscript.context.impl {
 			objectDefinitionsRegistry = nice(IObjectDefinitionRegistry);
 
 			objectDefinitionProvider = nice(IObjectDefinitionsProvider);
-			propertiesLoader = nice(IPropertiesLoader);
+			textFilesLoader = nice(ITextFilesLoader);
 			propertiesParser = nice(IPropertiesParser);
 
-			var uris:Vector.<PropertyURI> = new Vector.<PropertyURI>();
-			uris[uris.length] = new PropertyURI("properties.txt");
+			var uris:Vector.<TextFileURI> = new Vector.<TextFileURI>();
+			uris[uris.length] = new TextFileURI("properties.txt");
 			var defs:Object = {};
 			var def:IObjectDefinition = new ObjectDefinition();
 			defs["testName"] = def;
 
-			mock(propertiesLoader).getter("result").returns("property=value");
-			mock(propertiesLoader).method("addURIs").args(uris).dispatches(new OperationEvent(OperationEvent.COMPLETE, propertiesLoader));
+			mock(textFilesLoader).getter("result").returns("property=value");
+			mock(textFilesLoader).method("addURIs").args(uris).dispatches(new OperationEvent(OperationEvent.COMPLETE, textFilesLoader));
 
 			mock(objectDefinitionProvider).method("createDefinitions").returns(null).once();
 			mock(objectDefinitionProvider).getter("objectDefinitions").returns(defs).once();
@@ -184,13 +184,13 @@ package org.springextensions.actionscript.context.impl {
 
 			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
 			context.addDefinitionProvider(objectDefinitionProvider);
-			context.propertiesLoader = propertiesLoader;
+			context.textFilesLoader = textFilesLoader;
 			context.propertiesParser = propertiesParser;
 			context.load();
 
 			verify(objectFactory);
 
-			assertNull(context.propertiesLoader);
+			assertNull(context.textFilesLoader);
 			assertNull(context.propertiesParser);
 			assertNull(context.definitionProviders);
 		}

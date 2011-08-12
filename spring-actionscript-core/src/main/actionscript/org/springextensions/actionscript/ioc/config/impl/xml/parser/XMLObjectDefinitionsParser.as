@@ -13,15 +13,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.property {
+package org.springextensions.actionscript.ioc.config.impl.xml.parser {
 
-	import org.as3commons.async.operation.IOperation;
 
-	public interface IPropertiesLoader extends IOperation {
+	public class XMLObjectDefinitionsParser {
 
-		function addURIs(URIs:Vector.<PropertyURI>):void;
-
-		function addURI(URI:String, preventCache:Boolean=true):void;
-
+		public function XMLObjectDefinitionsParser() {
+			super();
+		}
 	}
 }

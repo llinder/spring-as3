@@ -15,26 +15,26 @@
 */
 package org.springextensions.actionscript.ioc.config.property {
 
-	public class PropertyURI {
+	public class TextFileURI {
 
-		public function PropertyURI(URI:String, prevent:Boolean=true) {
+		public function TextFileURI(URI:String, prevent:Boolean=true) {
 			super();
-			initPropertyURI(URI, prevent);
+			initTextFileURI(URI, prevent);
 		}
 
 		private var _preventCache:Boolean;
-		private var _propertyURI:String;
+		private var _textFileURI:String;
 
 		public function get preventCache():Boolean {
 			return _preventCache;
 		}
 
-		public function get propertyURI():String {
-			return _propertyURI;
+		public function get textFileURI():String {
+			return _textFileURI;
 		}
 
-		protected function initPropertyURI(URI:String, prevent:Boolean):void {
-			_propertyURI = URI;
+		protected function initTextFileURI(URI:String, prevent:Boolean):void {
+			_textFileURI = URI;
 			_preventCache = prevent;
 		}
 	}
