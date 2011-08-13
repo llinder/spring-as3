@@ -15,10 +15,10 @@
  */
 package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 	import org.as3commons.lang.Assert;
-	import org.as3commons.reflect.Constant;
 	import org.springextensions.actionscript.ioc.Constants;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_objects;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.IXMLObjectDefinitionsPreprocessor;
+	import org.springextensions.actionscript.ioc.objectdefinition.ObjectDefinitionScope;
 
 	use namespace spring_actionscript_objects;
 
@@ -42,13 +42,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 		 * Retrieves all &lt;object/&gt; element that have an ancestor &lt;object/&gt; element, checks if
 		 * their scope attribute is set to singleton, and if so, set their lazy-init attribute to true.
 		 * @param xml The specified <code>XML</code> object
-		 * @return The prcoessed <code>XML</code> object
+		 * @return The processed <code>XML</code> object
 		 *
 		 */
 		public function preprocess(xml:XML):XML {
 			Assert.notNull(xml, "The xml argument must not be null");
 			var innerObjectNodes:XMLList = xml.object..object.(attribute(Constants.SCOPE_ATTRIBUTE) == ObjectDefinitionScope.SINGLETON_NAME);
-			var isSingleton:Boolean;
 
 			for each (var node:XML in innerObjectNodes) {
 

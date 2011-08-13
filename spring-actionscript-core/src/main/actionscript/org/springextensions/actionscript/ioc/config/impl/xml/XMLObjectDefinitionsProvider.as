@@ -327,19 +327,16 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			if (!_preprocessorsInitialized) {
 				_preprocessorsInitialized = true;
 
+				addPreprocessor(new ScopeAttributePreprocessor());
 				addPreprocessor(new PropertyImportPreprocessor(_propertyURIs));
 				addPreprocessor(new PropertyElementsPreprocessor(_propertiesProvider));
 				addPreprocessor(new IdAttributePreprocessor());
 				addPreprocessor(new AttributeToElementPreprocessor());
 				addPreprocessor(new SpringNamesPreprocessor());
 				addPreprocessor(new TemplatePreprocessor());
-				addPreprocessor(new ScopeAttributePreprocessor());
 				addPreprocessor(new ParentAttributePreprocessor());
 				addPreprocessor(new InnerObjectsPreprocessor());
-				addPreprocessor(new AttributeToElementPreprocessor());
-				addPreprocessor(new InnerObjectsPreprocessor());
 				addPreprocessor(new MethodInvocationPreprocessor());
-				addPreprocessor(new ScopeAttributePreprocessor());
 			}
 
 			for each (var preprocessor:IXMLObjectDefinitionsPreprocessor in _preprocessors) {
