@@ -26,6 +26,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 			super();
 		}
 
+		[Test]
 		public function testPreprocess_shouldAddScopeAttributeAsSingletonIfSingletonAttributeIsTrue():void {
 			var p:ScopeAttributePreprocessor = new ScopeAttributePreprocessor();
 			var xml:XML = <objects>
@@ -37,6 +38,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 			assertTrue(node.@singleton == undefined);
 		}
 
+		[Test]
 		public function testPreprocess_shouldAddScopeAttributeAsPrototypeIfSingletonAttributeIsFalse():void {
 			var p:ScopeAttributePreprocessor = new ScopeAttributePreprocessor();
 			var xml:XML = <objects>
@@ -48,6 +50,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 			assertTrue(node.@singleton == undefined);
 		}
 
+		[Test]
 		public function testPreprocess_shouldAddScopeAttributeAsSingletonIfSingletonAttributeIsNotSpecified():void {
 			var p:ScopeAttributePreprocessor = new ScopeAttributePreprocessor();
 			var xml:XML = <objects>
