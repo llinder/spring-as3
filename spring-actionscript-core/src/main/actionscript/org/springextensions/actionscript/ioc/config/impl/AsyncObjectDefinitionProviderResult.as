@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl {
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 
 
@@ -25,25 +26,37 @@ package org.springextensions.actionscript.ioc.config.impl {
 
 		private var _objectDefinitions:Object;
 		private var _propertyURIs:Vector.<TextFileURI>;
+		private var _propertiesProvider:IPropertiesProvider;
 
 		/**
 		 * Creates a new <code>AsyncObjectDefinitionProviderResult</code> instance.
 		 * @param definitions
+		 * @param provider
 		 * @param URIs
-		 *
 		 */
-		public function AsyncObjectDefinitionProviderResult(definitions:Object, URIs:Vector.<TextFileURI>=null) {
+		public function AsyncObjectDefinitionProviderResult(definitions:Object, provider:IPropertiesProvider, URIs:Vector.<TextFileURI>=null) {
 			super();
-			init(definitions, URIs);
+			initAsyncObjectDefinitionProviderResult(definitions, provider, URIs);
 		}
 
-		protected function init(definitions:Object, URIs:Vector.<TextFileURI>):void {
+		/**
+		 * Initializes the current <code>AsyncObjectDefinitionProviderResult</code>.
+		 * @param definitions
+		 * @param provider
+		 * @param URIs
+		 */
+		protected function initAsyncObjectDefinitionProviderResult(definitions:Object, provider:IPropertiesProvider, URIs:Vector.<TextFileURI>):void {
 			_objectDefinitions = definitions;
+			_propertiesProvider = provider;
 			_propertyURIs = URIs;
 		}
 
 		public function get objectDefinitions():Object {
 			return _objectDefinitions;
+		}
+
+		public function get propertiesProvider():IPropertiesProvider {
+			return _propertiesProvider;
 		}
 
 		public function get propertyURIs():Vector.<TextFileURI> {

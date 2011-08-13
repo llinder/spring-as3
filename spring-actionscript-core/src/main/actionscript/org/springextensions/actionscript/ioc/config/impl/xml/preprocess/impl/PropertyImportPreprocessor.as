@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_objects;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.IXMLObjectDefinitionsPreprocessor;
+	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 	import org.springextensions.actionscript.util.Environment;
 
 	use namespace spring_actionscript_objects;
@@ -31,7 +32,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 		private static const FILE_ATTRIBUTE_NAME:String = 'file';
 		private static const REQUIRED_ATTRIBUTE_NAME:String = 'required';
 		private static const FALSE_VALUE:String = "false";
-		private var _configurerClassName:String;
+		private static const PREVENTCACHE_ATTRIBUTE_NAME:String = "prevent-cache";
+		private var _propertyURIS:Vector.<TextFileURI>;
 
 		// --------------------------------------------------------------------
 		//
@@ -39,18 +41,24 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 		//
 		// --------------------------------------------------------------------
 
-		public function PropertyImportPreprocessor() {
+		/**
+		 *
+		 * @param propURIs
+		 */
+		public function PropertyImportPreprocessor(propURIs:Vector.<TextFileURI>) {
 			super();
-			propertyImportPreprocessorInit();
+			initPropertyImportProcessor(propURIs);
 		}
 
-		protected function propertyImportPreprocessorInit():void {
-			if (Environment.isFlash) {
-				_configurerClassName = "org.springextensions.actionscript.ioc.factory.config.PropertyPlaceholderConfigurer";
-			} else {
-				_configurerClassName = "org.springextensions.actionscript.ioc.factory.config.flex.FlexPropertyPlaceholderConfigurer";
-			}
+		/**
+		 *
+		 * @param propURIs
+		 *
+		 */
+		protected function initPropertyImportProcessor(propURIs:Vector.<TextFileURI>):void {
+			_propertyURIS = propURIs;
 		}
+
 
 		// --------------------------------------------------------------------
 		//
@@ -63,19 +71,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 
 			for each (var propertyNode:XML in propertyNodes) {
 				if (propertyNode.attribute(FILE_ATTRIBUTE_NAME).length() > 0) {
-					var node:XML = <object class={_configurerClassName}>
-							<property name="location" value={propertyNode.attribute(FILE_ATTRIBUTE_NAME)[0]}/>
-						</object>;
-
-					// "required" attribute
-					if (propertyNode.attribute(REQUIRED_ATTRIBUTE_NAME).length() > 0) {
-						var notRequired:Boolean = (propertyNode.attribute(REQUIRED_ATTRIBUTE_NAME)[0] == FALSE_VALUE);
-						if (notRequired) {
-							node.appendChild(<property name="ignoreResourceNotFound" value="true"/>);
-						}
-					}
-
-					xml.appendChild(node);
+					var fileName:String = String(propertyNode.attribute(FILE_ATTRIBUTE_NAME)[0]);
+					var isRequired:Boolean = (propertyNode.attribute(REQUIRED_ATTRIBUTE_NAME).length() > 0) ? (propertyNode.attribute(REQUIRED_ATTRIBUTE_NAME)[0] == FALSE_VALUE) : true;
+					var preventCache:Boolean = (propertyNode.attribute(PREVENTCACHE_ATTRIBUTE_NAME).length() > 0) ? (propertyNode.attribute(PREVENTCACHE_ATTRIBUTE_NAME)[0] == FALSE_VALUE) : true;
+					_propertyURIS[_propertyURIS.length] = new TextFileURI(fileName, isRequired, preventCache);
 					delete xml.property[0];
 				}
 

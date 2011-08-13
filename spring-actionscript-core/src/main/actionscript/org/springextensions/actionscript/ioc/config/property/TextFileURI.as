@@ -15,15 +15,30 @@
 */
 package org.springextensions.actionscript.ioc.config.property {
 
+	/**
+	 *
+	 * @author Roland Zwaga
+	 */
 	public class TextFileURI {
 
-		public function TextFileURI(URI:String, prevent:Boolean=true) {
+		/**
+		 * Creates a new <code>TextFileURI</code> instance.
+		 * @param URI
+		 * @param prevent
+		 */
+		public function TextFileURI(URI:String, required:Boolean, prevent:Boolean=true) {
 			super();
-			initTextFileURI(URI, prevent);
+			initTextFileURI(URI, required, prevent);
 		}
 
 		private var _preventCache:Boolean;
+		private var _isRequired:Boolean;
 		private var _textFileURI:String;
+
+
+		public function get isRequired():Boolean {
+			return _isRequired;
+		}
 
 		public function get preventCache():Boolean {
 			return _preventCache;
@@ -33,8 +48,9 @@ package org.springextensions.actionscript.ioc.config.property {
 			return _textFileURI;
 		}
 
-		protected function initTextFileURI(URI:String, prevent:Boolean):void {
+		protected function initTextFileURI(URI:String, required:Boolean, prevent:Boolean):void {
 			_textFileURI = URI;
+			_isRequired = required;
 			_preventCache = prevent;
 		}
 	}

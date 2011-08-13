@@ -27,6 +27,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.eventbus.impl.EventBus;
 	import org.as3commons.lang.ClassUtils;
+	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistry;
 	import org.springextensions.actionscript.context.IApplicationContext;
@@ -290,6 +291,9 @@ package org.springextensions.actionscript.context.impl {
 		 * @inheritDoc
 		 */
 		public function addDefinitionProvider(provider:IObjectDefinitionsProvider):void {
+			if (provider is IApplicationDomainAware) {
+				IApplicationDomainAware(provider).applicationDomain = applicationDomain;
+			}
 			definitionProviders[definitionProviders.length] = provider;
 		}
 
@@ -381,10 +385,7 @@ package org.springextensions.actionscript.context.impl {
 						operation.addCompleteListener(providerCompleteHandler, false, 0, true);
 						_operationQueue.addOperation(operation);
 					} else {
-						registerObjectDefinitions(provider.objectDefinitions);
-						if (provider.propertyURIs != null) {
-							loadPropertyURIs(provider.propertyURIs);
-						}
+						handleObjectDefinitionResult(provider.objectDefinitions, provider.propertiesProvider, provider.propertyURIs);
 					}
 				}
 				if (_operationQueue.total > 0) {
@@ -394,6 +395,16 @@ package org.springextensions.actionscript.context.impl {
 					_operationQueue = null;
 					cleanUpObjectDefinitionCreation();
 				}
+			}
+		}
+
+		protected function handleObjectDefinitionResult(objectDefinitions:Object, propertiesProvider:IPropertiesProvider, propertyURIs:Vector.<TextFileURI>):void {
+			registerObjectDefinitions(objectDefinitions);
+			if (propertyURIs != null) {
+				loadPropertyURIs(propertyURIs);
+			}
+			if (propertiesProvider != null) {
+				propertiesProvider.merge(propertiesProvider);
 			}
 		}
 
@@ -586,10 +597,7 @@ package org.springextensions.actionscript.context.impl {
 		 */
 		protected function providerCompleteHandler(event:OperationEvent):void {
 			var result:AsyncObjectDefinitionProviderResult = AsyncObjectDefinitionProviderResult(event.result);
-			registerObjectDefinitions(result.objectDefinitions);
-			if (result.propertyURIs != null) {
-				loadPropertyURIs(result.propertyURIs);
-			}
+			handleObjectDefinitionResult(result.objectDefinitions, result.propertiesProvider, result.propertyURIs);
 		}
 
 		/**

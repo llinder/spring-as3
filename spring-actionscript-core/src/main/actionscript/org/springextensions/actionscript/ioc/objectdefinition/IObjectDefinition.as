@@ -30,6 +30,16 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	public interface IObjectDefinition {
 
 		/**
+		 * Determines if the class whose configuration is described by the current <code>IObjectDefinition</code> is an interface;
+		 */
+		function get isInterface():Boolean;
+
+		/**
+		 * @private
+		 */
+		function set isInterface(value:Boolean):void;
+
+		/**
 		 * The <code>Class</code> of the object that the current <code>IObjectDefinition</code> describes.
 		 */
 		function get clazz():Class;

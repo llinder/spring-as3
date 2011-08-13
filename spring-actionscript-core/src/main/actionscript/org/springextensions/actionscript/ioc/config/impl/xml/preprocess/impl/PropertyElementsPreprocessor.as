@@ -18,6 +18,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 	import org.as3commons.lang.Assert;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_objects;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.IXMLObjectDefinitionsPreprocessor;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 
 	use namespace spring_actionscript_objects;
@@ -30,19 +32,26 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 	 */
 	public class PropertyElementsPreprocessor implements IXMLObjectDefinitionsPreprocessor {
 
-		private var _objectFactory:IObjectFactory;
+		private var _properties:IPropertiesProvider;
 
 		/**
 		 * Creates a new <code>ConfigPropertyElementsPreprocessor</code> instance.
 		 */
-		public function PropertyElementsPreprocessor(objectFactory:IObjectFactory) {
+		public function PropertyElementsPreprocessor(properties:IPropertiesProvider) {
 			super();
-			initPropertyElementsPreprocessor(objectFactory);
+			initPropertyElementsPreprocessor(properties);
 		}
 
-		protected function initPropertyElementsPreprocessor(objectFactory:IObjectFactory):void {
-			Assert.notNull(objectFactory, "The objectFactory argument must not be null");
-			_objectFactory = objectFactory;
+		protected function initPropertyElementsPreprocessor(properties:IPropertiesProvider):void {
+			Assert.notNull(properties, "properties argument must not be null");
+			_properties = properties;
+		}
+
+		/**
+		 *
+		 */
+		public function get properties():IPropertiesProvider {
+			return _properties;
 		}
 
 		/**
@@ -52,15 +61,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 		 * @return The processed <code>XML</code> object, all &lt;configproperty/&gt; elements will have been removed.
 		 */
 		public function preprocess(xml:XML):XML {
-			/*var propertyElements:XMLList = xml.property.(attribute("file") == undefined);
-			var properties:Properties = new Properties();
-
-			for each (var child:XML in propertyElements) {
-				properties.setProperty(child.attribute("name")[0], child.attribute("value")[0]);
+			var propertyElements:XMLList = xml.property.(attribute("file") == undefined);
+			if (propertyElements.length() > 0) {
+				for each (var child:XML in propertyElements) {
+					_properties.setProperty(child.attribute("name")[0], child.attribute("value")[0]);
+				}
 			}
-
-			_objectFactory.properties.merge(properties);
-			*/
 			return xml;
 		}
 

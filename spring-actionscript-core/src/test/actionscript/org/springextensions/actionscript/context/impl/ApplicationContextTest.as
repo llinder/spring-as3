@@ -37,6 +37,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
+	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
@@ -166,7 +167,7 @@ package org.springextensions.actionscript.context.impl {
 			propertiesParser = nice(IPropertiesParser);
 
 			var uris:Vector.<TextFileURI> = new Vector.<TextFileURI>();
-			uris[uris.length] = new TextFileURI("properties.txt");
+			uris[uris.length] = new TextFileURI("properties.txt", true);
 			var defs:Object = {};
 			var def:IObjectDefinition = new ObjectDefinition();
 			defs["testName"] = def;
@@ -201,7 +202,7 @@ package org.springextensions.actionscript.context.impl {
 			var defs:Object = {};
 			var def:IObjectDefinition = new ObjectDefinition();
 			defs["testName"] = def;
-			var result:AsyncObjectDefinitionProviderResult = new AsyncObjectDefinitionProviderResult(defs);
+			var result:AsyncObjectDefinitionProviderResult = new AsyncObjectDefinitionProviderResult(defs, new Properties());
 
 			var mockOperation:MockDefinitionProviderResultOperation = new MockDefinitionProviderResultOperation();
 			mockOperation.result = result;

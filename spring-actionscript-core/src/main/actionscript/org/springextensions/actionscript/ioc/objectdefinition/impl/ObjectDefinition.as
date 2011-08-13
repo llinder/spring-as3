@@ -415,6 +415,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 
 		private var _dependencyCheck:DependencyCheckMode;
 		private var _clazz:Class;
+		private var _isInterface:Boolean;
 
 		/**
 		 * @default <code>ObjectDefinitionDependencyCheck.NONE</code>
@@ -468,6 +469,14 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 
 		public function set clazz(value:Class):void {
 			_clazz = value;
+		}
+
+		public function get isInterface():Boolean {
+			return _isInterface;
+		}
+
+		public function set isInterface(value:Boolean):void {
+			_isInterface = value;
 		}
 
 	}

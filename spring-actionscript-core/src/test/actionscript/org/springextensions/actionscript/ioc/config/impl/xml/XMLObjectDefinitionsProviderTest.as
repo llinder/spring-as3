@@ -13,23 +13,22 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.property.error {
+package org.springextensions.actionscript.ioc.config.impl.xml {
+	import mockolate.ingredients.Mockolate;
 
+	public class XMLObjectDefinitionsProviderTest {
 
-	/**
-	 *
-	 * @author Roland Zwaga
-	 */
-	public class PropertyPlaceholderResolverError extends Error {
+		[Rule]
+		public var mockolateRule:Mockolate = new Mockolate();
 
-		/**
-		 * Creates a new <code>PropertyPlaceholderResolverError</code> instance.
-		 * @param message
-		 * @param id
-		 *
-		 */
-		public function PropertyPlaceholderResolverError(message:*="", id:*=0) {
-			super(message, id);
+		public function XMLObjectDefinitionsProviderTest() {
+			super();
 		}
+
+		[Test]
+		public function testLoadWithExplicitXML():void {
+
+		}
+
 	}
 }

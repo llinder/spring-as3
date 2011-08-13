@@ -26,6 +26,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 	 * @author Christophe Herreman
 	 */
 	public class ParentAttributePreprocessor implements IXMLObjectDefinitionsPreprocessor {
+
 		private static const PARENT_ELEMENT_NAME:String = "parent";
 		private static const ID_ATTRIBUTE_NAME:String = "id";
 		private static const ABSTRACT_ATTRIBUTE_NAME:String = "abstract";

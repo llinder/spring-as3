@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.ioc.config {
 
 	import org.as3commons.async.operation.IOperation;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 
 	/**
@@ -26,5 +27,6 @@ package org.springextensions.actionscript.ioc.config {
 		function createDefinitions():IOperation;
 		function get objectDefinitions():Object;
 		function get propertyURIs():Vector.<TextFileURI>;
+		function get propertiesProvider():IPropertiesProvider;
 	}
 }

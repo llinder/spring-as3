@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml {
+	import flash.system.ApplicationDomain;
 	import flash.system.System;
 	import flash.utils.ByteArray;
 
@@ -21,34 +22,38 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 	import org.as3commons.async.operation.IOperationQueue;
 	import org.as3commons.async.operation.impl.LoadURLOperation;
 	import org.as3commons.lang.Assert;
+	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.XMLUtils;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResultOperation;
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoader;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.IXMLObjectDefinitionsPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.AttributeToElementPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.IdAttributePreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.InnerObjectsPreprocessor;
-	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.InterfacePreprocessor;
+	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.MethodInvocationPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.ParentAttributePreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.PropertyElementsPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.PropertyImportPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.ScopeAttributePreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.SpringNamesPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.TemplatePreprocessor;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class XMLObjectDefinitionsProvider implements IObjectDefinitionsProvider, IDisposable {
+	public class XMLObjectDefinitionsProvider implements IObjectDefinitionsProvider, IDisposable, IApplicationDomainAware {
 
+		private static const DISPOSE_XML_METHOD_NAME:String = "disposeXML";
 		private static const XML_OBJECT_DEFINITIONS_PROVIDER_QUEUE_NAME:String = "xmlObjectDefinitionsProviderQueue";
 		private static const XML_OBJECT_DEFINITON_XMLLOADER_Name:String = "xmlObjectDefinitonXMLLoader";
-		private static const DISPOSE_XML_METHOD_NAME:String = "disposeXML";
 
 		/**
 		 * Creates a new <code>XMLObjectDefinitionProvider</code> instance.
@@ -59,24 +64,20 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			initXMLObjectDefinitionProvider(locations);
 		}
 
-		private var _textFilesLoader:ITextFilesLoader;
 		private var _asyncOperation:AsyncObjectDefinitionProviderResultOperation;
 		private var _isDisposed:Boolean;
 		private var _loaders:Vector.<LoadURLOperation>;
 		private var _locations:Array;
 		private var _objectDefinitions:Object;
-		private var _propertyURIs:Vector.<TextFileURI>;
-		private var _xmlConfiguration:XML;
+		private var _parser:IXMLObjectDefinitionsParser;
+		private var _preprocessors:Vector.<IXMLObjectDefinitionsPreprocessor>;
 		private var _preprocessorsInitialized:Boolean;
-		private var _preprocessors:Vector.<IXMLObjectDefinitionsPreprocessor> = new Vector.<IXMLObjectDefinitionsPreprocessor>();
-
-		public function get textFilesLoader():ITextFilesLoader {
-			return _textFilesLoader;
-		}
-
-		public function set textFilesLoader(value:ITextFilesLoader):void {
-			_textFilesLoader = value;
-		}
+		private var _propertiesProvider:IPropertiesProvider;
+		private var _propertyURIs:Vector.<TextFileURI>;
+		private var _textFilesLoader:ITextFilesLoader;
+		private var _xmlConfiguration:XML;
+		private var _applicationDomain:ApplicationDomain;
+		private var _namespaceHandlers:Vector.<INamespaceHandler>;
 
 		/**
 		 * @inheritDoc
@@ -95,8 +96,43 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		/**
 		 * @inheritDoc
 		 */
+		public function get parser():IXMLObjectDefinitionsParser {
+			return _parser;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function set parser(value:IXMLObjectDefinitionsParser):void {
+			_parser = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get propertiesProvider():IPropertiesProvider {
+			return _propertiesProvider;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function get propertyURIs():Vector.<TextFileURI> {
 			return _propertyURIs;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get textFilesLoader():ITextFilesLoader {
+			return _textFilesLoader;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function set textFilesLoader(value:ITextFilesLoader):void {
+			_textFilesLoader = value;
 		}
 
 		/**
@@ -105,18 +141,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 */
 		public function addLocation(location:*):void {
 			_locations ||= [];
-			_locations[_locations.length] = location;
-		}
-
-		/**
-		 * Adds a preprocessor to the parser.
-		 *
-		 * @param preprocessor    The implementation of IXMLObjectDefinitionsPreprocessor that will be added
-		 */
-		public function addPreprocessor(preprocessor:IXMLObjectDefinitionsPreprocessor):void {
-			Assert.notNull(preprocessor, "The preprocessor argument must not be null");
-			_preprocessors ||= new Vector.<IXMLObjectDefinitionsPreprocessor>();
-			_preprocessors[_preprocessors.length] = preprocessor;
+			if (_locations.indexOf(location) < 0) {
+				_locations[_locations.length] = location;
+			}
 		}
 
 		/**
@@ -126,6 +153,30 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		public function addLocations(locations:Array):void {
 			_locations ||= [];
 			_locations = _locations.concat(locations);
+		}
+
+		/**
+		 * Adds a <code>INamespaceHandler</code> to the current <code>XMLObjectDefinitionsProvider</code>.
+		 * @param namespaceHandler
+		 */
+		public function addNamespaceHandler(namespaceHandler:INamespaceHandler):void {
+			Assert.notNull(namespaceHandler, "The namespaceHandler argument must not be null");
+			_namespaceHandlers ||= new Vector.<INamespaceHandler>();
+			if (_namespaceHandlers.indexOf(namespaceHandler) < 0) {
+				_namespaceHandlers[_namespaceHandlers.length] = namespaceHandler;
+			}
+		}
+
+		/**
+		 * Adds a <code>IXMLObjectDefinitionsPreprocessor</code> to the current <code>XMLObjectDefinitionsProvider</code>.
+		 * @param preprocessor    The implementation of IXMLObjectDefinitionsPreprocessor that will be added
+		 */
+		public function addPreprocessor(preprocessor:IXMLObjectDefinitionsPreprocessor):void {
+			Assert.notNull(preprocessor, "The preprocessor argument must not be null");
+			_preprocessors ||= new Vector.<IXMLObjectDefinitionsPreprocessor>();
+			if (_preprocessors.indexOf(preprocessor) < 0) {
+				_preprocessors[_preprocessors.length] = preprocessor;
+			}
 		}
 
 		/**
@@ -143,12 +194,20 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			return _asyncOperation;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function dispose():void {
 			if (!_isDisposed) {
 				_isDisposed = true;
 			}
 		}
 
+		/**
+		 *
+		 * @param queue
+		 * @return
+		 */
 		protected function addQueueListeners(queue:IOperationQueue):AsyncObjectDefinitionProviderResultOperation {
 			if ((queue != null) && (queue.total > 0)) {
 				queue.addCompleteListener(handleXMLLoadQueueComplete, false, 0, true);
@@ -159,18 +218,19 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			}
 		}
 
-		protected function handleXMLLoadQueueComplete(result:Vector.<String>):void {
-			for each (var xmlFile:String in result) {
-				addXMLConfig(new XML(xmlFile));
-			}
-			parseXML(_xmlConfiguration);
-		}
-
+		/**
+		 *
+		 * @param xml
+		 */
 		protected function addXMLConfig(xml:XML):void {
 			_xmlConfiguration = XMLUtils.mergeXML(_xmlConfiguration, xml);
 			disposeXML(xml);
 		}
 
+		/**
+		 *
+		 * @param merge
+		 */
 		protected function disposeXML(merge:XML):void {
 			try {
 				System[DISPOSE_XML_METHOD_NAME](merge);
@@ -179,8 +239,21 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			}
 		}
 
+		/**
+		 *
+		 * @param result
+		 */
+		protected function handleXMLLoadQueueComplete(result:Vector.<String>):void {
+			for each (var xmlFile:String in result) {
+				addXMLConfig(new XML(xmlFile));
+			}
+			parseXML(_xmlConfiguration);
+		}
 
-
+		/**
+		 *
+		 * @param error
+		 */
 		protected function handleXMLLoadQueueError(error:*):void {
 			_asyncOperation.dispatchErrorEvent(error);
 		}
@@ -190,6 +263,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 */
 		protected function initXMLObjectDefinitionProvider(locations:Array):void {
 			_locations = locations;
+			_propertyURIs = new Vector.<TextFileURI>();
 		}
 
 		/**
@@ -209,6 +283,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			addXMLConfig(xml);
 		}
 
+		/**
+		 *
+		 * @param xmlLocations
+		 */
 		protected function loadLocations(xmlLocations:Array):void {
 			for each (var item:* in xmlLocations) {
 				if (item is String) {
@@ -230,20 +308,27 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			_textFilesLoader.addURI(URI);
 		}
 
+		/**
+		 *
+		 * @param xmlConfig
+		 */
 		protected function parseXML(xmlConfig:XML):void {
-			// pre process the xml
 			preProcessXML(xmlConfig);
 
 		}
 
+		/**
+		 *
+		 * @param xmlConfig
+		 */
 		protected function preProcessXML(xmlConfig:XML):void {
 			// initialize the preprocessors
 			// do this here because the properties preprocessor needs the properties
 			if (!_preprocessorsInitialized) {
 				_preprocessorsInitialized = true;
 
-				addPreprocessor(new PropertyImportPreprocessor());
-//				addPreprocessor(new PropertyElementsPreprocessor(applicationContext));
+				addPreprocessor(new PropertyImportPreprocessor(_propertyURIs));
+				addPreprocessor(new PropertyElementsPreprocessor(_propertiesProvider));
 				addPreprocessor(new IdAttributePreprocessor());
 				addPreprocessor(new AttributeToElementPreprocessor());
 				addPreprocessor(new SpringNamesPreprocessor());
@@ -251,7 +336,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 				addPreprocessor(new ScopeAttributePreprocessor());
 				addPreprocessor(new ParentAttributePreprocessor());
 				addPreprocessor(new InnerObjectsPreprocessor());
-//				addPreprocessor(new InterfacePreprocessor(applicationContext.applicationDomain));
+				addPreprocessor(new AttributeToElementPreprocessor());
+				addPreprocessor(new InnerObjectsPreprocessor());
+				addPreprocessor(new MethodInvocationPreprocessor());
+				addPreprocessor(new ScopeAttributePreprocessor());
 			}
 
 			for each (var preprocessor:IXMLObjectDefinitionsPreprocessor in _preprocessors) {
@@ -260,5 +348,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 
 		}
 
+		public function set applicationDomain(value:ApplicationDomain):void {
+			_applicationDomain = value;
+		}
 	}
 }
