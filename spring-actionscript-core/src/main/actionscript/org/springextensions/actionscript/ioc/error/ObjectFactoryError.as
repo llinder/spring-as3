@@ -19,8 +19,9 @@ package org.springextensions.actionscript.ioc.error {
 	public class ObjectFactoryError extends Error {
 
 		public static const FACTORY_NOT_READY:String = "objectFactoryNotReady";
+		public static const CANNOT_INSTANTIATE_INTERFACE:String = "cannotInstantiateInterface";
 
-		public function ObjectFactoryError(message:* = "", id:* = 0) {
+		public function ObjectFactoryError(message:*="", id:*=0) {
 			super(message, id);
 		}
 	}

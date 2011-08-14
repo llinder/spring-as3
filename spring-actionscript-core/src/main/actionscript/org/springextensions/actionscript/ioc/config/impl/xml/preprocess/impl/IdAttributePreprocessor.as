@@ -46,10 +46,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 			var objectNodesWithoutId:XMLList = xml..object.(attribute(Constants.ID_ATTRIBUTE) == undefined);
 
 			for each (var node:XML in objectNodesWithoutId) {
-				if (node.parent().name() != XMLObjectDefinitionsParser.TEMPLATE_ELEMENT) {
-					node.@[Constants.ID_ATTRIBUTE] = GENERATED_ID_PREFIX + _counter;
-					_counter++;
-				}
+				node.@[Constants.ID_ATTRIBUTE] = GENERATED_ID_PREFIX + _counter;
+				_counter++;
 			}
 			return xml;
 		}

@@ -55,11 +55,13 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		private var _isLazyInit:Boolean;
 		private var _methodInvocations:Vector.<MethodInvocation>;
 		private var _parent:IObjectDefinition;
+		private var _parentName:String;
 		private var _primary:Boolean;
-		private var _properties:Object;
+		private var _properties:Vector.<PropertyDefinition>;
 		private var _scope:ObjectDefinitionScope;
 		private var _skipMetadata:Boolean = false;
 		private var _skipPostProcessors:Boolean = false;
+		private var _propertyNameLookup:Object;
 
 		/**
 		 * @default AutowireMode.NO
@@ -277,6 +279,14 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			_parent = value;
 		}
 
+		public function get parentName():String {
+			return _parentName;
+		}
+
+		public function set parentName(value:String):void {
+			_parentName = value;
+		}
+
 		/**
 		 * @default false
 		 * @inheritDoc
@@ -295,14 +305,14 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function get properties():Object {
+		public function get properties():Vector.<PropertyDefinition> {
 			return _properties;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set properties(value:Object):void {
+		public function set properties(value:Vector.<PropertyDefinition>):void {
 			_properties = value;
 		}
 
@@ -383,6 +393,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 				append(scope, that.scope). //
 				append(dependencyCheck, that.dependencyCheck). //
 				append(parent, that.parent). //
+				append(parentName, that.parentName). //
 				append(isInterface, that.isInterface). //
 				append(interfaceDefinitions, that.interfaceDefinitions). //
 				equals;
@@ -400,6 +411,17 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			isAutoWireCandidate = true;
 			primary = false;
 			dependencyCheck = DependencyCheckMode.NONE;
+		}
+
+		public function getPropertyDefinitionByName(name:String):PropertyDefinition {
+			return _propertyNameLookup[name] as PropertyDefinition;
+		}
+
+		public function addPropertyDefinition(propertyDefinition:PropertyDefinition):void {
+			_propertyNameLookup ||= {};
+			_properties ||= new Vector.<PropertyDefinition>();
+			_properties[_properties.length] = propertyDefinition;
+			_propertyNameLookup[propertyDefinition.name] = propertyDefinition;
 		}
 	}
 }

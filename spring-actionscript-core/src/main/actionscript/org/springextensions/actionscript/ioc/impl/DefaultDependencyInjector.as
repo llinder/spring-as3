@@ -33,6 +33,7 @@ package org.springextensions.actionscript.ioc.impl {
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
 	import org.springextensions.actionscript.object.ITypeConverter;
 	import org.springextensions.actionscript.object.SimpleTypeConverter;
 	import org.springextensions.actionscript.util.TypeUtils;
@@ -189,12 +190,12 @@ package org.springextensions.actionscript.ioc.impl {
 		protected function setPropertiesFromObjectDefinition(instance:*, objectDefinition:IObjectDefinition, objectName:String, objectFactory:IObjectFactory):void {
 			var newValue:*;
 			var clazz:Class;
-			for (var property:String in objectDefinition.properties) {
+			for each (var property:PropertyDefinition in objectDefinition.properties) {
 				clazz ||= ClassUtils.forInstance(instance, _applicationDomain);
 				// Note: Using two try blocks in order to improve error reporting
 				// resolve the reference to the property
 				try {
-					newValue = objectFactory.resolveReference(objectDefinition.properties[property]);
+					newValue = objectFactory.resolveReference(property.value);
 				} catch (e:Error) {
 					throw new ResolveReferenceError(StringUtils.substitute("The property '{0}' on the definition of '{1}' could not be resolved. Original error: {2}\n", property, objectName, e.message));
 				}
@@ -202,7 +203,7 @@ package org.springextensions.actionscript.ioc.impl {
 				// set the property on the created instance
 				try {
 					var type:Type = Type.forClass(clazz, _applicationDomain);
-					var field:Field = type.getField(property);
+					var field:Field = type.getField(property.name);
 
 					if (newValue && field && field.type.clazz) {
 						newValue = typeConverter.convertIfNecessary(newValue, field.type.clazz);
@@ -211,7 +212,7 @@ package org.springextensions.actionscript.ioc.impl {
 					// do the actual property setting
 					// note: skip this if the current property is equal to the new property
 					//if (object[property] !== newValue) {
-					instance[property] = newValue;
+					instance[property.name] = newValue;
 						//}
 						//} catch (typeError:TypeError) {
 						//	throw new PropertyTypeError("The property '" + property + "' on the object definition '" + name + "' was given the wrong type. Original error: \n" + typeError.message);

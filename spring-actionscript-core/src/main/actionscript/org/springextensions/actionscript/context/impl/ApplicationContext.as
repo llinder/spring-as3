@@ -31,6 +31,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistry;
 	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
@@ -54,6 +55,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.VectorReferenceResolver;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.process.impl.factory.PropertyPlaceholderConfigurer;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjector;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
@@ -380,6 +382,9 @@ package org.springextensions.actionscript.context.impl {
 			if (!isReady) {
 				_operationQueue = new OperationQueue(DEFINITION_PROVIDER_QUEUE_NAME);
 				for each (var provider:IObjectDefinitionsProvider in definitionProviders) {
+					if (provider is IApplicationContextAware) {
+						IApplicationContextAware(provider).applicationContext = this;
+					}
 					var operation:IOperation = provider.createDefinitions();
 					if (operation != null) {
 						operation.addCompleteListener(providerCompleteHandler, false, 0, true);
@@ -429,7 +434,9 @@ package org.springextensions.actionscript.context.impl {
 		 */
 		protected function cleanUpObjectDefinitionCreation():void {
 			if ((propertiesProvider != null) && (propertiesProvider.length > 0)) {
-				//addObjectFactoryPostProcessor(
+				var placeholderConfig:PropertyPlaceholderConfigurer = new PropertyPlaceholderConfigurer();
+				placeholderConfig.properties = propertiesProvider;
+				addObjectFactoryPostProcessor(placeholderConfig);
 			}
 			ContextUtils.disposeInstance(_propertiesParser);
 			_propertiesParser = null;

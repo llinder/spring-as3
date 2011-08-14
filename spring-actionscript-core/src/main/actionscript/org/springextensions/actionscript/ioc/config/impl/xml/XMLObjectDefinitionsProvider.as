@@ -25,12 +25,14 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.XMLUtils;
+	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResultOperation;
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.IXMLObjectDefinitionsPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.AttributeToElementPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.IdAttributePreprocessor;
@@ -42,12 +44,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.SpringNamesPreprocessor;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
+	import org.springextensions.actionscript.context.IApplicationContext;
 
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class XMLObjectDefinitionsProvider implements IObjectDefinitionsProvider, IDisposable, IApplicationDomainAware {
+	public class XMLObjectDefinitionsProvider implements IObjectDefinitionsProvider, IDisposable, IApplicationContextAware {
 
 		private static const DISPOSE_XML_METHOD_NAME:String = "disposeXML";
 		private static const XML_OBJECT_DEFINITIONS_PROVIDER_QUEUE_NAME:String = "xmlObjectDefinitionsProviderQueue";
@@ -74,8 +77,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		private var _propertyURIs:Vector.<TextFileURI>;
 		private var _textFilesLoader:ITextFilesLoader;
 		private var _xmlConfiguration:XML;
-		private var _applicationDomain:ApplicationDomain;
 		private var _namespaceHandlers:Vector.<INamespaceHandler>;
+		private var _applicationContext:IApplicationContext;
 
 		/**
 		 * @inheritDoc
@@ -312,7 +315,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 */
 		protected function parseXML(xmlConfig:XML):void {
 			preProcessXML(xmlConfig);
-
+			_parser ||= new XMLObjectDefinitionsParser(_applicationContext);
+			_parser.parse(xmlConfig);
 		}
 
 		/**
@@ -341,8 +345,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 
 		}
 
-		public function set applicationDomain(value:ApplicationDomain):void {
-			_applicationDomain = value;
+		public function get applicationContext():IApplicationContext {
+			return _applicationContext;
+		}
+
+		public function set applicationContext(value:IApplicationContext):void {
+			_applicationContext = value;
 		}
 	}
 }

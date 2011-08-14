@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.ioc.objectdefinition {
 	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
 
 	/**
 	 * Represents an object definition.
@@ -34,6 +35,15 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @private
 		 */
 		function set interfaceDefinitions(value:Vector.<IObjectDefinition>):void;
+
+		/**
+		 * The name of an <code>IObjectDefinition</code> whose properties will be inherited by the current <code>IObjectDefinition</code>.
+		 */
+		function get parentName():String;
+		/**
+		 * @private
+		 */
+		function set parentName(value:String):void;
 
 		/**
 		 * An <code>IObjectDefinition</code> whose properties will be inherited by the current <code>IObjectDefinition</code>.
@@ -124,11 +134,20 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * An anonymous object whose property values will be injected into the created object, the property names
 		 * on this object are the same as on the created object.
 		 */
-		function get properties():Object;
+		function get properties():Vector.<PropertyDefinition>;
+
 		/**
-		 * @private
+		 *
+		 * @param propertyDefinition
 		 */
-		function set properties(value:Object):void;
+		function addPropertyDefinition(propertyDefinition:PropertyDefinition):void;
+
+		/**
+		 *
+		 * @param name
+		 * @return
+		 */
+		function getPropertyDefinitionByName(name:String):PropertyDefinition;
 
 		/**
 		 * True if only one instance of this object needs to be created by the container, i.e. every subsequent call to the <code>getObject()</code>

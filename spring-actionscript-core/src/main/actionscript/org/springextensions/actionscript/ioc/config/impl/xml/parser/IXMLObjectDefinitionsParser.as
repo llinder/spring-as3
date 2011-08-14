@@ -14,7 +14,6 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.parser {
-	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
@@ -29,9 +28,11 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser {
 
 		function addNamespaceHandler(handler:INamespaceHandler):void;
 
+		function addNamespaceHandlers(handlers:Vector.<INamespaceHandler>):void;
+
 		function generateObjectName(definition:IObjectDefinition):String;
 
-		function parse(xml:XML):IApplicationContext;
+		function parse(xml:XML):void;
 
 		function parseNode(node:XML):void;
 

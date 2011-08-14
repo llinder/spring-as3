@@ -371,6 +371,8 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 			if (!objectDefinition) {
 				return getObjectFromParentFactory(name, constructorArguments);
+			} else if (objectDefinition.isInterface) {
+				throw new ObjectFactoryError(ObjectFactoryError.CANNOT_INSTANTIATE_INTERFACE, StringUtils.substitute("Objectdefinition {0} describes an interface which cannot be directly instantiated", objectName));
 			}
 
 			if (objectDefinition.isSingleton && (constructorArguments && !objectDefinition.isLazyInit)) {

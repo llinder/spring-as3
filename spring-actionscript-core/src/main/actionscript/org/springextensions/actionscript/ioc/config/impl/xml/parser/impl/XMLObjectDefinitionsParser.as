@@ -38,106 +38,51 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.ObjectDefinitionScope;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
 
 	use namespace spring_actionscript_objects;
 
 	public class XMLObjectDefinitionsParser implements IXMLObjectDefinitionsParser, IDisposable {
 
 		public static const ABSTRACT_ATTRIBUTE:String = "abstract";
-
-		/** Constant value 'array-collection' */
 		public static const ARRAY_COLLECTION_ELEMENT:String = "array-collection";
-
-		/** Constant value 'array' */
 		public static const ARRAY_ELEMENT:String = "array";
-
 		public static const AUTOWIRE_CANDIDATE_ATTRIBUTE:String = "autowire-candidate";
-
 		public static const AUTOWIRE_MODE_ATTRIBUTE:String = "autowire";
-
 		public static const AUTOWIRE_PRIMARY_CANDIDATE_ATTRIBUTE:String = "primary";
-
 		public static const CLASS_ATTRIBUTE:String = "class";
-
-		/** Constant value 'constructor-arg' */
 		public static const CONSTRUCTOR_ARG_ELEMENT:String = "constructor-arg";
-
 		public static const DEPENDENCY_CHECK_ATTRIBUTE:String = "dependency-check";
-
 		public static const DEPENDS_ON_ATTRIBUTE:String = "depends-on";
-
 		public static const DESTROY_METHOD_ATTRIBUTE:String = "destroy-method";
-
-		/** Constant value 'dictionary' */
 		public static const DICTIONARY_ELEMENT:String = "dictionary";
-
-		/** Constant value 'entry' */
 		public static const ENTRY_ELEMENENT:String = "entry";
-
 		public static const FACTORY_METHOD_ATTRIBUTE:String = "factory-method";
-
 		public static const FACTORY_OBJECT_ATTRIBUTE:String = "factory-object";
-
 		public static const ID_ATTRIBUTE:String = "id";
-
 		public static const INIT_METHOD_ATTRIBUTE:String = "init-method";
-
 		public static const KEY_ATTRIBUTE:String = "key";
-
-		/** Constant value 'key' */
 		public static const KEY_ELEMENT:String = "key";
-
 		public static const LAZY_INIT_ATTRIBUTE:String = "lazy-init";
-
-		/** Constant value 'list' */
 		public static const LIST_ELEMENT:String = "list";
-
-		/** Constant value 'map' */
 		public static const MAP_ELEMENT:String = "map";
-
-		/** Constant value 'method-invocation' */
 		public static const METHOD_INVOCATION:String = "method-invocation";
-
-		/** Constant value 'nan' (NaN - Not a Number) */
 		public static const NAN_ELEMENT:String = "nan";
-
-		/** Constant value 'null' */
 		public static const NULL_ELEMENT:String = "null";
-
-		/** Constant value 'object' */
 		public static const OBJECT_ELEMENT:String = "object";
-
 		public static const OBJECT_NAME_DELIMITERS:String = ",; ";
-
-		/** Constant value 'property' */
 		public static const PROPERTY_ELEMENT:String = "property";
-
+		public static const PARENT_ATTRIBUTE:String = "parent";
 		public static const REF_ATTRIBUTE:String = "ref";
-
-		/** Constant value 'ref' */
 		public static const REF_ELEMENT:String = "ref";
-
 		public static const SCOPE_ATTRIBUTE:String = "scope";
-
-		/** Constant value 'method-invocation' */
 		public static const SKIP_METADATA:String = "skip-metadata";
-
-		/** Constant value 'skip-postprocessors' */
 		public static const SKIP_POSTPROCESSORS:String = "skip-postprocessors";
-
-		/** Constant value 'template' */
-		public static const TEMPLATE_ELEMENT:String = "template";
-
-		/** Constant value 'undefined' */
 		public static const UNDEFINED_ELEMENT:String = "undefined";
-
 		public static const VALUE_ATTRIBUTE:String = "value";
-
-		/** Constant value 'value' */
 		public static const VALUE_ELEMENT:String = "value";
-
-		/** Constant value 'vector' */
 		public static const VECTOR_ELEMENT:String = "vector";
+
 		private static const HASH_CHAR:String = "#";
 
 		// --------------------------------------------------------------------
@@ -170,14 +115,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		// --------------------------------------------------------------------
 
 		private var _applicationContext:IApplicationContext;
-
 		private var _generatedObjectNames:Object = {};
 		private var _isDisposed:Boolean;
-
 		private var _namespaceHandlers:Object = {};
-
 		private var _nodeParsers:Vector.<INodeParser> = new Vector.<INodeParser>();
-
 		private var _preprocessorsInitialized:Boolean = false;
 
 		/**
@@ -214,6 +155,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 */
 		public function addNamespaceHandler(handler:INamespaceHandler):void {
 			_namespaceHandlers[handler.getNamespace().uri] = handler;
+		}
+
+		public function addNamespaceHandlers(handlers:Vector.<INamespaceHandler>):void {
+			for each (var handler:INamespaceHandler in handlers) {
+				addNamespaceHandler(handler);
+			}
 		}
 
 		/**
@@ -257,12 +204,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 *
 		 * @return the objectFactory with the parsed object definitions
 		 */
-		public function parse(xml:XML):IApplicationContext {
-
-			// parse the object definitions
+		public function parse(xml:XML):void {
 			parseObjectDefinitions(xml);
-
-			return applicationContext;
 		}
 
 		/**
@@ -442,6 +385,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			objectDefinition.skipPostProcessors = xml.attribute(SKIP_POSTPROCESSORS) == "true";
 			objectDefinition.skipMetadata = xml.attribute(SKIP_METADATA) == "true";
 			objectDefinition.dependencyCheck = DependencyCheckMode.fromName(xml.attribute(DEPENDENCY_CHECK_ATTRIBUTE).toString());
+			objectDefinition.parentName = (xml.attribute(PARENT_ATTRIBUTE).length() > 0) ? String(xml.attribute(PARENT_ATTRIBUTE)) : null;
 
 			var dependsOnAttributes:XMLList = xml.attribute(DEPENDS_ON_ATTRIBUTE);
 
@@ -528,10 +472,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		protected function parseObjectDefinitions(xml:XML):void {
 			// parse all top level nodes on the xml definition
 			for each (var node:XML in xml.children()) {
-				// only parse object nodes that are not part of a template
-				if (node.parent().name() != TEMPLATE_ELEMENT) {
-					parseNode(node);
-				}
+				parseNode(node);
 			}
 		}
 
@@ -541,14 +482,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 * @param xml
 		 */
 		protected function parseProperties(objectDefinition:IObjectDefinition, xml:XML):void {
-			var result:Object = {};
 			var propertyNodes:XMLList = xml.property;
 
 			for each (var node:XML in propertyNodes) {
-				result[node.@name.toString()] = parseProperty(node);
+				var isStatic:Boolean = (node.attribute("is-static").length() > 0) ? (String(node.attribute("is-static")) == "true") : false;
+				objectDefinition.addPropertyDefinition(new PropertyDefinition(node.@name.toString(), parseProperty(node), isStatic));
 			}
-
-			objectDefinition.properties = result;
 		}
 
 		/**

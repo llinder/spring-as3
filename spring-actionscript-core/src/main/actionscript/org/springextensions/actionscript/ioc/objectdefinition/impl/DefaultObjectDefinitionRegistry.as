@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	import flash.system.ApplicationDomain;
 	import flash.utils.Dictionary;
+
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
@@ -245,6 +246,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 					_objectDefinitionClasses[_objectDefinitionClasses.length] = cls;
 				}
 				objectDefinition.clazz = cls;
+				objectDefinition.isInterface = ClassUtils.isInterface(cls);
 			} else {
 				throw new Error("Object definition with that name already exists");
 			}
