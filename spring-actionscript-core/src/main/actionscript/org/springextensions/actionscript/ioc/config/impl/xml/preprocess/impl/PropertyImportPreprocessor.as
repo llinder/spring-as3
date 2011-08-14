@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
+	import org.as3commons.lang.Assert;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_objects;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.IXMLObjectDefinitionsPreprocessor;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
@@ -31,7 +32,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 
 		private static const FILE_ATTRIBUTE_NAME:String = 'file';
 		private static const REQUIRED_ATTRIBUTE_NAME:String = 'required';
-		private static const FALSE_VALUE:String = "false";
 		private static const PREVENTCACHE_ATTRIBUTE_NAME:String = "prevent-cache";
 		private var _propertyURIS:Vector.<TextFileURI>;
 
@@ -56,6 +56,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 		 *
 		 */
 		protected function initPropertyImportProcessor(propURIs:Vector.<TextFileURI>):void {
+			Assert.notNull(propURIs, "propURIs argument must not be null");
 			_propertyURIS = propURIs;
 		}
 
@@ -72,8 +73,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 			for each (var propertyNode:XML in propertyNodes) {
 				if (propertyNode.attribute(FILE_ATTRIBUTE_NAME).length() > 0) {
 					var fileName:String = String(propertyNode.attribute(FILE_ATTRIBUTE_NAME)[0]);
-					var isRequired:Boolean = (propertyNode.attribute(REQUIRED_ATTRIBUTE_NAME).length() > 0) ? (propertyNode.attribute(REQUIRED_ATTRIBUTE_NAME)[0] == FALSE_VALUE) : true;
-					var preventCache:Boolean = (propertyNode.attribute(PREVENTCACHE_ATTRIBUTE_NAME).length() > 0) ? (propertyNode.attribute(PREVENTCACHE_ATTRIBUTE_NAME)[0] == FALSE_VALUE) : true;
+					var isRequired:Boolean = (propertyNode.attribute(REQUIRED_ATTRIBUTE_NAME).length() > 0) ? (propertyNode.attribute(REQUIRED_ATTRIBUTE_NAME)[0] == true) : true;
+					var preventCache:Boolean = (propertyNode.attribute(PREVENTCACHE_ATTRIBUTE_NAME).length() > 0) ? (propertyNode.attribute(PREVENTCACHE_ATTRIBUTE_NAME)[0] == true) : true;
 					_propertyURIS[_propertyURIS.length] = new TextFileURI(fileName, isRequired, preventCache);
 					delete xml.property[0];
 				}

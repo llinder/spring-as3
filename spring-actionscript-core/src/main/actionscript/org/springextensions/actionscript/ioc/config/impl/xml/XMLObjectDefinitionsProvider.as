@@ -36,12 +36,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.IdAttributePreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.InnerObjectsPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.MethodInvocationPreprocessor;
-	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.ParentAttributePreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.PropertyElementsPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.PropertyImportPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.ScopeAttributePreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.SpringNamesPreprocessor;
-	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.TemplatePreprocessor;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 
@@ -333,8 +331,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 				addPreprocessor(new IdAttributePreprocessor());
 				addPreprocessor(new AttributeToElementPreprocessor());
 				addPreprocessor(new SpringNamesPreprocessor());
-				addPreprocessor(new TemplatePreprocessor());
-				addPreprocessor(new ParentAttributePreprocessor());
 				addPreprocessor(new InnerObjectsPreprocessor());
 				addPreprocessor(new MethodInvocationPreprocessor());
 			}

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.objectdefinition.impl {
-
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.IEquals;
 	import org.as3commons.lang.builder.EqualsBuilder;
@@ -31,45 +30,51 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	 */
 	public class ObjectDefinition implements IObjectDefinition, IEquals {
 
-		// --------------------------------------------------------------------
-		//
-		// Constructor
-		//
-		// --------------------------------------------------------------------
-
 		/**
 		 * Creates a new <code>ObjectDefinition</code> instance.
 		 * @param className The fully qualified class name for the object that this definition describes
 		 */
-		public function ObjectDefinition(className:String=null) {
-			initObjectDefinition(className);
+		public function ObjectDefinition(clazzName:String=null) {
+			super();
+			initObjectDefinition(clazzName);
 		}
 
-		protected function initObjectDefinition(className:String):void {
-			this.className = className;
-			this.constructorArguments = [];
-			this.properties = {};
-			this.scope = ObjectDefinitionScope.SINGLETON;
-			this.isLazyInit = false;
-			this.dependsOn = new Vector.<String>();
-			this.autoWireMode = AutowireMode.NO;
-			this.isAutoWireCandidate = true;
-			this.primary = false;
-			this.methodInvocations = new Vector.<MethodInvocation>();
-			this.dependencyCheck = DependencyCheckMode.NONE;
-		}
-
-		// --------------------------------------------------------------------
-		//
-		// Properties
-		//
-		// --------------------------------------------------------------------
-
-		// ----------------------------
-		// className
-		// ----------------------------
-
+		private var _autoWireMode:AutowireMode;
 		private var _className:String;
+		private var _clazz:Class;
+		private var _constructorArguments:Array;
+		private var _dependencyCheck:DependencyCheckMode;
+		private var _dependsOn:Vector.<String>;
+		private var _destroyMethod:String;
+		private var _factoryMethod:String;
+		private var _factoryObjectName:String;
+		private var _initMethod:String;
+		private var _interfaceDefinitions:Vector.<IObjectDefinition>;
+		private var _isAutoWireCandidate:Boolean;
+		private var _isInterface:Boolean;
+		private var _isLazyInit:Boolean;
+		private var _methodInvocations:Vector.<MethodInvocation>;
+		private var _parent:IObjectDefinition;
+		private var _primary:Boolean;
+		private var _properties:Object;
+		private var _scope:ObjectDefinitionScope;
+		private var _skipMetadata:Boolean = false;
+		private var _skipPostProcessors:Boolean = false;
+
+		/**
+		 * @default AutowireMode.NO
+		 * @inheritDoc
+		 */
+		public function get autoWireMode():AutowireMode {
+			return _autoWireMode;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set autoWireMode(value:AutowireMode):void {
+			_autoWireMode = (value) ? value : AutowireMode.NO;
+		}
 
 		/**
 		 * @inheritDoc
@@ -85,88 +90,13 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			_className = value;
 		}
 
-		// ----------------------------
-		// factoryObjectName
-		// ----------------------------
-
-		private var _factoryObjectName:String;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get factoryObjectName():String {
-			return _factoryObjectName;
+		public function get clazz():Class {
+			return _clazz;
 		}
 
-		/**
-		 * @private
-		 */
-		public function set factoryObjectName(value:String):void {
-			_factoryObjectName = value;
+		public function set clazz(value:Class):void {
+			_clazz = value;
 		}
-
-		// ----------------------------
-		// factoryMethod
-		// ----------------------------
-
-		private var _factoryMethod:String;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get factoryMethod():String {
-			return _factoryMethod;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set factoryMethod(value:String):void {
-			_factoryMethod = value;
-		}
-
-		// ----------------------------
-		// initMethod
-		// ----------------------------
-
-		private var _initMethod:String;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get initMethod():String {
-			return _initMethod;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set initMethod(value:String):void {
-			_initMethod = value;
-		}
-
-		// ----------------------------
-		// destroyMethod
-		// ----------------------------
-
-		private var _destroyMethod:String;
-
-		public function get destroyMethod():String {
-			return _destroyMethod;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set destroyMethod(value:String):void {
-			_destroyMethod = value;
-		}
-
-		// ----------------------------
-		// constructorArguments
-		// ----------------------------
-
-		private var _constructorArguments:Array;
 
 		/**
 		 * @inheritDoc
@@ -181,241 +111,6 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		public function set constructorArguments(value:Array):void {
 			_constructorArguments = value;
 		}
-
-		// ----------------------------
-		// properties
-		// ----------------------------
-
-		private var _properties:Object;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get properties():Object {
-			return _properties;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set properties(value:Object):void {
-			_properties = value;
-		}
-
-		// ----------------------------
-		// isSingleton
-		// ----------------------------
-
-		private var _scope:ObjectDefinitionScope;
-
-		/**
-		 * @default true
-		 * @inheritDoc
-		 */
-		public function get isSingleton():Boolean {
-			return (scope == ObjectDefinitionScope.SINGLETON);
-		}
-
-		/**
-		 * @private
-		 */
-		public function set isSingleton(value:Boolean):void {
-			scope = (value) ? ObjectDefinitionScope.SINGLETON : ObjectDefinitionScope.PROTOTYPE;
-		}
-
-		// ----------------------------
-		// scope
-		// ----------------------------
-
-		/**
-		 * @default ObjectDefinitionScope.SINGLETON
-		 * @inheritDoc
-		 */
-		public function get scope():ObjectDefinitionScope {
-			return _scope;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set scope(value:ObjectDefinitionScope):void {
-			Assert.notNull(value, "The scope cannot be null");
-			_scope = value;
-		}
-
-		// ----------------------------
-		// isLazyInit
-		// ----------------------------
-
-		private var _isLazyInit:Boolean;
-
-		/**
-		 * @default false
-		 * @inheritDoc
-		 */
-		public function get isLazyInit():Boolean {
-			return _isLazyInit;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set isLazyInit(value:Boolean):void {
-			_isLazyInit = value;
-		}
-
-		// ----------------------------
-		// dependsOn
-		// ----------------------------
-
-		private var _dependsOn:Vector.<String>;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get dependsOn():Vector.<String> {
-			return _dependsOn;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set dependsOn(value:Vector.<String>):void {
-			_dependsOn = value;
-		}
-
-		// ----------------------------
-		// isAutoWireCandidate
-		// ----------------------------
-
-		private var _isAutoWireCandidate:Boolean;
-
-		/**
-		 * @default true
-		 * @inheritDoc
-		 */
-		public function get isAutoWireCandidate():Boolean {
-			return _isAutoWireCandidate;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set isAutoWireCandidate(value:Boolean):void {
-			this._isAutoWireCandidate = value;
-		}
-
-		// ----------------------------
-		// autoWireMode
-		// ----------------------------
-
-		private var _autoWireMode:AutowireMode;
-
-		/**
-		 * @default AutowireMode.NO
-		 * @inheritDoc
-		 */
-		public function get autoWireMode():AutowireMode {
-			return this._autoWireMode;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set autoWireMode(value:AutowireMode):void {
-			this._autoWireMode = (value) ? value : AutowireMode.NO;
-		}
-
-		// ----------------------------
-		// primary
-		// ----------------------------
-
-		private var _primary:Boolean;
-
-		/**
-		 * @default false
-		 * @inheritDoc
-		 */
-		public function get primary():Boolean {
-			return this._primary;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set primary(value:Boolean):void {
-			this._primary = value;
-		}
-
-		// ----------------------------
-		// methodInvocations
-		// ----------------------------
-
-		private var _methodInvocations:Vector.<MethodInvocation>;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get methodInvocations():Vector.<MethodInvocation> {
-			return _methodInvocations;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set methodInvocations(value:Vector.<MethodInvocation>):void {
-			_methodInvocations = value;
-		}
-
-		// ----------------------------
-		// skipPostProcessors
-		// ----------------------------
-
-		private var _skipPostProcessors:Boolean = false;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get skipPostProcessors():Boolean {
-			return _skipPostProcessors;
-		}
-
-		/**
-		 * @default false
-		 * @inheritDoc
-		 */
-		public function set skipPostProcessors(value:Boolean):void {
-			_skipPostProcessors = value;
-		}
-
-		// ----------------------------
-		// skipMetadata
-		// ----------------------------
-
-		private var _skipMetadata:Boolean = false;
-
-		/**
-		 * @default false
-		 * @inheritDoc
-		 */
-		public function get skipMetadata():Boolean {
-			return _skipMetadata;
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function set skipMetadata(value:Boolean):void {
-			_skipMetadata = value;
-		}
-
-		// ----------------------------
-		// dependencyCheck
-		// ----------------------------
-
-		private var _dependencyCheck:DependencyCheckMode;
-		private var _clazz:Class;
-		private var _isInterface:Boolean;
 
 		/**
 		 * @default <code>ObjectDefinitionDependencyCheck.NONE</code>
@@ -432,12 +127,229 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			_dependencyCheck = (value) ? value : DependencyCheckMode.NONE;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function get dependsOn():Vector.<String> {
+			return _dependsOn;
+		}
 
-		// --------------------------------------------------------------------
-		//
-		// Public Methods
-		//
-		// --------------------------------------------------------------------
+		/**
+		 * @private
+		 */
+		public function set dependsOn(value:Vector.<String>):void {
+			_dependsOn = value;
+		}
+
+		public function get destroyMethod():String {
+			return _destroyMethod;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set destroyMethod(value:String):void {
+			_destroyMethod = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get factoryMethod():String {
+			return _factoryMethod;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set factoryMethod(value:String):void {
+			_factoryMethod = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get factoryObjectName():String {
+			return _factoryObjectName;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set factoryObjectName(value:String):void {
+			_factoryObjectName = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get initMethod():String {
+			return _initMethod;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set initMethod(value:String):void {
+			_initMethod = value;
+		}
+
+		public function get interfaceDefinitions():Vector.<IObjectDefinition> {
+			return _interfaceDefinitions;
+		}
+
+		public function set interfaceDefinitions(value:Vector.<IObjectDefinition>):void {
+			_interfaceDefinitions = value;
+		}
+
+		/**
+		 * @default true
+		 * @inheritDoc
+		 */
+		public function get isAutoWireCandidate():Boolean {
+			return _isAutoWireCandidate;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set isAutoWireCandidate(value:Boolean):void {
+			_isAutoWireCandidate = value;
+		}
+
+		public function get isInterface():Boolean {
+			return _isInterface;
+		}
+
+		public function set isInterface(value:Boolean):void {
+			_isInterface = value;
+		}
+
+		/**
+		 * @default false
+		 * @inheritDoc
+		 */
+		public function get isLazyInit():Boolean {
+			return _isLazyInit;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set isLazyInit(value:Boolean):void {
+			_isLazyInit = value;
+		}
+
+		/**
+		 * @default true
+		 * @inheritDoc
+		 */
+		public function get isSingleton():Boolean {
+			return (scope == ObjectDefinitionScope.SINGLETON);
+		}
+
+		/**
+		 * @private
+		 */
+		public function set isSingleton(value:Boolean):void {
+			scope = (value) ? ObjectDefinitionScope.SINGLETON : ObjectDefinitionScope.PROTOTYPE;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get methodInvocations():Vector.<MethodInvocation> {
+			return _methodInvocations;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set methodInvocations(value:Vector.<MethodInvocation>):void {
+			_methodInvocations = value;
+		}
+
+		public function get parent():IObjectDefinition {
+			return _parent;
+		}
+
+		public function set parent(value:IObjectDefinition):void {
+			_parent = value;
+		}
+
+		/**
+		 * @default false
+		 * @inheritDoc
+		 */
+		public function get primary():Boolean {
+			return _primary;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set primary(value:Boolean):void {
+			_primary = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get properties():Object {
+			return _properties;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set properties(value:Object):void {
+			_properties = value;
+		}
+
+		/**
+		 * @default ObjectDefinitionScope.SINGLETON
+		 * @inheritDoc
+		 */
+		public function get scope():ObjectDefinitionScope {
+			return _scope;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set scope(value:ObjectDefinitionScope):void {
+			_scope = value ||= ObjectDefinitionScope.SINGLETON;
+		}
+
+		/**
+		 * @default false
+		 * @inheritDoc
+		 */
+		public function get skipMetadata():Boolean {
+			return _skipMetadata;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function set skipMetadata(value:Boolean):void {
+			_skipMetadata = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get skipPostProcessors():Boolean {
+			return _skipPostProcessors;
+		}
+
+		/**
+		 * @default false
+		 * @inheritDoc
+		 */
+		public function set skipPostProcessors(value:Boolean):void {
+			_skipPostProcessors = value;
+		}
 
 		/**
 		 *
@@ -453,31 +365,41 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 
 			var that:IObjectDefinition = IObjectDefinition(object);
 
-			return new EqualsBuilder().append(autoWireMode, that.autoWireMode).append(className, that.className).append(constructorArguments, that.constructorArguments).append(dependsOn, that.dependsOn).append(factoryMethod, that.factoryMethod).append(factoryObjectName, that.factoryObjectName).append(initMethod, that.initMethod).append(isAutoWireCandidate, that.isAutoWireCandidate).append(isLazyInit, that.isLazyInit).append(isSingleton, that.isSingleton).append(methodInvocations, that.methodInvocations).append(skipPostProcessors, that.skipPostProcessors).append(skipMetadata, that.skipMetadata).append(primary, that.primary).append(properties, that.properties).append(scope, that.scope).append(dependencyCheck, that.dependencyCheck).equals;
+			return new EqualsBuilder().append(autoWireMode, that.autoWireMode). //
+				append(className, that.className). //
+				append(constructorArguments, that.constructorArguments). //
+				append(dependsOn, that.dependsOn). //
+				append(factoryMethod, that.factoryMethod). //
+				append(factoryObjectName, that.factoryObjectName). //
+				append(initMethod, that.initMethod). //
+				append(isAutoWireCandidate, that.isAutoWireCandidate). //
+				append(isLazyInit, that.isLazyInit). //
+				append(isSingleton, that.isSingleton). //
+				append(methodInvocations, that.methodInvocations). //
+				append(skipPostProcessors, that.skipPostProcessors). //
+				append(skipMetadata, that.skipMetadata). //
+				append(primary, that.primary). //
+				append(properties, that.properties). //
+				append(scope, that.scope). //
+				append(dependencyCheck, that.dependencyCheck). //
+				append(parent, that.parent). //
+				append(isInterface, that.isInterface). //
+				append(interfaceDefinitions, that.interfaceDefinitions). //
+				equals;
 		}
 
 		/**
 		 *
+		 * @param className
 		 */
-		public function toString():String {
-			return "[ObjectDefinition('" + className + "', factoryMethod: " + factoryMethod + ", constructorArguments: '" + constructorArguments + "', properties: " + properties + ")]";
+		protected function initObjectDefinition(clazzName:String):void {
+			className = clazzName;
+			scope = ObjectDefinitionScope.SINGLETON;
+			isLazyInit = false;
+			autoWireMode = AutowireMode.NO;
+			isAutoWireCandidate = true;
+			primary = false;
+			dependencyCheck = DependencyCheckMode.NONE;
 		}
-
-		public function get clazz():Class {
-			return _clazz;
-		}
-
-		public function set clazz(value:Class):void {
-			_clazz = value;
-		}
-
-		public function get isInterface():Boolean {
-			return _isInterface;
-		}
-
-		public function set isInterface(value:Boolean):void {
-			_isInterface = value;
-		}
-
 	}
 }

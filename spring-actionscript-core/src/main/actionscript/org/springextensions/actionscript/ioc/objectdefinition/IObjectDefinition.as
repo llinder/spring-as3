@@ -20,14 +20,29 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	/**
 	 * Represents an object definition.
 	 *
-	 * <p>
-	 * <b>Authors:</b> Christophe Herreman, Damir Murat<br/>
-	 * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
-	 * <b>Since:</b> 0.1
-	 * </p>
-	 * @docref container-documentation.html#the_objects
+	 * @author Christophe Herreman
+	 * @author Damir Murat
+	 * @author Roland Zwaga
 	 */
 	public interface IObjectDefinition {
+
+		/**
+		 * A list of <code>IObjectDefinitions</code> describing an interface configuration whose properties will be inherited by the current <code>IObjectDefinition</code>.
+		 */
+		function get interfaceDefinitions():Vector.<IObjectDefinition>;
+		/**
+		 * @private
+		 */
+		function set interfaceDefinitions(value:Vector.<IObjectDefinition>):void;
+
+		/**
+		 * An <code>IObjectDefinition</code> whose properties will be inherited by the current <code>IObjectDefinition</code>.
+		 */
+		function get parent():IObjectDefinition;
+		/**
+		 * @private
+		 */
+		function set parent(value:IObjectDefinition):void;
 
 		/**
 		 * Determines if the class whose configuration is described by the current <code>IObjectDefinition</code> is an interface;
