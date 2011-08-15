@@ -56,6 +56,11 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			return null;
 		}
 
+		/**
+		 *
+		 * @param registry
+		 * @param applicationDomain
+		 */
 		protected function mergeParentDefinitions(registry:IObjectDefinitionRegistry, applicationDomain:ApplicationDomain):void {
 			var objectNames:Vector.<String> = registry.getDefinitionNamesWithPropertyValue(PARENT_FIELD_NAME, null, false);
 			for each (var name:String in objectNames) {
@@ -65,15 +70,28 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 				}
 				objectDefinition.autoWireMode = objectDefinition.parent.autoWireMode;
 				objectDefinition.dependencyCheck = objectDefinition.parent.dependencyCheck;
-				objectDefinition.destroyMethod = objectDefinition.parent.destroyMethod;
-				objectDefinition.factoryMethod = objectDefinition.parent.factoryMethod;
-				objectDefinition.factoryObjectName = objectDefinition.parent.factoryObjectName;
-				objectDefinition.initMethod = objectDefinition.parent.initMethod;
+				if (!StringUtils.hasText(objectDefinition.destroyMethod)) {
+					objectDefinition.destroyMethod = objectDefinition.parent.destroyMethod;
+				}
+				if (!StringUtils.hasText(objectDefinition.factoryMethod)) {
+					objectDefinition.factoryMethod = objectDefinition.parent.factoryMethod;
+				}
+				if (!StringUtils.hasText(objectDefinition.factoryObjectName)) {
+					objectDefinition.factoryObjectName = objectDefinition.parent.factoryObjectName;
+				}
+				if (!StringUtils.hasText(objectDefinition.initMethod)) {
+					objectDefinition.initMethod = objectDefinition.parent.initMethod;
+				}
 				objectDefinition.scope = objectDefinition.parent.scope;
 				mergeObjectDefinitions(objectDefinition.parent, objectDefinition);
 			}
 		}
 
+		/**
+		 *
+		 * @param registry
+		 * @param applicationDomain
+		 */
 		protected function mergeInterfaceDefinitions(registry:IObjectDefinitionRegistry, applicationDomain:ApplicationDomain):void {
 			var interfaces:Vector.<String> = registry.getDefinitionNamesWithPropertyValue(IS_INTERFACE_FIELD_NAME, true);
 			var objects:Vector.<String> = registry.getDefinitionNamesWithPropertyValue(IS_INTERFACE_FIELD_NAME, false);
@@ -87,17 +105,32 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			}
 		}
 
+		/**
+		 *
+		 * @param interfaceDefinition
+		 * @param implementations
+		 */
 		protected function mergeInterfaceDefinitionWithObjectDefinitions(interfaceDefinition:IObjectDefinition, implementations:Vector.<IObjectDefinition>):void {
 			for each (var objectDefinition:IObjectDefinition in implementations) {
 				mergeObjectDefinitions(interfaceDefinition, objectDefinition);
 			}
 		}
 
+		/**
+		 *
+		 * @param sourceDefinition
+		 * @param destinationDefinition
+		 */
 		protected function mergeObjectDefinitions(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
 			mergeProperties(sourceDefinition, destinationDefinition);
 			mergeMethodInvocations(sourceDefinition, destinationDefinition);
 		}
 
+		/**
+		 *
+		 * @param sourceDefinition
+		 * @param destinationDefinition
+		 */
 		protected function mergeMethodInvocations(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
 			for each (var methodInvocation:MethodInvocation in sourceDefinition.methodInvocations) {
 				if (destinationDefinition.getMethodInvocationByName(methodInvocation.methodName, methodInvocation.namespaceURI) == null) {
@@ -106,6 +139,11 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			}
 		}
 
+		/**
+		 *
+		 * @param sourceDefinition
+		 * @param destinationDefinition
+		 */
 		protected function mergeProperties(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
 			for each (var propertyDefinition:PropertyDefinition in sourceDefinition.properties) {
 				if (destinationDefinition.getPropertyDefinitionByName(propertyDefinition.name, propertyDefinition.namespaceURI) == null) {
@@ -114,6 +152,14 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			}
 		}
 
+		/**
+		 *
+		 * @param objectNames
+		 * @param interfaceClass
+		 * @param registry
+		 * @param applicationDomain
+		 * @return
+		 */
 		protected function getImplementations(objectNames:Vector.<String>, interfaceClass:Class, registry:IObjectDefinitionRegistry, applicationDomain:ApplicationDomain):Vector.<IObjectDefinition> {
 			var result:Vector.<IObjectDefinition>;
 			for each (var objectName:String in objectNames) {
@@ -126,6 +172,10 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			return result;
 		}
 
+		/**
+		 *
+		 * @param registry
+		 */
 		protected function resolveParentDefinitions(registry:IObjectDefinitionRegistry):void {
 			for each (var name:String in registry.objectDefinitionNames) {
 				var objectDefinition:IObjectDefinition = registry.getObjectDefinition(name);

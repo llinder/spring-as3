@@ -96,11 +96,18 @@ package org.springextensions.actionscript.ioc.impl {
 		}
 
 
+		/**
+		 * Caches the object if its definition is a singleton<br/>
+		 * Note: if the object is an <code>IFactoryObject</code>, the <code>IFactoryObject</code> instance is cached and not the
+		 * object it creates
+		 * @param objectDefinition
+		 * @param cache
+		 * @param objectName
+		 * @param instance
+		 *
+		 */
 		protected function cacheSingleton(objectDefinition:IObjectDefinition, cache:IInstanceCache, objectName:String, instance:*):void {
 			if (objectDefinition.isSingleton) {
-				// cache the object if its definition is a singleton
-				// note: if the object is an object factory, the object factory is cached and not the
-				// object it creates
 				cache.addInstance(objectName, instance);
 			}
 		}
@@ -114,12 +121,12 @@ package org.springextensions.actionscript.ioc.impl {
 
 
 		protected function executeMethodInvocations(objectDefinition:IObjectDefinition, instance:*, objectFactory:IObjectFactory):void {
-			// execute all method invocations if any
 			if (objectDefinition.methodInvocations) {
 				for each (var methodInvocation:MethodInvocation in objectDefinition.methodInvocations) {
 					var methodInvoker:MethodInvoker = new MethodInvoker();
 					methodInvoker.target = instance;
 					methodInvoker.method = methodInvocation.methodName;
+					methodInvoker.namespaceURI = methodInvocation.namespaceURI;
 					methodInvoker.arguments = resolveReferences(methodInvocation.arguments, objectFactory);
 					methodInvoker.invoke();
 				}
