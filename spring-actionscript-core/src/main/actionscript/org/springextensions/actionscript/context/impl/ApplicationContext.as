@@ -36,7 +36,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
-	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResult;
+	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResultOperation;
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
@@ -390,7 +390,7 @@ package org.springextensions.actionscript.context.impl {
 						operation.addCompleteListener(providerCompleteHandler, false, 0, true);
 						_operationQueue.addOperation(operation);
 					} else {
-						handleObjectDefinitionResult(provider.objectDefinitions, provider.propertiesProvider, provider.propertyURIs);
+						handleObjectDefinitionResult(provider);
 					}
 				}
 				if (_operationQueue.total > 0) {
@@ -403,13 +403,13 @@ package org.springextensions.actionscript.context.impl {
 			}
 		}
 
-		protected function handleObjectDefinitionResult(objectDefinitions:Object, propertiesProvider:IPropertiesProvider, propertyURIs:Vector.<TextFileURI>):void {
-			registerObjectDefinitions(objectDefinitions);
-			if (propertyURIs != null) {
-				loadPropertyURIs(propertyURIs);
+		protected function handleObjectDefinitionResult(objectDefinitionsProvider:IObjectDefinitionsProvider):void {
+			registerObjectDefinitions(objectDefinitionsProvider.objectDefinitions);
+			if (objectDefinitionsProvider.propertyURIs != null) {
+				loadPropertyURIs(objectDefinitionsProvider.propertyURIs);
 			}
-			if (propertiesProvider != null) {
-				propertiesProvider.merge(propertiesProvider);
+			if (objectDefinitionsProvider.propertiesProvider != null) {
+				propertiesProvider.merge(objectDefinitionsProvider.propertiesProvider);
 			}
 		}
 
@@ -603,8 +603,7 @@ package org.springextensions.actionscript.context.impl {
 		 * @param event
 		 */
 		protected function providerCompleteHandler(event:OperationEvent):void {
-			var result:AsyncObjectDefinitionProviderResult = AsyncObjectDefinitionProviderResult(event.result);
-			handleObjectDefinitionResult(result.objectDefinitions, result.propertiesProvider, result.propertyURIs);
+			handleObjectDefinitionResult(AsyncObjectDefinitionProviderResultOperation(event.operation).objectDefinitionsProvider);
 		}
 
 		/**

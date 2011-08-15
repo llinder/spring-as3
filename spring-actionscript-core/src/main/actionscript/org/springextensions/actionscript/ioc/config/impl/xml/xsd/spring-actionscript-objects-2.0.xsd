@@ -4,7 +4,7 @@
 	<xs:annotation>
 		<xs:documentation>
 	<![CDATA[
-Spring ActionScript Framework 1.0 Schema
+Spring ActionScript Framework 2.0 Schema
 Schema Authors: Ryan Gardner, Erik Westra, Christophe Herreman, Roland Zwaga
 
 This defines a simple and consistent way of creating a namespace
@@ -225,6 +225,16 @@ The file attribute will take precedence over the name and value attributes.
 				<xs:documentation xml:lang="en">A reference to another object defined in the container.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="is-static" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Determines if the specified property is static.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="namespace" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">A namespace URI.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 
 	<xs:complexType name="methodInvocationType">
@@ -240,6 +250,11 @@ The file attribute will take precedence over the name and value attributes.
 		<xs:attribute name="name" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:documentation xml:lang="en">The name of the method.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="namespace" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">A namespace URI.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>

@@ -276,6 +276,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			// arguments are passed to the method and no constructor parameter are
 			// explicitly set in the object definition
 			if ((!objectDefinition.constructorArguments || objectDefinition.constructorArguments.length == 0) && objectDefinition.autoWireMode == AutowireMode.CONSTRUCTOR) {
+				objectDefinition.constructorArguments ||= [];
 				var idx:uint = 0;
 				for each (var parameter:Parameter in type.constructor.parameters) {
 					var isSimple:Boolean = TypeUtils.isSimpleProperty(parameter.type);

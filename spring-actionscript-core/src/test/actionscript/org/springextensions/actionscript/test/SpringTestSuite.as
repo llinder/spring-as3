@@ -16,6 +16,8 @@
 package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.context.impl.ApplicationContextTest;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
+	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoaderTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProviderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.AttributeToElementPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.IdAttributePreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.InnerObjectsPreprocessorTest;
@@ -78,5 +80,7 @@ package org.springextensions.actionscript.test {
 		public var t28:InnerObjectsPreprocessorTest;
 		public var t29:PropertyImportPreprocessorTest;
 		public var t30:SpringNamesPreprocessorTest;
+		public var t31:XMLObjectDefinitionsProviderTest;
+		public var t32:TextFilesLoaderTest;
 	}
 }

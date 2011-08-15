@@ -6,7 +6,7 @@
 
 	<xsd:annotation>
 		<xsd:documentation><![CDATA[
-			Spring ActionScript Framework 1.0 Stage Processing Schema
+			Spring ActionScript Framework 2.0 Stage Processing Schema
 			Schema Authors: Roland Zwaga
 			]]>
 		</xsd:documentation>

@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.impl {
+	import org.as3commons.lang.ICloneable;
 
 	/**
 	 *
 	 * @author Christophe Herreman
 	 *
 	 */
-	public class MethodInvocation extends Object {
+	public class MethodInvocation implements ICloneable {
 
 		private var _methodName:String;
+		private var _namespaceURI:String;
 		private var _arguments:Array;
 
 		/**
@@ -31,20 +33,27 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param args Optional array of arguments for the method invocation.
 		 *
 		 */
-		public function MethodInvocation(methodName:String, args:Array=null) {
+		public function MethodInvocation(methodName:String, args:Array=null, ns:String=null) {
 			super();
-			initMethodInvocation(methodName, args);
+			initMethodInvocation(methodName, args, ns);
+		}
+
+
+		public function get namespaceURI():String {
+			return _namespaceURI;
 		}
 
 		/**
 		 * Initializes the current <code>MethodInvocation</code>.
 		 * @param methodName The name of the method that needs to be invoked.
 		 * @param args Optional array of arguments for the method invocation.
-		 *
+		 * @param ns A namespace URI
+		 * @param isStatic Determines if the method is static
 		 */
-		protected function initMethodInvocation(methodName:String, args:Array):void {
+		protected function initMethodInvocation(methodName:String, args:Array, ns:String):void {
 			_methodName = methodName;
 			_arguments = args;
+			_namespaceURI = ns;
 		}
 
 		/**
@@ -59,6 +68,10 @@ package org.springextensions.actionscript.ioc.impl {
 		 */
 		public function get arguments():Array {
 			return _arguments;
+		}
+
+		public function clone():* {
+			return new MethodInvocation(this.methodName, this.arguments, this.namespaceURI);
 		}
 	}
 }

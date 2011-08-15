@@ -16,9 +16,8 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.ns {
 
 	/**
-	 * XML messaging namespace
-	 * @docref xml-schema-based-configuration.html#the_messaging_schema
-	 * @author Christophe Herreman
+	 * namespace for <code>Task</code> specific markup
+	 * @author Roland Zwaga
 	 */
-	public namespace spring_actionscript_messaging = "http://www.springactionscript.org/schema/messaging";
+	public namespace spring_actionscript_task = "http://www.springactionscript.org/schema/task";
 }

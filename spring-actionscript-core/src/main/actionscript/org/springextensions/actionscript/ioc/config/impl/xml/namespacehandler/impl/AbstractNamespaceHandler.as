@@ -70,7 +70,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 *
 		 * @param node the xml node for which to find a parser
 		 */
-		private function findParserForNode(node:XML):IObjectDefinitionParser {
+		protected function findParserForNode(node:XML):IObjectDefinitionParser {
 			var element:String = node.localName().toString();
 			var result:IObjectDefinitionParser = _nodeParsers[element];
 

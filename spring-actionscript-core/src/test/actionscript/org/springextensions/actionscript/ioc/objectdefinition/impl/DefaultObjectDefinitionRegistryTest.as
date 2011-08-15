@@ -191,5 +191,22 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			assertStrictlyEquals(objectDefinition, defs[0]);
 		}
 
+		[Test]
+		public function testRemoveObjectDefinition():void {
+			var objectDefinition:IObjectDefinition = new ObjectDefinition();
+			objectDefinition.className = "org.springextensions.actionscript.test.testtypes.TestClassWithMetadata";
+
+			_registry.registerObjectDefinition("test", objectDefinition);
+
+			var names:Vector.<String> = new Vector.<String>();
+			names.push("Mock");
+
+			_registry.removeObjectDefinition("test");
+			assertEquals(0, _registry.objectDefinitionNames.length);
+			assertNull(_registry.getObjectDefinitionsForType(TestClassWithMetadata));
+			assertEquals(0, _registry.getUsedTypes().length);
+			assertNull(_registry.getObjectDefinitionsWithMetadata(names));
+		}
+
 	}
 }

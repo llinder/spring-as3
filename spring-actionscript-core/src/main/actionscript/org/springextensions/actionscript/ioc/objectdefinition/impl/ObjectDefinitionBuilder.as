@@ -91,8 +91,8 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		/**
 		 * Adds a property with a value.
 		 */
-		public function addPropertyValue(name:String, value:*, isStatic:Boolean=false):ObjectDefinitionBuilder {
-			_objectDefinition.addPropertyDefinition(new PropertyDefinition(name, value, isStatic));
+		public function addPropertyValue(name:String, value:*, namespace:String=null, isStatic:Boolean=false):ObjectDefinitionBuilder {
+			_objectDefinition.addPropertyDefinition(new PropertyDefinition(name, value, namespace, isStatic));
 			return this;
 		}
 
@@ -105,8 +105,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 
 		public function addMethodInvocation(name:String, arguments:Array=null):ObjectDefinitionBuilder {
 			var methodInvocation:MethodInvocation = new MethodInvocation(name, arguments);
-			_objectDefinition.methodInvocations ||= new Vector.<MethodInvocation>();
-			_objectDefinition.methodInvocations[_objectDefinition.methodInvocations.length] = methodInvocation;
+			_objectDefinition.addMethodInvocation(methodInvocation);
 			return this;
 		}
 

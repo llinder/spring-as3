@@ -14,17 +14,29 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.objectdefinition.impl {
+	import org.as3commons.lang.ICloneable;
 
 
 	/**
-	 * Describes the the configuration of a single object property.
+	 * Describes the the configuration of a single instance property.
 	 * @author Roland Zwaga
 	 */
-	public class PropertyDefinition {
+	public class PropertyDefinition implements ICloneable {
 
 		private var _name:String;
+		private var _namespaceURI:String;
 		private var _value:*;
 		private var _isStatic:Boolean;
+		private var _qName:QName;
+
+		public function get qName():QName {
+			_qName ||= new QName(_namespaceURI, _name);
+			return _qName;
+		}
+
+		public function get namespaceURI():String {
+			return _namespaceURI;
+		}
 
 		public function get name():String {
 			return _name;
@@ -50,15 +62,20 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			_isStatic = value;
 		}
 
-		public function PropertyDefinition(propertyName:String, propertyValue:*, propertyIsStatic:Boolean=false) {
+		public function PropertyDefinition(propertyName:String, propertyValue:*, ns:String=null, propertyIsStatic:Boolean=false) {
 			super();
-			initPropertyDefinition(propertyName, propertyValue, propertyIsStatic);
+			initPropertyDefinition(propertyName, propertyValue, ns, propertyIsStatic);
 		}
 
-		protected function initPropertyDefinition(propertyName:String, propertyValue:*, propertyIsStatic:Boolean):void {
+		protected function initPropertyDefinition(propertyName:String, propertyValue:*, ns:String, propertyIsStatic:Boolean):void {
 			_name = propertyName;
 			_value = propertyValue;
+			_namespaceURI = ns;
 			_isStatic = propertyIsStatic;
+		}
+
+		public function clone():* {
+			return new PropertyDefinition(this.name, this.value, this.namespaceURI, this.isStatic);
 		}
 
 	}

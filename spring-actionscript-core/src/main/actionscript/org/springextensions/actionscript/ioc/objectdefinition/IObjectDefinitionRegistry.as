@@ -15,6 +15,7 @@
  */
 package org.springextensions.actionscript.ioc.objectdefinition {
 	import flash.system.ApplicationDomain;
+
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
 
 	/**
@@ -63,12 +64,16 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 */
 		function containsObjectDefinition(objectName:String):Boolean;
 
+
 		/**
-		 *
-		 * @return
-		 *
+		 * Returns the names of the <code>IObjectDefinitions</code> that have the specified property set to the specified value.<br/>
+		 * Optionally the selection may be reversed by setting the <code>returnMatching</code> argument to <code>false</code>.
+		 * @param propertyName The specified property name.
+		 * @param propertyValue The specified property value.
+		 * @param returnMatching Determines if the <code>IObjectdefinition</code> needs to match or not the specified property and value to be added to the result.
+		 * @return A vector of object names.
 		 */
-		function getDefinitionNamesWithPropertyValue(propertyName:String, propertyValue:*):Vector.<String>;
+		function getDefinitionNamesWithPropertyValue(propertyName:String, propertyValue:*, returnMatching:Boolean=true):Vector.<String>;
 
 		/**
 		 * Returns the object definition registered with the given name. If the object

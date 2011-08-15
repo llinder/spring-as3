@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.objectdefinition.impl {
+	import flash.utils.Dictionary;
+
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.IEquals;
 	import org.as3commons.lang.builder.EqualsBuilder;
@@ -29,6 +31,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	 * @docref container-documentation.html#the_objects
 	 */
 	public class ObjectDefinition implements IObjectDefinition, IEquals {
+		private static const COLON:String = ':';
 
 		/**
 		 * Creates a new <code>ObjectDefinition</code> instance.
@@ -49,7 +52,6 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		private var _factoryMethod:String;
 		private var _factoryObjectName:String;
 		private var _initMethod:String;
-		private var _interfaceDefinitions:Vector.<IObjectDefinition>;
 		private var _isAutoWireCandidate:Boolean;
 		private var _isInterface:Boolean;
 		private var _isLazyInit:Boolean;
@@ -62,6 +64,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		private var _skipMetadata:Boolean = false;
 		private var _skipPostProcessors:Boolean = false;
 		private var _propertyNameLookup:Object;
+		private var _methodNameLookup:Object;
 
 		/**
 		 * @default AutowireMode.NO
@@ -196,14 +199,6 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			_initMethod = value;
 		}
 
-		public function get interfaceDefinitions():Vector.<IObjectDefinition> {
-			return _interfaceDefinitions;
-		}
-
-		public function set interfaceDefinitions(value:Vector.<IObjectDefinition>):void {
-			_interfaceDefinitions = value;
-		}
-
 		/**
 		 * @default true
 		 * @inheritDoc
@@ -310,13 +305,6 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		}
 
 		/**
-		 * @private
-		 */
-		public function set properties(value:Vector.<PropertyDefinition>):void {
-			_properties = value;
-		}
-
-		/**
 		 * @default ObjectDefinitionScope.SINGLETON
 		 * @inheritDoc
 		 */
@@ -395,7 +383,6 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 				append(parent, that.parent). //
 				append(parentName, that.parentName). //
 				append(isInterface, that.isInterface). //
-				append(interfaceDefinitions, that.interfaceDefinitions). //
 				equals;
 		}
 
@@ -413,15 +400,31 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			dependencyCheck = DependencyCheckMode.NONE;
 		}
 
-		public function getPropertyDefinitionByName(name:String):PropertyDefinition {
-			return _propertyNameLookup[name] as PropertyDefinition;
+		public function getPropertyDefinitionByName(name:String, namespace:String=null):PropertyDefinition {
+			_propertyNameLookup ||= {};
+			var propertyName:String = (namespace != null) ? namespace + COLON + name : name;
+			return _propertyNameLookup[propertyName] as PropertyDefinition;
+		}
+
+		public function getMethodInvocationByName(name:String, namespace:String=null):MethodInvocation {
+			_methodNameLookup ||= {};
+			var methodName:String = (namespace != null) ? namespace + COLON + name : name;
+			return _methodNameLookup[methodName] as MethodInvocation;
 		}
 
 		public function addPropertyDefinition(propertyDefinition:PropertyDefinition):void {
-			_propertyNameLookup ||= {};
 			_properties ||= new Vector.<PropertyDefinition>();
 			_properties[_properties.length] = propertyDefinition;
-			_propertyNameLookup[propertyDefinition.name] = propertyDefinition;
+			var name:String = (propertyDefinition.namespaceURI != null) ? propertyDefinition.namespaceURI + COLON + propertyDefinition.name : propertyDefinition.name;
+			_propertyNameLookup[name] = propertyDefinition;
 		}
+
+		public function addMethodInvocation(methodInvocation:MethodInvocation):void {
+			_methodInvocations ||= new Vector.<MethodInvocation>();
+			_methodInvocations[_methodInvocations.length] = methodInvocation;
+			var name:String = (methodInvocation.namespaceURI != null) ? methodInvocation.namespaceURI + COLON + methodInvocation.methodName : methodInvocation.methodName;
+			_methodNameLookup[name] = methodInvocation;
+		}
+
 	}
 }

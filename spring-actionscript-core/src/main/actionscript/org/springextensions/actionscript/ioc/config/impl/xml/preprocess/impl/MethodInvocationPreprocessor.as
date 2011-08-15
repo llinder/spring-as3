@@ -54,26 +54,46 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 
 			var nodes:XMLList = xml.descendants(METHODINVOCATION_ELEMENT_NAME);
 
-			for (var i:int = 0; i < nodes.length(); i++) {
+			for (var i:int = 0; i < nodes.length(); ++i) {
 				var node:XML = nodes[i];
 				var parentID:String = node.parent().@id;
 				var objectID:String = METHOD_INVOCATION_NAME_PREFIX + idCounter++;
 				var methodName:String = node.@name;
+				var namespaceURI:String = (node.attribute("namespace").length() > 0) ? String(node.attribute("namespace")[0]) : null;
 
 				// create the xml for the method invocation
 				// use elements and not attributes for the "ref" and "value" because the AttributeToElementPreprocessor
 				// has already executed by now
-				var methodInvokingObjectXML:XML = <object id={objectID} class="org.springextensions.actionscript.ioc.factory.MethodInvokingObject">
-						<property name="target">
-							<ref>{parentID}</ref>
-						</property>
-						<property name="method">
-							<value>{methodName}</value>
-						</property>
-						<property name="arguments">
-							<array/>
-						</property>
-					</object>;
+				var methodInvokingObjectXML:XML;
+				if (namespaceURI != null) {
+					methodInvokingObjectXML = <object id={objectID} class="org.springextensions.actionscript.ioc.factory.MethodInvokingObject">
+							<property name="target">
+								<ref>{parentID}</ref>
+							</property>
+							<property name="method">
+								<value>{methodName}</value>
+							</property>
+							<property name="arguments">
+								<array/>
+							</property>
+							<property name="namespaceURI">
+								<value>{namespaceURI}</value>
+							</property>
+						</object>;
+				} else {
+					methodInvokingObjectXML = <object id={objectID} class="org.springextensions.actionscript.ioc.factory.MethodInvokingObject">
+							<property name="target">
+								<ref>{parentID}</ref>
+							</property>
+							<property name="method">
+								<value>{methodName}</value>
+							</property>
+							<property name="arguments">
+								<array/>
+							</property>
+						</object>;
+
+				}
 
 				// add arguments
 				var argumentsNode:XML = methodInvokingObjectXML.children()[2];

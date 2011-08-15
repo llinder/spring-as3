@@ -14,20 +14,92 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml {
-	import mockolate.ingredients.Mockolate;
+	import flash.net.getClassByAlias;
+
+	import mockolate.ingredients.Invocation;
+	import mockolate.mock;
+	import mockolate.nice;
+	import mockolate.runner.MockolateRule;
+	import mockolate.verify;
+
+	import org.as3commons.async.operation.IOperation;
+	import org.as3commons.async.operation.event.OperationEvent;
+	import org.flexunit.asserts.assertNotNull;
+	import org.flexunit.asserts.assertNull;
+	import org.flexunit.asserts.assertTrue;
+	import org.flexunit.async.Async;
+	import org.hamcrest.core.anything;
+	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
+	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResultOperation;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
+	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
+	import org.springextensions.actionscript.test.testtypes.EmbeddedContexts;
 
 	public class XMLObjectDefinitionsProviderTest {
 
+		private var _xmlObjectDefinitionProvider:XMLObjectDefinitionsProvider;
+
 		[Rule]
-		public var mockolateRule:Mockolate = new Mockolate();
+		public var mockolateRule:MockolateRule = new MockolateRule();
+
+		[Mock]
+		public var parser:IXMLObjectDefinitionsParser;
+		[Mock]
+		public var loader:ITextFilesLoader;
 
 		public function XMLObjectDefinitionsProviderTest() {
 			super();
 		}
 
+		[Before]
+		public function setUp():void {
+			_xmlObjectDefinitionProvider = new XMLObjectDefinitionsProvider();
+			parser = nice(IXMLObjectDefinitionsParser);
+			_xmlObjectDefinitionProvider.parser = parser;
+		}
+
 		[Test]
 		public function testLoadWithExplicitXML():void {
+			var xml:XML = new XML("<objects/>");
+			_xmlObjectDefinitionProvider.addLocation(xml);
+			mock(parser).method("parse").args(anything()).once();
+			var result:IOperation = _xmlObjectDefinitionProvider.createDefinitions();
+			verify(parser);
+			assertNull(result);
+		}
 
+		[Test]
+		public function testLoadWithEmbeddedXML():void {
+			_xmlObjectDefinitionProvider.addLocation(EmbeddedContexts.embeddedEmptyContext);
+			mock(parser).method("parse").args(anything()).once();
+			var result:IOperation = _xmlObjectDefinitionProvider.createDefinitions();
+			verify(parser);
+			assertNull(result);
+		}
+
+		[Test]
+		public function testLoadWithExternalXML():void {
+			var _func:Function;
+			var uri:String = "config.xml";
+			var vec:Vector.<String> = new Vector.<String>();
+			vec.push("<objects/>");
+			loader = nice(ITextFilesLoader);
+			_xmlObjectDefinitionProvider.textFilesLoader = loader;
+			mock(loader).asEventDispatcher();
+			mock(loader).method("addURI").args(uri).once();
+			mock(loader).getter("total").returns(1);
+			mock(loader).method("addCompleteListener").callsWithInvocation(function(invoc:Invocation):void {
+				_func = invoc.arguments[0];
+			});
+
+			_xmlObjectDefinitionProvider.addLocation(uri);
+			mock(parser).method("parse").args(anything()).once();
+			var result:IOperation = _xmlObjectDefinitionProvider.createDefinitions();
+			_func(vec);
+			verify(loader);
+			verify(parser);
+			assertNotNull(result);
+			assertTrue(result is AsyncObjectDefinitionProviderResultOperation);
 		}
 
 	}

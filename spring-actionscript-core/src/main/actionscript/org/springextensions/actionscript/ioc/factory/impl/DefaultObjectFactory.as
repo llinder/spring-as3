@@ -350,7 +350,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @inheritDoc
 		 */
 		public function resolveReferences(properties:Array):Array {
-			if (properties.length == 0) {
+			if ((!properties) || (properties.length == 0)) {
 				return null;
 			}
 			var result:Array = [];
@@ -466,7 +466,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		/**
 		 *
 		 * @param evt
-		 *
 		 */
 		protected function dispatchEventThroughEventBus(evt:ObjectFactoryEvent):void {
 			if (_eventBus != null) {
@@ -594,7 +593,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 					ContextUtils.disposeInstance(postProcessor);
 				}
 				_objectPostProcessors = null;
-				_parent = null; //Do NOT dispose the parent!
+				_parent = null; //Do NOT invoke dispose() on the parent!
 				ContextUtils.disposeInstance(_propertiesProvider);
 				_propertiesProvider = null;
 				for each (var resolver:IReferenceResolver in _referenceResolvers) {

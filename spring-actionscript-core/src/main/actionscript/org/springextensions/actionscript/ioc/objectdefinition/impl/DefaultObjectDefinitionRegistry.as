@@ -32,6 +32,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	 */
 	public class DefaultObjectDefinitionRegistry implements IObjectDefinitionRegistry, IDisposable, IApplicationDomainAware {
 		private static const IS_SINGLETON_FIELD_NAME:String = "isSingleton";
+		private static const OBJECT_DEFINITION_NAME_EXISTS_ERROR:String = "Object definition with that name has already been registered";
 
 		/**
 		 * Creates a new <code>DefaultObjectDefinitionRegistry</code> instance.
@@ -104,11 +105,12 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function getDefinitionNamesWithPropertyValue(propertyName:String, propertyValue:*):Vector.<String> {
+		public function getDefinitionNamesWithPropertyValue(propertyName:String, propertyValue:*, returnMatching:Boolean=true):Vector.<String> {
 			var result:Vector.<String>;
 			for each (var name:String in _objectDefinitionNames) {
 				var definition:IObjectDefinition = getObjectDefinition(name);
-				if (definition[propertyName] == propertyValue) {
+				var match:Boolean = ((definition[propertyName] == propertyValue) && (returnMatching));
+				if (match) {
 					result ||= Vector.<String>();
 					result[result.length] = name;
 				}
@@ -248,7 +250,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 				objectDefinition.clazz = cls;
 				objectDefinition.isInterface = ClassUtils.isInterface(cls);
 			} else {
-				throw new Error("Object definition with that name already exists");
+				throw new Error(OBJECT_DEFINITION_NAME_EXISTS_ERROR);
 			}
 		}
 
@@ -256,7 +258,46 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		 * @inheritDoc
 		 */
 		public function removeObjectDefinition(objectName:String):void {
-			throw new Error("Not implemented yet!");
+			if (containsObjectDefinition(objectName)) {
+				var definition:IObjectDefinition = getObjectDefinition(objectName);
+				var idx:int;
+				var list:Vector.<String> = getObjectNamesForType(definition.clazz);
+				var deleteClass:Boolean = ((list != null) && (list.length == 1));
+				if (deleteClass) {
+					idx = _objectDefinitionClasses.indexOf(definition.clazz);
+					if (idx > -1) {
+						_objectDefinitionClasses.splice(idx, 1);
+					}
+				}
+				var type:Type = Type.forName(definition.className, _applicationDomain);
+				for each (var metadata:Metadata in type.metadata) {
+					var name:String = metadata.name.toLowerCase();
+					removeFromMetadataLookup(name, definition);
+				}
+				delete _objectDefinitionNameLookup[definition];
+				idx = _objectDefinitionList.indexOf(definition);
+				if (idx > -1) {
+					_objectDefinitionList.splice(idx, 1);
+				}
+				delete _objectDefinitions[objectName];
+				idx = _objectDefinitionNames.indexOf(objectName);
+				if (idx > -1) {
+					_objectDefinitionNames.splice(idx, 1);
+				}
+			}
+		}
+
+		protected function removeFromMetadataLookup(name:String, definition:IObjectDefinition):void {
+			var list:Vector.<IObjectDefinition> = _objectDefinitionMetadataLookup[name];
+			if (list != null) {
+				var idx:int = list.indexOf(definition);
+				if (idx > -1) {
+					list.splice(idx, 1);
+				}
+				if (list.length == 0) {
+					delete _objectDefinitionMetadataLookup[name];
+				}
+			}
 		}
 
 		protected function addToMetadataLookup(objectDefinition:IObjectDefinition):void {

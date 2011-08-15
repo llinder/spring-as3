@@ -61,18 +61,20 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		public static const FACTORY_OBJECT_ATTRIBUTE:String = "factory-object";
 		public static const ID_ATTRIBUTE:String = "id";
 		public static const INIT_METHOD_ATTRIBUTE:String = "init-method";
+		public static const ISSTATIC_ATTRIBUTE:String = "is-static";
 		public static const KEY_ATTRIBUTE:String = "key";
 		public static const KEY_ELEMENT:String = "key";
 		public static const LAZY_INIT_ATTRIBUTE:String = "lazy-init";
 		public static const LIST_ELEMENT:String = "list";
 		public static const MAP_ELEMENT:String = "map";
 		public static const METHOD_INVOCATION:String = "method-invocation";
+		public static const NAMESPACE_ATTRIBUTE:String = "namespace";
 		public static const NAN_ELEMENT:String = "nan";
 		public static const NULL_ELEMENT:String = "null";
 		public static const OBJECT_ELEMENT:String = "object";
 		public static const OBJECT_NAME_DELIMITERS:String = ",; ";
-		public static const PROPERTY_ELEMENT:String = "property";
 		public static const PARENT_ATTRIBUTE:String = "parent";
+		public static const PROPERTY_ELEMENT:String = "property";
 		public static const REF_ATTRIBUTE:String = "ref";
 		public static const REF_ELEMENT:String = "ref";
 		public static const SCOPE_ATTRIBUTE:String = "scope";
@@ -84,6 +86,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		public static const VECTOR_ELEMENT:String = "vector";
 
 		private static const HASH_CHAR:String = "#";
+		private static const TRUE_VALUE:String = "true";
 
 		// --------------------------------------------------------------------
 		//
@@ -377,13 +380,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			objectDefinition.factoryObjectName = (xml.attribute(FACTORY_OBJECT_ATTRIBUTE) == undefined) ? null : xml.attribute(FACTORY_OBJECT_ATTRIBUTE);
 			objectDefinition.initMethod = (xml.attribute(INIT_METHOD_ATTRIBUTE) == undefined) ? null : xml.attribute(INIT_METHOD_ATTRIBUTE);
 			objectDefinition.destroyMethod = (xml.attribute(DESTROY_METHOD_ATTRIBUTE) == undefined) ? null : xml.attribute(DESTROY_METHOD_ATTRIBUTE);
-			objectDefinition.isLazyInit = (xml.attribute(LAZY_INIT_ATTRIBUTE) == "true");
+			objectDefinition.isLazyInit = (xml.attribute(LAZY_INIT_ATTRIBUTE) == TRUE_VALUE);
 			objectDefinition.scope = ObjectDefinitionScope.fromName(xml.attribute(SCOPE_ATTRIBUTE).toString());
 			objectDefinition.autoWireMode = AutowireMode.fromName(xml.attribute(AUTOWIRE_MODE_ATTRIBUTE).toString());
 			objectDefinition.isAutoWireCandidate = (xml.attribute(AUTOWIRE_CANDIDATE_ATTRIBUTE) != "false");
-			objectDefinition.primary = xml.attribute(AUTOWIRE_PRIMARY_CANDIDATE_ATTRIBUTE) == "true";
-			objectDefinition.skipPostProcessors = xml.attribute(SKIP_POSTPROCESSORS) == "true";
-			objectDefinition.skipMetadata = xml.attribute(SKIP_METADATA) == "true";
+			objectDefinition.primary = xml.attribute(AUTOWIRE_PRIMARY_CANDIDATE_ATTRIBUTE) == TRUE_VALUE;
+			objectDefinition.skipPostProcessors = xml.attribute(SKIP_POSTPROCESSORS) == TRUE_VALUE;
+			objectDefinition.skipMetadata = xml.attribute(SKIP_METADATA) == TRUE_VALUE;
 			objectDefinition.dependencyCheck = DependencyCheckMode.fromName(xml.attribute(DEPENDENCY_CHECK_ATTRIBUTE).toString());
 			objectDefinition.parentName = (xml.attribute(PARENT_ATTRIBUTE).length() > 0) ? String(xml.attribute(PARENT_ATTRIBUTE)) : null;
 
@@ -444,10 +447,11 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 */
 		protected function parseMethodInvocation(node:XML):MethodInvocation {
 			var methodName:String = node.@name;
-			var args:Array = [];
+			var args:Array;
 
 			for each (var argXML:XML in node.arg) {
-				args.push(parseProperty(argXML));
+				args ||= [];
+				args[args.length] = parseProperty(argXML);
 			}
 
 			return new MethodInvocation(methodName, args);
@@ -457,13 +461,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 * Parses the method invocations of the given definition.
 		 */
 		protected function parseMethodInvocations(objectDefinition:IObjectDefinition, xml:XML):void {
-			var result:Vector.<MethodInvocation> = new Vector.<MethodInvocation>();
-
 			for each (var node:XML in xml.children().(name().localName == METHOD_INVOCATION)) {
-				result[result.length] = parseMethodInvocation(node);
+				objectDefinition.addMethodInvocation(parseMethodInvocation(node));
 			}
-
-			objectDefinition.methodInvocations = result;
 		}
 
 		/**
@@ -485,8 +485,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			var propertyNodes:XMLList = xml.property;
 
 			for each (var node:XML in propertyNodes) {
-				var isStatic:Boolean = (node.attribute("is-static").length() > 0) ? (String(node.attribute("is-static")) == "true") : false;
-				objectDefinition.addPropertyDefinition(new PropertyDefinition(node.@name.toString(), parseProperty(node), isStatic));
+				var isStatic:Boolean = (node.attribute(ISSTATIC_ATTRIBUTE).length() > 0) ? (String(node.attribute(ISSTATIC_ATTRIBUTE)) == TRUE_VALUE) : false;
+				var ns:String = (node.attribute(NAMESPACE_ATTRIBUTE).length() > 0) ? String(node.attribute(NAMESPACE_ATTRIBUTE)) : null;
+				objectDefinition.addPropertyDefinition(new PropertyDefinition(node.@name.toString(), parseProperty(node), ns, isStatic));
 			}
 		}
 

@@ -15,6 +15,8 @@
 */
 package org.springextensions.actionscript.ioc.config.impl {
 
+	import org.as3commons.async.operation.IOperation;
+	import org.as3commons.async.operation.event.OperationEvent;
 	import org.as3commons.async.operation.impl.LoadURLOperation;
 	import org.as3commons.async.operation.impl.OperationQueue;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
@@ -39,13 +41,25 @@ package org.springextensions.actionscript.ioc.config.impl {
 
 		public function addURI(URI:String, preventCache:Boolean=true):void {
 			var loader:LoadURLOperation = new LoadURLOperation(formatURL(URI, preventCache));
-			loader.addCompleteListener(textFileLoaderComplete, false, 0, true);
+			loader.addCompleteListener(textFileLoaderComplete);
+			loader.addErrorListener(textFileLoaderError);
 			addOperation(loader);
 		}
 
-		protected function textFileLoaderComplete(source:String):void {
+		protected function textFileLoaderError(event:OperationEvent):void {
+			cleanUpLoadURLOperation(event.operation);
+			throw new Error(event.error);
+		}
+
+		protected function cleanUpLoadURLOperation(operation:IOperation):void {
+			operation.removeCompleteListener(textFileLoaderComplete);
+			operation.removeErrorListener(textFileLoaderError);
+		}
+
+		protected function textFileLoaderComplete(event:OperationEvent):void {
+			cleanUpLoadURLOperation(event.operation);
 			_results ||= new Vector.<String>();
-			_results[_results.length] = source;
+			_results[_results.length] = String(event.result);
 		}
 
 		/**

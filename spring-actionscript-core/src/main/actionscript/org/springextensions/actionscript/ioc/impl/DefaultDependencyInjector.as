@@ -190,6 +190,7 @@ package org.springextensions.actionscript.ioc.impl {
 		protected function setPropertiesFromObjectDefinition(instance:*, objectDefinition:IObjectDefinition, objectName:String, objectFactory:IObjectFactory):void {
 			var newValue:*;
 			var clazz:Class;
+			var target:Object;
 			for each (var property:PropertyDefinition in objectDefinition.properties) {
 				clazz ||= ClassUtils.forInstance(instance, _applicationDomain);
 				// Note: Using two try blocks in order to improve error reporting
@@ -209,13 +210,13 @@ package org.springextensions.actionscript.ioc.impl {
 						newValue = typeConverter.convertIfNecessary(newValue, field.type.clazz);
 					}
 
-					// do the actual property setting
-					// note: skip this if the current property is equal to the new property
-					//if (object[property] !== newValue) {
-					instance[property.name] = newValue;
-						//}
-						//} catch (typeError:TypeError) {
-						//	throw new PropertyTypeError("The property '" + property + "' on the object definition '" + name + "' was given the wrong type. Original error: \n" + typeError.message);
+					if (!property.isStatic) {
+						target = instance;
+					} else {
+						target = clazz;
+					}
+
+					target[property.qName] = newValue;
 				} catch (e:Error) {
 					throw e;
 				}

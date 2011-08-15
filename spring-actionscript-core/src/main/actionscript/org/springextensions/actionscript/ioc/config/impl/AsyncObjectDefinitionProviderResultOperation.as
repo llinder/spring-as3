@@ -15,15 +15,23 @@
 */
 package org.springextensions.actionscript.ioc.config.impl {
 	import org.as3commons.async.operation.impl.AbstractOperation;
+	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 
 	public class AsyncObjectDefinitionProviderResultOperation extends AbstractOperation {
+
+		private var _objectDefinitionsProvider:IObjectDefinitionsProvider;
 
 		public function AsyncObjectDefinitionProviderResultOperation() {
 			super();
 		}
 
+		public function get objectDefinitionsProvider():IObjectDefinitionsProvider {
+			return _objectDefinitionsProvider;
+		}
+
 		override public function dispatchCompleteEvent(result:*=null):Boolean {
-			return super.dispatchCompleteEvent(AsyncObjectDefinitionProviderResult(result));
+			_objectDefinitionsProvider = IObjectDefinitionsProvider(result);
+			return super.dispatchCompleteEvent(_objectDefinitionsProvider);
 		}
 
 	}

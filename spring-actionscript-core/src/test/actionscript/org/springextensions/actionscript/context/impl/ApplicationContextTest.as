@@ -33,11 +33,10 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
-	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResult;
+	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResultOperation;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
-	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
@@ -202,11 +201,10 @@ package org.springextensions.actionscript.context.impl {
 			var defs:Object = {};
 			var def:IObjectDefinition = new ObjectDefinition();
 			defs["testName"] = def;
-			var result:AsyncObjectDefinitionProviderResult = new AsyncObjectDefinitionProviderResult(defs, new Properties());
 
-			var mockOperation:MockDefinitionProviderResultOperation = new MockDefinitionProviderResultOperation();
-			mockOperation.result = result;
+			var mockOperation:AsyncObjectDefinitionProviderResultOperation = new AsyncObjectDefinitionProviderResultOperation();
 			objectDefinitionProvider = nice(IObjectDefinitionsProvider);
+			mockOperation.result = objectDefinitionProvider;
 			stub(objectDefinitionProvider).method("createDefinitions").returns(mockOperation).once();
 			stub(objectDefinitionProvider).getter("objectDefinitions").returns(defs).once();
 			stub(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
@@ -226,7 +224,7 @@ package org.springextensions.actionscript.context.impl {
 			_context.addEventListener(Event.COMPLETE, Async.asyncHandler(this, handleAsyncProvider, 500, def, handleAsyncProviderTimeOut), false, 0, true);
 			_context.load();
 			setTimeout(function():void {
-				mockOperation.dispatchEvent(new OperationEvent(OperationEvent.COMPLETE, mockOperation));
+				mockOperation.dispatchCompleteEvent(objectDefinitionProvider);
 			}, 5);
 		}
 

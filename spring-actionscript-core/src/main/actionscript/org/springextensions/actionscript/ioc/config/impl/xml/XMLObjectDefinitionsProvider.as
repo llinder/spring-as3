@@ -25,6 +25,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.XMLUtils;
+	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
@@ -44,7 +45,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.SpringNamesPreprocessor;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
-	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
 
 	/**
 	 *
@@ -60,7 +61,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 * Creates a new <code>XMLObjectDefinitionProvider</code> instance.
 		 * @param locations
 		 */
-		public function XMLObjectDefinitionsProvider(locations:Array) {
+		public function XMLObjectDefinitionsProvider(locations:Array=null) {
 			super()
 			initXMLObjectDefinitionProvider(locations);
 		}
@@ -152,8 +153,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 * @param locations
 		 */
 		public function addLocations(locations:Array):void {
-			_locations ||= [];
-			_locations = _locations.concat(locations);
+			_locations = (_locations == null) ? locations : _locations.concat(locations);
 		}
 
 		/**
@@ -328,6 +328,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			// do this here because the properties preprocessor needs the properties
 			if (!_preprocessorsInitialized) {
 				_preprocessorsInitialized = true;
+				_propertiesProvider ||= new Properties();
+				_propertyURIs ||= new Vector.<TextFileURI>();
 
 				addPreprocessor(new ScopeAttributePreprocessor());
 				addPreprocessor(new PropertyImportPreprocessor(_propertyURIs));
