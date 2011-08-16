@@ -21,15 +21,23 @@ package org.springextensions.actionscript.ioc.impl {
 	import mockolate.stub;
 	import mockolate.verify;
 
+	import org.flexunit.asserts.assertEquals;
 	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_objects;
 	import org.springextensions.actionscript.ioc.factory.IInitializingObject;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
 	import org.springextensions.actionscript.test.testtypes.AutowiredAnnotatedClass;
 	import org.springextensions.actionscript.test.testtypes.IAutowireProcessorAwareObjectFactory;
+	import org.springextensions.actionscript.test.testtypes.TestInjectionClass;
+
+	use namespace spring_actionscript_objects;
 
 	public class DefaultDependencyInjectorTest {
 
@@ -96,6 +104,76 @@ package org.springextensions.actionscript.ioc.impl {
 			mock(initializingObject).method("afterPropertiesSet").once();
 			injector.wire(initializingObject, factory);
 			verify(initializingObject);
+		}
+
+		[Test]
+		public function testWithObjectDefinitionWithOnePropertyDefinition():void {
+			var definition:IObjectDefinition = new ObjectDefinition();
+			definition.isSingleton = false;
+			definition.addPropertyDefinition(new PropertyDefinition("testProperty", "testValue"));
+			mock(factory).method("resolveReference").args("testValue").returns("testValue").once();
+			var obj:Object = {};
+			obj.testProperty = "";
+			injector.wire(obj, factory, definition, "testObject");
+			verify(factory);
+			assertEquals("testValue", obj.testProperty);
+		}
+
+		[Test]
+		public function testWithObjectDefinitionWithOnePropertyDefinitionWithNameSpace():void {
+			var definition:IObjectDefinition = new ObjectDefinition();
+			definition.isSingleton = false;
+			definition.addPropertyDefinition(new PropertyDefinition("testProperty", "testValue", spring_actionscript_objects));
+			mock(factory).method("resolveReference").args("testValue").returns("testValue").once();
+			var obj:TestInjectionClass = new TestInjectionClass();
+			var qn:QName = new QName(spring_actionscript_objects, "testProperty");
+			injector.wire(obj, factory, definition, "testObject");
+			verify(factory);
+			assertEquals("testValue", obj[qn]);
+		}
+
+		[Test]
+		public function testWithObjectDefinitionWithOneStaticPropertyDefinition():void {
+			var definition:IObjectDefinition = new ObjectDefinition();
+			definition.isSingleton = false;
+			definition.addPropertyDefinition(new PropertyDefinition("testStaticProperty", "testValue", null, true));
+			mock(factory).method("resolveReference").args("testValue").returns("testValue").once();
+			var obj:TestInjectionClass = new TestInjectionClass();
+			injector.wire(obj, factory, definition, "testObject");
+			verify(factory);
+			assertEquals("testValue", TestInjectionClass.testStaticProperty);
+		}
+
+		[Test]
+		public function testWithObjectDefinitionWithOneMethodInvocation():void {
+			var definition:IObjectDefinition = new ObjectDefinition();
+			definition.isSingleton = false;
+			definition.addMethodInvocation(new MethodInvocation("testCounter"));
+			var obj:TestInjectionClass = new TestInjectionClass();
+			injector.wire(obj, factory, definition, "testObject");
+			assertEquals(1, obj.count);
+		}
+
+		[Test]
+		public function testWithObjectDefinitionWithOneMethodInvocationWithNamespace():void {
+			var definition:IObjectDefinition = new ObjectDefinition();
+			definition.isSingleton = false;
+			definition.addMethodInvocation(new MethodInvocation("testCounter", null, spring_actionscript_objects));
+			var obj:TestInjectionClass = new TestInjectionClass();
+			injector.wire(obj, factory, definition, "testObject");
+			assertEquals(2, obj.count);
+		}
+
+		[Test]
+		public function testWithSingletonObjectDefinition():void {
+			var definition:IObjectDefinition = new ObjectDefinition();
+			definition.isSingleton = true;
+			var obj:TestInjectionClass = new TestInjectionClass();
+			stub(factory).getter("cache").returns(cache);
+			stub(cache).method("prepareInstance(").args("testObject", obj).once();
+			mock(cache).method("addInstance").args("testObject", obj).once();
+			injector.wire(obj, factory, definition, "testObject");
+			verify(cache);
 		}
 	}
 }

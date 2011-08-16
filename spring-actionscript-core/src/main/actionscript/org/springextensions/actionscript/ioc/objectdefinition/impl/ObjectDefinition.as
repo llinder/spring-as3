@@ -413,6 +413,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		}
 
 		public function addPropertyDefinition(propertyDefinition:PropertyDefinition):void {
+			_propertyNameLookup ||= {};
 			_properties ||= new Vector.<PropertyDefinition>();
 			_properties[_properties.length] = propertyDefinition;
 			var name:String = (propertyDefinition.namespaceURI != null) ? propertyDefinition.namespaceURI + COLON + propertyDefinition.name : propertyDefinition.name;
@@ -420,6 +421,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		}
 
 		public function addMethodInvocation(methodInvocation:MethodInvocation):void {
+			_methodNameLookup ||= {};
 			_methodInvocations ||= new Vector.<MethodInvocation>();
 			_methodInvocations[_methodInvocations.length] = methodInvocation;
 			var name:String = (methodInvocation.namespaceURI != null) ? methodInvocation.namespaceURI + COLON + methodInvocation.methodName : methodInvocation.methodName;

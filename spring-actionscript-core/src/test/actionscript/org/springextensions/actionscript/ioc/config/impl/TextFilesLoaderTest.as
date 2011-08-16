@@ -24,7 +24,6 @@ package org.springextensions.actionscript.ioc.config.impl {
 	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.async.Async;
 
-
 	public class TextFilesLoaderTest {
 
 		private var _textFilesLoader:TextFilesLoader
@@ -35,15 +34,9 @@ package org.springextensions.actionscript.ioc.config.impl {
 
 		[Test(async, timeout="1000")]
 		public function testLoadSingleFile():void {
-			Async.asyncHandler(null, null, 0);
 			_textFilesLoader = new TextFilesLoader("singleFileTest");
 			_textFilesLoader.addCompleteListener(handleSingleFileComplete);
 			_textFilesLoader.addURI("testfile1.txt", false);
-			setTimeout(test, 100);
-		}
-
-		protected function test():void {
-			assertFalse(true);
 		}
 
 		protected function handleSingleFileComplete(event:OperationEvent):void {

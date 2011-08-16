@@ -43,8 +43,8 @@ package org.springextensions.actionscript.ioc.impl {
 	 * @author Roland Zwaga
 	 */
 	public class DefaultDependencyInjector extends EventDispatcher implements IDependencyInjector, IApplicationDomainAware {
-		private static const DEFAULT_OBJECTNAME:String = "(no name)";
 
+		private static const DEFAULT_OBJECTNAME:String = "(no name)";
 		private static const ID_FIELD_NAME:String = "id";
 		private static const PROTOTYPE_FIELD_NAME:String = 'prototype';
 
@@ -58,6 +58,9 @@ package org.springextensions.actionscript.ioc.impl {
 		private var _applicationDomain:ApplicationDomain;
 		private var _typeConverter:ITypeConverter;
 
+		/**
+		 * @inheritDoc
+		 */
 		public function set applicationDomain(value:ApplicationDomain):void {
 			_applicationDomain = value;
 			if (_typeConverter != null) {
@@ -65,6 +68,9 @@ package org.springextensions.actionscript.ioc.impl {
 			}
 		}
 
+		/**
+		 *
+		 */
 		public function get typeConverter():ITypeConverter {
 			if (_typeConverter == null) {
 				_typeConverter = new SimpleTypeConverter(_applicationDomain);
@@ -72,6 +78,9 @@ package org.springextensions.actionscript.ioc.impl {
 			return _typeConverter;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set typeConverter(value:ITypeConverter):void {
 			_typeConverter = value;
 		}
@@ -87,7 +96,13 @@ package org.springextensions.actionscript.ioc.impl {
 			}
 		}
 
-
+		/**
+		 *
+		 * @param instance
+		 * @param objectName
+		 * @param objectFactory
+		 * @param objectDefinition
+		 */
 		protected function autowireInstance(instance:*, objectName:String, objectFactory:IObjectFactory, objectDefinition:IObjectDefinition=null):void {
 			var autoWireAware:IAutowireProcessorAware = objectFactory as IAutowireProcessorAware;
 			if ((autoWireAware != null) && (autoWireAware.autowireProcessor != null)) {
@@ -104,7 +119,6 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param cache
 		 * @param objectName
 		 * @param instance
-		 *
 		 */
 		protected function cacheSingleton(objectDefinition:IObjectDefinition, cache:IInstanceCache, objectName:String, instance:*):void {
 			if (objectDefinition.isSingleton) {
@@ -112,7 +126,12 @@ package org.springextensions.actionscript.ioc.impl {
 			}
 		}
 
-
+		/**
+		 *
+		 * @param objectDefinition
+		 * @param instance
+		 * @param objectName
+		 */
 		protected function checkDependencies(objectDefinition:IObjectDefinition, instance:*, objectName:String):void {
 			if (objectDefinition.dependencyCheck !== DependencyCheckMode.NONE) {
 				performDependencyCheck(instance, objectDefinition, objectName);
@@ -120,6 +139,12 @@ package org.springextensions.actionscript.ioc.impl {
 		}
 
 
+		/**
+		 *
+		 * @param objectDefinition
+		 * @param instance
+		 * @param objectFactory
+		 */
 		protected function executeMethodInvocations(objectDefinition:IObjectDefinition, instance:*, objectFactory:IObjectFactory):void {
 			if (objectDefinition.methodInvocations) {
 				for each (var methodInvocation:MethodInvocation in objectDefinition.methodInvocations) {
@@ -133,6 +158,11 @@ package org.springextensions.actionscript.ioc.impl {
 			}
 		}
 
+		/**
+		 *
+		 * @param instance
+		 * @param objectDefinition
+		 */
 		protected function initializeInstance(instance:*, objectDefinition:IObjectDefinition):void {
 			if (instance is IInitializingObject) {
 				IInitializingObject(instance).afterPropertiesSet();
@@ -143,6 +173,12 @@ package org.springextensions.actionscript.ioc.impl {
 			}
 		}
 
+		/**
+		 *
+		 * @param instance
+		 * @param objectDefinition
+		 * @param name
+		 */
 		protected function performDependencyCheck(instance:*, objectDefinition:IObjectDefinition, name:String):void {
 			var type:Type = Type.forInstance(instance, _applicationDomain);
 			for each (var field:Field in type.properties) {
@@ -161,24 +197,60 @@ package org.springextensions.actionscript.ioc.impl {
 			}
 		}
 
+		/**
+		 *
+		 * @param instance
+		 * @param objectName
+		 * @param objectPostProcessors
+		 */
 		protected function postProcessingAfterInitialization(instance:*, objectName:String, objectPostProcessors:Vector.<IObjectPostProcessor>):void {
 			for each (var processor:IObjectPostProcessor in objectPostProcessors) {
 				processor.postProcessAfterInitialization(instance, objectName);
 			}
 		}
 
+		/**
+		 *
+		 * @param instance
+		 * @param objectName
+		 * @param objectPostProcessors
+		 */
 		protected function postProcessingBeforeInitialization(instance:*, objectName:String, objectPostProcessors:Vector.<IObjectPostProcessor>):void {
 			for each (var processor:IObjectPostProcessor in objectPostProcessors) {
 				processor.postProcessBeforeInitialization(instance, objectName);
 			}
 		}
 
+		/**
+		 *
+		 * @param objectDefinition
+		 * @param cache
+		 * @param instance
+		 * @param objectName
+		 */
 		protected function prepareSingleton(objectDefinition:IObjectDefinition, cache:IInstanceCache, instance:*, objectName:String):void {
 			if (objectDefinition.isSingleton) {
-				cache.prepareInstance(instance, objectName);
+				cache.prepareInstance(objectName, instance);
 			}
 		}
 
+		protected function resolveObjectName(objectName:String, instance:*):String {
+			if (!StringUtils.hasText(objectName)) {
+				if (instance.hasOwnProperty(ID_FIELD_NAME)) {
+					objectName = instance[ID_FIELD_NAME];
+				} else {
+					objectName = DEFAULT_OBJECTNAME;
+				}
+			}
+			return objectName;
+		}
+
+		/**
+		 *
+		 * @param properties
+		 * @param objectFactory
+		 * @return
+		 */
 		protected function resolveReferences(properties:Array, objectFactory:IObjectFactory):Array {
 			var result:Array = [];
 			for each (var p:Object in properties) {
@@ -208,7 +280,6 @@ package org.springextensions.actionscript.ioc.impl {
 					throw new ResolveReferenceError(StringUtils.substitute("The property '{0}' on the definition of '{1}' could not be resolved. Original error: {2}\n", property, objectName, e.message));
 				}
 
-				// set the property on the created instance
 				try {
 					var type:Type = Type.forClass(clazz, _applicationDomain);
 					var field:Field = type.getField(property.name);
@@ -223,13 +294,24 @@ package org.springextensions.actionscript.ioc.impl {
 						target = clazz;
 					}
 
-					target[property.qName] = newValue;
+					if (!StringUtils.hasText(property.namespaceURI)) {
+						target[property.name] = newValue;
+					} else {
+						target[property.qName] = newValue;
+					}
 				} catch (e:Error) {
 					throw e;
 				}
 			}
 		}
 
+		/**
+		 *
+		 * @param instance
+		 * @param objectFactory
+		 * @param objectName
+		 * @param objectDefinition
+		 */
 		protected function wireWithObjectDefinition(instance:*, objectFactory:IObjectFactory, objectName:String, objectDefinition:IObjectDefinition):void {
 			objectName ||= objectDefinition.className;
 
@@ -258,24 +340,25 @@ package org.springextensions.actionscript.ioc.impl {
 			cacheSingleton(objectDefinition, objectFactory.cache, objectName, instance);
 		}
 
+		/**
+		 *
+		 * @param instance
+		 * @param objectName
+		 * @param objectFactory
+		 */
 		protected function wireWithoutObjectDefinition(instance:*, objectName:String, objectFactory:IObjectFactory):void {
-			// resolve object name
-			if (!StringUtils.hasText(objectName)) {
-				if (instance.hasOwnProperty(ID_FIELD_NAME)) {
-					objectName = instance[ID_FIELD_NAME];
-				} else {
-					objectName = DEFAULT_OBJECTNAME;
-				}
-			}
+			objectName = resolveObjectName(objectName, instance);
 
 			autowireInstance(instance, objectName, objectFactory);
 
 			var processors:Vector.<IObjectPostProcessor> = objectFactory.objectPostProcessors;
 
 			postProcessingBeforeInitialization(instance, objectName, processors);
+
 			if (instance is IInitializingObject) {
 				IInitializingObject(instance).afterPropertiesSet();
 			}
+
 			postProcessingAfterInitialization(instance, objectName, processors);
 		}
 	}
