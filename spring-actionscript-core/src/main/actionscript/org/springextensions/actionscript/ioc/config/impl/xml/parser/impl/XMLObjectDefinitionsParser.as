@@ -39,6 +39,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 	import org.springextensions.actionscript.ioc.objectdefinition.ObjectDefinitionScope;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
+	import org.springextensions.actionscript.util.ContextUtils;
 
 	use namespace spring_actionscript_objects;
 
@@ -123,6 +124,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		private var _namespaceHandlers:Object = {};
 		private var _nodeParsers:Vector.<INodeParser> = new Vector.<INodeParser>();
 		private var _preprocessorsInitialized:Boolean = false;
+		private var _definitions:Object;
 
 		/**
 		 * The objectFactory currently in use
@@ -177,6 +179,16 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		public function dispose():void {
 			if (!_isDisposed) {
+				_applicationContext = null;
+				_definitions = null;
+				_generatedObjectNames = null;
+				_namespaceHandlers = null;
+				if (_nodeParsers != null) {
+					for each(var nodeParser:INodeParser in _nodeParsers) {
+						ContextUtils.disposeInstance(nodeParser);
+					}
+				}
+				_nodeParsers = null;
 				_isDisposed = true;
 			}
 		}
@@ -207,8 +219,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 *
 		 * @return the objectFactory with the parsed object definitions
 		 */
-		public function parse(xml:XML):void {
+		public function parse(xml:XML):Object {
+			_definitions = {};
 			parseObjectDefinitions(xml);
+			return _definitions;
 		}
 
 		/**
@@ -346,7 +360,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 * @param objectDefinition the object definition
 		 */
 		public function registerObjectDefinition(objectName:String, objectDefinition:IObjectDefinition):void {
-			applicationContext.objectDefinitionRegistry.registerObjectDefinition(objectName, objectDefinition);
+			_definitions[objectName] = objectDefinition;
 		}
 
 		protected function initXMLObjectDefinitionsParser(applicationContext:IApplicationContext):void {

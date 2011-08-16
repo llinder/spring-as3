@@ -111,7 +111,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 				var definition:IObjectDefinition = getObjectDefinition(name);
 				var match:Boolean = ((definition[propertyName] == propertyValue) && (returnMatching));
 				if (match) {
-					result ||= Vector.<String>();
+					result ||= new Vector.<String>();
 					result[result.length] = name;
 				}
 			}
@@ -192,7 +192,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			for each (var name:String in _objectDefinitionNames) {
 				var definition:IObjectDefinition = getObjectDefinition(name);
 				if ((definition.isSingleton) && (definition.isLazyInit == lazyInit)) {
-					result ||= Vector.<String>();
+					result ||= new Vector.<String>();
 					result[result.length] = name;
 				}
 			}

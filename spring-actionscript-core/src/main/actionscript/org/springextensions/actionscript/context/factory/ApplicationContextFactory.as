@@ -15,6 +15,7 @@
 */
 package org.springextensions.actionscript.context.factory {
 	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.context.factory.config.IContextConfiguration;
 
 	/**
 	 * Static factory class that is used to instantiate and configure an <code>IApllicationContext</code> instance.
@@ -22,7 +23,11 @@ package org.springextensions.actionscript.context.factory {
 	 */
 	public final class ApplicationContextFactory {
 
-		public static function createContext():IApplicationContext {
+		public static function createContextConfiguration():IContextConfiguration {
+			return null;
+		}
+
+		public static function createContext(config:IContextConfiguration):IApplicationContext {
 			return null;
 		}
 

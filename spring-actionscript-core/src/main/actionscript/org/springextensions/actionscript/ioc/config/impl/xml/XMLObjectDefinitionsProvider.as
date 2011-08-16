@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml {
+	import flash.errors.IllegalOperationError;
 	import flash.system.ApplicationDomain;
 	import flash.system.System;
 	import flash.utils.ByteArray;
@@ -22,8 +23,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 	import org.as3commons.async.operation.IOperationQueue;
 	import org.as3commons.async.operation.impl.LoadURLOperation;
 	import org.as3commons.lang.Assert;
+	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
+	import org.as3commons.lang.StringUtils;
 	import org.as3commons.lang.XMLUtils;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
@@ -46,6 +49,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
+	import org.springextensions.actionscript.util.ContextUtils;
 
 	/**
 	 *
@@ -68,7 +72,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 
 		private var _asyncOperation:AsyncObjectDefinitionProviderResultOperation;
 		private var _isDisposed:Boolean;
-		private var _loaders:Vector.<LoadURLOperation>;
 		private var _locations:Array;
 		private var _objectDefinitions:Object;
 		private var _parser:IXMLObjectDefinitionsParser;
@@ -200,6 +203,31 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 */
 		public function dispose():void {
 			if (!_isDisposed) {
+				disposeXML(_xmlConfiguration);
+				if (_locations != null) {
+					for each (var item:* in _locations) {
+						if (item is XML) {
+							disposeXML(item);
+						}
+					}
+					_locations.length = 0;
+				}
+				_locations = null;
+				_applicationContext = null;
+				_asyncOperation = null;
+				if (_preprocessors != null) {
+					for each (var processor:IXMLObjectDefinitionsPreprocessor in _preprocessors) {
+						ContextUtils.disposeInstance(processor);
+					}
+					_preprocessors.length = 0;
+				}
+				_preprocessors = null;
+				_propertiesProvider = null;
+				_propertyURIs = null;
+				ContextUtils.disposeInstance(_parser);
+				_parser = null;
+				ContextUtils.disposeInstance(_textFilesLoader);
+				_textFilesLoader = null;
 				_isDisposed = true;
 			}
 		}
@@ -225,18 +253,19 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 */
 		protected function addXMLConfig(xml:XML):void {
 			_xmlConfiguration = XMLUtils.mergeXML(_xmlConfiguration, xml);
-			disposeXML(xml);
 		}
 
 		/**
 		 *
 		 * @param merge
 		 */
-		protected function disposeXML(merge:XML):void {
+		protected function disposeXML(xml:XML):void {
+			if (xml == null) {
+				return;
+			}
 			try {
-				System[DISPOSE_XML_METHOD_NAME](merge);
+				System[DISPOSE_XML_METHOD_NAME](xml);
 			} catch (e:Error) {
-
 			}
 		}
 
@@ -296,6 +325,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 					loadEmbeddedXML(Class(item));
 				} else if (item is XML) {
 					loadExplicitXML(XML(item));
+				} else {
+					throw new IllegalOperationError(StringUtils.substitute("XML location was of an unknown type: {0}, only String, Class or XML types are allowed", ClassUtils.forInstance(item, applicationContext.applicationDomain)));
 				}
 			}
 		}
@@ -316,7 +347,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		protected function parseXML(xmlConfig:XML):void {
 			preProcessXML(xmlConfig);
 			_parser ||= new XMLObjectDefinitionsParser(_applicationContext);
-			_parser.parse(xmlConfig);
+			_objectDefinitions = _parser.parse(xmlConfig);
 		}
 
 		/**
@@ -339,6 +370,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 				addPreprocessor(new SpringNamesPreprocessor());
 				addPreprocessor(new InnerObjectsPreprocessor());
 				addPreprocessor(new MethodInvocationPreprocessor());
+				if (_propertiesProvider.length == 0) {
+					_propertiesProvider = null;
+				}
+				if (_propertyURIs.length == 0) {
+					_propertyURIs = null;
+				}
 			}
 
 			for each (var preprocessor:IXMLObjectDefinitionsPreprocessor in _preprocessors) {

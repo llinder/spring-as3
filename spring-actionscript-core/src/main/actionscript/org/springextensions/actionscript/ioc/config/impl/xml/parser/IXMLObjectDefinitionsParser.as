@@ -32,7 +32,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser {
 
 		function generateObjectName(definition:IObjectDefinition):String;
 
-		function parse(xml:XML):void;
+		function parse(xml:XML):Object;
 
 		function parseNode(node:XML):void;
 

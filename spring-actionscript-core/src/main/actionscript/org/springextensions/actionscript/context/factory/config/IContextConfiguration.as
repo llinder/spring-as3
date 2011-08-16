@@ -13,26 +13,12 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.property {
-	import flash.events.IEventDispatcher;
-	import flash.net.URLLoader;
+package org.springextensions.actionscript.context.factory.config {
 
-	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
 
-	public interface IPropertiesProvider {
-
-		function get content():Object;
-
-		function get propertyNames():Vector.<String>;
-
-		function get length():uint;
-
-		function hasProperty(key:String):Boolean;
-
-		function getProperty(key:String):*;
-
-		function merge(properties:IPropertiesProvider, overrideProperty:Boolean=false):void;
-
-		function setProperty(key:String, value:String):void;
+	public interface IContextConfiguration {
+		function addDefinitionProvider():IContextConfiguration;
+		function addDefinitionProviderParam(param:*):IContextConfiguration;
+		function addComponent():IContextConfiguration;
 	}
 }

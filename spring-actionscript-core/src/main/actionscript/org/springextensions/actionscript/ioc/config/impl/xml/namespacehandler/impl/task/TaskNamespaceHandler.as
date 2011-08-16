@@ -15,6 +15,10 @@
  */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task {
 
+	import avmplus.getQualifiedClassName;
+
+	import flash.utils.getDefinitionByName;
+
 	import org.as3commons.lang.StringUtils;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractNamespaceHandler;
@@ -29,6 +33,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_task;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.util.Environment;
 
 	/**
 	 * Converts specialized <code>Task</code> related markup to <code>ObjectDefinitions</code>.

@@ -18,6 +18,7 @@ package org.springextensions.actionscript.context.impl {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
+
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.IOperationQueue;
 	import org.as3commons.async.operation.event.OperationEvent;
@@ -46,6 +47,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
+	import org.springextensions.actionscript.ioc.factory.impl.DefaultInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayCollectionReferenceResolver;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayReferenceResolver;
@@ -62,6 +64,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjector;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistry;
 	import org.springextensions.actionscript.util.ContextUtils;
 
 	[Event(name="complete", type="flash.events.Event")]
@@ -470,6 +473,8 @@ package org.springextensions.actionscript.context.impl {
 		 */
 		protected function createDefaultObjectFactory(parent:IApplicationContext):IObjectFactory {
 			var defaultObjectFactory:DefaultObjectFactory = new DefaultObjectFactory(parent);
+			defaultObjectFactory.cache = new DefaultInstanceCache();
+			defaultObjectFactory.objectDefinitionRegistry = new DefaultObjectDefinitionRegistry();
 			defaultObjectFactory.eventBus = new EventBus();
 			defaultObjectFactory.dependencyInjector = new DefaultDependencyInjector();
 			var autowireProcessor:DefaultAutowireProcessor = new DefaultAutowireProcessor(this);
@@ -492,20 +497,18 @@ package org.springextensions.actionscript.context.impl {
 		 *
 		 */
 		protected function executeObjectFactoryPostProcessors():void {
-			if (!isReady) {
-				_operationQueue = new OperationQueue(OBJECT_FACTORY_POST_PROCESSOR_QUEUE_NAME);
-				for each (var postprocessor:IObjectFactoryPostProcessor in objectFactoryPostProcessors) {
-					var operation:IOperation = postprocessor.postProcessObjectFactory(this);
-					if (operation != null) {
-						_operationQueue.addOperation(operation);
-					}
+			_operationQueue = new OperationQueue(OBJECT_FACTORY_POST_PROCESSOR_QUEUE_NAME);
+			for each (var postprocessor:IObjectFactoryPostProcessor in objectFactoryPostProcessors) {
+				var operation:IOperation = postprocessor.postProcessObjectFactory(this);
+				if (operation != null) {
+					_operationQueue.addOperation(operation);
 				}
-				if (_operationQueue.total > 0) {
-					_operationQueue.addCompleteListener(handleObjectFactoriesComplete, false, 0, true);
-					_operationQueue.addErrorListener(handleObjectFactoriesError, false, 0, true);
-				} else {
-					finalizeObjectFactoryProcessorExecution();
-				}
+			}
+			if (_operationQueue.total > 0) {
+				_operationQueue.addCompleteListener(handleObjectFactoriesComplete, false, 0, true);
+				_operationQueue.addErrorListener(handleObjectFactoriesError, false, 0, true);
+			} else {
+				finalizeObjectFactoryProcessorExecution();
 			}
 		}
 
@@ -513,16 +516,26 @@ package org.springextensions.actionscript.context.impl {
 		 *
 		 */
 		protected function finalizeObjectFactoryProcessorExecution():void {
+			for each (var postprocessor:IObjectFactoryPostProcessor in objectFactoryPostProcessors) {
+				ContextUtils.disposeInstance(postprocessor);
+			}
+			_objectFactoryPostProcessors.length = 0;
+			_objectFactoryPostProcessors = null;
 			instantiateSingletons();
 			completeContextInitialization();
 		}
 
+		/**
+		 *
+		 * @param objectDefinitionsProvider
+		 */
 		protected function handleObjectDefinitionResult(objectDefinitionsProvider:IObjectDefinitionsProvider):void {
 			registerObjectDefinitions(objectDefinitionsProvider.objectDefinitions);
 			if (objectDefinitionsProvider.propertyURIs != null) {
 				loadPropertyURIs(objectDefinitionsProvider.propertyURIs);
 			}
-			if (objectDefinitionsProvider.propertiesProvider != null) {
+			if ((objectDefinitionsProvider.propertiesProvider != null) && (objectDefinitionsProvider.propertiesProvider.length > 0)) {
+				propertiesProvider ||= new Properties();
 				propertiesProvider.merge(objectDefinitionsProvider.propertiesProvider);
 			}
 		}
