@@ -51,8 +51,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		[Mock]
 		public var objectPostProcessor:IObjectPostProcessor;
 		[Mock]
-		public var objectFactoryPostProcessor:IObjectFactoryPostProcessor;
-		[Mock]
 		public var cache:IInstanceCache;
 		[Mock]
 		public var injector:IDependencyInjector;
@@ -82,14 +80,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			assertEquals(0, _objectFactory.objectPostProcessors.length);
 			_objectFactory.addObjectPostProcessor(processor);
 			assertEquals(1, _objectFactory.objectPostProcessors.length);
-		}
-
-		[Test]
-		public function testAddObjectFactoryPostProcessor():void {
-			var processor:IObjectFactoryPostProcessor = nice(IObjectFactoryPostProcessor);
-			assertEquals(0, _objectFactory.objectFactoryPostProcessors.length);
-			_objectFactory.addObjectFactoryPostProcessor(processor);
-			assertEquals(1, _objectFactory.objectFactoryPostProcessors.length);
 		}
 
 		[Test(expects="org.springextensions.actionscript.ioc.objectdefinition.error.ObjectDefinitionNotFoundError")]

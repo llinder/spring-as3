@@ -14,6 +14,8 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.test {
+	import integration.objectfactory.ObjectFactoryIntegrationTest;
+
 	import org.springextensions.actionscript.context.impl.ApplicationContextTest;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoaderTest;
@@ -36,6 +38,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ObjectReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ThisReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.VectorReferenceResolverTest;
+	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectFactoryPostProcessorsFactoryPostProcessorTest;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessorTest;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjectorTest;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistryTest;
@@ -50,6 +53,7 @@ package org.springextensions.actionscript.test {
 	[Suite]
 	[RunWith("org.flexunit.runners.Suite")]
 	public final class SpringTestSuite {
+		//Unit tests
 		public var t1:DefaultInstanceCacheTest;
 		public var t2:TypeUtilsTest;
 		public var t3:SimpleTypeConverterTest;
@@ -82,5 +86,8 @@ package org.springextensions.actionscript.test {
 		public var t30:SpringNamesPreprocessorTest;
 		public var t31:XMLObjectDefinitionsProviderTest;
 		public var t32:TextFilesLoaderTest;
+		public var t33:RegisterObjectFactoryPostProcessorsFactoryPostProcessorTest;
+		//Integrations:
+		public var i1:ObjectFactoryIntegrationTest;
 	}
 }

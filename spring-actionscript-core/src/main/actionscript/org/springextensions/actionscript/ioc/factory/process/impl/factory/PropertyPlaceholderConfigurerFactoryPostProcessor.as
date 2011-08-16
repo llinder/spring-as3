@@ -31,7 +31,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	/**
 	 * @author Christophe Herreman
 	 */
-	public class PropertyPlaceholderConfigurer implements IObjectFactoryPostProcessor, IOrdered {
+	public class PropertyPlaceholderConfigurerFactoryPostProcessor extends AbstractOrderedFactoryPostProcessor {
 
 		// --------------------------------------------------------------------
 		//
@@ -63,8 +63,8 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		/**
 		 * Creates a new <code>PropertyPlaceholderConfigurer</code> instance.
 		 */
-		public function PropertyPlaceholderConfigurer() {
-			super();
+		public function PropertyPlaceholderConfigurerFactoryPostProcessor(orderPosition:int) {
+			super(orderPosition);
 		}
 
 		// --------------------------------------------------------------------
@@ -72,20 +72,6 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		// Public Properties
 		//
 		// --------------------------------------------------------------------
-
-		// ----------------------------
-		// order
-		// ----------------------------
-
-		private var _order:int = 0;
-
-		public function get order():int {
-			return _order;
-		}
-
-		public function set order(value:int):void {
-			_order = value;
-		}
 
 		// ----------------------------
 		// properties
@@ -123,7 +109,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		//
 		// --------------------------------------------------------------------
 
-		public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
+		override public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
 			_objectFactory = objectFactory;
 
 			var resolver:IPropertyPlaceholderResolver = new PropertyPlaceholderResolver(null, _properties, _ignoreUnresolvablePlaceholders);

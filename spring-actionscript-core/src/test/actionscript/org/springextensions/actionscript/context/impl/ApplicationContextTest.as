@@ -66,6 +66,8 @@ package org.springextensions.actionscript.context.impl {
 		public var textFilesLoader:ITextFilesLoader;
 		[Mock]
 		public var propertiesParser:IPropertiesParser;
+		[Mock]
+		public var objectFactoryPostProcessor:IObjectFactoryPostProcessor;
 
 		private var _context:ApplicationContext;
 
@@ -90,7 +92,6 @@ package org.springextensions.actionscript.context.impl {
 
 		[Test]
 		public function testCompositedMembers():void {
-			mock(objectFactory).method("addObjectFactoryPostProcessor").args(null).once();
 			mock(objectFactory).method("addObjectPostProcessor").args(null).once();
 			mock(objectFactory).method("addReferenceResolver").args(null).once();
 			mock(objectFactory).getter("applicationDomain").returns(applicationDomain).once();
@@ -100,7 +101,6 @@ package org.springextensions.actionscript.context.impl {
 			mock(objectFactory).setter("dependencyInjector").arg(null).once();
 			stub(objectFactory).method("getObject").args(anything());
 			mock(objectFactory).getter("isReady").returns(true).once();
-			mock(objectFactory).getter("objectFactoryPostProcessors").returns(null).once();
 			mock(objectFactory).getter("objectPostProcessors").returns(null).once();
 			mock(objectFactory).getter("parent").returns(null).once();
 			mock(objectFactory).getter("propertiesProvider").returns(null).once();
@@ -109,7 +109,6 @@ package org.springextensions.actionscript.context.impl {
 			mock(objectFactory).getter("objectDefinitionRegistry").returns(null).once();
 
 			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
-			context.addObjectFactoryPostProcessor(null);
 			context.addObjectPostProcessor(null);
 			context.addReferenceResolver(null);
 			var applicationDomain:ApplicationDomain = context.applicationDomain;
@@ -120,7 +119,6 @@ package org.springextensions.actionscript.context.impl {
 			context.dependencyInjector = dependencyInjector;
 			context.getObject("testName");
 			var b:Boolean = context.isReady;
-			var factoryPostProcessors:Vector.<IObjectFactoryPostProcessor> = context.objectFactoryPostProcessors;
 			var postProcessors:Vector.<IObjectPostProcessor> = context.objectPostProcessors;
 			var parent:IObjectFactory = context.parent;
 			var propertiesProvider:IPropertiesProvider = context.propertiesProvider;
@@ -226,6 +224,15 @@ package org.springextensions.actionscript.context.impl {
 			setTimeout(function():void {
 				mockOperation.dispatchCompleteEvent(objectDefinitionProvider);
 			}, 5);
+		}
+
+		[Test]
+		public function testAddObjectFactoryPostProcessor():void {
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var processor:IObjectFactoryPostProcessor = nice(IObjectFactoryPostProcessor);
+			assertEquals(3, context.objectFactoryPostProcessors.length);
+			context.addObjectFactoryPostProcessor(processor);
+			assertEquals(4, context.objectFactoryPostProcessors.length);
 		}
 
 		protected function handleAsyncProvider(event:Event, passThroughData:Object):void {

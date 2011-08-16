@@ -15,12 +15,12 @@
 */
 package org.springextensions.actionscript.context {
 	import flash.display.DisplayObject;
-
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
+	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 
 	/**
 	 *
@@ -35,11 +35,7 @@ package org.springextensions.actionscript.context {
 		/**
 		 *
 		 */
-		function get textFilesLoader():ITextFilesLoader;
-		/**
-		 * @private
-		 */
-		function set textFilesLoader(value:ITextFilesLoader):void;
+		function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor>;
 
 		/**
 		 *
@@ -57,9 +53,23 @@ package org.springextensions.actionscript.context {
 
 		/**
 		 *
+		 */
+		function get textFilesLoader():ITextFilesLoader;
+		/**
+		 * @private
+		 */
+		function set textFilesLoader(value:ITextFilesLoader):void;
+
+		/**
+		 *
 		 * @param provider
 		 */
 		function addDefinitionProvider(provider:IObjectDefinitionsProvider):void;
+		/**
+		 *
+		 * @param objectFactoryPostProcessor
+		 */
+		function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void;
 
 		/**
 		 *

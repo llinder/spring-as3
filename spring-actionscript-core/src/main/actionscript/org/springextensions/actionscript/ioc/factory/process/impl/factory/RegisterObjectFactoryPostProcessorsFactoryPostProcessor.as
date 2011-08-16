@@ -19,34 +19,20 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
-	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 
 
-	/**
-	 *
-	 * @author Roland Zwaga
-	 */
-	public class RegisterObjectPostProcessorsFactoryPostProcessor extends AbstractOrderedFactoryPostProcessor {
+	public class RegisterObjectFactoryPostProcessorsFactoryPostProcessor extends AbstractOrderedFactoryPostProcessor {
 
-		/**
-		 * Creates a new <code>RegisterObjectPostProcessorsFactoryPostProcessor</code> instance.
-		 *
-		 */
-		public function RegisterObjectPostProcessorsFactoryPostProcessor(orderPosition:int) {
+		public function RegisterObjectFactoryPostProcessorsFactoryPostProcessor(orderPosition:int) {
 			super(orderPosition);
 		}
 
-		/**
-		 * Retrieves all instances of type <code>IObjectPostProcessor</code> from the specified <code>IObjectFactory</code> and registers
-		 * them with the same <code>IObjectFactory</code>.
-		 * @param objectFactory
-		 * @return
-		 */
 		override public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
-			if (objectFactory.objectDefinitionRegistry != null) {
-				var objectNames:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IObjectPostProcessor);
+			var applicationContext:IApplicationContext = objectFactory as IApplicationContext;
+			if ((applicationContext != null) && (objectFactory.objectDefinitionRegistry != null)) {
+				var objectNames:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IObjectFactoryPostProcessor);
 				for each (var name:String in objectNames) {
-					objectFactory.addObjectPostProcessor(IObjectPostProcessor(objectFactory.getObject(name)));
+					applicationContext.addObjectFactoryPostProcessor(IObjectFactoryPostProcessor(objectFactory.getObject(name)));
 				}
 			}
 			return null;

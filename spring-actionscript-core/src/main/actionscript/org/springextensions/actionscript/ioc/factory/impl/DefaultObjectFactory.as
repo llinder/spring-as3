@@ -77,21 +77,12 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _eventBus:IEventBus;
 		private var _isReady:Boolean;
 		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
-		private var _objectFactoryPostProcessors:Vector.<IObjectFactoryPostProcessor>;
 		private var _objectPostProcessors:Vector.<IObjectPostProcessor>;
 		private var _parent:IObjectFactory;
 		private var _properties:Properties;
 		private var _propertiesProvider:IPropertiesProvider;
 		private var _referenceResolvers:Vector.<IReferenceResolver>;
 		private var _isDisposed:Boolean;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void {
-			objectFactoryPostProcessors[objectFactoryPostProcessors.length] = objectFactoryPostProcessor;
-			_objectFactoryPostProcessors.sort(OrderedUtils.orderedCompareFunction);
-		}
 
 		/**
 		 * @inheritDoc
@@ -271,16 +262,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				return _objectDefinitionRegistry.getObjectDefinition(objectName);
 			}
 			return null;
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor> {
-			if (_objectFactoryPostProcessors == null) {
-				_objectFactoryPostProcessors = new Vector.<IObjectFactoryPostProcessor>();
-			}
-			return _objectFactoryPostProcessors;
 		}
 
 		/**
@@ -585,11 +566,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				_eventBus = null;
 				ContextUtils.disposeInstance(_objectDefinitionRegistry);
 				_objectDefinitionRegistry = null;
-				for each (var factoryPostProcessor:IObjectFactoryPostProcessor in _objectFactoryPostProcessors) {
-					ContextUtils.disposeInstance(factoryPostProcessor);
-				}
-				_objectFactoryPostProcessors = null;
-				for each (var postProcessor:IObjectPostProcessor in _objectFactoryPostProcessors) {
+				for each (var postProcessor:IObjectPostProcessor in _objectPostProcessors) {
 					ContextUtils.disposeInstance(postProcessor);
 				}
 				_objectPostProcessors = null;

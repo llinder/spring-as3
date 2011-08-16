@@ -20,15 +20,10 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import mockolate.runner.MockolateRule;
 	import mockolate.verify;
 
-	import org.as3commons.async.operation.IOperation;
-	import org.flexunit.asserts.assertTrue;
 	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
-	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
-	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
-	import org.springextensions.actionscript.ioc.factory.process.impl.object.ApplicationDomainAwarePostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
 
@@ -36,7 +31,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class RegisterObjectPostProcessorsFactoryPostProcessorTest {
+	public class RegisterObjectFactoryPostProcessorsFactoryPostProcessorTest {
 
 		[Rule]
 		public var mockolateRule:MockolateRule = new MockolateRule();
@@ -46,9 +41,9 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		[Mock]
 		public var objectDefinitionRegistry:IObjectDefinitionRegistry;
 		[Mock]
-		public var objectPostProcessor:IObjectPostProcessor;
+		public var objectFactoryPostProcessor:IObjectFactoryPostProcessor;
 
-		public function RegisterObjectPostProcessorsFactoryPostProcessorTest() {
+		public function RegisterObjectFactoryPostProcessorsFactoryPostProcessorTest() {
 			super();
 		}
 
@@ -60,9 +55,9 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 
 		[Test]
 		public function testPostProcessObjectFactory():void {
-			var processor1:IObjectPostProcessor = nice(IObjectPostProcessor);
-			var processor2:IObjectPostProcessor = nice(IObjectPostProcessor);
-			var processor3:IObjectPostProcessor = nice(IObjectPostProcessor);
+			var processor1:IObjectFactoryPostProcessor = nice(IObjectFactoryPostProcessor);
+			var processor2:IObjectFactoryPostProcessor = nice(IObjectFactoryPostProcessor);
+			var processor3:IObjectFactoryPostProcessor = nice(IObjectFactoryPostProcessor);
 
 			var names:Vector.<String> = new Vector.<String>();
 			names[names.length] = "processor1";
@@ -75,7 +70,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			mock(applicationContext).method("getObject").args("processor2").returns(processor2).once();
 			mock(applicationContext).method("getObject").args("processor3").returns(processor3).once();
 
-			var processor:RegisterObjectPostProcessorsFactoryPostProcessor = new RegisterObjectPostProcessorsFactoryPostProcessor(0);
+			var processor:RegisterObjectFactoryPostProcessorsFactoryPostProcessor = new RegisterObjectFactoryPostProcessorsFactoryPostProcessor(0);
 			processor.postProcessObjectFactory(applicationContext);
 			verify(applicationContext);
 			verify(objectDefinitionRegistry);

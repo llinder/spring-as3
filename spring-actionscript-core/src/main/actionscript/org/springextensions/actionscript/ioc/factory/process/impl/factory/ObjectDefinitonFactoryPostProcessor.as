@@ -19,6 +19,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.lang.ClassUtils;
+	import org.as3commons.lang.IOrdered;
 	import org.as3commons.lang.StringUtils;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
@@ -32,15 +33,16 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	 * and merges the referenced <code>IObjectDefinitions</code>.
 	 * @author Roland Zwaga
 	 */
-	public class ObjectDefinitonFactoryPostProcessor implements IObjectFactoryPostProcessor {
+	public class ObjectDefinitonFactoryPostProcessor extends AbstractOrderedFactoryPostProcessor {
+
 		private static const IS_INTERFACE_FIELD_NAME:String = "isInterface";
 		private static const PARENT_FIELD_NAME:String = "parent";
 
 		/**
 		 * Creates a new <code>ObjectDefinitonFactoryPostProcessor</code> instance.
 		 */
-		public function ObjectDefinitonFactoryPostProcessor() {
-			super();
+		public function ObjectDefinitonFactoryPostProcessor(orderPosition:int) {
+			super(orderPosition);
 		}
 
 		/**
@@ -48,7 +50,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 * @param objectFactory
 		 * @return
 		 */
-		public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
+		override public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
 			var registry:IObjectDefinitionRegistry = objectFactory.objectDefinitionRegistry;
 			resolveParentDefinitions(registry);
 			mergeParentDefinitions(registry, objectFactory.applicationDomain);
@@ -184,7 +186,6 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 				}
 			}
 		}
-
 
 	}
 }

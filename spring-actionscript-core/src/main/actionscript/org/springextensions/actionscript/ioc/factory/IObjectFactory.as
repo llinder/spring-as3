@@ -32,12 +32,6 @@ package org.springextensions.actionscript.ioc.factory {
 
 		/**
 		 *
-		 * @param objectFactoryPostProcessor
-		 */
-		function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void;
-
-		/**
-		 *
 		 * @param objectPostProcessor
 		 */
 		function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void;
@@ -140,11 +134,6 @@ package org.springextensions.actionscript.ioc.factory {
 		 * @private
 		 */
 		function set isReady(value:Boolean):void;
-
-		/**
-		 *
-		 */
-		function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor>;
 
 		/**
 		 *
