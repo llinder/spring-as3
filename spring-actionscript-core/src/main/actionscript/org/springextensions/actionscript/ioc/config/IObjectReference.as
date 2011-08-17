@@ -17,12 +17,7 @@ package org.springextensions.actionscript.ioc.config {
 
 	/**
 	 * Exposes a reference to an object by its name.
-	 *
-	 * <p>
-	 * <b>Author:</b> Christophe Herreman<br/>
-	 * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
-	 * <b>Since:</b> 0.1
-	 * </p>
+	 * @author Christophe Herreman
 	 */
 	public interface IObjectReference {
 

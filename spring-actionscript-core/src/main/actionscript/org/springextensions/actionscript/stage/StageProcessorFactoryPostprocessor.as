@@ -44,6 +44,7 @@ package org.springextensions.actionscript.stage {
 		// Constructor
 		//
 		// --------------------------------------------------------------------
+		private var _defaultObjectSelector:IObjectSelector;
 
 		/**
 		 * Creates a new <code>StageProcessorFactoryPostprocessor</code> instance.
@@ -87,11 +88,21 @@ package org.springextensions.actionscript.stage {
 			if (stageProcessorRegistry) {
 				var selectorMapping:Object = objectFactory.cache.getInstance(StageProcessorNodeParser.SELECTOR_MAPPING_CACHE_NAME);
 				for each (var name:String in stageProcessorNames) {
-					var objectSelector:IObjectSelector = objectFactory.getObject(String(selectorMapping[name]));
+					var objectSelector:IObjectSelector;
+					var selectorName:String = (selectorMapping.hasOwnProperty(name)) ? String(selectorMapping[name]) : null;
+					if ((selectorName != null) && (objectFactory.objectDefinitionRegistry.containsObjectDefinition(selectorName))) {
+						objectSelector = objectFactory.getObject(selectorName);
+					} else {
+						objectSelector = getDefaultObjectSelector();
+					}
 					registerProcessor(stageProcessorRegistry, name, IStageObjectProcessor(objectFactory.getObject(name)), rootView, objectSelector);
 				}
 			}
 			return null;
+		}
+
+		protected function getDefaultObjectSelector():IObjectSelector {
+			return _defaultObjectSelector ||= new DefaultSpringObjectSelector();
 		}
 
 		// --------------------------------------------------------------------

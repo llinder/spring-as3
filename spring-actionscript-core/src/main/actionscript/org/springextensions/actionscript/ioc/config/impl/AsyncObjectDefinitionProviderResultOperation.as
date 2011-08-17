@@ -17,6 +17,10 @@ package org.springextensions.actionscript.ioc.config.impl {
 	import org.as3commons.async.operation.impl.AbstractOperation;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 
+	/**
+	 *
+	 * @author Roland Zwaga
+	 */
 	public class AsyncObjectDefinitionProviderResultOperation extends AbstractOperation {
 
 		private var _objectDefinitionsProvider:IObjectDefinitionsProvider;

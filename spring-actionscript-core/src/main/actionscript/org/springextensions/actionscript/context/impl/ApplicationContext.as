@@ -31,6 +31,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.util.OrderedUtils;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistry;
+	import org.as3commons.stageprocessing.impl.FlashStageObjectProcessorRegistry;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
@@ -565,6 +566,7 @@ package org.springextensions.actionscript.context.impl {
 		protected function initApplicationContext(parent:IApplicationContext, rootView:DisplayObject, objFactory:IObjectFactory):void {
 			_definitionProviders = new Vector.<IObjectDefinitionsProvider>();
 			_objectFactory = objFactory ||= createDefaultObjectFactory(parent);
+			stageProcessorRegistry = new FlashStageObjectProcessorRegistry();
 			_rootView = rootView;
 			applicationDomain = resolveRootViewApplicationDomain(_rootView);
 

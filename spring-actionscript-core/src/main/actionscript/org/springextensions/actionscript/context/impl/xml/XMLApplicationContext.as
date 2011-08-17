@@ -21,6 +21,7 @@ package org.springextensions.actionscript.context.impl.xml {
 	import org.springextensions.actionscript.context.impl.ApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.GenericStageProcessorNamespaceHandler;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 
 
@@ -34,6 +35,7 @@ package org.springextensions.actionscript.context.impl.xml {
 		protected function initXMLApplicationContext(configLocation:*):void {
 			var provider:XMLObjectDefinitionsProvider = new XMLObjectDefinitionsProvider((configLocation != null) ? [configLocation] : null);
 			provider.applicationContext = this;
+			provider.addNamespaceHandler(new GenericStageProcessorNamespaceHandler(cache));
 			addDefinitionProvider(provider);
 		}
 

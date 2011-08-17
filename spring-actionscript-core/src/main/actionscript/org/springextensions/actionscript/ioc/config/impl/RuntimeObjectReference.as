@@ -21,24 +21,25 @@ package org.springextensions.actionscript.ioc.config.impl {
 	/**
 	 * Immutable placeholder class used for a property value object when it is
 	 * a reference to another object in the factory, to be resolved at runtime.
-	 * <p>
-	 * <b>Author:</b> Christophe Herreman<br/>
-	 * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
-	 * <b>Since:</b> 0.1
-	 * </p>
+	 * @author Christophe Herreman
 	 */
 	public class RuntimeObjectReference implements IObjectReference {
 
-		private var _objectName:String = "";
+		private var _objectName:String;
 
 		/**
-		 * Creates a new RuntimeObjectReference.
+		 * Creates a new <code>RuntimeObjectReference</code>.
+		 * @param objectName
 		 */
 		public function RuntimeObjectReference(objectName:String) {
 			super();
 			initRuntimeObjectReference(objectName);
 		}
 
+		/**
+		 * Initializes the current <code>RuntimeObjectReference</code>.
+		 * @param objectName
+		 */
 		protected function initRuntimeObjectReference(objectName:String):void {
 			Assert.hasText(objectName, "The object name must have text");
 			_objectName = objectName;

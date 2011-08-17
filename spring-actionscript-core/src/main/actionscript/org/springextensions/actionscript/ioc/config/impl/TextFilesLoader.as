@@ -26,6 +26,10 @@ package org.springextensions.actionscript.ioc.config.impl {
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 
+	/**
+	 *
+	 * @author Roland Zwaga
+	 */
 	public class TextFilesLoader extends OperationQueue implements ITextFilesLoader {
 
 		private static const LOGGER:ILogger = getClassLogger(TextFilesLoader);
@@ -99,6 +103,7 @@ package org.springextensions.actionscript.ioc.config.impl {
 			cleanUpLoadURLOperation(event.operation);
 			_results ||= new Vector.<String>();
 			_results[_results.length] = String(event.result);
+			LOGGER.debug("Completed operation {0}", [event.operation]);
 		}
 
 		/**
@@ -121,6 +126,7 @@ package org.springextensions.actionscript.ioc.config.impl {
 		 */
 		override public function dispatchCompleteEvent(result:*=null):Boolean {
 			return super.dispatchCompleteEvent(_results);
+			LOGGER.debug("Completed loading of {0} text file(s)", [_results.length]);
 		}
 
 	}

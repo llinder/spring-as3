@@ -15,49 +15,22 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.nodeparser {
 
-	import org.as3commons.lang.ClassUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinitionBuilder;
+	import org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor;
 
-	/**
-	 *
-	 * @author Roland Zwaga
-	 */
-	public class StageProcessorNodeParser extends AbstractObjectDefinitionParser {
 
-		/** The object-selector attribute */
-		public static const OBJECT_SELECTOR_ATTR:String = "object-selector";
-		public static const SELECTOR_MAPPING_CACHE_NAME:String = "stageObjectProcessorToObjectSelectorMapping";
-		protected var selectorMapping:Object;
+	public class AutowiringStageProcessorNodeParser extends StageProcessorNodeParser {
 
-		/**
-		 * Creates a new <code>StageProcessorNodeParser</code> instance.
-		 */
-		public function StageProcessorNodeParser(cache:IInstanceCache) {
-			super();
-			initStageProcessorNodeParser(cache);
+		public function AutowiringStageProcessorNodeParser(cache:IInstanceCache) {
+			super(cache);
 		}
 
-		/**
-		 *
-		 * @param cache
-		 */
-		protected function initStageProcessorNodeParser(cache:IInstanceCache):void {
-			selectorMapping = {};
-			cache.addInstance(SELECTOR_MAPPING_CACHE_NAME, selectorMapping);
-		}
-
-
-		/**
-		 * @inheritDoc
-		 */
 		override protected function parseInternal(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
-			var cls:Class = ClassUtils.forName(String(node.attribute("class")[0]));
-			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(cls);
+			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(DefaultAutowiringStageProcessor);
 
 			var objectName:String = resolveID(node, result.objectDefinition, context);
 			context.registerObjectDefinition(objectName, result.objectDefinition);
@@ -69,5 +42,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			return result.objectDefinition;
 		}
+
 	}
 }

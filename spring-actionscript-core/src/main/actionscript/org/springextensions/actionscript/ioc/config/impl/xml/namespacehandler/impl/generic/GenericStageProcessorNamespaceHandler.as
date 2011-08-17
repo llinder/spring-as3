@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic {
 
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractNamespaceHandler;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.nodeparser.AutowiringStageProcessorNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.nodeparser.GenericStageProcessorNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.nodeparser.StageProcessorNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_stageprocessing;
@@ -30,11 +31,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		public static const GENERIC_STAGE_PROCESSOR_ELEMENT:String = "genericstageprocessor";
 		public static const STAGE_PROCESSOR_ELEMENT:String = "stageprocessor";
+		public static const AUTOWIRING_STAGE_PROCESSOR_ELEMENT:String = "autowiringstageprocessor";
 
 		public function GenericStageProcessorNamespaceHandler(cache:IInstanceCache) {
 			super(spring_actionscript_stageprocessing);
 			registerObjectDefinitionParser(GENERIC_STAGE_PROCESSOR_ELEMENT, new GenericStageProcessorNodeParser());
 			registerObjectDefinitionParser(STAGE_PROCESSOR_ELEMENT, new StageProcessorNodeParser(cache));
+			registerObjectDefinitionParser(AUTOWIRING_STAGE_PROCESSOR_ELEMENT, new AutowiringStageProcessorNodeParser(cache));
 		}
 	}
 }

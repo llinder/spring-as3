@@ -16,6 +16,8 @@
 	
 	<xsd:element name="genericstageprocessor" type="genericStageProcessorType"/>
 
+	<xsd:element name="autowiringstageprocessor" type="stageProcessorType"/>
+	
 	<xsd:element name="stageprocessor" type="stageProcessorType"/>
 	
 	<xsd:complexType name="genericStageProcessorType" mixed="true">

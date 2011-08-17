@@ -15,16 +15,13 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.xml {
 	import flash.errors.IllegalOperationError;
-	import flash.system.ApplicationDomain;
 	import flash.system.System;
 	import flash.utils.ByteArray;
 
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.IOperationQueue;
-	import org.as3commons.async.operation.impl.LoadURLOperation;
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.ClassUtils;
-	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.StringUtils;
 	import org.as3commons.lang.XMLUtils;
@@ -70,9 +67,11 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			initXMLObjectDefinitionProvider(locations);
 		}
 
+		private var _applicationContext:IApplicationContext;
 		private var _asyncOperation:AsyncObjectDefinitionProviderResultOperation;
 		private var _isDisposed:Boolean;
 		private var _locations:Array;
+		private var _namespaceHandlers:Vector.<INamespaceHandler>;
 		private var _objectDefinitions:Object;
 		private var _parser:IXMLObjectDefinitionsParser;
 		private var _preprocessors:Vector.<IXMLObjectDefinitionsPreprocessor>;
@@ -81,8 +80,14 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		private var _propertyURIs:Vector.<TextFileURI>;
 		private var _textFilesLoader:ITextFilesLoader;
 		private var _xmlConfiguration:XML;
-		private var _namespaceHandlers:Vector.<INamespaceHandler>;
-		private var _applicationContext:IApplicationContext;
+
+		public function get applicationContext():IApplicationContext {
+			return _applicationContext;
+		}
+
+		public function set applicationContext(value:IApplicationContext):void {
+			_applicationContext = value;
+		}
 
 		/**
 		 * @inheritDoc
@@ -382,14 +387,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 				xmlConfig = preprocessor.preprocess(xmlConfig);
 			}
 
-		}
-
-		public function get applicationContext():IApplicationContext {
-			return _applicationContext;
-		}
-
-		public function set applicationContext(value:IApplicationContext):void {
-			_applicationContext = value;
 		}
 	}
 }
