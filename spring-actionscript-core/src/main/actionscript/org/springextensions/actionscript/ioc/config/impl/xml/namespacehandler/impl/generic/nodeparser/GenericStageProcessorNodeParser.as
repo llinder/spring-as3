@@ -37,9 +37,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		/** The target-method attribute */
 		public static const TARGET_METHOD_ATTR:String = "target-method";
 
-		/** The object-selector attribute */
-		public static const OBJECT_SELECTOR_ATTR:String = "object-selector";
-
 		/**
 		 * Creates a new <code>StageProcessorNodeParser</code> instance.
 		 */
@@ -54,7 +51,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(GenericStageProcessor);
 
 			ParsingUtils.mapProperties(result.objectDefinition, node, TARGET_PROPERTY_ATTR, TARGET_METHOD_ATTR);
-			ParsingUtils.mapReferences(result.objectDefinition, node, OBJECT_SELECTOR_ATTR, TARGET_OBJECT_ATTR);
+			ParsingUtils.mapReferences(result.objectDefinition, node, TARGET_OBJECT_ATTR);
 
 			return result.objectDefinition;
 		}

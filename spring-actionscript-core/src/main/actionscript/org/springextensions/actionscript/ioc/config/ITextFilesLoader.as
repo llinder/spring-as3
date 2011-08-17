@@ -23,7 +23,7 @@ package org.springextensions.actionscript.ioc.config {
 
 		function addURIs(URIs:Vector.<TextFileURI>):void;
 
-		function addURI(URI:String, preventCache:Boolean=true):void;
+		function addURI(URI:String, preventCache:Boolean=true, isRequired:Boolean=true):void;
 
 	}
 }

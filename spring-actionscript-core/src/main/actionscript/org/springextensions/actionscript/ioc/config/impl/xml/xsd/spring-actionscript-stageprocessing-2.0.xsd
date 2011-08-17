@@ -13,23 +13,28 @@
 	</xsd:annotation>
 
 	<xsd:import namespace="http://www.springactionscript.org/schema/objects"/>
-
+	
 	<xsd:element name="genericstageprocessor" type="genericStageProcessorType"/>
 
+	<xsd:element name="stageprocessor" type="stageProcessorType"/>
+	
 	<xsd:complexType name="genericStageProcessorType" mixed="true">
 		<xsd:complexContent>
-	      <xsd:extension base="objects:objectType">
+	      <xsd:extension base="stageProcessorType">
 	         <xsd:attribute name="target-object" type="xsd:string" use="required"/>
 	         <xsd:attribute name="target-property" type="xsd:string" />
 	         <xsd:attribute name="target-method" type="xsd:string" />
 	         <xsd:attribute name="object-selector" type="xsd:string" />
-	         <!-- xsd:element name="objectSelector" type="objectSelectorType"/-->
+	      </xsd:extension>
+	   	</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="stageProcessorType" mixed="true">
+		<xsd:complexContent>
+	      <xsd:extension base="objects:objectType">
+	         <xsd:element name="objectSelector" type="xs:String"/>
 	      </xsd:extension>
 	   	</xsd:complexContent>
 	</xsd:complexType>
 	
-	<!-- xsd:complexType name="objectSelectorType" mixed="true">
-		<xsd:element name="object" type="objectType"/>
-	</xsd:complexType -->
-
 </xsd:schema>

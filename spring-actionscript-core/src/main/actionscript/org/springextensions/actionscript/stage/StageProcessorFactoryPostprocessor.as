@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.stage {
+	import flash.display.DisplayObject;
+
 	import org.as3commons.async.operation.IOperation;
+	import org.as3commons.stageprocessing.IObjectSelector;
+	import org.as3commons.stageprocessing.IStageObjectProcessor;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistry;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
+	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.nodeparser.StageProcessorNodeParser;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
+	import org.springextensions.actionscript.util.ContextUtils;
 
 
 
@@ -58,20 +65,32 @@ package org.springextensions.actionscript.stage {
 		 * <code>IStageProcessor</code> instances which all are registered with the specified <code>IStageProcessorRegistry</code>.
 		 */
 		public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
-			/*var stageProcessorRegistry:IStageObjectProcessorRegistry = (objectFactory is IStageObjectProcessorRegistryAware) ? IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry : null;
+			var stageProcessorNames:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IStageObjectProcessor);
+			if (stageProcessorNames == null) {
+				if (objectFactory is IStageObjectProcessorRegistryAware) {
+					ContextUtils.disposeInstance(IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry);
+					IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry = null;
+				}
+				return null;
+			}
+
+			var rootView:DisplayObject;
+			if (objectFactory is IApplicationContext) {
+				rootView = IApplicationContext(objectFactory).rootView;
+			}
+			var stageProcessorRegistry:IStageObjectProcessorRegistry = (objectFactory is IStageObjectProcessorRegistryAware) ? IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry : null;
 
 			if (stageProcessorRegistry == null) {
 				stageProcessorRegistry = findStageProcessorRegistryInFactory(objectFactory);
 			}
 
 			if (stageProcessorRegistry) {
-				var document:Object = findCurrentDocument(objectFactory);
-				var stageProcessorNames:Array = objectFactory.getObjectNamesForType(IStageProcessor);
-
+				var selectorMapping:Object = objectFactory.cache.getInstance(StageProcessorNodeParser.SELECTOR_MAPPING_CACHE_NAME);
 				for each (var name:String in stageProcessorNames) {
-					registerProcessor(stageProcessorRegistry, name, objectFactory.getObject(name) as IStageProcessor, document);
+					var objectSelector:IObjectSelector = objectFactory.getObject(String(selectorMapping[name]));
+					registerProcessor(stageProcessorRegistry, name, IStageObjectProcessor(objectFactory.getObject(name)), rootView, objectSelector);
 				}
-			}*/
+			}
 			return null;
 		}
 
@@ -81,37 +100,30 @@ package org.springextensions.actionscript.stage {
 		//
 		// --------------------------------------------------------------------
 
-	/**
-	 * Retrieves all objects in the container of the type <code>IStageProcessorRegistry</code> and returns the first instance.
-	 * If no objects are found, null is returned.
-	 * @param objectFactory The <code>IConfigurableListableObjectFactory</code> that will be searched.
-	 * @return An <code>IStageProcessorRegistry</code> or null if none was found.
-	 *
-	 */
-		 //protected function findStageProcessorRegistryInFactory(objectFactory:IConfigurableListableObjectFactory):IStageProcessorRegistry {
-		 //	var stageProcessorRegistryNames:Array = objectFactory.getObjectNamesForType(IStageProcessorRegistry);
-		 //	return (stageProcessorRegistryNames.length > 0) ? objectFactory.getObject(stageProcessorRegistryNames[0]) as IStageProcessorRegistry : null;
-		 //}
+		/**
+		 * Retrieves all objects in the container of the type <code>IStageProcessorRegistry</code> and returns the first instance.
+		 * If no objects are found, null is returned.
+		 * @param objectFactory The <code>IConfigurableListableObjectFactory</code> that will be searched.
+		 * @return An <code>IStageProcessorRegistry</code> or null if none was found.
+		 *
+		 */
+		protected function findStageProcessorRegistryInFactory(objectFactory:IObjectFactory):IStageObjectProcessorRegistry {
+			var stageProcessorRegistryNames:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IStageObjectProcessorRegistry);
+			return (stageProcessorRegistryNames.length > 0) ? objectFactory.getObject(stageProcessorRegistryNames[0]) as IStageObjectProcessorRegistry : null;
+		}
 
-	/**
-	 * Registers the specified <code>IStageProcessor</code> with the specified <code>IStageProcessorRegistry</code>. If the specified <code>IStageProcessor.document</code>
-	 * property is null, it will be assigned with the specified <code>document</code> instance.
-	 * @param stageProcessorRegistry The specified <code>IStageProcessorRegistry</code> instance.
-	 * @param name The name under which the specified <code>IStageProcessor</code> will be registered.
-	 * @param stageProcessor The specified <code>IStageProcessor</code> instance.
-	 * @param document The specified <code>document</code> instance.
-	 *
-	 */
-		 //protected function registerProcessor(stageProcessorRegistry:IStageProcessorRegistry, name:String, stageProcessor:IStageProcessor, document:Object):void {
-		 //	var objectSelectorAware:IObjectSelectorAware = (stageProcessor as IObjectSelectorAware);
-
-		 //	if (objectSelectorAware) {
-		 //		if (!stageProcessor.document) {
-		 //			stageProcessor.document = document;
-		 //		}
-		 //		stageProcessorRegistry.registerStageProcessor(name, stageProcessor, objectSelectorAware.objectSelector);
-		 //	}
-		 //}
+		/**
+		 * Registers the specified <code>IStageProcessor</code> with the specified <code>IStageProcessorRegistry</code>. If the specified <code>IStageProcessor.document</code>
+		 * property is null, it will be assigned with the specified <code>document</code> instance.
+		 * @param stageProcessorRegistry The specified <code>IStageProcessorRegistry</code> instance.
+		 * @param name The name under which the specified <code>IStageProcessor</code> will be registered.
+		 * @param stageProcessor The specified <code>IStageProcessor</code> instance.
+		 * @param document The specified <code>document</code> instance.
+		 *
+		 */
+		protected function registerProcessor(stageProcessorRegistry:IStageObjectProcessorRegistry, name:String, stageProcessor:IStageObjectProcessor, rootView:DisplayObject, objectSelector:IObjectSelector):void {
+			stageProcessorRegistry.registerStageObjectProcessor(stageProcessor, objectSelector, rootView);
+		}
 
 	}
 }

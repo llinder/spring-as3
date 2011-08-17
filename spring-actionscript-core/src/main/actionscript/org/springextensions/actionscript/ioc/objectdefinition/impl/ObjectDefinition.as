@@ -15,7 +15,6 @@
  */
 package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	import flash.utils.Dictionary;
-
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.IEquals;
 	import org.as3commons.lang.builder.EqualsBuilder;
@@ -31,6 +30,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	 * @docref container-documentation.html#the_objects
 	 */
 	public class ObjectDefinition implements IObjectDefinition, IEquals {
+
 		private static const COLON:String = ':';
 
 		/**
@@ -52,19 +52,20 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		private var _factoryMethod:String;
 		private var _factoryObjectName:String;
 		private var _initMethod:String;
+		private var _isAbstract:Boolean;
 		private var _isAutoWireCandidate:Boolean;
 		private var _isInterface:Boolean;
 		private var _isLazyInit:Boolean;
 		private var _methodInvocations:Vector.<MethodInvocation>;
+		private var _methodNameLookup:Object;
 		private var _parent:IObjectDefinition;
 		private var _parentName:String;
 		private var _primary:Boolean;
 		private var _properties:Vector.<PropertyDefinition>;
+		private var _propertyNameLookup:Object;
 		private var _scope:ObjectDefinitionScope;
 		private var _skipMetadata:Boolean = false;
 		private var _skipPostProcessors:Boolean = false;
-		private var _propertyNameLookup:Object;
-		private var _methodNameLookup:Object;
 
 		/**
 		 * @default AutowireMode.NO
@@ -95,10 +96,16 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			_className = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get clazz():Class {
 			return _clazz;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set clazz(value:Class):void {
 			_clazz = value;
 		}
@@ -146,6 +153,9 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			_dependsOn = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get destroyMethod():String {
 			return _destroyMethod;
 		}
@@ -200,6 +210,20 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		}
 
 		/**
+		 * @inheritDoc
+		 */
+		public function get isAbstract():Boolean {
+			return _isAbstract;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set isAbstract(value:Boolean):void {
+			_isAbstract = value;
+		}
+
+		/**
 		 * @default true
 		 * @inheritDoc
 		 */
@@ -214,10 +238,16 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			_isAutoWireCandidate = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get isInterface():Boolean {
 			return _isInterface;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set isInterface(value:Boolean):void {
 			_isInterface = value;
 		}
@@ -266,18 +296,30 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			_methodInvocations = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get parent():IObjectDefinition {
 			return _parent;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set parent(value:IObjectDefinition):void {
 			_parent = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get parentName():String {
 			return _parentName;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set parentName(value:String):void {
 			_parentName = value;
 		}
@@ -350,6 +392,28 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		}
 
 		/**
+		 * @inheritDoc
+		 */
+		public function addMethodInvocation(methodInvocation:MethodInvocation):void {
+			_methodNameLookup ||= {};
+			_methodInvocations ||= new Vector.<MethodInvocation>();
+			_methodInvocations[_methodInvocations.length] = methodInvocation;
+			var name:String = (methodInvocation.namespaceURI != null) ? methodInvocation.namespaceURI + COLON + methodInvocation.methodName : methodInvocation.methodName;
+			_methodNameLookup[name] = methodInvocation;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function addPropertyDefinition(propertyDefinition:PropertyDefinition):void {
+			_propertyNameLookup ||= {};
+			_properties ||= new Vector.<PropertyDefinition>();
+			_properties[_properties.length] = propertyDefinition;
+			var name:String = (propertyDefinition.namespaceURI != null) ? propertyDefinition.namespaceURI + COLON + propertyDefinition.name : propertyDefinition.name;
+			_propertyNameLookup[name] = propertyDefinition;
+		}
+
+		/**
 		 *
 		 */
 		public function equals(object:Object):Boolean {
@@ -387,6 +451,24 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		}
 
 		/**
+		 * @inheritDoc
+		 */
+		public function getMethodInvocationByName(name:String, namespace:String=null):MethodInvocation {
+			_methodNameLookup ||= {};
+			var methodName:String = (namespace != null) ? namespace + COLON + name : name;
+			return _methodNameLookup[methodName] as MethodInvocation;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function getPropertyDefinitionByName(name:String, namespace:String=null):PropertyDefinition {
+			_propertyNameLookup ||= {};
+			var propertyName:String = (namespace != null) ? namespace + COLON + name : name;
+			return _propertyNameLookup[propertyName] as PropertyDefinition;
+		}
+
+		/**
 		 *
 		 * @param className
 		 */
@@ -399,34 +481,5 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			primary = false;
 			dependencyCheck = DependencyCheckMode.NONE;
 		}
-
-		public function getPropertyDefinitionByName(name:String, namespace:String=null):PropertyDefinition {
-			_propertyNameLookup ||= {};
-			var propertyName:String = (namespace != null) ? namespace + COLON + name : name;
-			return _propertyNameLookup[propertyName] as PropertyDefinition;
-		}
-
-		public function getMethodInvocationByName(name:String, namespace:String=null):MethodInvocation {
-			_methodNameLookup ||= {};
-			var methodName:String = (namespace != null) ? namespace + COLON + name : name;
-			return _methodNameLookup[methodName] as MethodInvocation;
-		}
-
-		public function addPropertyDefinition(propertyDefinition:PropertyDefinition):void {
-			_propertyNameLookup ||= {};
-			_properties ||= new Vector.<PropertyDefinition>();
-			_properties[_properties.length] = propertyDefinition;
-			var name:String = (propertyDefinition.namespaceURI != null) ? propertyDefinition.namespaceURI + COLON + propertyDefinition.name : propertyDefinition.name;
-			_propertyNameLookup[name] = propertyDefinition;
-		}
-
-		public function addMethodInvocation(methodInvocation:MethodInvocation):void {
-			_methodNameLookup ||= {};
-			_methodInvocations ||= new Vector.<MethodInvocation>();
-			_methodInvocations[_methodInvocations.length] = methodInvocation;
-			var name:String = (methodInvocation.namespaceURI != null) ? methodInvocation.namespaceURI + COLON + methodInvocation.methodName : methodInvocation.methodName;
-			_methodNameLookup[name] = methodInvocation;
-		}
-
 	}
 }

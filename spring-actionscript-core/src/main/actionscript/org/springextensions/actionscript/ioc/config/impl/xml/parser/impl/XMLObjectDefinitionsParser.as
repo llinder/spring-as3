@@ -14,12 +14,14 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
+	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.StringUtils;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.GenericStageProcessorNamespaceHandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_objects;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.INodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
@@ -70,7 +72,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		public static const MAP_ELEMENT:String = "map";
 		public static const METHOD_INVOCATION:String = "method-invocation";
 		public static const NAMESPACE_ATTRIBUTE:String = "namespace";
-		public static const NAN_ELEMENT:String = "nan";
+		public static const NAN_ELEMENT:String = "not-a-number";
 		public static const NULL_ELEMENT:String = "null";
 		public static const OBJECT_ELEMENT:String = "object";
 		public static const OBJECT_NAME_DELIMITERS:String = ",; ";
@@ -96,16 +98,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		// --------------------------------------------------------------------
 
 		/**
-		 * Constructs a new <code>XmlObjectDefinitionsParser</code>.
-		 *
+		 * Creates a new <code>XmlObjectDefinitionsParser</code> instance.
 		 * @param applicationContext   the applicationContext where the object definitions will be stored
-		 *
-		 * @see org.springextensions.actionscript.ioc.factory.xml.XMLObjectFactory XMLObjectFactory
-		 * @see org.springextensions.actionscript.ioc.factory.xml.parser.support.nodeparsers.ObjectNodeParser ObjectNodeParser
-		 * @see org.springextensions.actionscript.ioc.factory.xml.parser.support.nodeparsers.KeyValueNodeParser KeyValueNodeParser
-		 * @see org.springextensions.actionscript.ioc.factory.xml.parser.support.nodeparsers.ArrayNodeParser ArrayNodeParser
-		 * @see org.springextensions.actionscript.ioc.factory.xml.parser.support.nodeparsers.RefNodeParser RefNodeParser
-		 * @see org.springextensions.actionscript.ioc.factory.xml.parser.support.nodeparsers.DictionaryNodeParser DictionaryNodeParser
 		 */
 		public function XMLObjectDefinitionsParser(applicationContext:IApplicationContext) {
 			super();
@@ -127,20 +121,23 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		private var _definitions:Object;
 
 		/**
-		 * The objectFactory currently in use
-		 *
+		 * The current <code>IApplicationContext</code>
 		 * @default an instance of XMLObjectFactory
-		 *
-		 * @see org.springextensions.actionscript.ioc.factory.xml.XMLObjectFactory
 		 */
 		public function get applicationContext():IApplicationContext {
 			return _applicationContext;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set applicationContext(value:IApplicationContext):void {
 			_applicationContext = value;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get isDisposed():Boolean {
 			return _isDisposed;
 		}
@@ -162,6 +159,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			_namespaceHandlers[handler.getNamespace().uri] = handler;
 		}
 
+		/**
+		 *
+		 * @param handlers
+		 */
 		public function addNamespaceHandlers(handlers:Vector.<INamespaceHandler>):void {
 			for each (var handler:INamespaceHandler in handlers) {
 				addNamespaceHandler(handler);
@@ -170,13 +171,15 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		/**
 		 * Adds a NodeParser to the parser.
-		 *
 		 * @param parser    The implementation of INodeParser that will be added
 		 */
 		public function addNodeParser(parser:INodeParser):void {
 			_nodeParsers.push(parser);
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function dispose():void {
 			if (!_isDisposed) {
 				_applicationContext = null;
@@ -184,7 +187,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 				_generatedObjectNames = null;
 				_namespaceHandlers = null;
 				if (_nodeParsers != null) {
-					for each(var nodeParser:INodeParser in _nodeParsers) {
+					for each (var nodeParser:INodeParser in _nodeParsers) {
 						ContextUtils.disposeInstance(nodeParser);
 					}
 				}
@@ -241,6 +244,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			return id;
 		}
 
+		/**
+		 *
+		 * @param node
+		 */
 		public function parseNode(node:XML):void {
 			if (node.name() is QName) {
 				var qname:QName = QName(node.name());
@@ -257,7 +264,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 * Parses the given object definition node into an implementation of IObjectDefinition.
 		 *
 		 * @param xml  The object definition node
-		 *
 		 * @return an implementation of IObjectDefinition
 		 */
 		public function parseObjectDefinition(xml:XML, objectDefinition:IObjectDefinition=null):IObjectDefinition {
@@ -317,8 +323,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		}
 
 		/**
-		 * Will parse the given property value using the node parsers.
-		 * <p />
+		 * Will parse the given property value using the node parsers.<br/>
+		 *
 		 * Will loop through the node parsers in the order that they have
 		 * been added. The first parser able to parse the node is used to
 		 * retrieve the value.
@@ -354,7 +360,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		}
 
 		/**
-		 * Registers an object definition in the internal object factory.
+		 * Registers in a temporary object which will be returned by the parse() method.
 		 *
 		 * @param objectName the name of the object
 		 * @param objectDefinition the object definition
@@ -364,6 +370,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		}
 
 		protected function initXMLObjectDefinitionsParser(applicationContext:IApplicationContext):void {
+			Assert.notNull(applicationContext, "applicationContext argument must not be null");
 			_applicationContext = applicationContext;
 			addNodeParser(new ObjectNodeParser(this));
 			addNodeParser(new KeyValueNodeParser(this, _applicationContext.applicationDomain));
@@ -377,6 +384,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			if (ArrayCollectionNodeParser.canCreate(_applicationContext.applicationDomain)) {
 				addNodeParser(new ArrayCollectionNodeParser(this));
 			}
+			addNamespaceHandler(new GenericStageProcessorNamespaceHandler(_applicationContext.cache));
 		}
 
 		/**
@@ -451,8 +459,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			var isObjectNode:Boolean = (qname.localName == OBJECT_ELEMENT);
 			var isAbstract:Boolean = (node.attribute(ABSTRACT_ATTRIBUTE).length() > 0);
 
-			if (isObjectNode && !isAbstract) {
-				processObjectDefinition(node);
+			if (isObjectNode) {
+				processObjectDefinition(node, isAbstract);
 			}
 		}
 
@@ -461,6 +469,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 */
 		protected function parseMethodInvocation(node:XML):MethodInvocation {
 			var methodName:String = node.@name;
+			var namespaceURI:String = null;
+			if (node.attribute(NAMESPACE_ATTRIBUTE).length() > 0) {
+				namespaceURI = String(node.attribute(NAMESPACE_ATTRIBUTE)[0]);
+			}
 			var args:Array;
 
 			for each (var argXML:XML in node.arg) {
@@ -468,7 +480,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 				args[args.length] = parseProperty(argXML);
 			}
 
-			return new MethodInvocation(methodName, args);
+			return new MethodInvocation(methodName, args, namespaceURI);
 		}
 
 		/**
@@ -484,7 +496,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 *
 		 */
 		protected function parseObjectDefinitions(xml:XML):void {
-			// parse all top level nodes on the xml definition
 			for each (var node:XML in xml.children()) {
 				parseNode(node);
 			}
@@ -508,8 +519,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		/**
 		 * Process the given node as an object definition.
 		 */
-		protected function processObjectDefinition(node:XML):void {
+		protected function processObjectDefinition(node:XML, isAbstract:Boolean=false):void {
 			var definition:IObjectDefinition = parseObjectDefinition(node);
+			definition.isAbstract = isAbstract;
 			var id:String = node.@id.toString();
 			registerObjectDefinition(id, definition);
 		}

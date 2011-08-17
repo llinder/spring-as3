@@ -28,6 +28,16 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	public interface IObjectDefinition {
 
 		/**
+		 *
+		 */
+		function get isAbstract():Boolean;
+
+		/**
+		 * @private
+		 */
+		function set isAbstract(value:Boolean):void;
+
+		/**
 		 * Defines the way an object will be autowired (configured).
 		 */
 		function get autoWireMode():AutowireMode;
