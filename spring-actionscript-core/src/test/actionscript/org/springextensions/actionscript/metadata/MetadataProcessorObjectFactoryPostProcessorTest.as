@@ -19,6 +19,7 @@ package org.springextensions.actionscript.metadata {
 	import mockolate.runner.MockolateRule;
 	import mockolate.verify;
 
+	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
@@ -31,13 +32,15 @@ package org.springextensions.actionscript.metadata {
 		public var objectFactory:IObjectFactory;
 		[Mock]
 		public var objectDefinitionRegistry:IObjectDefinitionRegistry;
+		[Mock]
+		public var metadataProcessorObjectPostProcessor:MetadataProcessorObjectPostProcessor;
 
 		public function MetadataProcessorObjectFactoryPostProcessorTest() {
 			super();
 		}
 
 		[Test]
-		public function testPostProcessObjectFactoryWithoutPostProcessorAndWithMetdataProcessors():void {
+		public function testPostProcessObjectFactoryWithoutPostProcessorAndWithoutMetdataProcessors():void {
 			var objectFactory:IObjectFactory = nice(IObjectFactory);
 			var objectDefinitionRegistry:IObjectDefinitionRegistry = nice(IObjectDefinitionRegistry);
 			mock(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionRegistry);
@@ -45,6 +48,47 @@ package org.springextensions.actionscript.metadata {
 			mock(objectDefinitionRegistry).method("getObjectNamesForType").args(IMetadataProcessor).returns(null).once();
 			mock(objectFactory).method("addObjectPostProcessor").never();
 			mock(objectFactory).method("createInstance").never();
+
+			var processor:MetadataProcessorObjectFactoryPostProcessor = new MetadataProcessorObjectFactoryPostProcessor();
+			processor.postProcessObjectFactory(objectFactory);
+
+			verify(objectFactory);
+			verify(objectDefinitionRegistry);
+
+		}
+
+		[Test]
+		public function testPostProcessObjectFactoryWithPostProcessorButWithoutMetdataProcessors():void {
+			var objectFactory:IObjectFactory = nice(IObjectFactory);
+			var objectDefinitionRegistry:IObjectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			mock(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionRegistry);
+			var vec:Vector.<String> = new Vector.<String>();
+			vec.push("name");
+			mock(objectDefinitionRegistry).method("getObjectNamesForType").args(IMetaDataProcessorObjectPostProcessor).returns(vec).once();
+			mock(objectDefinitionRegistry).method("getObjectNamesForType").args(IMetadataProcessor).returns(null).once();
+			mock(objectFactory).method("addObjectPostProcessor").never();
+			mock(objectFactory).method("createInstance").never();
+
+			var processor:MetadataProcessorObjectFactoryPostProcessor = new MetadataProcessorObjectFactoryPostProcessor();
+			processor.postProcessObjectFactory(objectFactory);
+
+			verify(objectFactory);
+			verify(objectDefinitionRegistry);
+
+		}
+
+		[Test]
+		public function testPostProcessObjectFactoryWithPostProcessorAndWithMetdataProcessors():void {
+			var objectFactory:IObjectFactory = nice(IObjectFactory);
+			var objectDefinitionRegistry:IObjectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			var metadataProcessorObjectPostProcessor:MetadataProcessorObjectPostProcessor = nice(MetadataProcessorObjectPostProcessor);
+			mock(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionRegistry);
+			var vec:Vector.<String> = new Vector.<String>();
+			vec.push("name");
+			mock(objectDefinitionRegistry).method("getObjectNamesForType").args(IMetaDataProcessorObjectPostProcessor).returns(null);
+			mock(objectDefinitionRegistry).method("getObjectNamesForType").args(IMetadataProcessor).returns(vec);
+			mock(objectFactory).method("addObjectPostProcessor").args(anything()).once();
+			mock(objectFactory).method("createInstance").args(MetadataProcessorObjectPostProcessor).returns(metadataProcessorObjectPostProcessor).once();
 
 			var processor:MetadataProcessorObjectFactoryPostProcessor = new MetadataProcessorObjectFactoryPostProcessor();
 			processor.postProcessObjectFactory(objectFactory);

@@ -65,10 +65,12 @@ package org.springextensions.actionscript.metadata {
 		public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
 			Assert.notNull(objectFactory, "objectFactory argument must not be null");
 
-			var noMetadataProcessorObjectPostProcessorRegistered:Boolean = (objectFactory.objectDefinitionRegistry.getObjectNamesForType(IMetaDataProcessorObjectPostProcessor) == null);
-			var noMetadataProcessorsRegistered:Boolean = (objectFactory.objectDefinitionRegistry.getObjectNamesForType(IMetadataProcessor) == null);
+			var names:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IMetaDataProcessorObjectPostProcessor);
+			var noMetadataProcessorObjectPostProcessorRegistered:Boolean = (names == null);
+			names = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IMetadataProcessor);
+			var metadataProcessorsRegistered:Boolean = (names != null);
 
-			if ((noMetadataProcessorObjectPostProcessorRegistered) && (!noMetadataProcessorsRegistered)) {
+			if ((noMetadataProcessorObjectPostProcessorRegistered) && (metadataProcessorsRegistered == true)) {
 				logger.debug("No MetadataProcessorObjectPostProcessor found in the object factory, registering MetadataProcessorObjectPostProcessor");
 				objectFactory.addObjectPostProcessor(objectFactory.createInstance(MetadataProcessorObjectPostProcessor));
 			}
