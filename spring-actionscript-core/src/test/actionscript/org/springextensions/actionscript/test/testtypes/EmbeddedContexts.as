@@ -17,6 +17,12 @@ package org.springextensions.actionscript.test.testtypes {
 
 
 	public final class EmbeddedContexts {
+
+		[Ignore]
+		[Test(description="This test is being ignored")]
+		public function testDummy():void {
+		}
+
 		[Embed(source="EmbeddedEmptyContext.xml", mimeType="application/octet-stream")]
 		public static var embeddedEmptyContext:Class;
 	}

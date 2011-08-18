@@ -17,6 +17,12 @@ package org.springextensions.actionscript.test.testtypes {
 
 	[Mock]
 	public class TestClassWithMetadata {
+
+		[Ignore]
+		[Test(description="This test is being ignored")]
+		public function testDummy():void {
+		}
+
 		public function TestClassWithMetadata() {
 			super();
 		}

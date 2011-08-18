@@ -18,11 +18,16 @@ package org.springextensions.actionscript.test.testtypes {
 
 	public class AutowiredExternalPropertyAnnotatedClass {
 
+		[Ignore]
+		[Test(description="This test is being ignored")]
+		public function testDummy():void {
+		}
+
 		public function AutowiredExternalPropertyAnnotatedClass() {
 			super();
 		}
 
-		[Autowired(externalProperty = 'testProperty')]
+		[Autowired(externalProperty='testProperty')]
 		public var injectedExternalProperty:String;
 	}
 }

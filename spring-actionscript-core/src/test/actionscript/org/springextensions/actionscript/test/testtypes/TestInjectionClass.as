@@ -21,6 +21,11 @@ package org.springextensions.actionscript.test.testtypes {
 
 	public class TestInjectionClass {
 
+		[Ignore]
+		[Test(description="This test is being ignored")]
+		public function testDummy():void {
+		}
+
 		private var _count:uint = 0;
 
 		public function TestInjectionClass() {

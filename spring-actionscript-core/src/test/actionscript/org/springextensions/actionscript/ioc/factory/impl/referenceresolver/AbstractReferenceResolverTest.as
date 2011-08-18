@@ -26,6 +26,11 @@ package org.springextensions.actionscript.ioc.factory.impl.referenceresolver {
 
 	public class AbstractReferenceResolverTest {
 
+		[Ignore]
+		[Test(description="This test is being ignored")]
+		public function testDummy():void {
+		}
+
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
 

@@ -230,9 +230,9 @@ package org.springextensions.actionscript.context.impl {
 		public function testAddObjectFactoryPostProcessor():void {
 			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
 			var processor:IObjectFactoryPostProcessor = nice(IObjectFactoryPostProcessor);
-			assertEquals(3, context.objectFactoryPostProcessors.length);
-			context.addObjectFactoryPostProcessor(processor);
 			assertEquals(4, context.objectFactoryPostProcessors.length);
+			context.addObjectFactoryPostProcessor(processor);
+			assertEquals(5, context.objectFactoryPostProcessors.length);
 		}
 
 		protected function handleAsyncProvider(event:Event, passThroughData:Object):void {

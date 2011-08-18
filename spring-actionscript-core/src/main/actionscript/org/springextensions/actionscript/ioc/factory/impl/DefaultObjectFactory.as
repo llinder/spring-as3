@@ -379,7 +379,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		protected function attemptToInstantiate(objectDefinition:IObjectDefinition, constructorArguments:Array, name:String, objectName:String):* {
 			var result:* = null;
 			try {
-				var result:* = instantiateClass(objectDefinition, constructorArguments);
+				result = instantiateClass(objectDefinition, constructorArguments);
 				var evt1:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_CREATED, result, name, constructorArguments);
 				dispatchEvent(evt1);
 				dispatchEventThroughEventBus(evt1);

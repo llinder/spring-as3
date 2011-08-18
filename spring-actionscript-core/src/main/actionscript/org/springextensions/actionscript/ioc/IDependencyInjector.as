@@ -29,7 +29,6 @@ package org.springextensions.actionscript.ioc {
 	 * @author Roland Zwaga
 	 */
 	public interface IDependencyInjector extends IEventDispatcher {
-
 		/**
 		 *
 		 * @param instance
@@ -38,6 +37,6 @@ package org.springextensions.actionscript.ioc {
 		 * @param objectPostProcessors
 		 * @param referenceResolvers
 		 */
-		function wire(instance:*, objectFactory:IObjectFactory, objectDefinition:IObjectDefinition = null, objectName:String = null):void;
+		function wire(instance:*, objectFactory:IObjectFactory, objectDefinition:IObjectDefinition=null, objectName:String=null):void;
 	}
 }

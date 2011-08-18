@@ -18,6 +18,11 @@ package org.springextensions.actionscript.test.testtypes {
 
 	public class ClassWithStaticFactoryMethod {
 
+		[Ignore]
+		[Test(description="This test is being ignored")]
+		public function testDummy():void {
+		}
+
 		public function ClassWithStaticFactoryMethod() {
 			super();
 		}
