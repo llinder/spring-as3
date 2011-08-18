@@ -65,6 +65,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectFactoryPostProcessorsFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.object.ApplicationContextAwareObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.process.impl.object.ObjectFactoryAwarePostProcessor;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjector;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -581,6 +582,7 @@ package org.springextensions.actionscript.context.impl {
 			addObjectFactoryPostProcessor(new MetadataProcessorObjectFactoryPostProcessor());
 
 			_objectFactory.addObjectPostProcessor(new ApplicationContextAwareObjectPostProcessor(this));
+			_objectFactory.addObjectPostProcessor(new ObjectFactoryAwarePostProcessor(this));
 
 			_objectFactory.addReferenceResolver(new ThisReferenceResolver(this));
 			_objectFactory.addReferenceResolver(new ObjectReferenceResolver(this));

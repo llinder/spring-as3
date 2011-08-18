@@ -140,8 +140,10 @@ package org.springextensions.actionscript.metadata {
 			if (processorVector == null) {
 				processorVector = new Vector.<IMetadataProcessor>();
 			}
-			processorVector[processorVector.length] = metaDataProcessor;
-			processorLookup[metaDataName] = processorVector.sort(OrderedUtils.orderedCompareFunction);
+			if (processorVector.indexOf(metaDataProcessor) < 0) {
+				processorVector[processorVector.length] = metaDataProcessor;
+				processorLookup[metaDataName] = processorVector.sort(OrderedUtils.orderedCompareFunction);
+			}
 		}
 
 		// --------------------------------------------------------------------
@@ -160,7 +162,7 @@ package org.springextensions.actionscript.metadata {
 			}
 			for (var name:String in names) {
 				//LOGGER.debug("Invoking IMetadataProcessors for {0} metadata", name);
-				var processors:Array = names[name] as Array;
+				var processors:Vector.<IMetadataProcessor> = names[name] as Vector.<IMetadataProcessor>;
 				var containers:Array = [];
 				if (type.hasMetadata(name)) {
 					containers[containers.length] = type;
