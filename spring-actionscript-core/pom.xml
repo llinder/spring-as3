@@ -187,9 +187,12 @@
 					    <goal>copy-dependencies</goal>
 					</goals>
 					<configuration>
-					    <includeTypes>swc</includeTypes>
-					    <overWriteIfNewer>true</overWriteIfNewer>
-					    <stripVersion>true</stripVersion>
+						<includeScope>runtime</includeScope> 
+						<excludeScope>test</excludeScope>
+						<excludeScope>external</excludeScope>
+						<includeTypes>swc</includeTypes>
+						<overWriteIfNewer>true</overWriteIfNewer>
+						<excludeTransitive>true</excludeTransitive>
 					</configuration>
 				    </execution>
 				</executions>
@@ -381,7 +384,7 @@
 			<artifactId>flexmojos-unittest-support</artifactId>
 			<version>${flex-mojos.version}</version>
 			<type>swc</type>
-			<scope>external</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.adobe.flex.framework</groupId>
