@@ -97,6 +97,7 @@ package org.springextensions.actionscript.stage {
 					}
 					registerProcessor(stageProcessorRegistry, name, IStageObjectProcessor(objectFactory.getObject(name)), rootView, objectSelector);
 				}
+				stageProcessorRegistry.initialize();
 			}
 			return null;
 		}

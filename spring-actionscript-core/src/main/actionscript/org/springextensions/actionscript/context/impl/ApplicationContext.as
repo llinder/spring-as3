@@ -35,6 +35,8 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
+	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
+	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
@@ -62,6 +64,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.PropertyPlaceholderConfigurerFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectFactoryPostProcessorsFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.process.impl.object.ApplicationContextAwareObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjector;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -74,7 +77,7 @@ package org.springextensions.actionscript.context.impl {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class ApplicationContext extends EventDispatcher implements IApplicationContext, IDisposable {
+	public class ApplicationContext extends EventDispatcher implements IApplicationContext, IDisposable, IAutowireProcessorAware {
 
 		private static const APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME:String = "applicationContextTextFilesLoader";
 		private static const DEFINITION_PROVIDER_QUEUE_NAME:String = "definitionProviderQueue";
@@ -575,6 +578,8 @@ package org.springextensions.actionscript.context.impl {
 			addObjectFactoryPostProcessor(new ObjectDefinitonFactoryPostProcessor(1000));
 			addObjectFactoryPostProcessor(new StageProcessorFactoryPostprocessor());
 
+			_objectFactory.addObjectPostProcessor(new ApplicationContextAwareObjectPostProcessor(this));
+
 			_objectFactory.addReferenceResolver(new ThisReferenceResolver(this));
 			_objectFactory.addReferenceResolver(new ObjectReferenceResolver(this));
 			_objectFactory.addReferenceResolver(new ArrayReferenceResolver(this));
@@ -665,6 +670,16 @@ package org.springextensions.actionscript.context.impl {
 			} catch (e:Error) {
 			}
 			return ApplicationDomain.currentDomain;
+		}
+
+		public function get autowireProcessor():IAutowireProcessor {
+			return (_objectFactory is IAutowireProcessorAware) ? IAutowireProcessorAware(_objectFactory).autowireProcessor : null;
+		}
+
+		public function set autowireProcessor(value:IAutowireProcessor):void {
+			if (_objectFactory is IAutowireProcessorAware) {
+				IAutowireProcessorAware(_objectFactory).autowireProcessor = value;
+			}
 		}
 	}
 }

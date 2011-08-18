@@ -138,7 +138,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		public function getObjectDefinitionsForType(type:Class):Vector.<IObjectDefinition> {
 			var result:Vector.<IObjectDefinition>;
 			for each (var definition:IObjectDefinition in _objectDefinitionList) {
-				if (ClassUtils.isAssignableFrom(definition.clazz, type, _applicationDomain)) {
+				if (ClassUtils.isAssignableFrom(type, definition.clazz, _applicationDomain)) {
 					result ||= new Vector.<IObjectDefinition>();
 					result[result.length] = definition;
 				}
@@ -169,7 +169,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			var result:Vector.<String>;
 			for each (var name:String in _objectDefinitionNames) {
 				var definition:IObjectDefinition = getObjectDefinition(name);
-				if (ClassUtils.isAssignableFrom(definition.clazz, type, _applicationDomain)) {
+				if (ClassUtils.isAssignableFrom(type, definition.clazz, _applicationDomain)) {
 					result ||= new Vector.<String>();
 					result[result.length] = name;
 				}

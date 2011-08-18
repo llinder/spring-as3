@@ -17,6 +17,7 @@ package org.springextensions.actionscript.stage {
 	import flash.display.DisplayObject;
 	import flash.utils.Dictionary;
 
+	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.StringUtils;
@@ -58,15 +59,15 @@ package org.springextensions.actionscript.stage {
 		/**
 		 * Creates a new <code>DefaultAutowiringStageProcessor</code> instance.
 		 */
-		public function DefaultAutowiringStageProcessor(objectFactory:IApplicationContext=null) {
+		public function DefaultAutowiringStageProcessor(context:IApplicationContext=null) {
 			super();
-			initDefaultAutowiringStageProcessor(objectFactory);
+			initDefaultAutowiringStageProcessor(context);
 		}
 
-		protected function initDefaultAutowiringStageProcessor(objectFactory:IApplicationContext):void {
+		protected function initDefaultAutowiringStageProcessor(context:IApplicationContext):void {
 			componentCache = new Dictionary(true);
 			autowireOnce = true;
-			applicationContext = objectFactory;
+			applicationContext = context;
 			_objectDefinitionResolver = null;
 		}
 

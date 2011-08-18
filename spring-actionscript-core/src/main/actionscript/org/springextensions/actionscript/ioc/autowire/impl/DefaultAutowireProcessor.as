@@ -573,7 +573,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			}
 
 
-			for each (var accessor:Accessor in type.accessors.length) {
+			for each (var accessor:Accessor in type.accessors) {
 				if ((accessor.access === AccessorAccess.WRITE_ONLY || accessor.access === AccessorAccess.READ_WRITE) && !accessor.isStatic && isPropertyUnclaimed(objectDefinition, accessor)) {
 					result[result.length] = Field(accessor);
 				}
@@ -632,7 +632,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		 * @return <code>true</code> if the field is unclaimed.
 		 */
 		protected function isPropertyUnclaimed(objectDefinition:IObjectDefinition, field:Field):Boolean {
-			return ((objectDefinition == null || objectDefinition.properties[field.name] === undefined));
+			return ((objectDefinition == null || objectDefinition.getPropertyDefinitionByName(field.name, field.namespaceURI) == null));
 		}
 
 		/**

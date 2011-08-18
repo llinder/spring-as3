@@ -33,7 +33,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(DefaultAutowiringStageProcessor);
 
 			var objectName:String = resolveID(node, result.objectDefinition, context);
-			context.registerObjectDefinition(objectName, result.objectDefinition);
 
 			if (node.attribute(OBJECT_SELECTOR_ATTR).length() > 0) {
 				var objectSelectorName:String = String(node.attribute(OBJECT_SELECTOR_ATTR)[0]);
