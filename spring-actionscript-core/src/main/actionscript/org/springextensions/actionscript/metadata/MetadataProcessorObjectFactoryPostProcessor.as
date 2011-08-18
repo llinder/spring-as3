@@ -27,8 +27,6 @@ package org.springextensions.actionscript.metadata {
 	 * contains a <code>MetadataProcessorObjectPostProcessor</code>, if not it creates an instance and registers it
 	 * with the factory.
 	 * @author Roland Zwaga
-	 * @docref annotations.html
-	 * @sampleref metadataprocessor
 	 */
 	public class MetadataProcessorObjectFactoryPostProcessor implements IObjectFactoryPostProcessor {
 

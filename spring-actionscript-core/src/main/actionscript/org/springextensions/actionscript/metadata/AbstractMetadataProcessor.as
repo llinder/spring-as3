@@ -21,8 +21,6 @@ package org.springextensions.actionscript.metadata {
 	/**
 	 * Abstract base class for <code>IMetadataProcessor</code> implementations.
 	 * @author Roland Zwaga
-	 * @docref annotations.html
-	 * @sampleref metadataprocessor
 	 */
 	public class AbstractMetadataProcessor implements IMetadataProcessor {
 

@@ -42,6 +42,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessorTest;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjectorTest;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistryTest;
+	import org.springextensions.actionscript.metadata.MetadataProcessorObjectFactoryPostProcessorTest;
 	import org.springextensions.actionscript.object.SimpleTypeConverterTest;
 	import org.springextensions.actionscript.object.propertyeditor.BooleanPropertyEditorTest;
 	import org.springextensions.actionscript.object.propertyeditor.ClassPropertyEditorTest;
@@ -87,6 +88,7 @@ package org.springextensions.actionscript.test {
 		public var t31:XMLObjectDefinitionsProviderTest;
 		public var t32:TextFilesLoaderTest;
 		public var t33:RegisterObjectFactoryPostProcessorsFactoryPostProcessorTest;
+		public var t34:MetadataProcessorObjectFactoryPostProcessorTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 	}

@@ -20,8 +20,6 @@ package org.springextensions.actionscript.metadata {
 	 * Describes and object that acts as a registry for <code>IMetaDataProcessors</code> and is able
 	 * to dispatch objects with the appropriate metadata annotations to their respective <code>process()</code> methods.
 	 * @author Roland Zwaga
-	 * @docref annotations.html
-	 * @sampleref metadataprocessor
 	 */
 	public interface IMetaDataProcessorObjectPostProcessor extends IObjectPostProcessor {
 		/**

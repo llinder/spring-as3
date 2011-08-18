@@ -1,0 +1,57 @@
+/*
+* Copyright 2007-2011 the original author or authors.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+package org.springextensions.actionscript.metadata {
+	import mockolate.mock;
+	import mockolate.nice;
+	import mockolate.runner.MockolateRule;
+	import mockolate.verify;
+
+	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
+
+	public class MetadataProcessorObjectFactoryPostProcessorTest {
+
+		[Rule]
+		public var mockolateRule:MockolateRule = new MockolateRule();
+
+		[Mock]
+		public var objectFactory:IObjectFactory;
+		[Mock]
+		public var objectDefinitionRegistry:IObjectDefinitionRegistry;
+
+		public function MetadataProcessorObjectFactoryPostProcessorTest() {
+			super();
+		}
+
+		[Test]
+		public function testPostProcessObjectFactoryWithoutPostProcessorAndWithMetdataProcessors():void {
+			var objectFactory:IObjectFactory = nice(IObjectFactory);
+			var objectDefinitionRegistry:IObjectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			mock(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionRegistry);
+			mock(objectDefinitionRegistry).method("getObjectNamesForType").args(IMetaDataProcessorObjectPostProcessor).returns(null).once();
+			mock(objectDefinitionRegistry).method("getObjectNamesForType").args(IMetadataProcessor).returns(null).once();
+			mock(objectFactory).method("addObjectPostProcessor").never();
+			mock(objectFactory).method("createInstance").never();
+
+			var processor:MetadataProcessorObjectFactoryPostProcessor = new MetadataProcessorObjectFactoryPostProcessor();
+			processor.postProcessObjectFactory(objectFactory);
+
+			verify(objectFactory);
+			verify(objectDefinitionRegistry);
+
+		}
+	}
+}

@@ -20,8 +20,6 @@ package org.springextensions.actionscript.metadata {
 	/**
 	 * Describes an object that can process an instance that is annotated with specific metadata.
 	 * @author Roland Zwaga
-	 * @docref annotations.html
-	 * @sampleref metadataprocessor
 	 */
 	public interface IMetadataProcessor {
 
