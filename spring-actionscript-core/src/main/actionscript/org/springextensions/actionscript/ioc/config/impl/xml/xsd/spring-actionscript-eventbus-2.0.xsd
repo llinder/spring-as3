@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://www.springactionscript.org/schema/eventbus"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://www.springactionscript.org/schema/eventbus"
+			elementFormDefault="qualified">
+
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+			Spring ActionScript Framework 2.0 Eventbus Schema
+			Schema Authors: Roland Zwaga
+			]]>
+		</xsd:documentation>
+	</xsd:annotation>
+
+	<xsd:element name="event-router" type="eventRouterType"/>
+	<xsd:element name="event-handler" type="eventHandlerType"/>
+	<xsd:element name="event-handler-method" type="eventHandlerMethodType"/>
+	
+	<xsd:complexType name="eventRouterType" mixed="true">
+		<xsd:complexContent mixed="true">
+	   	</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="eventHandlerType" mixed="true">
+		<xsd:complexContent mixed="true">
+			<xs:attribute name="instance" type="xs:string" use="required">
+			<xs:choice maxOccurs="unbounded" minOccurs="0">
+				<xsd:element name="eventHandlerMethod" type="eventHandlerMethodType"/>
+			</xs:choice>
+	   	</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="eventHandlerMethodType" mixed="true">
+		<xsd:complexContent mixed="true">
+			<xs:choice maxOccurs="unbounded" minOccurs="0">
+				<xsd:element name="event-name" type="xs:String"/>
+				<xsd:element name="properties" type="xs:String"/>
+				<xsd:element name="class" type="xs:String"/>
+			</xs:choice>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+</xsd:schema>

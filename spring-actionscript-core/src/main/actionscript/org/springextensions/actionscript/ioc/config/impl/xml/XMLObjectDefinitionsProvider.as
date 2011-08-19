@@ -241,7 +241,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 					_preprocessors.length = 0;
 				}
 				_preprocessors = null;
-				_propertiesProvider = null;
+				if (_namespaceHandlers != null) {
+					for each (var handler:INamespaceHandler in _namespaceHandlers) {
+						ContextUtils.disposeInstance(handler);
+					}
+					_namespaceHandlers.length = 0;
+				}
+				_namespaceHandlers = null;
 				_propertyURIs = null;
 				ContextUtils.disposeInstance(_parser);
 				_parser = null;

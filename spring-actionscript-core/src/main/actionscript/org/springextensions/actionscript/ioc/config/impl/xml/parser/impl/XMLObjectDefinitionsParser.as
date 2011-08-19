@@ -186,11 +186,18 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 				_applicationContext = null;
 				_definitions = null;
 				_generatedObjectNames = null;
+				if (_namespaceHandlers != null) {
+					for each (var handler:INamespaceHandler in _namespaceHandlers) {
+						ContextUtils.disposeInstance(handler);
+					}
+					_namespaceHandlers.length = 0;
+				}
 				_namespaceHandlers = null;
 				if (_nodeParsers != null) {
 					for each (var nodeParser:INodeParser in _nodeParsers) {
 						ContextUtils.disposeInstance(nodeParser);
 					}
+					_nodeParsers.length = 0;
 				}
 				_nodeParsers = null;
 				_isDisposed = true;
@@ -268,8 +275,24 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 * @return an implementation of IObjectDefinition
 		 */
 		public function parseObjectDefinition(xml:XML, objectDefinition:IObjectDefinition=null):IObjectDefinition {
-			var result:IObjectDefinition;
+			var result:IObjectDefinition = createObjectDefinitionResult(objectDefinition, xml);
 
+			parseAttributes(result, xml);
+			parseConstructorArguments(result, xml);
+			parseProperties(result, xml);
+			parseMethodInvocations(result, xml);
+
+			return result;
+		}
+
+		/**
+		 *
+		 * @param objectDefinition
+		 * @param xml
+		 *
+		 */
+		protected function createObjectDefinitionResult(objectDefinition:IObjectDefinition, xml:XML):IObjectDefinition {
+			var result:IObjectDefinition;
 			if (objectDefinition != null) {
 				result = objectDefinition;
 			} else if (xml.attribute(CLASS_ATTRIBUTE).length() == 0) {
@@ -277,12 +300,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			} else {
 				result = new ObjectDefinition(xml.attribute(CLASS_ATTRIBUTE)[0]);
 			}
-
-			parseAttributes(result, xml);
-			parseConstructorArguments(result, xml);
-			parseProperties(result, xml);
-			parseMethodInvocations(result, xml);
-
 			return result;
 		}
 
