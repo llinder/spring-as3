@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic {
+package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing {
 
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractNamespaceHandler;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.nodeparser.AutowiringStageProcessorNodeParser;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.nodeparser.GenericStageProcessorNodeParser;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.nodeparser.StageProcessorNodeParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser.AutowiringStageProcessorNodeParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser.GenericStageProcessorNodeParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser.StageProcessorNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_stageprocessing;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 
@@ -27,17 +27,17 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	 * @author Roland Zwaga
 	 * @docref xml-schema-based-configuration.html#the_stage_interception_schema
 	 */
-	public class GenericStageProcessorNamespaceHandler extends AbstractNamespaceHandler {
+	public class StageProcessingNamespaceHandler extends AbstractNamespaceHandler {
 
 		public static const GENERIC_STAGE_PROCESSOR_ELEMENT:String = "genericstageprocessor";
 		public static const STAGE_PROCESSOR_ELEMENT:String = "stageprocessor";
 		public static const AUTOWIRING_STAGE_PROCESSOR_ELEMENT:String = "autowiringstageprocessor";
 
-		public function GenericStageProcessorNamespaceHandler(cache:IInstanceCache) {
+		public function StageProcessingNamespaceHandler() {
 			super(spring_actionscript_stageprocessing);
 			registerObjectDefinitionParser(GENERIC_STAGE_PROCESSOR_ELEMENT, new GenericStageProcessorNodeParser());
-			registerObjectDefinitionParser(STAGE_PROCESSOR_ELEMENT, new StageProcessorNodeParser(cache));
-			registerObjectDefinitionParser(AUTOWIRING_STAGE_PROCESSOR_ELEMENT, new AutowiringStageProcessorNodeParser(cache));
+			registerObjectDefinitionParser(STAGE_PROCESSOR_ELEMENT, new StageProcessorNodeParser());
+			registerObjectDefinitionParser(AUTOWIRING_STAGE_PROCESSOR_ELEMENT, new AutowiringStageProcessorNodeParser());
 		}
 	}
 }

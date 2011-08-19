@@ -46,6 +46,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		private var _className:String;
 		private var _clazz:Class;
 		private var _constructorArguments:Array;
+		private var _customConfiguration:*;
 		private var _dependencyCheck:DependencyCheckMode;
 		private var _dependsOn:Vector.<String>;
 		private var _destroyMethod:String;
@@ -122,6 +123,20 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		 */
 		public function set constructorArguments(value:Array):void {
 			_constructorArguments = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get customConfiguration():* {
+			return _customConfiguration;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set customConfiguration(value:*):void {
+			_customConfiguration = value;
 		}
 
 		/**
@@ -447,6 +462,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 				append(parent, that.parent). //
 				append(parentName, that.parentName). //
 				append(isInterface, that.isInterface). //
+				append(customConfiguration, that.customConfiguration). //
 				equals;
 		}
 

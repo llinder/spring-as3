@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.nodeparser {
+package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser {
 
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
@@ -25,8 +25,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 	public class AutowiringStageProcessorNodeParser extends StageProcessorNodeParser {
 
-		public function AutowiringStageProcessorNodeParser(cache:IInstanceCache) {
-			super(cache);
+		public function AutowiringStageProcessorNodeParser() {
+			super();
 		}
 
 		override protected function parseInternal(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
@@ -36,7 +36,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			if (node.attribute(OBJECT_SELECTOR_ATTR).length() > 0) {
 				var objectSelectorName:String = String(node.attribute(OBJECT_SELECTOR_ATTR)[0]);
-				selectorMapping[objectName] = objectSelectorName;
+				result.objectDefinition.customConfiguration = objectSelectorName
 			}
 
 			return result.objectDefinition;

@@ -28,16 +28,6 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	public interface IObjectDefinition {
 
 		/**
-		 *
-		 */
-		function get isAbstract():Boolean;
-
-		/**
-		 * @private
-		 */
-		function set isAbstract(value:Boolean):void;
-
-		/**
 		 * Defines the way an object will be autowired (configured).
 		 */
 		function get autoWireMode():AutowireMode;
@@ -72,6 +62,15 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @private
 		 */
 		function set constructorArguments(value:Array):void;
+
+		/**
+		 * Optional extra data that can be used by other processing logic.
+		 */
+		function get customConfiguration():*;
+		/**
+		 * @private
+		 */
+		function set customConfiguration(value:*):void;
 
 		/**
 		 * Determines if and how the object properties dependencies should be checked.
@@ -132,6 +131,16 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @private
 		 */
 		function set initMethod(value:String):void;
+
+		/**
+		 *
+		 */
+		function get isAbstract():Boolean;
+
+		/**
+		 * @private
+		 */
+		function set isAbstract(value:Boolean):void;
 
 		/**
 		 * True if this object can be used as a value used by the container when it autowires an object by type.
@@ -258,16 +267,16 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @param name
 		 * @param namespace
 		 * @return
+		 *
 		 */
-		function getPropertyDefinitionByName(name:String, namespace:String=null):PropertyDefinition;
+		function getMethodInvocationByName(name:String, namespace:String=null):MethodInvocation;
 
 		/**
 		 *
 		 * @param name
 		 * @param namespace
 		 * @return
-		 *
 		 */
-		function getMethodInvocationByName(name:String, namespace:String=null):MethodInvocation;
+		function getPropertyDefinitionByName(name:String, namespace:String=null):PropertyDefinition;
 	}
 }

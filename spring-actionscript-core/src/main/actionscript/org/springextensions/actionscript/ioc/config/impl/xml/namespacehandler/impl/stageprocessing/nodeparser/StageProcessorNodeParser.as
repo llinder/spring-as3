@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.nodeparser {
+package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser {
 
 	import org.as3commons.lang.ClassUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
@@ -31,26 +31,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		/** The object-selector attribute */
 		public static const OBJECT_SELECTOR_ATTR:String = "object-selector";
-		public static const SELECTOR_MAPPING_CACHE_NAME:String = "stageObjectProcessorToObjectSelectorMapping";
-		protected var selectorMapping:Object;
 
 		/**
 		 * Creates a new <code>StageProcessorNodeParser</code> instance.
 		 */
-		public function StageProcessorNodeParser(cache:IInstanceCache) {
+		public function StageProcessorNodeParser() {
 			super();
-			initStageProcessorNodeParser(cache);
 		}
-
-		/**
-		 *
-		 * @param cache
-		 */
-		protected function initStageProcessorNodeParser(cache:IInstanceCache):void {
-			selectorMapping = {};
-			cache.addInstance(SELECTOR_MAPPING_CACHE_NAME, selectorMapping);
-		}
-
 
 		/**
 		 * @inheritDoc
@@ -64,7 +51,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			if (node.attribute(OBJECT_SELECTOR_ATTR).length() > 0) {
 				var objectSelectorName:String = String(node.attribute(OBJECT_SELECTOR_ATTR)[0]);
-				selectorMapping[objectName] = objectSelectorName;
+				result.objectDefinition.customConfiguration = objectSelectorName
 			}
 
 			return result.objectDefinition;

@@ -21,7 +21,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.GenericStageProcessorNamespaceHandler;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.StageProcessingNamespaceHandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_objects;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.INodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
@@ -384,7 +384,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			if (ArrayCollectionNodeParser.canCreate(_applicationContext.applicationDomain)) {
 				addNodeParser(new ArrayCollectionNodeParser(this));
 			}
-			addNamespaceHandler(new GenericStageProcessorNamespaceHandler(_applicationContext.cache));
+			addNamespaceHandler(new StageProcessingNamespaceHandler());
 		}
 
 		/**

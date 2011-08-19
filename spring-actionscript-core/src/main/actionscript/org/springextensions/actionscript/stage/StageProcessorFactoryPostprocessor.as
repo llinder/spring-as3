@@ -22,7 +22,7 @@ package org.springextensions.actionscript.stage {
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistry;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
 	import org.springextensions.actionscript.context.IApplicationContext;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.generic.nodeparser.StageProcessorNodeParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser.StageProcessorNodeParser;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.util.ContextUtils;
@@ -86,10 +86,9 @@ package org.springextensions.actionscript.stage {
 			}
 
 			if (stageProcessorRegistry) {
-				var selectorMapping:Object = objectFactory.cache.getInstance(StageProcessorNodeParser.SELECTOR_MAPPING_CACHE_NAME);
 				for each (var name:String in stageProcessorNames) {
 					var objectSelector:IObjectSelector;
-					var selectorName:String = (selectorMapping.hasOwnProperty(name)) ? String(selectorMapping[name]) : null;
+					var selectorName:String = objectFactory.getObjectDefinition(name).customConfiguration as String;
 					if ((selectorName != null) && (objectFactory.objectDefinitionRegistry.containsObjectDefinition(selectorName))) {
 						objectSelector = objectFactory.getObject(selectorName);
 					} else {
