@@ -50,5 +50,9 @@ package org.springextensions.actionscript.context.impl.xml {
 		public function addNamespaceHandler(namespaceHandler:INamespaceHandler):void {
 			XMLObjectDefinitionsProvider(definitionProviders[0]).addNamespaceHandler(namespaceHandler);
 		}
+
+		public function addNamespaceHandlers(namespaceHandlers:Vector.<INamespaceHandler>):void {
+			XMLObjectDefinitionsProvider(definitionProviders[0]).addNamespaceHandlers(namespaceHandlers);
+		}
 	}
 }

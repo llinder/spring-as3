@@ -35,6 +35,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.RefNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.UndefinedNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.VectorNodeParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.IXMLObjectDefinitionsPreprocessor;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
 	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
@@ -384,7 +385,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			if (ArrayCollectionNodeParser.canCreate(_applicationContext.applicationDomain)) {
 				addNodeParser(new ArrayCollectionNodeParser(this));
 			}
-			addNamespaceHandler(new StageProcessingNamespaceHandler());
 		}
 
 		/**

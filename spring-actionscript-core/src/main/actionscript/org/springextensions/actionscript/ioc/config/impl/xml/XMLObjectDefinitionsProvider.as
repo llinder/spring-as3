@@ -174,6 +174,20 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			if (_namespaceHandlers.indexOf(namespaceHandler) < 0) {
 				_namespaceHandlers[_namespaceHandlers.length] = namespaceHandler;
 			}
+			if (namespaceHandler is IXMLObjectDefinitionsPreprocessor) {
+				addPreprocessor(IXMLObjectDefinitionsPreprocessor(namespaceHandler));
+			}
+		}
+
+		/**
+		 * Adds a list <code>INamespaceHandlers</code> to the current <code>XMLObjectDefinitionsProvider</code>.
+		 * @param namespaceHandler
+		 */
+		public function addNamespaceHandlers(namespaceHandlers:Vector.<INamespaceHandler>):void {
+			Assert.notNull(namespaceHandlers, "The namespaceHandlers argument must not be null");
+			for each (var handler:INamespaceHandler in namespaceHandlers) {
+				addNamespaceHandler(handler);
+			}
 		}
 
 		/**
@@ -258,6 +272,16 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 */
 		protected function addXMLConfig(xml:XML):void {
 			_xmlConfiguration = XMLUtils.mergeXML(_xmlConfiguration, xml);
+		}
+
+		/**
+		 *
+		 * @return
+		 */
+		protected function createParser():IXMLObjectDefinitionsParser {
+			var result:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(_applicationContext);
+			result.addNamespaceHandlers(_namespaceHandlers);
+			return result;
 		}
 
 		/**
@@ -351,7 +375,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 */
 		protected function parseXML(xmlConfig:XML):void {
 			preProcessXML(xmlConfig);
-			_parser ||= new XMLObjectDefinitionsParser(_applicationContext);
+			_parser ||= createParser();
 			_objectDefinitions = _parser.parse(xmlConfig);
 		}
 

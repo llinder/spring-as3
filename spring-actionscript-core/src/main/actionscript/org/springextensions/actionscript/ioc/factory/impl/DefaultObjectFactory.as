@@ -21,6 +21,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
+	import org.as3commons.eventbus.IEventBusListener;
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.ClassNotFoundError;
 	import org.as3commons.lang.ClassUtils;
@@ -187,8 +188,26 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @private
 		 */
 		public function set eventBus(value:IEventBus):void {
-			_eventBus = value;
+			if (value !== _eventBus) {
+				removeParentEventBusListener();
+				_eventBus = value;
+				addParentEventBusListener();
+			}
 		}
+
+		protected function addParentEventBusListener():void {
+			if ((parent is IEventBusAware) && (_eventBus is IEventBusListener)) {
+				IEventBusAware(parent).eventBus.addListener(IEventBusListener(_eventBus));
+			}
+		}
+
+
+		protected function removeParentEventBusListener():void {
+			if ((parent is IEventBusAware) && (_eventBus is IEventBusListener)) {
+				IEventBusAware(parent).eventBus.removeListener(IEventBusListener(_eventBus));
+			}
+		}
+
 
 		/**
 		 * @inheritDoc
@@ -285,7 +304,11 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @private
 		 */
 		public function set parent(value:IObjectFactory):void {
-			_parent = value;
+			if (_parent !== value) {
+				removeParentEventBusListener();
+				_parent = parent;
+				addParentEventBusListener();
+			}
 		}
 
 		/**
@@ -511,10 +534,8 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * Initializes the current <code>DefaultObjectFactory</code>.
 		 * @param parent
 		 */
-		protected function initObjectFactory(parent:IObjectFactory):void {
-			if (parent !== _parent) {
-				_parent = parent;
-			}
+		protected function initObjectFactory(parentFactory:IObjectFactory):void {
+			parent = parentFactory;
 		}
 
 		/**
