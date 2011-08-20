@@ -41,7 +41,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		public static const EVENT_HANDLER_METHOD_ELEMENT_NAME:String = "event-handler-method";
 		public static const EVENT_INTERCEPTOR_FIELD_NAME:String = "event-interceptor";
 		public static const EVENT_LISTENER_INTERCEPTOR_FIELD_NAME:String = "event-listener-interceptor";
-		public static const CONFIGURATION_ELEMENT_NAME:String = "configuration";
+		public static const ROUTING_CONFIGURATION_ELEMENT_NAME:String = "routing-configuration";
 
 		private var _preprocessor:EventBusElementsPreprocessor;
 		private var _eventBusUserRegistry:IEventBusUserRegistry;
@@ -84,7 +84,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			registerObjectDefinitionParser(EVENT_HANDLER_METHOD_ELEMENT_NAME, new NullReturningNodeParser());
 			registerObjectDefinitionParser(EVENT_INTERCEPTOR_FIELD_NAME, null);
 			registerObjectDefinitionParser(EVENT_LISTENER_INTERCEPTOR_FIELD_NAME, null);
-			registerObjectDefinitionParser(CONFIGURATION_ELEMENT_NAME, new NullReturningNodeParser());
+			registerObjectDefinitionParser(ROUTING_CONFIGURATION_ELEMENT_NAME, new NullReturningNodeParser());
 		}
 	}
 }

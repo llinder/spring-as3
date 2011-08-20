@@ -58,7 +58,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param node
 		 */
 		protected function createConfigurations(customConfiguration:Vector.<ICustomConfigurator>, node:XML):void {
-			for each (var child:XML in node.descendants(EventBusNamespacehandler.CONFIGURATION_ELEMENT_NAME)) {
+			for each (var child:XML in node.descendants(EventBusNamespacehandler.ROUTING_CONFIGURATION_ELEMENT_NAME)) {
 				var names:Array = getPropertyNames(child);
 				var topics:Vector.<String> = commaSeparatedAttributeNameToStringVector(child, TOPICS_ATTRIBUTE_NAME);
 				var topicProperties:Vector.<String> = commaSeparatedAttributeNameToStringVector(child, TOPIC_PROPERTIES_ATTRIBUTE_NAME);
