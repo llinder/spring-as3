@@ -64,6 +64,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		private var _primary:Boolean;
 		private var _properties:Vector.<PropertyDefinition>;
 		private var _propertyNameLookup:Object;
+		private var _registryId:String;
 		private var _scope:ObjectDefinitionScope;
 		private var _skipMetadata:Boolean = false;
 		private var _skipPostProcessors:Boolean = false;
@@ -359,6 +360,20 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		 */
 		public function get properties():Vector.<PropertyDefinition> {
 			return _properties;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get registryId():String {
+			return _registryId;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set registryId(value:String):void {
+			_registryId = value;
 		}
 
 		/**

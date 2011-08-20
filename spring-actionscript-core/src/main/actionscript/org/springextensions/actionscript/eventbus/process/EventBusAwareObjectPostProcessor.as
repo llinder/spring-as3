@@ -13,8 +13,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.factory.process.impl.object {
+package org.springextensions.actionscript.eventbus.process {
 	import org.as3commons.eventbus.IEventBusAware;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 
@@ -38,6 +39,10 @@ package org.springextensions.actionscript.ioc.factory.process.impl.object {
 			var eba:IEventBusAware = (object as IEventBusAware);
 			if (eba != null) {
 				eba.eventBus = IEventBusAware(_objectFactory).eventBus;
+			}
+			var ebura:IEventBusUserRegistryAware = (object as IEventBusUserRegistryAware);
+			if (ebura != null) {
+				ebura.eventBusUserRegistry = IEventBusUserRegistryAware(_objectFactory).eventBusUserRegistry;
 			}
 		}
 

@@ -14,7 +14,6 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl {
-
 	import flash.errors.IllegalOperationError;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
@@ -32,6 +31,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.as3commons.reflect.Method;
 	import org.as3commons.reflect.MethodInvoker;
 	import org.as3commons.reflect.Type;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
+	import org.springextensions.actionscript.eventbus.impl.DefaultEventBusUserRegistry;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
@@ -55,7 +57,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class DefaultObjectFactory extends EventDispatcher implements IObjectFactory, IEventBusAware, IAutowireProcessorAware, IDisposable {
+	public class DefaultObjectFactory extends EventDispatcher implements IObjectFactory, IEventBusAware, IAutowireProcessorAware, IDisposable, IEventBusUserRegistryAware {
 
 		public static const OBJECT_FACTORY_PREFIX:String = "&";
 		private static const NON_LAZY_SINGLETON_CTOR_ARGS_ERROR:String = "The object definition for '{0}' is not lazy. Constructor arguments can only be supplied for lazy instantiating objects.";
@@ -76,6 +78,8 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _cache:IInstanceCache;
 		private var _dependencyInjector:IDependencyInjector;
 		private var _eventBus:IEventBus;
+		private var _eventBusUserRegistry:IEventBusUserRegistry;
+		private var _isDisposed:Boolean;
 		private var _isReady:Boolean;
 		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
 		private var _objectPostProcessors:Vector.<IObjectPostProcessor>;
@@ -83,23 +87,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _properties:Properties;
 		private var _propertiesProvider:IPropertiesProvider;
 		private var _referenceResolvers:Vector.<IReferenceResolver>;
-		private var _isDisposed:Boolean;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void {
-			objectPostProcessors[objectPostProcessors.length] = objectPostProcessor;
-			_objectPostProcessors.sort(OrderedUtils.orderedCompareFunction);
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function addReferenceResolver(referenceResolver:IReferenceResolver):void {
-			referenceResolvers[referenceResolvers.length] = referenceResolver;
-			_referenceResolvers.sort(OrderedUtils.orderedCompareFunction);
-		}
 
 		/**
 		 * @inheritDoc
@@ -151,21 +138,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function createInstance(clazz:Class, constructorArguments:Array=null):* {
-			Assert.notNull(clazz, "The clazz arguments must not be null");
-			if (!_isReady) {
-				throw new ObjectFactoryError(ObjectFactoryError.FACTORY_NOT_READY, "Object factory isn't fully initialized yet");
-			}
-			var result:* = ClassUtils.newInstance(clazz, constructorArguments);
-			if (dependencyInjector != null) {
-				dependencyInjector.wire(result, this);
-			}
-			return result;
-		}
-
-		/**
-		 * @inheritDoc
-		 */
 		public function get dependencyInjector():IDependencyInjector {
 			return _dependencyInjector;
 		}
@@ -190,55 +162,31 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		public function set eventBus(value:IEventBus):void {
 			if (value !== _eventBus) {
 				removeParentEventBusListener();
+				ContextUtils.disposeInstance(_eventBusUserRegistry);
 				_eventBus = value;
 				addParentEventBusListener();
+				if (_eventBus != null) {
+					_eventBusUserRegistry = new DefaultEventBusUserRegistry();
+				}
 			}
 		}
-
-		protected function addParentEventBusListener():void {
-			if ((parent is IEventBusAware) && (_eventBus is IEventBusListener)) {
-				IEventBusAware(parent).eventBus.addListener(IEventBusListener(_eventBus));
-			}
-		}
-
-
-		protected function removeParentEventBusListener():void {
-			if ((parent is IEventBusAware) && (_eventBus is IEventBusListener)) {
-				IEventBusAware(parent).eventBus.removeListener(IEventBusListener(_eventBus));
-			}
-		}
-
 
 		/**
 		 * @inheritDoc
 		 */
-		public function getObject(name:String, constructorArguments:Array=null):* {
-			Assert.hasText(name, "name parameter must not be empty");
-			if (!_isReady) {
-				throw new ObjectFactoryError(ObjectFactoryError.FACTORY_NOT_READY, "Object factory isn't fully initialized yet");
-			}
-			var result:*;
-			var isFactoryDereference:Boolean = (name.charAt(0) == OBJECT_FACTORY_PREFIX);
-			var objectName:String = (isFactoryDereference ? name.substring(1) : name);
+		public function get eventBusUserRegistry():IEventBusUserRegistry {
+			return _eventBusUserRegistry;
+		}
 
-			// try to get the object from the explicit singleton cache
-			if (_cache.isPrepared(objectName)) {
-				result = _cache.getPreparedInstance(objectName);
-			} else {
-				// we don't have an object in the cache, so create it
-				result = buildObject(name, constructorArguments);
-			}
+		/**
+		 * @private
+		 */
+		public function set eventBusUserRegistry(value:IEventBusUserRegistry):void {
+			_eventBusUserRegistry = value;
+		}
 
-			// if we have an object factory and we don't ask for the object factory,
-			// replace the result with the object the factory creates
-			if ((result is IFactoryObject) && !isFactoryDereference) {
-				result = IFactoryObject(result).getObject();
-			}
-
-			var evt:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_RETRIEVED, result, name, constructorArguments);
-			dispatchEvent(evt);
-			dispatchEventThroughEventBus(evt);
-			return result;
+		public function get isDisposed():Boolean {
+			return _isDisposed;
 		}
 
 		/**
@@ -271,16 +219,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			if (appDomainAware != null) {
 				appDomainAware.applicationDomain = this.applicationDomain;
 			}
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function getObjectDefinition(objectName:String):IObjectDefinition {
-			if (_objectDefinitionRegistry != null) {
-				return _objectDefinitionRegistry.getObjectDefinition(objectName);
-			}
-			return null;
 		}
 
 		/**
@@ -338,6 +276,109 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		/**
 		 * @inheritDoc
 		 */
+		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void {
+			objectPostProcessors[objectPostProcessors.length] = objectPostProcessor;
+			_objectPostProcessors.sort(OrderedUtils.orderedCompareFunction);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function addReferenceResolver(referenceResolver:IReferenceResolver):void {
+			referenceResolvers[referenceResolvers.length] = referenceResolver;
+			_referenceResolvers.sort(OrderedUtils.orderedCompareFunction);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function createInstance(clazz:Class, constructorArguments:Array=null):* {
+			Assert.notNull(clazz, "The clazz arguments must not be null");
+			if (!_isReady) {
+				throw new ObjectFactoryError(ObjectFactoryError.FACTORY_NOT_READY, "Object factory isn't fully initialized yet");
+			}
+			var result:* = ClassUtils.newInstance(clazz, constructorArguments);
+			if (dependencyInjector != null) {
+				dependencyInjector.wire(result, this);
+			}
+			return result;
+		}
+
+		public function dispose():void {
+			if (!_isDisposed) {
+				_applicationDomain = null;
+				ContextUtils.disposeInstance(_autowireProcessor);
+				_autowireProcessor = null;
+				ContextUtils.disposeInstance(_cache);
+				_cache = null;
+				ContextUtils.disposeInstance(_dependencyInjector);
+				_dependencyInjector = null;
+				_eventBus.clear();
+				ContextUtils.disposeInstance(_eventBus);
+				_eventBus = null;
+				ContextUtils.disposeInstance(_objectDefinitionRegistry);
+				_objectDefinitionRegistry = null;
+				for each (var postProcessor:IObjectPostProcessor in _objectPostProcessors) {
+					ContextUtils.disposeInstance(postProcessor);
+				}
+				_objectPostProcessors = null;
+				_parent = null; //Do NOT invoke dispose() on the parent!
+				ContextUtils.disposeInstance(_propertiesProvider);
+				_propertiesProvider = null;
+				for each (var resolver:IReferenceResolver in _referenceResolvers) {
+					ContextUtils.disposeInstance(resolver);
+				}
+				_referenceResolvers = null;
+				_isDisposed = true;
+			}
+		}
+
+
+		/**
+		 * @inheritDoc
+		 */
+		public function getObject(name:String, constructorArguments:Array=null):* {
+			Assert.hasText(name, "name parameter must not be empty");
+			if (!_isReady) {
+				throw new ObjectFactoryError(ObjectFactoryError.FACTORY_NOT_READY, "Object factory isn't fully initialized yet");
+			}
+			var result:*;
+			var isFactoryDereference:Boolean = (name.charAt(0) == OBJECT_FACTORY_PREFIX);
+			var objectName:String = (isFactoryDereference ? name.substring(1) : name);
+
+			// try to get the object from the explicit singleton cache
+			if (_cache.isPrepared(objectName)) {
+				result = _cache.getPreparedInstance(objectName);
+			} else {
+				// we don't have an object in the cache, so create it
+				result = buildObject(name, constructorArguments);
+			}
+
+			// if we have an object factory and we don't ask for the object factory,
+			// replace the result with the object the factory creates
+			if ((result is IFactoryObject) && !isFactoryDereference) {
+				result = IFactoryObject(result).getObject();
+			}
+
+			var evt:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_RETRIEVED, result, name, constructorArguments);
+			dispatchEvent(evt);
+			dispatchEventThroughEventBus(evt);
+			return result;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function getObjectDefinition(objectName:String):IObjectDefinition {
+			if (_objectDefinitionRegistry != null) {
+				return _objectDefinitionRegistry.getObjectDefinition(objectName);
+			}
+			return null;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function resolveReference(property:*):* {
 			if (property == null) { // note: don't change this to !property since we might pass in empty strings here
 				return null;
@@ -360,6 +401,31 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			var result:Array = [];
 			for each (var prop:* in properties) {
 				result[result.length] = resolveReference(prop);
+			}
+			return result;
+		}
+
+		protected function addParentEventBusListener():void {
+			if ((parent is IEventBusAware) && (_eventBus is IEventBusListener)) {
+				IEventBusAware(parent).eventBus.addListener(IEventBusListener(_eventBus));
+			}
+		}
+
+		protected function attemptToInstantiate(objectDefinition:IObjectDefinition, constructorArguments:Array, name:String, objectName:String):* {
+			var result:* = null;
+			try {
+				result = instantiateClass(objectDefinition, constructorArguments);
+				var evt1:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_CREATED, result, name, constructorArguments);
+				dispatchEvent(evt1);
+				dispatchEventThroughEventBus(evt1);
+				if (dependencyInjector != null) {
+					dependencyInjector.wire(result, this, objectDefinition, objectName);
+					var evt2:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_WIRED, result, name, constructorArguments);
+					dispatchEvent(evt2);
+					dispatchEventThroughEventBus(evt2);
+				}
+			} catch (e:ClassNotFoundError) {
+				throw new ObjectContainerError(e.message, objectName);
 			}
 			return result;
 		}
@@ -395,25 +461,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			// create a new object from its definition
 			if (!result) {
 				result = attemptToInstantiate(objectDefinition, constructorArguments, name, objectName);
-			}
-			return result;
-		}
-
-		protected function attemptToInstantiate(objectDefinition:IObjectDefinition, constructorArguments:Array, name:String, objectName:String):* {
-			var result:* = null;
-			try {
-				result = instantiateClass(objectDefinition, constructorArguments);
-				var evt1:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_CREATED, result, name, constructorArguments);
-				dispatchEvent(evt1);
-				dispatchEventThroughEventBus(evt1);
-				if (dependencyInjector != null) {
-					dependencyInjector.wire(result, this, objectDefinition, objectName);
-					var evt2:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_WIRED, result, name, constructorArguments);
-					dispatchEvent(evt2);
-					dispatchEventThroughEventBus(evt2);
-				}
-			} catch (e:ClassNotFoundError) {
-				throw new ObjectContainerError(e.message, objectName);
 			}
 			return result;
 		}
@@ -569,36 +616,10 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			}
 		}
 
-		public function get isDisposed():Boolean {
-			return _isDisposed;
-		}
 
-		public function dispose():void {
-			if (!_isDisposed) {
-				_applicationDomain = null;
-				ContextUtils.disposeInstance(_autowireProcessor);
-				_autowireProcessor = null;
-				ContextUtils.disposeInstance(_cache);
-				_cache = null;
-				ContextUtils.disposeInstance(_dependencyInjector);
-				_dependencyInjector = null;
-				_eventBus.clear();
-				ContextUtils.disposeInstance(_eventBus);
-				_eventBus = null;
-				ContextUtils.disposeInstance(_objectDefinitionRegistry);
-				_objectDefinitionRegistry = null;
-				for each (var postProcessor:IObjectPostProcessor in _objectPostProcessors) {
-					ContextUtils.disposeInstance(postProcessor);
-				}
-				_objectPostProcessors = null;
-				_parent = null; //Do NOT invoke dispose() on the parent!
-				ContextUtils.disposeInstance(_propertiesProvider);
-				_propertiesProvider = null;
-				for each (var resolver:IReferenceResolver in _referenceResolvers) {
-					ContextUtils.disposeInstance(resolver);
-				}
-				_referenceResolvers = null;
-				_isDisposed = true;
+		protected function removeParentEventBusListener():void {
+			if ((parent is IEventBusAware) && (_eventBus is IEventBusListener)) {
+				IEventBusAware(parent).eventBus.removeListener(IEventBusListener(_eventBus));
 			}
 		}
 	}

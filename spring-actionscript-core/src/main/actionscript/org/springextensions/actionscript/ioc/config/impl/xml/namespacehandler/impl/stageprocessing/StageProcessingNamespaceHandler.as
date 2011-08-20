@@ -20,7 +20,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser.GenericStageProcessorNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser.StageProcessorNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_stageprocessing;
-	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 
 	/**
 	 * Namespace handler for all elements pertaining to the stage interception schema
@@ -35,9 +34,15 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		public function StageProcessingNamespaceHandler() {
 			super(spring_actionscript_stageprocessing);
+			initStageProcessingNamespaceHandler();
+		}
+
+		protected function initStageProcessingNamespaceHandler():void {
 			registerObjectDefinitionParser(GENERIC_STAGE_PROCESSOR_ELEMENT, new GenericStageProcessorNodeParser());
 			registerObjectDefinitionParser(STAGE_PROCESSOR_ELEMENT, new StageProcessorNodeParser());
 			registerObjectDefinitionParser(AUTOWIRING_STAGE_PROCESSOR_ELEMENT, new AutowiringStageProcessorNodeParser());
 		}
+
+
 	}
 }

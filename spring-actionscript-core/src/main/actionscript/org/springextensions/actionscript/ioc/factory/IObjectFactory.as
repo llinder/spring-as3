@@ -15,6 +15,7 @@
  */
 package org.springextensions.actionscript.ioc.factory {
 	import flash.system.ApplicationDomain;
+
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
@@ -170,5 +171,6 @@ package org.springextensions.actionscript.ioc.factory {
 		 *
 		 */
 		function resolveReference(property:*):*;
+
 	}
 }

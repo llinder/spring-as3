@@ -34,6 +34,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.as3commons.stageprocessing.impl.FlashStageObjectProcessorRegistry;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
+	import org.springextensions.actionscript.eventbus.process.EventBusAwareObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
@@ -108,6 +109,7 @@ package org.springextensions.actionscript.context.impl {
 		private var _rootView:DisplayObject;
 		private var _stageProcessorRegistry:IStageObjectProcessorRegistry;
 		private var _textFilesLoader:ITextFilesLoader;
+		private var _childContexts:Vector.<IApplicationContext>;
 
 		/**
 		 * @inheritDoc
@@ -583,6 +585,7 @@ package org.springextensions.actionscript.context.impl {
 
 			_objectFactory.addObjectPostProcessor(new ApplicationContextAwareObjectPostProcessor(this));
 			_objectFactory.addObjectPostProcessor(new ObjectFactoryAwarePostProcessor(this));
+			_objectFactory.addObjectPostProcessor(new EventBusAwareObjectPostProcessor(this));
 
 			_objectFactory.addReferenceResolver(new ThisReferenceResolver(this));
 			_objectFactory.addReferenceResolver(new ObjectReferenceResolver(this));
@@ -683,6 +686,17 @@ package org.springextensions.actionscript.context.impl {
 		public function set autowireProcessor(value:IAutowireProcessor):void {
 			if (_objectFactory is IAutowireProcessorAware) {
 				IAutowireProcessorAware(_objectFactory).autowireProcessor = value;
+			}
+		}
+
+		public function get childContexts():Vector.<IApplicationContext> {
+			return _childContexts;
+		}
+
+		public function addChildContext(childContext:IApplicationContext):void {
+			_childContexts ||= new Vector.<IApplicationContext>();
+			if (_childContexts.indexOf(childContext) < 0) {
+				childContexts[childContexts.length] = childContext;
 			}
 		}
 	}

@@ -25,6 +25,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
+	import org.springextensions.actionscript.util.ContextUtils;
 
 	/**
 	 *
@@ -33,6 +34,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	public class DefaultObjectDefinitionRegistry implements IObjectDefinitionRegistry, IDisposable, IApplicationDomainAware {
 		private static const IS_SINGLETON_FIELD_NAME:String = "isSingleton";
 		private static const OBJECT_DEFINITION_NAME_EXISTS_ERROR:String = "Object definition with that name has already been registered";
+		private static const CHARACTERS:String = "abcdefghijklmnopqrstuvwxys";
 
 		/**
 		 * Creates a new <code>DefaultObjectDefinitionRegistry</code> instance.
@@ -51,12 +53,20 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		private var _objectDefinitionNameLookup:Dictionary;
 		private var _objectDefinitionNames:Vector.<String>;
 		private var _objectDefinitions:Object;
+		private var _id:String;
 
 		/**
 		 * @inheritDoc
 		 */
 		public function set applicationDomain(value:ApplicationDomain):void {
 			_applicationDomain = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get id():String {
+			return _id;
 		}
 
 		/**
@@ -87,11 +97,26 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			return _objectDefinitions.hasOwnProperty(objectName);
 		}
 
+		public static function generateRegistryId():String {
+			var len:int = 20;
+			var result:Array = new Array(20);
+			while (len) {
+				result[len--] = CHARACTERS.charAt(Math.floor(Math.random() * 26));
+			}
+			return result.join('');
+		}
+
 		/**
 		 * @inheritDoc
 		 */
 		public function dispose():void {
 			if (!_isDisposed) {
+				for each (var name:String in _objectDefinitionNames) {
+					var objectDefinition:IObjectDefinition = IObjectDefinition(_objectDefinitions[name]);
+					if (objectDefinition.registryId == _id) {
+						ContextUtils.disposeInstance(objectDefinition);
+					}
+				}
 				_objectDefinitions = null;
 				_objectDefinitionNames = null;
 				_objectDefinitionClasses = null;
@@ -238,6 +263,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		 */
 		public function registerObjectDefinition(objectName:String, objectDefinition:IObjectDefinition):void {
 			if (!containsObjectDefinition(objectName)) {
+				objectDefinition.registryId = id;
 				_objectDefinitionNameLookup[objectDefinition] = objectName;
 				_objectDefinitionList[_objectDefinitionList.length] = objectDefinition;
 				_objectDefinitions[objectName] = objectDefinition;
@@ -287,6 +313,37 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			}
 		}
 
+		/**
+		 *
+		 * @param objectDefinition
+		 */
+		protected function addToMetadataLookup(objectDefinition:IObjectDefinition):void {
+			var type:Type = Type.forName(objectDefinition.className, _applicationDomain);
+			for each (var metadata:Metadata in type.metadata) {
+				var name:String = metadata.name.toLowerCase();
+				_objectDefinitionMetadataLookup[name] ||= new Vector.<IObjectDefinition>();
+				_objectDefinitionMetadataLookup[name].push(objectDefinition);
+			}
+		}
+
+		/**
+		 *
+		 */
+		protected function initDefaultObjectDefinitionRegistry():void {
+			_objectDefinitions = {};
+			_objectDefinitionList = new Vector.<IObjectDefinition>();
+			_objectDefinitionNames = new Vector.<String>();
+			_objectDefinitionClasses = new Vector.<Class>();
+			_objectDefinitionMetadataLookup = new Dictionary();
+			_objectDefinitionNameLookup = new Dictionary();
+			_id = generateRegistryId();
+		}
+
+		/**
+		 *
+		 * @param name
+		 * @param definition
+		 */
 		protected function removeFromMetadataLookup(name:String, definition:IObjectDefinition):void {
 			var list:Vector.<IObjectDefinition> = _objectDefinitionMetadataLookup[name];
 			if (list != null) {
@@ -298,24 +355,6 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 					delete _objectDefinitionMetadataLookup[name];
 				}
 			}
-		}
-
-		protected function addToMetadataLookup(objectDefinition:IObjectDefinition):void {
-			var type:Type = Type.forName(objectDefinition.className, _applicationDomain);
-			for each (var metadata:Metadata in type.metadata) {
-				var name:String = metadata.name.toLowerCase();
-				_objectDefinitionMetadataLookup[name] ||= new Vector.<IObjectDefinition>();
-				_objectDefinitionMetadataLookup[name].push(objectDefinition);
-			}
-		}
-
-		protected function initDefaultObjectDefinitionRegistry():void {
-			_objectDefinitions = {};
-			_objectDefinitionList = new Vector.<IObjectDefinition>();
-			_objectDefinitionNames = new Vector.<String>();
-			_objectDefinitionClasses = new Vector.<Class>();
-			_objectDefinitionMetadataLookup = new Dictionary();
-			_objectDefinitionNameLookup = new Dictionary();
 		}
 	}
 }

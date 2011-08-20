@@ -26,6 +26,8 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	 */
 	public interface IObjectDefinitionRegistry {
 
+		function get id():String;
+
 		// --------------------------------------------------------------------
 		//
 		// Properties

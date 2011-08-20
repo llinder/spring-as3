@@ -278,5 +278,14 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @return
 		 */
 		function getPropertyDefinitionByName(name:String, namespace:String=null):PropertyDefinition;
+
+		/**
+		 * The id of the <code>IObjectDefinitionRegistry</code> that the current <code>IObjectDefinition</code> was first registered with.
+		 */
+		function get registryId():String;
+		/**
+		 * @private
+		 */
+		function set registryId(value:String):void;
 	}
 }

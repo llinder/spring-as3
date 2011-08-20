@@ -32,6 +32,7 @@ package org.springextensions.actionscript.ioc.impl {
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
+	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
 	import org.springextensions.actionscript.object.ITypeConverter;
@@ -337,7 +338,25 @@ package org.springextensions.actionscript.ioc.impl {
 				postProcessingAfterInitialization(instance, objectName, objectFactory.objectPostProcessors);
 			}
 
+			executeCustomConfiguration(instance, objectDefinition);
+
 			cacheSingleton(objectDefinition, objectFactory.cache, objectName, instance);
+		}
+
+		/**
+		 *
+		 * @param instance
+		 * @param objectDefinition
+		 */
+		protected function executeCustomConfiguration(instance:*, objectDefinition:IObjectDefinition):void {
+			if (objectDefinition.customConfiguration is ICustomConfigurator) {
+				ICustomConfigurator(objectDefinition.customConfiguration).execute(instance, objectDefinition);
+			} else if (objectDefinition.customConfiguration is Vector.<ICustomConfigurator>) {
+				var configurators:Vector.<ICustomConfigurator> = objectDefinition.customConfiguration as Vector.<ICustomConfigurator>;
+				for each (var configurator:ICustomConfigurator in configurators) {
+					configurator.execute(instance, objectDefinition);
+				}
+			}
 		}
 
 		/**

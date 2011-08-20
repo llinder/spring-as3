@@ -35,20 +35,10 @@ package org.springextensions.actionscript.stage {
 	 * @docref container-documentation.html#autowiring_stage_components
 	 * @sampleref stagewiring
 	 */
-	public class DefaultAutowiringStageProcessor implements IApplicationContextAware, IStageObjectProcessor, IStageObjectDestroyer {
-
-		// Force the default definition resolver to be included
-		DefaultObjectDefinitionResolver;
-
-		/**
-		 * A Dictionary instance used to keep track of the stage components that have already been
-		 * processed by the current <code>DefaultAutowiringStageProcessor</code>. This <code>Dictionary</code>
-		 * instance is created with the <code>weakKeys</code> constructor argument set to <code>true</code>
-		 * and will therefore not cause any memory leaks should any of the components be removed
-		 * from the stage permanently.
-		 * @see org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor#autowireOnce DefaultAutowiringStageProcessor.autowireOnce
-		 */
-		protected var componentCache:Dictionary;
+	public class DefaultAutowiringStageProcessor implements IApplicationContextAware, IStageObjectProcessor, IStageObjectDestroyer, IDisposable {
+		{
+			DefaultObjectDefinitionResolver;
+		}
 
 		// --------------------------------------------------------------------
 		//
@@ -64,24 +54,39 @@ package org.springextensions.actionscript.stage {
 			initDefaultAutowiringStageProcessor(context);
 		}
 
-		protected function initDefaultAutowiringStageProcessor(context:IApplicationContext):void {
-			componentCache = new Dictionary(true);
-			autowireOnce = true;
-			applicationContext = context;
-			_objectDefinitionResolver = null;
-		}
+		/**
+		 * A Dictionary instance used to keep track of the stage components that have already been
+		 * processed by the current <code>DefaultAutowiringStageProcessor</code>. This <code>Dictionary</code>
+		 * instance is created with the <code>weakKeys</code> constructor argument set to <code>true</code>
+		 * and will therefore not cause any memory leaks should any of the components be removed
+		 * from the stage permanently.
+		 * @see org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor#autowireOnce DefaultAutowiringStageProcessor.autowireOnce
+		 */
+		protected var componentCache:Dictionary;
+
+		private var _applicationContext:IApplicationContext;
+		private var _autowireOnce:Boolean = true;
+		private var _objectDefinitionResolver:IObjectDefinitionResolver;
 
 		// --------------------------------------------------------------------
 		//
 		// Properties
 		//
 		// --------------------------------------------------------------------
+		private var _isDisposed:Boolean;
 
-		// ----------------------------
-		// autowireOnce
-		// ----------------------------
 
-		private var _autowireOnce:Boolean = true;
+		public function get applicationContext():IApplicationContext {
+			return _applicationContext;
+		}
+
+		/**
+		 * <p><code>IObjectFactory</code> instance whose <code>wire()</code> method will be invoked in the <code>process()</code> method.</p>
+		 * @inheritDoc
+		 */
+		public function set applicationContext(applicationContext:IApplicationContext):void {
+			_applicationContext = applicationContext;
+		}
 
 		/**
 		 * Determines whether an object will be autowired again when it is passed to the <code>process()</code> method more than once.
@@ -97,12 +102,6 @@ package org.springextensions.actionscript.stage {
 		public function set autowireOnce(value:Boolean):void {
 			_autowireOnce = value;
 		}
-
-		// ----------------------------
-		// objectDefinitionResolver
-		// ----------------------------
-
-		private var _objectDefinitionResolver:IObjectDefinitionResolver;
 
 		/**
 		 * An <code>IObjectDefinitionResolver</code> to retrieve <code>IObjectDefinition</code>
@@ -120,22 +119,22 @@ package org.springextensions.actionscript.stage {
 			_objectDefinitionResolver = value;
 		}
 
-		// ----------------------------
-		// applicationContext
-		// ----------------------------
-
-		private var _applicationContext:IApplicationContext;
-
-		public function get applicationContext():IApplicationContext {
-			return _applicationContext;
+		public function destroy(displayObject:DisplayObject):DisplayObject {
+			delete componentCache[displayObject];
+			var objectDefinition:IObjectDefinition = (_objectDefinitionResolver ? _objectDefinitionResolver.resolveObjectDefinition(displayObject) : null);
+			if ((objectDefinition != null) && (StringUtils.hasText(objectDefinition.destroyMethod))) {
+				displayObject[objectDefinition.destroyMethod].apply(displayObject);
+			} else if (displayObject is IDisposable) {
+				IDisposable(displayObject).dispose();
+			}
+			return displayObject;
 		}
 
-		/**
-		 * <p><code>IObjectFactory</code> instance whose <code>wire()</code> method will be invoked in the <code>process()</code> method.</p>
-		 * @inheritDoc
-		 */
-		public function set applicationContext(applicationContext:IApplicationContext):void {
-			_applicationContext = applicationContext;
+		public function dispose():void {
+			if (!_isDisposed) {
+				componentCache = null;
+				_isDisposed = true;
+			}
 		}
 
 		// --------------------------------------------------------------------
@@ -166,30 +165,19 @@ package org.springextensions.actionscript.stage {
 			return displayObject;
 		}
 
-		public function destroy(displayObject:DisplayObject):DisplayObject {
-			delete componentCache[displayObject];
-			var objectDefinition:IObjectDefinition = (_objectDefinitionResolver ? _objectDefinitionResolver.resolveObjectDefinition(displayObject) : null);
-			if ((objectDefinition != null) && (StringUtils.hasText(objectDefinition.destroyMethod))) {
-				displayObject[objectDefinition.destroyMethod].apply(displayObject);
-			} else if (displayObject is IDisposable) {
-				IDisposable(displayObject).dispose();
-			}
-			return displayObject;
-		}
-
 		public function toString():String {
 			return "[DefaultAutowiringStageProcessor(autowireOnce=" + autowireOnce + ")]";
 		}
 
-		public function dispose():void {
-			componentCache = null;
+		protected function initDefaultAutowiringStageProcessor(context:IApplicationContext):void {
+			componentCache = new Dictionary(true);
+			autowireOnce = true;
+			applicationContext = context;
+			_objectDefinitionResolver = null;
 		}
 
-		// --------------------------------------------------------------------
-		//
-		// Private Methods
-		//
-		// --------------------------------------------------------------------
-
+		public function get isDisposed():Boolean {
+			return _isDisposed;
+		}
 	}
 }

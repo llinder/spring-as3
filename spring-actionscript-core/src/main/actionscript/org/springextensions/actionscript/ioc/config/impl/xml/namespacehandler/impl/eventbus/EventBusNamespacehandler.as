@@ -16,21 +16,35 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus {
 
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractNamespaceHandler;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventRouterNodeParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_eventbus;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.IXMLObjectDefinitionsPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.EventBusElementsPreprocessor;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
-
+	/**
+	 *
+	 * @author Roland Zwaga
+	 *
+	 */
 	public class EventBusNamespacehandler extends AbstractNamespaceHandler implements IXMLObjectDefinitionsPreprocessor {
+
+		private static const EVENT_ROUTER_ELEMENT_NAME:String = "event-router";
+		private static const EVENT_HANDLER_ELEMENT_NAME:String = "event-handler";
+		private static const EVENT_HANDLER_METHOD_ELEMENT_NAME:String = "event-handler-method";
 
 		private var _preprocessor:EventBusElementsPreprocessor;
 
-		public function EventBusNamespacehandler(ns:Namespace) {
-			super(ns);
-			initEventBusNamespacehandler();
+		public function EventBusNamespacehandler(objectDefinitionRegistry:IObjectDefinitionRegistry) {
+			super(spring_actionscript_eventbus);
+			initEventBusNamespacehandler(objectDefinitionRegistry);
 		}
 
-		protected function initEventBusNamespacehandler():void {
+		protected function initEventBusNamespacehandler(objectDefinitionRegistry:IObjectDefinitionRegistry):void {
 			_preprocessor = new EventBusElementsPreprocessor();
+			registerObjectDefinitionParser(EVENT_ROUTER_ELEMENT_NAME, new EventRouterNodeParser(objectDefinitionRegistry));
+			registerObjectDefinitionParser(EVENT_HANDLER_ELEMENT_NAME, null);
+			registerObjectDefinitionParser(EVENT_HANDLER_METHOD_ELEMENT_NAME, null);
 		}
 
 		public function preprocess(xml:XML):XML {
