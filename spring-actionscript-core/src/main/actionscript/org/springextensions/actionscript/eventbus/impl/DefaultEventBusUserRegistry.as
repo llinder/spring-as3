@@ -17,9 +17,9 @@ package org.springextensions.actionscript.eventbus.impl {
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
-
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
+	import org.as3commons.eventbus.IEventInterceptor;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.SoftReference;
 	import org.as3commons.logging.api.ILogger;
@@ -42,9 +42,9 @@ package org.springextensions.actionscript.eventbus.impl {
 		}
 
 		private var _eventBus:IEventBus;
+		private var _eventBusRegistryEntryCache:Dictionary;
 		private var _isDisposed:Boolean;
 		private var _listenerCache:Dictionary;
-		private var _eventBuslistenerCache:Dictionary;
 		private var _proxies:Dictionary;
 		private var _typesLookup:Dictionary;
 
@@ -69,15 +69,39 @@ package org.springextensions.actionscript.eventbus.impl {
 			return _isDisposed;
 		}
 
+		/**
+		 *
+		 * @param eventClass
+		 * @param interceptor
+		 * @param topic
+		 */
+		public function addEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(EventHandlerProxy(interceptor));
+			registryItem.classEntries[registryItem.classEntries.length] = new ClassEntry(eventClass, topic);
+			_eventBus.addEventClassInterceptor(eventClass, interceptor, topic);
+		}
+
 		public function addEventClassListenerProxy(eventClass:Class, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean {
-			var registryItem:EventBusRegistryListenerEntry = _eventBuslistenerCache[proxy] ||= new EventBusRegistryListenerEntry(EventHandlerProxy(proxy));
-			registryItem.classes[registryItem.classes.length] = new ClassListenerEntry(eventClass, topic);
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy] ||= new EventBusRegistryEntry(EventHandlerProxy(proxy));
+			registryItem.classEntries[registryItem.classEntries.length] = new ClassEntry(eventClass, topic);
 			return _eventBus.addEventClassListenerProxy(eventClass, proxy, useWeakReference, topic);
 		}
 
+		/**
+		 *
+		 * @param type
+		 * @param interceptor
+		 * @param topic
+		 */
+		public function addEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(EventHandlerProxy(interceptor));
+			registryItem.eventTypeEntries[registryItem.eventTypeEntries.length] = new EventTypeEntry(type, topic);
+			_eventBus.addEventInterceptor(type, interceptor, topic);
+		}
+
 		public function addEventListenerProxy(type:String, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean {
-			var registryItem:EventBusRegistryListenerEntry = _eventBuslistenerCache[proxy] ||= new EventBusRegistryListenerEntry(EventHandlerProxy(proxy));
-			registryItem.eventTypes[registryItem.eventTypes.length] = new EventListenerEntry(type, topic);
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy] ||= new EventBusRegistryEntry(EventHandlerProxy(proxy));
+			registryItem.eventTypeEntries[registryItem.eventTypeEntries.length] = new EventTypeEntry(type, topic);
 			return _eventBus.addEventListenerProxy(type, proxy, useWeakReference, topic);
 		}
 
@@ -104,6 +128,17 @@ package org.springextensions.actionscript.eventbus.impl {
 		}
 
 		/**
+		 *
+		 * @param interceptor
+		 * @param topic
+		 */
+		public function addInterceptor(interceptor:IEventInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(EventHandlerProxy(interceptor));
+			registryItem.eventTypeEntries[registryItem.eventTypeEntries.length] = new EventTypeEntry(null, topic);
+			_eventBus.addInterceptor(interceptor, topic);
+		}
+
+		/**
 		 * @inheritDoc
 		 */
 		public function dispose():void {
@@ -115,12 +150,12 @@ package org.springextensions.actionscript.eventbus.impl {
 					delete _listenerCache[dispatcher];
 				}
 				_listenerCache = null;
-				for (var proxy:* in _eventBuslistenerCache) {
-					var entry:EventBusRegistryListenerEntry = _eventBuslistenerCache[proxy];
-					for each (var classEntry:ClassListenerEntry in entry.classes) {
+				for (var proxy:* in _eventBusRegistryEntryCache) {
+					var entry:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy];
+					for each (var classEntry:ClassEntry in entry.classEntries) {
 						return _eventBus.removeEventClassListenerProxy(classEntry.clazz, proxy, classEntry.topic);
 					}
-					for each (var eventEntry:EventListenerEntry in entry.eventTypes) {
+					for each (var eventEntry:EventTypeEntry in entry.eventTypeEntries) {
 						return _eventBus.removeEventListenerProxy(eventEntry.eventType, proxy, eventEntry.topic);
 					}
 				}
@@ -146,7 +181,7 @@ package org.springextensions.actionscript.eventbus.impl {
 		 */
 		protected function initEventBusRegistry():void {
 			_listenerCache = new Dictionary(true);
-			_eventBuslistenerCache = new Dictionary();
+			_eventBusRegistryEntryCache = new Dictionary();
 			_typesLookup = new Dictionary();
 			_proxies = new Dictionary(true);
 		}

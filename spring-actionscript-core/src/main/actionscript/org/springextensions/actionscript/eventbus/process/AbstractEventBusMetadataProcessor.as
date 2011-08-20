@@ -15,12 +15,15 @@
 */
 package org.springextensions.actionscript.eventbus.process {
 	import flash.errors.IllegalOperationError;
+
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.lang.StringUtils;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getLogger;
 	import org.as3commons.reflect.Metadata;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
 	import org.springextensions.actionscript.metadata.AbstractMetadataProcessor;
@@ -54,15 +57,15 @@ package org.springextensions.actionscript.eventbus.process {
 		/**
 		 * @inheritDoc
 		 */
-		public function get eventBus():IEventBus {
-			return IEventBusAware(objFactory).eventBus;
+		public function get eventBusUserRegistry():IEventBusUserRegistry {
+			return IEventBusUserRegistryAware(objFactory).eventBusUserRegistry;
 		}
 
 		public function set objectFactory(objectFactory:IObjectFactory):void {
-			if (objectFactory is IEventBusAware) {
+			if (objectFactory is IEventBusUserRegistryAware) {
 				objFactory = objectFactory;
 			} else {
-				throw new IllegalOperationError("IObjectFactory instance must also implement IEventBusAware");
+				throw new IllegalOperationError("IObjectFactory instance must also implement IEventBusUserRegistryAware");
 			}
 		}
 

@@ -164,12 +164,12 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param instance
 		 * @param objectDefinition
 		 */
-		protected function initializeInstance(instance:*, objectDefinition:IObjectDefinition):void {
+		protected function initializeInstance(instance:*, objectDefinition:IObjectDefinition=null):void {
 			if (instance is IInitializingObject) {
 				IInitializingObject(instance).afterPropertiesSet();
 			}
 
-			if (objectDefinition.initMethod) {
+			if ((objectDefinition != null) && (StringUtils.hasText(objectDefinition.initMethod))) {
 				instance[objectDefinition.initMethod]();
 			}
 		}
@@ -374,9 +374,7 @@ package org.springextensions.actionscript.ioc.impl {
 
 			postProcessingBeforeInitialization(instance, objectName, processors);
 
-			if (instance is IInitializingObject) {
-				IInitializingObject(instance).afterPropertiesSet();
-			}
+			initializeInstance(instance);
 
 			postProcessingAfterInitialization(instance, objectName, processors);
 		}

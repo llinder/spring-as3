@@ -15,6 +15,7 @@
  */
 package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	import flash.utils.Dictionary;
+
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.IEquals;
 	import org.as3commons.lang.builder.EqualsBuilder;
@@ -22,6 +23,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
 	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.ObjectDefinitionAccess;
 	import org.springextensions.actionscript.ioc.objectdefinition.ObjectDefinitionScope;
 
 	/**
@@ -68,6 +70,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		private var _scope:ObjectDefinitionScope;
 		private var _skipMetadata:Boolean = false;
 		private var _skipPostProcessors:Boolean = false;
+		private var _access:ObjectDefinitionAccess;
 
 		/**
 		 * @default AutowireMode.NO
@@ -511,6 +514,20 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			isAutoWireCandidate = true;
 			primary = false;
 			dependencyCheck = DependencyCheckMode.NONE;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get access():ObjectDefinitionAccess {
+			return _access;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set access(value:ObjectDefinitionAccess):void {
+			_access = value;
 		}
 	}
 }

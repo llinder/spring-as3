@@ -20,12 +20,12 @@ package org.springextensions.actionscript.eventbus.impl {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class ClassListenerEntry {
+	public class ClassEntry {
 
 		private var _clazz:Class;
 		private var _topic:Object;
 
-		public function ClassListenerEntry(clazz:Class, topic:Object=null) {
+		public function ClassEntry(clazz:Class, topic:Object=null) {
 			super();
 			_clazz = clazz;
 			_topic = topic;

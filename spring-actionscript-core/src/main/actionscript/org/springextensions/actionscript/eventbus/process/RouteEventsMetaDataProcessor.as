@@ -93,7 +93,7 @@ package org.springextensions.actionscript.eventbus.process {
 	 * @author Roland Zwaga
 	 * @docref the_eventbus.html#routing_other_events_through_the_eventbus
 	 */
-	public class RouteEventsMetaDataProcessor extends AbstractEventBusMetadataProcessor implements IDisposable, IEventBusUserRegistryAware {
+	public class RouteEventsMetaDataProcessor extends AbstractEventBusMetadataProcessor implements IDisposable {
 
 		/** The events metadata argument */
 		public static const EVENTS_KEY:String = "events";
@@ -142,14 +142,6 @@ package org.springextensions.actionscript.eventbus.process {
 
 		private var _isDisposed:Boolean = false;
 		private var _typesLookup:Dictionary;
-
-		public function get eventBusUserRegistry():IEventBusUserRegistry {
-			return _eventBusUserRegistry;
-		}
-
-		public function set eventBusUserRegistry(value:IEventBusUserRegistry):void {
-			_eventBusUserRegistry = value;
-		}
 
 		public function get isDisposed():Boolean {
 			return _isDisposed;

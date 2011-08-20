@@ -28,6 +28,16 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	public interface IObjectDefinition {
 
 		/**
+		 * Determines if the current <code>IObjectDefinition</code> will be injected into child contexts.
+		 */
+		function get access():ObjectDefinitionAccess;
+
+		/**
+		 * @private
+		 */
+		function set access(value:ObjectDefinitionAccess):void;
+
+		/**
 		 * Defines the way an object will be autowired (configured).
 		 */
 		function get autoWireMode():AutowireMode;

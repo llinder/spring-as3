@@ -35,7 +35,11 @@ package org.springextensions.actionscript.context.impl.xml {
 		protected function initXMLApplicationContext(configLocation:*):void {
 			var provider:XMLObjectDefinitionsProvider = new XMLObjectDefinitionsProvider((configLocation != null) ? [configLocation] : null);
 			provider.applicationContext = this;
-			provider.addNamespaceHandler(new StageProcessingNamespaceHandler());
+			var stageHandler:INamespaceHandler = new StageProcessingNamespaceHandler();
+			if (dependencyInjector != null) {
+				dependencyInjector.wire(stageHandler, this);
+			}
+			provider.addNamespaceHandler(stageHandler);
 			addDefinitionProvider(provider);
 		}
 
@@ -48,6 +52,9 @@ package org.springextensions.actionscript.context.impl.xml {
 		}
 
 		public function addNamespaceHandler(namespaceHandler:INamespaceHandler):void {
+			if (dependencyInjector != null) {
+				dependencyInjector.wire(namespaceHandler, this);
+			}
 			XMLObjectDefinitionsProvider(definitionProviders[0]).addNamespaceHandler(namespaceHandler);
 		}
 

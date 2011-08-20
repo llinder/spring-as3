@@ -21,11 +21,11 @@ package org.springextensions.actionscript.eventbus.impl {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class EventBusRegistryListenerEntry {
+	public class EventBusRegistryEntry {
 
-		private var _eventTypes:Vector.<EventListenerEntry>;
-		private var _classes:Vector.<ClassListenerEntry>;
-		private var _proxy:EventHandlerProxy;
+		private var _eventTypeEntries:Vector.<EventTypeEntry>;
+		private var _classEntries:Vector.<ClassEntry>;
+		private var _instance:Object;
 
 		/**
 		 *
@@ -33,27 +33,27 @@ package org.springextensions.actionscript.eventbus.impl {
 		 * @param types
 		 * @param topics
 		 */
-		public function EventBusRegistryListenerEntry(proxy:EventHandlerProxy, types:Vector.<EventListenerEntry>=null, classes:Vector.<ClassListenerEntry>=null) {
+		public function EventBusRegistryEntry(instnc:Object, types:Vector.<EventTypeEntry>=null, classes:Vector.<ClassEntry>=null) {
 			super();
-			initEvenBusRegistryListenerEntry(proxy, types, classes);
+			initEvenBusRegistryListenerEntry(instnc, types, classes);
 		}
 
-		public function get classes():Vector.<ClassListenerEntry> {
-			return _classes;
+		public function get classEntries():Vector.<ClassEntry> {
+			return _classEntries;
 		}
 
-		public function get eventTypes():Vector.<EventListenerEntry> {
-			return _eventTypes;
+		public function get eventTypeEntries():Vector.<EventTypeEntry> {
+			return _eventTypeEntries;
 		}
 
-		public function get proxy():EventHandlerProxy {
-			return _proxy;
+		public function get instance():Object {
+			return _instance;
 		}
 
-		protected function initEvenBusRegistryListenerEntry(proxy:EventHandlerProxy, types:Vector.<EventListenerEntry>, classes:Vector.<ClassListenerEntry>):void {
-			_proxy = proxy;
-			_eventTypes = types ||= new Vector.<EventListenerEntry>();
-			_classes = classes ||= new Vector.<ClassListenerEntry>();
+		protected function initEvenBusRegistryListenerEntry(instnc:Object, types:Vector.<EventTypeEntry>, classes:Vector.<ClassEntry>):void {
+			_instance = instnc;
+			_eventTypeEntries = types ||= new Vector.<EventTypeEntry>();
+			_classEntries = classes ||= new Vector.<ClassEntry>();
 		}
 	}
 }

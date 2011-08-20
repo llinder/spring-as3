@@ -15,40 +15,76 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus {
 
+	import flash.system.ApplicationDomain;
+
+	import org.as3commons.lang.IApplicationDomainAware;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractNamespaceHandler;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventHandlerNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventRouterNodeParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.NullReturningNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_eventbus;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.IXMLObjectDefinitionsPreprocessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.EventBusElementsPreprocessor;
+	import org.springextensions.actionscript.ioc.factory.IInitializingObject;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
 	/**
 	 *
 	 * @author Roland Zwaga
-	 *
 	 */
-	public class EventBusNamespacehandler extends AbstractNamespaceHandler implements IXMLObjectDefinitionsPreprocessor {
+	public class EventBusNamespacehandler extends AbstractNamespaceHandler implements IXMLObjectDefinitionsPreprocessor, IEventBusUserRegistryAware, IApplicationDomainAware, IInitializingObject {
 
-		private static const EVENT_ROUTER_ELEMENT_NAME:String = "event-router";
-		private static const EVENT_HANDLER_ELEMENT_NAME:String = "event-handler";
-		private static const EVENT_HANDLER_METHOD_ELEMENT_NAME:String = "event-handler-method";
+		public static const EVENT_ROUTER_ELEMENT_NAME:String = "event-router";
+		public static const EVENT_HANDLER_ELEMENT_NAME:String = "event-handler";
+		public static const EVENT_HANDLER_METHOD_ELEMENT_NAME:String = "event-handler-method";
+		public static const EVENT_INTERCEPTOR_FIELD_NAME:String = "event-interceptor";
+		public static const EVENT_LISTENER_INTERCEPTOR_FIELD_NAME:String = "event-listener-interceptor";
+		public static const CONFIGURATION_ELEMENT_NAME:String = "configuration";
 
 		private var _preprocessor:EventBusElementsPreprocessor;
+		private var _eventBusUserRegistry:IEventBusUserRegistry;
+		private var _applicationDomain:ApplicationDomain;
+		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
 
+		/**
+		 * Creates a new <code>EventBusNamespacehandler</code> instance.
+		 * @param objectDefinitionRegistry
+		 */
 		public function EventBusNamespacehandler(objectDefinitionRegistry:IObjectDefinitionRegistry) {
 			super(spring_actionscript_eventbus);
 			initEventBusNamespacehandler(objectDefinitionRegistry);
 		}
 
 		protected function initEventBusNamespacehandler(objectDefinitionRegistry:IObjectDefinitionRegistry):void {
-			_preprocessor = new EventBusElementsPreprocessor();
-			registerObjectDefinitionParser(EVENT_ROUTER_ELEMENT_NAME, new EventRouterNodeParser(objectDefinitionRegistry));
-			registerObjectDefinitionParser(EVENT_HANDLER_ELEMENT_NAME, null);
-			registerObjectDefinitionParser(EVENT_HANDLER_METHOD_ELEMENT_NAME, null);
+			_objectDefinitionRegistry = objectDefinitionRegistry;
 		}
 
 		public function preprocess(xml:XML):XML {
 			return _preprocessor.preprocess(xml);
+		}
+
+		public function get eventBusUserRegistry():IEventBusUserRegistry {
+			return _eventBusUserRegistry;
+		}
+
+		public function set eventBusUserRegistry(value:IEventBusUserRegistry):void {
+			_eventBusUserRegistry = value;
+		}
+
+		public function set applicationDomain(value:ApplicationDomain):void {
+			_applicationDomain = value;
+		}
+
+		public function afterPropertiesSet():void {
+			_preprocessor = new EventBusElementsPreprocessor();
+			registerObjectDefinitionParser(EVENT_ROUTER_ELEMENT_NAME, new EventRouterNodeParser(_objectDefinitionRegistry, eventBusUserRegistry));
+			registerObjectDefinitionParser(EVENT_HANDLER_ELEMENT_NAME, new EventHandlerNodeParser(_objectDefinitionRegistry, eventBusUserRegistry, _applicationDomain));
+			registerObjectDefinitionParser(EVENT_HANDLER_METHOD_ELEMENT_NAME, new NullReturningNodeParser());
+			registerObjectDefinitionParser(EVENT_INTERCEPTOR_FIELD_NAME, null);
+			registerObjectDefinitionParser(EVENT_LISTENER_INTERCEPTOR_FIELD_NAME, null);
+			registerObjectDefinitionParser(CONFIGURATION_ELEMENT_NAME, new NullReturningNodeParser());
 		}
 	}
 }

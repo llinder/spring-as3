@@ -15,28 +15,44 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration {
 
+	import flash.events.IEventDispatcher;
+
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 
 
 	public class RouteEventsCustomConfigurator implements ICustomConfigurator {
 
-		private var _data:*;
+		private var _eventNames:Array;
+		private var _topics:Vector.<String>;
+		private var _topicProperties:Vector.<String>;
+		private var _eventBusUserRegistry:IEventBusUserRegistry;
 
-		public function RouteEventsCustomConfigurator(eventNames:Vector.<String>=null) {
+		public function RouteEventsCustomConfigurator(eventBusUserRegistry:IEventBusUserRegistry, eventNames:Array=null, topics:Vector.<String>=null, topicProperties:Vector.<String>=null) {
 			super();
-			_data = eventNames;
+			initRouteEventsCustomConfigurator(eventNames, topics, topicProperties, eventBusUserRegistry);
 		}
 
-		public function get data():* {
-			return _data;
-		}
-
-		public function set data(value:*):void {
-			_data = value;
+		protected function initRouteEventsCustomConfigurator(eventNames:Array, topics:Vector.<String>, topicProperties:Vector.<String>, eventBusUserRegistry:IEventBusUserRegistry):void {
+			_eventNames = eventNames;
+			_topics = topics;
+			_topicProperties = topicProperties;
+			_eventBusUserRegistry = eventBusUserRegistry;
 		}
 
 		public function execute(instance:*, objectDefinition:IObjectDefinition):void {
+			var resolvedTopics:Array;
+			var topic:String;
+			for each (topic in _topics) {
+				resolvedTopics ||= [];
+				resolvedTopics[resolvedTopics.length] = topic;
+			}
+			for each (topic in _topicProperties) {
+				resolvedTopics ||= [];
+				resolvedTopics[resolvedTopics.length] = instance[topic];
+			}
+			_eventBusUserRegistry.addEventListeners(IEventDispatcher(instance), _eventNames, resolvedTopics);
 		}
 	}
 }

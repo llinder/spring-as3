@@ -30,9 +30,6 @@ package org.springextensions.actionscript.eventbus.process {
 	 */
 	public class EventInterceptorMetadataProcessor extends AbstractEventBusMetadataProcessor {
 
-		/** The EventInterceptor metadata */
-		private static const EVENT_INTERCEPTOR_METADATA_NAME:String = "EventInterceptor";
-
 		// --------------------------------------------------------------------
 		//
 		// Private Static Variables
@@ -41,28 +38,21 @@ package org.springextensions.actionscript.eventbus.process {
 
 		private static var logger:ILogger = getLogger(EventInterceptorMetadataProcessor);
 
-		/**
-		 * Creates a new <code>EventInterceptorMetadataProcessor</code> instance.
-		 */
+		/** The EventInterceptor metadata */
+		private static const EVENT_INTERCEPTOR_METADATA_NAME:String = "EventInterceptor";
+
 		public function EventInterceptorMetadataProcessor() {
 			super(true, new Vector.<String>[EVENT_INTERCEPTOR_METADATA_NAME]);
 		}
 
-		/**
-		 *
-		 * @param instance
-		 * @param container
-		 * @param name
-		 * @param objectName
-		 */
 		override public function process(instance:Object, container:IMetadataContainer, name:String, objectName:String):void {
 			var type:Type = (container as Type);
 			if (type == null) {
 				return;
 			}
 			if (!ClassUtils.isImplementationOf(type.clazz, IEventInterceptor, objFactory.applicationDomain)) {
-				logger.debug("{0} is not an IEventInterceptor implementation", [type.clazz]);
 				return;
+				logger.debug("{0} is not an IEventInterceptor implementation", type.clazz);
 			}
 			var metaDatas:Array = type.getMetadata(EVENT_INTERCEPTOR_METADATA_NAME);
 			for each (var metaData:Metadata in metaDatas) {
@@ -75,6 +65,43 @@ package org.springextensions.actionscript.eventbus.process {
 		// Protected Methods
 		//
 		// --------------------------------------------------------------------
+
+		protected function processMetaData(object:Object, type:Type, metaData:Metadata):void {
+			var interceptor:IEventInterceptor = IEventInterceptor(object);
+			var className:String = getEventInterceptClassName(metaData);
+			var topics:Array = getTopics(metaData, object);
+			var topic:Object;
+
+			if (className == null) {
+				var eventName:String = getEventName(metaData);
+				if (eventName == null) {
+					if ((topics == null) || (topics.length == 0)) {
+						eventBusUserRegistry.addInterceptor(interceptor);
+					} else {
+						for each (topic in topics) {
+							eventBusUserRegistry.addInterceptor(interceptor, topic);
+						}
+					}
+				} else {
+					if ((topics == null) || (topics.length == 0)) {
+						eventBusUserRegistry.addEventInterceptor(eventName, interceptor);
+					} else {
+						for each (topic in topics) {
+							eventBusUserRegistry.addEventInterceptor(eventName, interceptor, topic);
+						}
+					}
+				}
+			} else {
+				var clazz:Class = ClassUtils.forName(className, objFactory.applicationDomain);
+				if ((topics == null) || (topics.length == 0)) {
+					eventBusUserRegistry.addEventClassInterceptor(clazz, interceptor);
+				} else {
+					for each (topic in topics) {
+						eventBusUserRegistry.addEventClassInterceptor(clazz, interceptor, topic);
+					}
+				}
+			}
+		}
 
 		/**
 		 *
@@ -112,47 +139,5 @@ package org.springextensions.actionscript.eventbus.process {
 			return result;
 		}
 
-		/**
-		 *
-		 * @param object
-		 * @param type
-		 * @param metaData
-		 */
-		protected function processMetaData(object:Object, type:Type, metaData:Metadata):void {
-			var interceptor:IEventInterceptor = IEventInterceptor(object);
-			var className:String = getEventInterceptClassName(metaData);
-			var topics:Array = getTopics(metaData, object);
-			var topic:Object;
-
-			if (className == null) {
-				var eventName:String = getEventName(metaData);
-				if (eventName == null) {
-					if ((topics == null) || (topics.length == 0)) {
-						eventBus.addInterceptor(interceptor);
-					} else {
-						for each (topic in topics) {
-							eventBus.addInterceptor(interceptor, topic);
-						}
-					}
-				} else {
-					if ((topics == null) || (topics.length == 0)) {
-						eventBus.addEventInterceptor(eventName, interceptor);
-					} else {
-						for each (topic in topics) {
-							eventBus.addEventInterceptor(eventName, interceptor, topic);
-						}
-					}
-				}
-			} else {
-				var clazz:Class = ClassUtils.forName(className, objFactory.applicationDomain);
-				if ((topics == null) || (topics.length == 0)) {
-					eventBus.addEventClassInterceptor(clazz, interceptor);
-				} else {
-					for each (topic in topics) {
-						eventBus.addEventClassInterceptor(clazz, interceptor, topic);
-					}
-				}
-			}
-		}
 	}
 }

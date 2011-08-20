@@ -14,11 +14,15 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser {
-	import org.as3commons.lang.Assert;
+
+	import flash.system.ApplicationDomain;
+
+	import org.as3commons.lang.ClassUtils;
+	import org.as3commons.lang.IApplicationDomainAware;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.IObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.EventBusNamespacehandler;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.RouteEventsCustomConfigurator;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfigurator;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
@@ -28,20 +32,19 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class EventRouterNodeParser extends AbstractEventBusNodeParser {
+	public class EventHandlerNodeParser extends AbstractEventBusNodeParser implements IApplicationDomainAware {
+		private var _applicationDomain:ApplicationDomain;
 
 		/**
-		 * Creates a new <code>EventRouterNodeParser</code> instance.
+		 * Creates a new <code>EventHandlerNodeParser</code> instance.
 		 * @param objectDefinitionRegistry
 		 * @param eventBusUserRegistry
 		 */
-		public function EventRouterNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry) {
-			super(objectDefinitionRegistry, eventBusUserRegistry);
+		public function EventHandlerNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry, applicationDomain:ApplicationDomain) {
+			super(objectDefinitionRegistry, eventBusUserRegistry)
+			_applicationDomain = applicationDomain;
 		}
 
-		/**
-		 * @inheritDoc
-		 */
 		override public function parse(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var ref:String = String(node.attribute(INSTANCE_ATTRIBUTE_NAME)[0]);
 			if (objectDefinitionRegistry.containsObjectDefinition(ref)) {
@@ -52,19 +55,27 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			return null;
 		}
 
-		/**
-		 *
-		 * @param customConfiguration
-		 * @param node
-		 */
 		protected function createConfigurations(customConfiguration:Vector.<ICustomConfigurator>, node:XML):void {
-			for each (var child:XML in node.descendants(EventBusNamespacehandler.CONFIGURATION_ELEMENT_NAME)) {
-				var names:Array = getPropertyNames(child);
-				var topics:Vector.<String> = commaSeparatedAttributeNameToStringVector(child, TOPICS_ATTRIBUTE_NAME);
-				var topicProperties:Vector.<String> = commaSeparatedAttributeNameToStringVector(child, TOPIC_PROPERTIES_ATTRIBUTE_NAME);
-				var configurator:RouteEventsCustomConfigurator = new RouteEventsCustomConfigurator(eventBusUserRegistry, names, topics, topicProperties);
+			for each (var child:XML in node.descendants(EventBusNamespacehandler.EVENT_HANDLER_METHOD_ELEMENT_NAME)) {
+				var eventName:String = null;
+				var eventClass:Class = null;
+				var methodName:String = String(child.attribute(AbstractEventBusNodeParser.METHOD_NAME_ATTRIBUTE_NAME)[0]);
+				if (child.attribute(AbstractEventBusNodeParser.EVENT_NAME_ATTRIBUTE_NAME).length() > 0) {
+					eventName = String(child.attribute(AbstractEventBusNodeParser.EVENT_NAME_ATTRIBUTE_NAME)[0]);
+				}
+				if (child.attribute(AbstractEventBusNodeParser.EVENT_CLASS_ATTRIBUTE_NAME).length() > 0) {
+					var clsName:String = String(child.attribute(AbstractEventBusNodeParser.EVENT_CLASS_ATTRIBUTE_NAME)[0]);
+					eventClass = ClassUtils.forName(clsName, _applicationDomain);
+				}
+				var topics:Vector.<String> = this.commaSeparatedAttributeNameToStringVector(child, TOPICS_ATTRIBUTE_NAME);
+				var topicProperties:Vector.<String> = this.commaSeparatedAttributeNameToStringVector(child, TOPIC_PROPERTIES_ATTRIBUTE_NAME);
+				var configurator:EventHandlerCustomConfigurator = new EventHandlerCustomConfigurator(eventBusUserRegistry, methodName, eventName, eventClass, topics, topicProperties);
 				customConfiguration[customConfiguration.length] = configurator;
 			}
+		}
+
+		public function set applicationDomain(value:ApplicationDomain):void {
+			_applicationDomain = value;
 		}
 
 	}

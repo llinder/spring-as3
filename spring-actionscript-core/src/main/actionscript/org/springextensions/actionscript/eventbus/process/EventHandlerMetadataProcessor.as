@@ -80,7 +80,7 @@ package org.springextensions.actionscript.eventbus.process {
 	 * @author Christophe Herreman
 	 * @docref the_eventbus.html#eventbus_event_handling_using_metadata_annotations
 	 */
-	public class EventHandlerMetadataProcessor extends AbstractEventBusMetadataProcessor implements IDisposable, IEventBusUserRegistryAware {
+	public class EventHandlerMetadataProcessor extends AbstractEventBusMetadataProcessor implements IDisposable {
 		/** The "clazz" property of the EventHandler metadata */
 		public static const CLASS_KEY:String = "clazz";
 		public static const COMMA:String = ",";
@@ -136,14 +136,6 @@ package org.springextensions.actionscript.eventbus.process {
 		// --------------------------------------------------------------------
 
 		private var _isDisposed:Boolean = false;
-
-		public function get eventBusUserRegistry():IEventBusUserRegistry {
-			return _eventBusUserRegistry;
-		}
-
-		public function set eventBusUserRegistry(value:IEventBusUserRegistry):void {
-			_eventBusUserRegistry = value;
-		}
 
 		public function get isDisposed():Boolean {
 			return _isDisposed;

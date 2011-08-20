@@ -16,13 +16,20 @@
 package org.springextensions.actionscript.eventbus {
 	import flash.events.IEventDispatcher;
 
+	import org.as3commons.eventbus.IEventInterceptor;
 	import org.as3commons.reflect.MethodInvoker;
 
-
+	/**
+	 *
+	 * @author Roland Zwaga
+	 */
 	public interface IEventBusUserRegistry {
 		function addEventListeners(eventDispatcher:IEventDispatcher, eventTypes:Array, topics:Array):void;
 		function removeListeners(eventDispatcher:IEventDispatcher):void;
 		function addEventListenerProxy(type:String, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean;
 		function addEventClassListenerProxy(eventClass:Class, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean;
+		function addInterceptor(interceptor:IEventInterceptor, topic:Object=null):void;
+		function addEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void;
+		function addEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void;
 	}
 }
