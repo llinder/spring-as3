@@ -49,7 +49,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var ref:String = String(node.attribute(INSTANCE_ATTRIBUTE_NAME)[0]);
 			if (objectDefinitionRegistry.containsObjectDefinition(ref)) {
 				var objectDefinition:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(ref);
-				objectDefinition.customConfiguration ||= new Vector.<ICustomConfigurator>;
+				objectDefinition.customConfiguration ||= new Vector.<ICustomConfigurator>();
 				createConfigurations(objectDefinition.customConfiguration, node);
 			}
 			return null;

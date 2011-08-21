@@ -16,14 +16,12 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser {
 	import mockolate.mock;
 	import mockolate.nice;
-	import mockolate.runner.MockolateRule;
 	import mockolate.verify;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.flexunit.asserts.assertTrue;
-	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.RouteEventsCustomConfigurator;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
@@ -32,7 +30,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
 
-	public class EventRouterNodeParserTest {
+	public class EventRouterNodeParserTest extends AbstractNodeParserTest {
 
 		public static const simpleRouteEventXML:XML = new XML('<eventbus:event-router xmlns:eventbus="http://www.springactionscript.org/schema/eventbus" instance="test">' + //
 			'<eventbus:routing-configuration event-names="event1" topics="topic"/>' + //
@@ -47,17 +45,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			'<eventbus:routing-configuration event-names="event4" topics="topic4"/>' + //
 			'<eventbus:routing-configuration event-names="event5" topic-properties="property1"/>' + //
 			'</eventbus:event-router>');
-
-		[Rule]
-		public var mockolateRule:MockolateRule = new MockolateRule();
-		[Mock]
-		public var objectDefinitionRegistry:IObjectDefinitionRegistry;
-		[Mock]
-		public var eventBusUserRegistry:IEventBusUserRegistry;
-		[Mock]
-		public var xmlParser:IXMLObjectDefinitionsParser;
-		[Mock]
-		public var objectDefinition:IObjectDefinition;
 
 		public function EventRouterNodeParserTest() {
 			super();

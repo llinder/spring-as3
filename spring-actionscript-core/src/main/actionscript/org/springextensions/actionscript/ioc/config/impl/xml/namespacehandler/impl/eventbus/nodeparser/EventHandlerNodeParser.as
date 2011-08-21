@@ -23,6 +23,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.IObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.EventBusNamespacehandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfigurator;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_eventbus;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
@@ -49,14 +50,15 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var ref:String = String(node.attribute(INSTANCE_ATTRIBUTE_NAME)[0]);
 			if (objectDefinitionRegistry.containsObjectDefinition(ref)) {
 				var objectDefinition:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(ref);
-				objectDefinition.customConfiguration ||= new Vector.<ICustomConfigurator>;
+				objectDefinition.customConfiguration ||= new Vector.<ICustomConfigurator>();
 				createConfigurations(objectDefinition.customConfiguration, node);
 			}
 			return null;
 		}
 
 		protected function createConfigurations(customConfiguration:Vector.<ICustomConfigurator>, node:XML):void {
-			for each (var child:XML in node.descendants(EventBusNamespacehandler.EVENT_HANDLER_METHOD_ELEMENT_NAME)) {
+			var QN:QName = new QName(spring_actionscript_eventbus, EventBusNamespacehandler.EVENT_HANDLER_METHOD_ELEMENT_NAME);
+			for each (var child:XML in node.descendants(QN)) {
 				var eventName:String = null;
 				var eventClass:Class = null;
 				var methodName:String = String(child.attribute(AbstractEventBusNodeParser.METHOD_NAME_ATTRIBUTE_NAME)[0]);
@@ -69,7 +71,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 				}
 				var topics:Vector.<String> = this.commaSeparatedAttributeNameToStringVector(child, TOPICS_ATTRIBUTE_NAME);
 				var topicProperties:Vector.<String> = this.commaSeparatedAttributeNameToStringVector(child, TOPIC_PROPERTIES_ATTRIBUTE_NAME);
-				var configurator:EventHandlerCustomConfigurator = new EventHandlerCustomConfigurator(eventBusUserRegistry, methodName, eventName, eventClass, topics, topicProperties);
+				var properties:Vector.<String> = this.commaSeparatedAttributeNameToStringVector(child, PROPERTIES_ATTRIBUTE_NAME);
+				var configurator:EventHandlerCustomConfigurator = new EventHandlerCustomConfigurator(eventBusUserRegistry, methodName, eventName, eventClass, properties, topics, topicProperties);
 				customConfiguration[customConfiguration.length] = configurator;
 			}
 		}

@@ -36,6 +36,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		public static const EVENT_CLASS_ATTRIBUTE_NAME:String = "event-class";
 		public static const TOPICS_ATTRIBUTE_NAME:String = "topics";
 		public static const TOPIC_PROPERTIES_ATTRIBUTE_NAME:String = "topic-properties";
+		public static const PROPERTIES_ATTRIBUTE_NAME:String = "properties";
 		public static const COMMA:String = ',';
 		public static const SPACE:String = ' ';
 		public static const EMPTY:String = '';
