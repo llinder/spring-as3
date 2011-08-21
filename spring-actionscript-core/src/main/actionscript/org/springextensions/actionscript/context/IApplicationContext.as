@@ -17,6 +17,7 @@ package org.springextensions.actionscript.context {
 	import flash.display.DisplayObject;
 
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
+	import org.springextensions.actionscript.context.config.IConfigurationPackage;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
@@ -87,5 +88,7 @@ package org.springextensions.actionscript.context {
 		 * @param objectFactory
 		 */
 		function addChildContext(childContext:IApplicationContext):void;
+
+		function configure(configurationPackage:IConfigurationPackage):void;
 	}
 }

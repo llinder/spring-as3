@@ -34,6 +34,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.as3commons.stageprocessing.impl.FlashStageObjectProcessorRegistry;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
+	import org.springextensions.actionscript.context.config.IConfigurationPackage;
 	import org.springextensions.actionscript.eventbus.process.EventBusAwareObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
@@ -698,6 +699,10 @@ package org.springextensions.actionscript.context.impl {
 			if (_childContexts.indexOf(childContext) < 0) {
 				childContexts[childContexts.length] = childContext;
 			}
+		}
+
+		public function configure(configurationPackage:IConfigurationPackage):void {
+			configurationPackage.execute(this);
 		}
 	}
 }
