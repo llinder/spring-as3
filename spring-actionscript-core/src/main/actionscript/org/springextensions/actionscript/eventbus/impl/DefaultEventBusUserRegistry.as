@@ -17,9 +17,11 @@ package org.springextensions.actionscript.eventbus.impl {
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
+
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.eventbus.IEventInterceptor;
+	import org.as3commons.eventbus.IEventListenerInterceptor;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.SoftReference;
 	import org.as3commons.logging.api.ILogger;
@@ -76,13 +78,19 @@ package org.springextensions.actionscript.eventbus.impl {
 		 * @param topic
 		 */
 		public function addEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void {
-			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(EventHandlerProxy(interceptor));
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(interceptor);
 			registryItem.classEntries[registryItem.classEntries.length] = new ClassEntry(eventClass, topic);
 			_eventBus.addEventClassInterceptor(eventClass, interceptor, topic);
 		}
 
+		public function addEventClassListenerInterceptor(eventClass:Class, interceptor:IEventListenerInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(interceptor);
+			registryItem.classEntries[registryItem.classEntries.length] = new ClassEntry(eventClass, topic);
+			_eventBus.addEventClassListenerInterceptor(eventClass, interceptor, topic);
+		}
+
 		public function addEventClassListenerProxy(eventClass:Class, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean {
-			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy] ||= new EventBusRegistryEntry(EventHandlerProxy(proxy));
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy] ||= new EventBusRegistryEntry(proxy);
 			registryItem.classEntries[registryItem.classEntries.length] = new ClassEntry(eventClass, topic);
 			return _eventBus.addEventClassListenerProxy(eventClass, proxy, useWeakReference, topic);
 		}
@@ -94,13 +102,19 @@ package org.springextensions.actionscript.eventbus.impl {
 		 * @param topic
 		 */
 		public function addEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void {
-			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(EventHandlerProxy(interceptor));
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(interceptor);
 			registryItem.eventTypeEntries[registryItem.eventTypeEntries.length] = new EventTypeEntry(type, topic);
 			_eventBus.addEventInterceptor(type, interceptor, topic);
 		}
 
+		public function addEventListenerInterceptor(type:String, interceptor:IEventListenerInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(interceptor);
+			registryItem.eventTypeEntries[registryItem.eventTypeEntries.length] = new EventTypeEntry(type, topic);
+			_eventBus.addEventListenerInterceptor(type, interceptor, topic);
+		}
+
 		public function addEventListenerProxy(type:String, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean {
-			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy] ||= new EventBusRegistryEntry(EventHandlerProxy(proxy));
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy] ||= new EventBusRegistryEntry(proxy);
 			registryItem.eventTypeEntries[registryItem.eventTypeEntries.length] = new EventTypeEntry(type, topic);
 			return _eventBus.addEventListenerProxy(type, proxy, useWeakReference, topic);
 		}
@@ -133,9 +147,15 @@ package org.springextensions.actionscript.eventbus.impl {
 		 * @param topic
 		 */
 		public function addInterceptor(interceptor:IEventInterceptor, topic:Object=null):void {
-			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(EventHandlerProxy(interceptor));
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(interceptor);
 			registryItem.eventTypeEntries[registryItem.eventTypeEntries.length] = new EventTypeEntry(null, topic);
 			_eventBus.addInterceptor(interceptor, topic);
+		}
+
+		public function addListenerInterceptor(interceptor:IEventListenerInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor] ||= new EventBusRegistryEntry(interceptor);
+			registryItem.eventTypeEntries[registryItem.eventTypeEntries.length] = new EventTypeEntry(null, topic);
+			_eventBus.addListenerInterceptor(interceptor, topic);
 		}
 
 		/**
@@ -152,11 +172,29 @@ package org.springextensions.actionscript.eventbus.impl {
 				_listenerCache = null;
 				for (var proxy:* in _eventBusRegistryEntryCache) {
 					var entry:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy];
-					for each (var classEntry:ClassEntry in entry.classEntries) {
-						return _eventBus.removeEventClassListenerProxy(classEntry.clazz, proxy, classEntry.topic);
-					}
-					for each (var eventEntry:EventTypeEntry in entry.eventTypeEntries) {
-						return _eventBus.removeEventListenerProxy(eventEntry.eventType, proxy, eventEntry.topic);
+					var classEntry:ClassEntry;
+					var eventEntry:EventTypeEntry;
+					if (proxy is MethodInvoker) {
+						for each (classEntry in entry.classEntries) {
+							return _eventBus.removeEventClassListenerProxy(classEntry.clazz, proxy, classEntry.topic);
+						}
+						for each (eventEntry in entry.eventTypeEntries) {
+							return _eventBus.removeEventListenerProxy(eventEntry.eventType, proxy, eventEntry.topic);
+						}
+					} else if (proxy is IEventInterceptor) {
+						for each (classEntry in entry.classEntries) {
+							return _eventBus.removeEventClassInterceptor(classEntry.clazz, proxy, classEntry.topic);
+						}
+						for each (eventEntry in entry.eventTypeEntries) {
+							return _eventBus.removeEventInterceptor(eventEntry.eventType, proxy, eventEntry.topic);
+						}
+					} else if (proxy is IEventListenerInterceptor) {
+						for each (classEntry in entry.classEntries) {
+							return _eventBus.removeEventClassListenerInterceptor(classEntry.clazz, proxy, classEntry.topic);
+						}
+						for each (eventEntry in entry.eventTypeEntries) {
+							return _eventBus.removeEventListenerInterceptor(eventEntry.eventType, proxy, eventEntry.topic);
+						}
 					}
 				}
 				_typesLookup = null;

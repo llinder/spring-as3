@@ -14,50 +14,60 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration {
-
 	import flash.events.IEventDispatcher;
-
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 
+	/**
+	 *
+	 * @author Roland Zwaga
+	 */
+	public class RouteEventsCustomConfigurator extends AbstractEventBusCustomConfigurator {
 
-	public class RouteEventsCustomConfigurator implements ICustomConfigurator {
-
-		private var _eventNames:Array;
-		private var _topics:Vector.<String>;
-		private var _topicProperties:Vector.<String>;
-		private var _eventBusUserRegistry:IEventBusUserRegistry;
-
+		/**
+		 * Creates a new <code>RouteEventsCustomConfigurator</code> instance.
+		 * @param eventBusUserRegistry
+		 * @param eventNames
+		 * @param topics
+		 * @param topicProperties
+		 */
 		public function RouteEventsCustomConfigurator(eventBusUserRegistry:IEventBusUserRegistry, eventNames:Array=null, topics:Vector.<String>=null, topicProperties:Vector.<String>=null) {
-			super();
-			initRouteEventsCustomConfigurator(eventNames, topics, topicProperties, eventBusUserRegistry);
+			super(eventBusUserRegistry);
+			initRouteEventsCustomConfigurator(eventNames, topics, topicProperties);
 		}
 
+		private var _eventNames:Array;
+		private var _topicProperties:Vector.<String>;
+		private var _topics:Vector.<String>;
+
+		/**
+		 *
+		 */
 		public function get eventNames():Array {
 			return _eventNames;
 		}
 
-		public function get topics():Vector.<String> {
-			return _topics;
-		}
-
+		/**
+		 *
+		 */
 		public function get topicProperties():Vector.<String> {
 			return _topicProperties;
 		}
 
-		public function get eventBusUserRegistry():IEventBusUserRegistry {
-			return _eventBusUserRegistry;
+		/**
+		 *
+		 */
+		public function get topics():Vector.<String> {
+			return _topics;
 		}
 
-		protected function initRouteEventsCustomConfigurator(eventNames:Array, topics:Vector.<String>, topicProperties:Vector.<String>, eventBusUserRegistry:IEventBusUserRegistry):void {
-			_eventNames = eventNames;
-			_topics = topics;
-			_topicProperties = topicProperties;
-			_eventBusUserRegistry = eventBusUserRegistry;
-		}
-
-		public function execute(instance:*, objectDefinition:IObjectDefinition):void {
+		/**
+		 *
+		 * @param instance
+		 * @param objectDefinition
+		 */
+		override public function execute(instance:*, objectDefinition:IObjectDefinition):void {
 			var resolvedTopics:Array;
 			var topic:String;
 			for each (topic in _topics) {
@@ -68,7 +78,19 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 				resolvedTopics ||= [];
 				resolvedTopics[resolvedTopics.length] = instance[topic];
 			}
-			_eventBusUserRegistry.addEventListeners(IEventDispatcher(instance), _eventNames, resolvedTopics);
+			eventBusUserRegistry.addEventListeners(IEventDispatcher(instance), _eventNames, resolvedTopics);
+		}
+
+		/**
+		 *
+		 * @param eventNames
+		 * @param topics
+		 * @param topicProperties
+		 */
+		protected function initRouteEventsCustomConfigurator(eventNames:Array, topics:Vector.<String>, topicProperties:Vector.<String>):void {
+			_eventNames = eventNames;
+			_topics = topics;
+			_topicProperties = topicProperties;
 		}
 	}
 }

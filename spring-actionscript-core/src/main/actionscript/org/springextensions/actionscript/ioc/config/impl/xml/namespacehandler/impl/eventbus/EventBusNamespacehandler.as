@@ -22,6 +22,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractNamespaceHandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventHandlerNodeParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventInterceptorNodeParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventListenerInterceptorNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventRouterNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.NullReturningNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_eventbus;
@@ -79,11 +81,11 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		public function afterPropertiesSet():void {
 			_preprocessor = new EventBusElementsPreprocessor();
-			registerObjectDefinitionParser(EVENT_ROUTER_ELEMENT_NAME, new EventRouterNodeParser(_objectDefinitionRegistry, eventBusUserRegistry));
+			registerObjectDefinitionParser(EVENT_ROUTER_ELEMENT_NAME, new EventRouterNodeParser(_objectDefinitionRegistry, eventBusUserRegistry, _applicationDomain));
 			registerObjectDefinitionParser(EVENT_HANDLER_ELEMENT_NAME, new EventHandlerNodeParser(_objectDefinitionRegistry, eventBusUserRegistry, _applicationDomain));
 			registerObjectDefinitionParser(EVENT_HANDLER_METHOD_ELEMENT_NAME, new NullReturningNodeParser());
-			registerObjectDefinitionParser(EVENT_INTERCEPTOR_FIELD_NAME, null);
-			registerObjectDefinitionParser(EVENT_LISTENER_INTERCEPTOR_FIELD_NAME, null);
+			registerObjectDefinitionParser(EVENT_INTERCEPTOR_FIELD_NAME, new EventInterceptorNodeParser(_objectDefinitionRegistry, eventBusUserRegistry, _applicationDomain));
+			registerObjectDefinitionParser(EVENT_LISTENER_INTERCEPTOR_FIELD_NAME, new EventListenerInterceptorNodeParser(_objectDefinitionRegistry, eventBusUserRegistry, _applicationDomain));
 			registerObjectDefinitionParser(ROUTING_CONFIGURATION_ELEMENT_NAME, new NullReturningNodeParser());
 		}
 	}

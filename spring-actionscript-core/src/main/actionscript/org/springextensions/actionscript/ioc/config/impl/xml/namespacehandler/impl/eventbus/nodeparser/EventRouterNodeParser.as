@@ -14,6 +14,8 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser {
+	import flash.system.ApplicationDomain;
+
 	import org.as3commons.lang.Assert;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.IObjectDefinitionParser;
@@ -38,8 +40,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param objectDefinitionRegistry
 		 * @param eventBusUserRegistry
 		 */
-		public function EventRouterNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry) {
-			super(objectDefinitionRegistry, eventBusUserRegistry);
+		public function EventRouterNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry, applicationDomain:ApplicationDomain) {
+			super(objectDefinitionRegistry, eventBusUserRegistry, applicationDomain);
 		}
 
 		/**

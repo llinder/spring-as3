@@ -17,6 +17,7 @@ package org.springextensions.actionscript.eventbus {
 	import flash.events.IEventDispatcher;
 
 	import org.as3commons.eventbus.IEventInterceptor;
+	import org.as3commons.eventbus.IEventListenerInterceptor;
 	import org.as3commons.reflect.MethodInvoker;
 
 	/**
@@ -28,8 +29,13 @@ package org.springextensions.actionscript.eventbus {
 		function removeListeners(eventDispatcher:IEventDispatcher):void;
 		function addEventListenerProxy(type:String, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean;
 		function addEventClassListenerProxy(eventClass:Class, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean;
+
 		function addInterceptor(interceptor:IEventInterceptor, topic:Object=null):void;
 		function addEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void;
 		function addEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void;
+
+		function addListenerInterceptor(interceptor:IEventListenerInterceptor, topic:Object=null):void;
+		function addEventListenerInterceptor(type:String, interceptor:IEventListenerInterceptor, topic:Object=null):void;
+		function addEventClassListenerInterceptor(eventClass:Class, interceptor:IEventListenerInterceptor, topic:Object=null):void;
 	}
 }

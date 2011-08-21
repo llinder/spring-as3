@@ -14,6 +14,8 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser {
+	import flash.system.ApplicationDomain;
+
 	import mockolate.mock;
 	import mockolate.nice;
 	import mockolate.verify;
@@ -63,7 +65,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			mock(objectDefinitionRegistry).method("getObjectDefinition").args("test").returns(objectDefinition).once();
 			mock(objectDefinition).getter("customConfiguration").returns(configs);
 
-			var parser:EventRouterNodeParser = new EventRouterNodeParser(objectDefinitionRegistry, eventBusUserRegistry);
+			var parser:EventRouterNodeParser = new EventRouterNodeParser(objectDefinitionRegistry, eventBusUserRegistry, ApplicationDomain.currentDomain);
 			parser.parse(simpleRouteEventXML, xmlParser);
 
 			verify(objectDefinitionRegistry);
@@ -92,7 +94,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			mock(objectDefinitionRegistry).method("getObjectDefinition").args("test").returns(objectDefinition).once();
 			mock(objectDefinition).getter("customConfiguration").returns(configs);
 
-			var parser:EventRouterNodeParser = new EventRouterNodeParser(objectDefinitionRegistry, eventBusUserRegistry);
+			var parser:EventRouterNodeParser = new EventRouterNodeParser(objectDefinitionRegistry, eventBusUserRegistry, ApplicationDomain.currentDomain);
 			parser.parse(multipleNamesAndTopicsRouteEventXML, xmlParser);
 
 			verify(objectDefinitionRegistry);
@@ -125,7 +127,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			mock(objectDefinitionRegistry).method("getObjectDefinition").args("test").returns(objectDefinition).once();
 			mock(objectDefinition).getter("customConfiguration").returns(configs);
 
-			var parser:EventRouterNodeParser = new EventRouterNodeParser(objectDefinitionRegistry, eventBusUserRegistry);
+			var parser:EventRouterNodeParser = new EventRouterNodeParser(objectDefinitionRegistry, eventBusUserRegistry, ApplicationDomain.currentDomain);
 			parser.parse(multipleConfigurationsRouteEventXML, xmlParser);
 
 			verify(objectDefinitionRegistry);

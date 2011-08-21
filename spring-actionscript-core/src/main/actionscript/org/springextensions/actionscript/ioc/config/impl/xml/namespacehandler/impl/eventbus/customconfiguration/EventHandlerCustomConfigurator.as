@@ -26,7 +26,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class EventHandlerCustomConfigurator implements ICustomConfigurator {
+	public class EventHandlerCustomConfigurator extends AbstractEventBusCustomConfigurator {
 
 		/**
 		 * Creates a new <code>EventHandlerCustomConfigurator</code>
@@ -39,24 +39,16 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param topicProperties
 		 */
 		public function EventHandlerCustomConfigurator(eventBusUserRegistry:IEventBusUserRegistry, eventHandlerMethodName:String, eventName:String=null, eventClass:Class=null, properties:Vector.<String>=null, topics:Vector.<String>=null, topicProperties:Vector.<String>=null) {
-			super();
-			initEventHandlerCustomConfigurator(eventBusUserRegistry, eventHandlerMethodName, eventName, eventClass, properties, topics, topicProperties);
+			super(eventBusUserRegistry);
+			initEventHandlerCustomConfigurator(eventHandlerMethodName, eventName, eventClass, properties, topics, topicProperties);
 		}
 
-		private var _eventBusUserRegistry:IEventBusUserRegistry;
 		private var _eventClass:Class;
 		private var _eventHandlerMethodName:String;
 		private var _eventName:String;
 		private var _properties:Vector.<String>;
 		private var _topicProperties:Vector.<String>;
 		private var _topics:Vector.<String>;
-
-		/**
-		 *
-		 */
-		public function get eventBusUserRegistry():IEventBusUserRegistry {
-			return _eventBusUserRegistry;
-		}
 
 		/**
 		 *
@@ -105,20 +97,20 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param instance
 		 * @param objectDefinition
 		 */
-		public function execute(instance:*, objectDefinition:IObjectDefinition):void {
+		override public function execute(instance:*, objectDefinition:IObjectDefinition):void {
 			var type:Type = Type.forClass(objectDefinition.clazz);
 			var method:Method = type.getMethod(_eventHandlerMethodName);
 			var proxy:EventHandlerProxy = new EventHandlerProxy(instance, method, _properties);
 			var topic:String;
 			if (((_topics == null) || (_topics.length == 0)) && ((_topicProperties == null) || (_topicProperties.length == 0))) {
-				addEventBusListener(_eventBusUserRegistry, _eventName, _eventClass, proxy);
+				addEventBusListener(eventBusUserRegistry, _eventName, _eventClass, proxy);
 			}
 			for each (topic in _topics) {
-				addEventBusListener(_eventBusUserRegistry, _eventName, _eventClass, proxy, topic);
+				addEventBusListener(eventBusUserRegistry, _eventName, _eventClass, proxy, topic);
 			}
 			for each (topic in _topicProperties) {
 				var topicInstance:* = instance[topic];
-				addEventBusListener(_eventBusUserRegistry, _eventName, _eventClass, proxy, topicInstance);
+				addEventBusListener(eventBusUserRegistry, _eventName, _eventClass, proxy, topicInstance);
 			}
 		}
 
@@ -149,8 +141,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param topics
 		 * @param topicProperties
 		 */
-		protected function initEventHandlerCustomConfigurator(eventBusUserRegistry:IEventBusUserRegistry, eventHandlerMethodName:String, eventName:String, eventClass:Class, properties:Vector.<String>, topics:Vector.<String>, topicProperties:Vector.<String>):void {
-			_eventBusUserRegistry = eventBusUserRegistry;
+		protected function initEventHandlerCustomConfigurator(eventHandlerMethodName:String, eventName:String, eventClass:Class, properties:Vector.<String>, topics:Vector.<String>, topicProperties:Vector.<String>):void {
 			_eventHandlerMethodName = eventHandlerMethodName;
 			_eventName = eventName;
 			_eventClass = eventClass;

@@ -15,7 +15,9 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser {
 	import flash.errors.IllegalOperationError;
+	import flash.system.ApplicationDomain;
 
+	import org.as3commons.lang.IApplicationDomainAware;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.IObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_eventbus;
@@ -27,7 +29,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class AbstractEventBusNodeParser implements IObjectDefinitionParser {
+	public class AbstractEventBusNodeParser implements IObjectDefinitionParser, IApplicationDomainAware {
 
 		public static const INSTANCE_ATTRIBUTE_NAME:String = "instance";
 		public static const EVENT_NAMES_ATTRIBUTE_NAME:String = "event-names";
@@ -37,12 +39,14 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		public static const TOPICS_ATTRIBUTE_NAME:String = "topics";
 		public static const TOPIC_PROPERTIES_ATTRIBUTE_NAME:String = "topic-properties";
 		public static const PROPERTIES_ATTRIBUTE_NAME:String = "properties";
+		public static const INTERCEPTION_CONFIGURATION_ATTRIBUTE_NAME:String = "interception-configuration";
 		public static const COMMA:String = ',';
 		public static const SPACE:String = ' ';
 		public static const EMPTY:String = '';
 
 		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
 		private var _eventBusUserRegistry:IEventBusUserRegistry;
+		private var _applicationDomain:ApplicationDomain;
 
 		use namespace spring_actionscript_eventbus;
 
@@ -51,9 +55,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param objectDefinitionRegistry
 		 * @param eventBusUserRegistry
 		 */
-		public function AbstractEventBusNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry) {
+		public function AbstractEventBusNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry, applicationDomain:ApplicationDomain) {
 			super();
-			init(objectDefinitionRegistry, eventBusUserRegistry);
+			init(objectDefinitionRegistry, eventBusUserRegistry, applicationDomain);
 		}
 
 		/**
@@ -61,9 +65,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param objectDefinitionRegistry
 		 * @param eventBusUserRegistry
 		 */
-		protected function init(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry):void {
+		protected function init(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry, applicationDomain:ApplicationDomain):void {
 			_objectDefinitionRegistry = objectDefinitionRegistry;
 			_eventBusUserRegistry = eventBusUserRegistry;
+			_applicationDomain = applicationDomain;
 		}
 
 		/**
@@ -119,6 +124,14 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 				return result;
 			}
 			return null;
+		}
+
+		public function get applicationDomain():ApplicationDomain {
+			return _applicationDomain;
+		}
+
+		public function set applicationDomain(value:ApplicationDomain):void {
+			_applicationDomain = value;
 		}
 
 	}

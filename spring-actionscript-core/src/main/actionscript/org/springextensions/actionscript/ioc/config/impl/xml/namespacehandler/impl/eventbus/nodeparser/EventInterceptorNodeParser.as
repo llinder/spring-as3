@@ -17,12 +17,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 	import flash.system.ApplicationDomain;
 
+	import org.as3commons.eventbus.IEventInterceptor;
 	import org.as3commons.lang.ClassUtils;
-	import org.as3commons.lang.IApplicationDomainAware;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.IObjectDefinitionParser;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.EventBusNamespacehandler;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfigurator;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventInterceptorCustomConfigurator;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_eventbus;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
@@ -33,47 +31,65 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class EventHandlerNodeParser extends AbstractEventBusNodeParser {
+	public class EventInterceptorNodeParser extends AbstractEventBusNodeParser {
 
 		/**
-		 * Creates a new <code>EventHandlerNodeParser</code> instance.
+		 * Creates a new <code>EventInterceptorNodeParser</code> instance.
 		 * @param objectDefinitionRegistry
 		 * @param eventBusUserRegistry
 		 */
-		public function EventHandlerNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry, applicationDomain:ApplicationDomain) {
+		public function EventInterceptorNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry, applicationDomain:ApplicationDomain) {
 			super(objectDefinitionRegistry, eventBusUserRegistry, applicationDomain);
 		}
 
+		/**
+		 *
+		 * @param node
+		 * @param context
+		 * @return
+		 */
 		override public function parse(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var ref:String = String(node.attribute(INSTANCE_ATTRIBUTE_NAME)[0]);
 			if (objectDefinitionRegistry.containsObjectDefinition(ref)) {
 				var objectDefinition:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(ref);
+				if (!ClassUtils.isImplementationOf(objectDefinition.clazz, IEventInterceptor)) {
+					throw new Error("Object definition must describe a class that implements IEventInterceptor");
+				}
 				objectDefinition.customConfiguration ||= new Vector.<ICustomConfigurator>();
 				createConfigurations(objectDefinition.customConfiguration, node);
 			}
 			return null;
 		}
 
+		/**
+		 *
+		 * @param customConfiguration
+		 * @param node
+		 */
 		protected function createConfigurations(customConfiguration:Vector.<ICustomConfigurator>, node:XML):void {
-			var QN:QName = new QName(spring_actionscript_eventbus, EventBusNamespacehandler.EVENT_HANDLER_METHOD_ELEMENT_NAME);
-			for each (var child:XML in node.descendants(QN)) {
-				var eventName:String = null;
-				var eventClass:Class = null;
-				var methodName:String = String(child.attribute(AbstractEventBusNodeParser.METHOD_NAME_ATTRIBUTE_NAME)[0]);
-				if (child.attribute(AbstractEventBusNodeParser.EVENT_NAME_ATTRIBUTE_NAME).length() > 0) {
-					eventName = String(child.attribute(AbstractEventBusNodeParser.EVENT_NAME_ATTRIBUTE_NAME)[0]);
-				}
-				if (child.attribute(AbstractEventBusNodeParser.EVENT_CLASS_ATTRIBUTE_NAME).length() > 0) {
-					var clsName:String = String(child.attribute(AbstractEventBusNodeParser.EVENT_CLASS_ATTRIBUTE_NAME)[0]);
-					eventClass = ClassUtils.forName(clsName, applicationDomain);
-				}
-				var topics:Vector.<String> = this.commaSeparatedAttributeNameToStringVector(child, TOPICS_ATTRIBUTE_NAME);
-				var topicProperties:Vector.<String> = this.commaSeparatedAttributeNameToStringVector(child, TOPIC_PROPERTIES_ATTRIBUTE_NAME);
-				var properties:Vector.<String> = this.commaSeparatedAttributeNameToStringVector(child, PROPERTIES_ATTRIBUTE_NAME);
-				var configurator:EventHandlerCustomConfigurator = new EventHandlerCustomConfigurator(eventBusUserRegistry, methodName, eventName, eventClass, properties, topics, topicProperties);
-				customConfiguration[customConfiguration.length] = configurator;
+			var QN:QName = new QName(spring_actionscript_eventbus, INTERCEPTION_CONFIGURATION_ATTRIBUTE_NAME);
+			var list:XMLList = node.descendants(QN);
+			for each (var child:XML in list) {
+				createEventInterceptorConfiguration(customConfiguration, child);
 			}
 		}
 
+		/**
+		 *
+		 * @param customConfiguration
+		 * @param child
+		 */
+		protected function createEventInterceptorConfiguration(customConfiguration:Vector.<ICustomConfigurator>, child:XML):void {
+			if (child.attribute(EVENT_NAME_ATTRIBUTE_NAME).length() > 0) {
+				var eventName:String = String(child.attribute(EVENT_NAME_ATTRIBUTE_NAME)[0]);
+			}
+			if (child.attribute(EVENT_CLASS_ATTRIBUTE_NAME).length() > 0) {
+				var eventClass:Class = ClassUtils.forName(String(child.attribute(EVENT_CLASS_ATTRIBUTE_NAME)[0]), applicationDomain);
+			}
+			var topics:Vector.<String> = commaSeparatedAttributeNameToStringVector(child, TOPICS_ATTRIBUTE_NAME);
+			var topicProperties:Vector.<String> = commaSeparatedAttributeNameToStringVector(child, TOPIC_PROPERTIES_ATTRIBUTE_NAME);
+			var config:EventInterceptorCustomConfigurator = new EventInterceptorCustomConfigurator(eventBusUserRegistry, eventName, eventClass, topics, topicProperties);
+			customConfiguration[customConfiguration.length] = config;
+		}
 	}
 }
