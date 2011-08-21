@@ -18,6 +18,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.IObjectDefinitionParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_eventbus;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -41,6 +42,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
 		private var _eventBusUserRegistry:IEventBusUserRegistry;
+
+		use namespace spring_actionscript_eventbus;
 
 		/**
 		 * Creates a new <code>AbstractEventBusNodeParser</code> instance.

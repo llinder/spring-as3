@@ -19,10 +19,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.IObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.EventBusNamespacehandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.RouteEventsCustomConfigurator;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_eventbus;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
+
+	use namespace spring_actionscript_eventbus;
 
 	/**
 	 *
@@ -58,7 +61,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param node
 		 */
 		protected function createConfigurations(customConfiguration:Vector.<ICustomConfigurator>, node:XML):void {
-			for each (var child:XML in node.descendants(EventBusNamespacehandler.ROUTING_CONFIGURATION_ELEMENT_NAME)) {
+			var QN:QName = new QName(spring_actionscript_eventbus, EventBusNamespacehandler.ROUTING_CONFIGURATION_ELEMENT_NAME);
+			for each (var child:XML in node.descendants(QN)) {
 				var names:Array = getPropertyNames(child);
 				var topics:Vector.<String> = commaSeparatedAttributeNameToStringVector(child, TOPICS_ATTRIBUTE_NAME);
 				var topicProperties:Vector.<String> = commaSeparatedAttributeNameToStringVector(child, TOPIC_PROPERTIES_ATTRIBUTE_NAME);

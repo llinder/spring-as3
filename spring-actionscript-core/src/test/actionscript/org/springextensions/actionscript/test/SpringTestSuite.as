@@ -20,6 +20,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoaderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProviderTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventRouterNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.AttributeToElementPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.EventBusElementsPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.IdAttributePreprocessorTest;
@@ -93,6 +94,7 @@ package org.springextensions.actionscript.test {
 		public var t34:MetadataProcessorObjectFactoryPostProcessorTest;
 		public var t35:MetadataProcessorObjectPostProcessorTest;
 		public var t36:EventBusElementsPreprocessorTest;
+		public var t37:EventRouterNodeParserTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 	}

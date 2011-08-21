@@ -294,9 +294,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 */
 		public function createInstance(clazz:Class, constructorArguments:Array=null):* {
 			Assert.notNull(clazz, "The clazz arguments must not be null");
-			if (!_isReady) {
-				throw new ObjectFactoryError(ObjectFactoryError.FACTORY_NOT_READY, "Object factory isn't fully initialized yet");
-			}
 			var result:* = ClassUtils.newInstance(clazz, constructorArguments);
 			if (dependencyInjector != null) {
 				dependencyInjector.wire(result, this);
@@ -339,9 +336,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 */
 		public function getObject(name:String, constructorArguments:Array=null):* {
 			Assert.hasText(name, "name parameter must not be empty");
-			if (!_isReady) {
-				throw new ObjectFactoryError(ObjectFactoryError.FACTORY_NOT_READY, "Object factory isn't fully initialized yet");
-			}
 			var result:*;
 			var isFactoryDereference:Boolean = (name.charAt(0) == OBJECT_FACTORY_PREFIX);
 			var objectName:String = (isFactoryDereference ? name.substring(1) : name);

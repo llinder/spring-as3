@@ -34,6 +34,22 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			initRouteEventsCustomConfigurator(eventNames, topics, topicProperties, eventBusUserRegistry);
 		}
 
+		public function get eventNames():Array {
+			return _eventNames;
+		}
+
+		public function get topics():Vector.<String> {
+			return _topics;
+		}
+
+		public function get topicProperties():Vector.<String> {
+			return _topicProperties;
+		}
+
+		public function get eventBusUserRegistry():IEventBusUserRegistry {
+			return _eventBusUserRegistry;
+		}
+
 		protected function initRouteEventsCustomConfigurator(eventNames:Array, topics:Vector.<String>, topicProperties:Vector.<String>, eventBusUserRegistry:IEventBusUserRegistry):void {
 			_eventNames = eventNames;
 			_topics = topics;
