@@ -18,7 +18,6 @@ package org.springextensions.actionscript.context.impl {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
-
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.IOperationQueue;
 	import org.as3commons.async.operation.event.OperationEvent;
@@ -35,6 +34,8 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.context.config.IConfigurationPackage;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.eventbus.process.EventBusAwareObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
@@ -81,7 +82,7 @@ package org.springextensions.actionscript.context.impl {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class ApplicationContext extends EventDispatcher implements IApplicationContext, IDisposable, IAutowireProcessorAware {
+	public class ApplicationContext extends EventDispatcher implements IApplicationContext, IDisposable, IAutowireProcessorAware, IEventBusUserRegistryAware {
 
 		private static const APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME:String = "applicationContextTextFilesLoader";
 		private static const DEFINITION_PROVIDER_QUEUE_NAME:String = "definitionProviderQueue";
@@ -100,6 +101,8 @@ package org.springextensions.actionscript.context.impl {
 			initApplicationContext(parent, rootView, objFactory);
 		}
 
+		private var _childContexts:Vector.<IApplicationContext>;
+
 		private var _definitionProviders:Vector.<IObjectDefinitionsProvider>;
 		private var _eventBus:IEventBus;
 		private var _isDisposed:Boolean;
@@ -110,7 +113,6 @@ package org.springextensions.actionscript.context.impl {
 		private var _rootView:DisplayObject;
 		private var _stageProcessorRegistry:IStageObjectProcessorRegistry;
 		private var _textFilesLoader:ITextFilesLoader;
-		private var _childContexts:Vector.<IApplicationContext>;
 
 		/**
 		 * @inheritDoc
@@ -129,8 +131,31 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * @inheritDoc
 		 */
+		public function get autowireProcessor():IAutowireProcessor {
+			return (_objectFactory is IAutowireProcessorAware) ? IAutowireProcessorAware(_objectFactory).autowireProcessor : null;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set autowireProcessor(value:IAutowireProcessor):void {
+			if (_objectFactory is IAutowireProcessorAware) {
+				IAutowireProcessorAware(_objectFactory).autowireProcessor = value;
+			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function get cache():IInstanceCache {
 			return _objectFactory.cache;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get childContexts():Vector.<IApplicationContext> {
+			return _childContexts;
 		}
 
 		/**
@@ -169,6 +194,25 @@ package org.springextensions.actionscript.context.impl {
 				IEventBusAware(_objectFactory).eventBus = value;
 			} else {
 				_eventBus = value;
+			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get eventBusUserRegistry():IEventBusUserRegistry {
+			if (_objectFactory is IEventBusUserRegistryAware) {
+				return IEventBusUserRegistryAware(_objectFactory).eventBusUserRegistry;
+			}
+			return null;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set eventBusUserRegistry(value:IEventBusUserRegistry):void {
+			if (_objectFactory is IEventBusUserRegistryAware) {
+				IEventBusUserRegistryAware(_objectFactory).eventBusUserRegistry = value;
 			}
 		}
 
@@ -311,6 +355,16 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * @inheritDoc
 		 */
+		public function addChildContext(childContext:IApplicationContext):void {
+			_childContexts ||= new Vector.<IApplicationContext>();
+			if (_childContexts.indexOf(childContext) < 0) {
+				childContexts[childContexts.length] = childContext;
+			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function addDefinitionProvider(provider:IObjectDefinitionsProvider):void {
 			if (provider is IApplicationDomainAware) {
 				IApplicationDomainAware(provider).applicationDomain = applicationDomain;
@@ -338,6 +392,13 @@ package org.springextensions.actionscript.context.impl {
 		 */
 		public function addReferenceResolver(referenceResolver:IReferenceResolver):void {
 			_objectFactory.addReferenceResolver(referenceResolver);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function configure(configurationPackage:IConfigurationPackage):void {
+			configurationPackage.execute(this);
 		}
 
 		/**
@@ -678,31 +739,6 @@ package org.springextensions.actionscript.context.impl {
 			} catch (e:Error) {
 			}
 			return ApplicationDomain.currentDomain;
-		}
-
-		public function get autowireProcessor():IAutowireProcessor {
-			return (_objectFactory is IAutowireProcessorAware) ? IAutowireProcessorAware(_objectFactory).autowireProcessor : null;
-		}
-
-		public function set autowireProcessor(value:IAutowireProcessor):void {
-			if (_objectFactory is IAutowireProcessorAware) {
-				IAutowireProcessorAware(_objectFactory).autowireProcessor = value;
-			}
-		}
-
-		public function get childContexts():Vector.<IApplicationContext> {
-			return _childContexts;
-		}
-
-		public function addChildContext(childContext:IApplicationContext):void {
-			_childContexts ||= new Vector.<IApplicationContext>();
-			if (_childContexts.indexOf(childContext) < 0) {
-				childContexts[childContexts.length] = childContext;
-			}
-		}
-
-		public function configure(configurationPackage:IConfigurationPackage):void {
-			configurationPackage.execute(this);
 		}
 	}
 }

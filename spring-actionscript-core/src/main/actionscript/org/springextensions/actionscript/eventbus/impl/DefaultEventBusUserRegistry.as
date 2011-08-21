@@ -17,7 +17,7 @@ package org.springextensions.actionscript.eventbus.impl {
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
-
+	
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.eventbus.IEventInterceptor;
@@ -38,9 +38,9 @@ package org.springextensions.actionscript.eventbus.impl {
 
 		private static const LOGGER:ILogger = getLogger(DefaultEventBusUserRegistry);
 
-		public function DefaultEventBusUserRegistry() {
+		public function DefaultEventBusUserRegistry(eventBus:IEventBus) {
 			super();
-			initEventBusRegistry();
+			initEventBusRegistry(eventBus);
 		}
 
 		private var _eventBus:IEventBus;
@@ -217,11 +217,12 @@ package org.springextensions.actionscript.eventbus.impl {
 		/**
 		 * Initializes the current <code>DefaultEventBusUserRegistry</code>.
 		 */
-		protected function initEventBusRegistry():void {
+		protected function initEventBusRegistry(eventBus:IEventBus):void {
 			_listenerCache = new Dictionary(true);
 			_eventBusRegistryEntryCache = new Dictionary();
 			_typesLookup = new Dictionary();
 			_proxies = new Dictionary(true);
+			_eventBus = eventBus;
 		}
 
 		/**

@@ -46,11 +46,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		override public function parse(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var ref:String = String(node.attribute(INSTANCE_ATTRIBUTE_NAME)[0]);
-			if (objectDefinitionRegistry.containsObjectDefinition(ref)) {
-				var objectDefinition:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(ref);
-				objectDefinition.customConfiguration ||= new Vector.<ICustomConfigurator>();
-				createConfigurations(objectDefinition.customConfiguration, node);
-			}
+			var customConfiguration:Vector.<ICustomConfigurator> = objectDefinitionRegistry.getCustomConfiguration(ref);
+			customConfiguration ||= new Vector.<ICustomConfigurator>();
+			createConfigurations(customConfiguration, node);
+			objectDefinitionRegistry.registerCustomConfiguration(ref, customConfiguration);
 			return null;
 		}
 

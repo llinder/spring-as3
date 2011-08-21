@@ -16,13 +16,13 @@
 package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	import flash.system.ApplicationDomain;
 	import flash.utils.Dictionary;
-
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.reflect.Metadata;
 	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
+	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.util.ContextUtils;
@@ -32,9 +32,18 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	 * @author Roland Zwaga
 	 */
 	public class DefaultObjectDefinitionRegistry implements IObjectDefinitionRegistry, IDisposable, IApplicationDomainAware {
+		private static const CHARACTERS:String = "abcdefghijklmnopqrstuvwxys";
 		private static const IS_SINGLETON_FIELD_NAME:String = "isSingleton";
 		private static const OBJECT_DEFINITION_NAME_EXISTS_ERROR:String = "Object definition with that name has already been registered";
-		private static const CHARACTERS:String = "abcdefghijklmnopqrstuvwxys";
+
+		public static function generateRegistryId():String {
+			var len:int = 20;
+			var result:Array = new Array(20);
+			while (len) {
+				result[len--] = CHARACTERS.charAt(Math.floor(Math.random() * 26));
+			}
+			return result.join('');
+		}
 
 		/**
 		 * Creates a new <code>DefaultObjectDefinitionRegistry</code> instance.
@@ -46,6 +55,8 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		}
 
 		private var _applicationDomain:ApplicationDomain;
+		private var _customConfigurations:Object;
+		private var _id:String;
 		private var _isDisposed:Boolean;
 		private var _objectDefinitionClasses:Vector.<Class>;
 		private var _objectDefinitionList:Vector.<IObjectDefinition>;
@@ -53,7 +64,6 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		private var _objectDefinitionNameLookup:Dictionary;
 		private var _objectDefinitionNames:Vector.<String>;
 		private var _objectDefinitions:Object;
-		private var _id:String;
 
 		/**
 		 * @inheritDoc
@@ -97,15 +107,6 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			return _objectDefinitions.hasOwnProperty(objectName);
 		}
 
-		public static function generateRegistryId():String {
-			var len:int = 20;
-			var result:Array = new Array(20);
-			while (len) {
-				result[len--] = CHARACTERS.charAt(Math.floor(Math.random() * 26));
-			}
-			return result.join('');
-		}
-
 		/**
 		 * @inheritDoc
 		 */
@@ -123,8 +124,13 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 				_objectDefinitionMetadataLookup = null;
 				_objectDefinitionList = null;
 				_objectDefinitionNames = null;
+				_customConfigurations = null;
 				_isDisposed = true;
 			}
+		}
+
+		public function getCustomConfiguration(objectName:String):* {
+			return (_customConfigurations != null) ? _customConfigurations[objectName] : null;
 		}
 
 		/**
@@ -258,6 +264,16 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			return !(isPrototype(objectName));
 		}
 
+		public function registerCustomConfiguration(objectName:String, configuration:*):void {
+			if (containsObjectDefinition(objectName)) {
+				var objectDefinition:IObjectDefinition = getObjectDefinition(objectName);
+				objectDefinition.customConfiguration = configuration;
+			} else {
+				_customConfigurations ||= {};
+				_customConfigurations[objectName] = configuration;
+			}
+		}
+
 		/**
 		 * @inheritDoc
 		 */
@@ -275,6 +291,10 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 				}
 				objectDefinition.clazz = cls;
 				objectDefinition.isInterface = ClassUtils.isInterface(cls);
+				if (_customConfigurations.hasOwnProperty(objectName)) {
+					objectDefinition.customConfiguration = _customConfigurations[objectName];
+					delete _customConfigurations[objectName];
+				}
 			} else {
 				throw new Error(OBJECT_DEFINITION_NAME_EXISTS_ERROR);
 			}

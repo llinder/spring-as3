@@ -166,7 +166,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				_eventBus = value;
 				addParentEventBusListener();
 				if (_eventBus != null) {
-					_eventBusUserRegistry = new DefaultEventBusUserRegistry();
+					_eventBusUserRegistry = new DefaultEventBusUserRegistry(_eventBus);
 				}
 			}
 		}

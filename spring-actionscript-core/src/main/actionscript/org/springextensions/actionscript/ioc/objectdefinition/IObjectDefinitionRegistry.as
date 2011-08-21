@@ -15,7 +15,6 @@
  */
 package org.springextensions.actionscript.ioc.objectdefinition {
 	import flash.system.ApplicationDomain;
-
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
 
 	/**
@@ -65,6 +64,13 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
 		 */
 		function containsObjectDefinition(objectName:String):Boolean;
+
+		/**
+		 *
+		 * @param objectName
+		 * @return
+		 */
+		function getCustomConfiguration(objectName:String):*;
 
 
 		/**
@@ -168,6 +174,13 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @see org.springextensions.actionscript.ioc.IObjectDefinition
 		 */
 		function isSingleton(objectName:String):Boolean;
+
+		/**
+		 *
+		 * @param objectName
+		 * @param configurator
+		 */
+		function registerCustomConfiguration(objectName:String, configurator:*):void;
 
 		/**
 		 * Registers the given objectDefinition under the given name.
