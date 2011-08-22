@@ -16,12 +16,15 @@
 package org.springextensions.actionscript.test {
 	import integration.objectfactory.ObjectFactoryIntegrationTest;
 
+	import org.as3commons.async.task.impl.Task;
 	import org.springextensions.actionscript.context.impl.ApplicationContextTest;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoaderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProviderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventHandlerNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventRouterNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.TaskElementsPreprocessorTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.TaskNamespaceHandlerTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.BlockNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.CompositeCommandNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.CountProviderNodeParserTest;
@@ -111,6 +114,8 @@ package org.springextensions.actionscript.test {
 		public var t43:LoadURLStreamNodeParserTest;
 		public var t44:PauseCommandNodeParserTest;
 		public var t45:TaskNodeParserTest;
+		public var t46:TaskElementsPreprocessorTest;
+		public var t47:TaskNamespaceHandlerTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 	}
