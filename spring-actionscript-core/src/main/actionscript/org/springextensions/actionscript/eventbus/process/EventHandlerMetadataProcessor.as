@@ -118,7 +118,7 @@ package org.springextensions.actionscript.eventbus.process {
 		 * Creates a new <code>EventHandlerMetaDataPostProcessor</code> instance.
 		 */
 		public function EventHandlerMetadataProcessor() {
-			super(false, new Vector.<String>[EVENT_HANDLER_METADATA]);
+			super(false, new Vector.<String>([EVENT_HANDLER_METADATA]));
 		}
 
 		// --------------------------------------------------------------------
