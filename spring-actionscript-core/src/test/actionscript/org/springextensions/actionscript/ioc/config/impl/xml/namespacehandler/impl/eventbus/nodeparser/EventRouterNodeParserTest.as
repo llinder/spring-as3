@@ -16,14 +16,17 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser {
 	import flash.system.ApplicationDomain;
 
+	import mockolate.ingredients.Invocation;
 	import mockolate.mock;
 	import mockolate.nice;
+	import mockolate.stub;
 	import mockolate.verify;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.flexunit.asserts.assertTrue;
+	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.RouteEventsCustomConfigurator;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
@@ -61,15 +64,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			var configs:Vector.<ICustomConfigurator> = new Vector.<ICustomConfigurator>();
 
-			mock(objectDefinitionRegistry).method("containsObjectDefinition").args("test").returns(true).once();
-			mock(objectDefinitionRegistry).method("getObjectDefinition").args("test").returns(objectDefinition).once();
-			mock(objectDefinition).getter("customConfiguration").returns(configs);
+			mock(objectDefinitionRegistry).method("getCustomConfiguration").args("test").returns(configs).once();
+			stub(objectDefinitionRegistry).method("registerCustomConfiguration").args(anything());
 
 			var parser:EventRouterNodeParser = new EventRouterNodeParser(objectDefinitionRegistry, eventBusUserRegistry, ApplicationDomain.currentDomain);
 			parser.parse(simpleRouteEventXML, xmlParser);
 
 			verify(objectDefinitionRegistry);
-			verify(objectDefinition);
 			assertEquals(1, configs.length);
 			assertTrue(configs[0] is RouteEventsCustomConfigurator);
 			var configurator:RouteEventsCustomConfigurator = RouteEventsCustomConfigurator(configs[0]);
@@ -90,15 +91,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			var configs:Vector.<ICustomConfigurator> = new Vector.<ICustomConfigurator>();
 
-			mock(objectDefinitionRegistry).method("containsObjectDefinition").args("test").returns(true).once();
-			mock(objectDefinitionRegistry).method("getObjectDefinition").args("test").returns(objectDefinition).once();
-			mock(objectDefinition).getter("customConfiguration").returns(configs);
+			mock(objectDefinitionRegistry).method("getCustomConfiguration").args("test").returns(configs).once();
+			stub(objectDefinitionRegistry).method("registerCustomConfiguration").args(anything());
 
 			var parser:EventRouterNodeParser = new EventRouterNodeParser(objectDefinitionRegistry, eventBusUserRegistry, ApplicationDomain.currentDomain);
 			parser.parse(multipleNamesAndTopicsRouteEventXML, xmlParser);
 
 			verify(objectDefinitionRegistry);
-			verify(objectDefinition);
 			assertEquals(1, configs.length);
 			assertTrue(configs[0] is RouteEventsCustomConfigurator);
 			var configurator:RouteEventsCustomConfigurator = RouteEventsCustomConfigurator(configs[0]);
@@ -123,15 +122,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			var configs:Vector.<ICustomConfigurator> = new Vector.<ICustomConfigurator>();
 
-			mock(objectDefinitionRegistry).method("containsObjectDefinition").args("test").returns(true).once();
-			mock(objectDefinitionRegistry).method("getObjectDefinition").args("test").returns(objectDefinition).once();
-			mock(objectDefinition).getter("customConfiguration").returns(configs);
+			mock(objectDefinitionRegistry).method("getCustomConfiguration").args("test").returns(configs).once();
+			stub(objectDefinitionRegistry).method("registerCustomConfiguration").args(anything());
 
 			var parser:EventRouterNodeParser = new EventRouterNodeParser(objectDefinitionRegistry, eventBusUserRegistry, ApplicationDomain.currentDomain);
 			parser.parse(multipleConfigurationsRouteEventXML, xmlParser);
 
 			verify(objectDefinitionRegistry);
-			verify(objectDefinition);
 			assertEquals(3, configs.length);
 			assertTrue(configs[0] is RouteEventsCustomConfigurator);
 			assertTrue(configs[1] is RouteEventsCustomConfigurator);

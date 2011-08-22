@@ -19,6 +19,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 	import mockolate.mock;
 	import mockolate.nice;
+	import mockolate.stub;
 	import mockolate.verify;
 
 	import org.flexunit.asserts.assertEquals;
@@ -26,6 +27,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.flexunit.asserts.assertTrue;
+	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfigurator;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
@@ -66,9 +68,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			var configs:Vector.<ICustomConfigurator> = new Vector.<ICustomConfigurator>();
 
-			mock(objectDefinitionRegistry).method("containsObjectDefinition").args("test").returns(true).once();
-			mock(objectDefinitionRegistry).method("getObjectDefinition").args("test").returns(objectDefinition).once();
-			mock(objectDefinition).getter("customConfiguration").returns(configs);
+			mock(objectDefinitionRegistry).method("getCustomConfiguration").args("test").returns(configs).once();
+			stub(objectDefinitionRegistry).method("registerCustomConfiguration").args(anything());
 
 			var parser:EventHandlerNodeParser = new EventHandlerNodeParser(objectDefinitionRegistry, eventBusUserRegistry, ApplicationDomain.currentDomain);
 			parser.parse(simpleEventHandlerXML, xmlParser);
@@ -96,9 +97,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			var configs:Vector.<ICustomConfigurator> = new Vector.<ICustomConfigurator>();
 
-			mock(objectDefinitionRegistry).method("containsObjectDefinition").args("test").returns(true).once();
-			mock(objectDefinitionRegistry).method("getObjectDefinition").args("test").returns(objectDefinition).once();
-			mock(objectDefinition).getter("customConfiguration").returns(configs);
+			mock(objectDefinitionRegistry).method("getCustomConfiguration").args("test").returns(configs).once();
+			stub(objectDefinitionRegistry).method("registerCustomConfiguration").args(anything());
 
 			var parser:EventHandlerNodeParser = new EventHandlerNodeParser(objectDefinitionRegistry, eventBusUserRegistry, ApplicationDomain.currentDomain);
 			parser.parse(simpleEventHandlerWithTopicXML, xmlParser);
@@ -128,9 +128,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			var configs:Vector.<ICustomConfigurator> = new Vector.<ICustomConfigurator>();
 
-			mock(objectDefinitionRegistry).method("containsObjectDefinition").args("test").returns(true).once();
-			mock(objectDefinitionRegistry).method("getObjectDefinition").args("test").returns(objectDefinition).once();
-			mock(objectDefinition).getter("customConfiguration").returns(configs);
+			mock(objectDefinitionRegistry).method("getCustomConfiguration").args("test").returns(configs).once();
+			stub(objectDefinitionRegistry).method("registerCustomConfiguration").args(anything());
 
 			var parser:EventHandlerNodeParser = new EventHandlerNodeParser(objectDefinitionRegistry, eventBusUserRegistry, ApplicationDomain.currentDomain);
 			parser.parse(simpleEventHandlerWithTopicAndPropertiesXML, xmlParser);
@@ -163,9 +162,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			var configs:Vector.<ICustomConfigurator> = new Vector.<ICustomConfigurator>();
 
-			mock(objectDefinitionRegistry).method("containsObjectDefinition").args("test").returns(true).once();
-			mock(objectDefinitionRegistry).method("getObjectDefinition").args("test").returns(objectDefinition).once();
-			mock(objectDefinition).getter("customConfiguration").returns(configs);
+			mock(objectDefinitionRegistry).method("getCustomConfiguration").args("test").returns(configs).once();
+			stub(objectDefinitionRegistry).method("registerCustomConfiguration").args(anything());
 
 			var parser:EventHandlerNodeParser = new EventHandlerNodeParser(objectDefinitionRegistry, eventBusUserRegistry, ApplicationDomain.currentDomain);
 			parser.parse(simpleEventHandlerWithClassAndMultipleMethodHandlersXML, xmlParser);
