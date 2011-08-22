@@ -43,7 +43,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 		 */
 		override public function parse(node:XML):* {
 			var result:Object;
-			var isVanillaObject:Boolean = (node.attribute(XMLObjectDefinitionsParser.CLASS_ATTRIBUTE) == undefined);
+			var isVanillaObject:Boolean = (node.attribute(XMLObjectDefinitionsParser.CLASS_ATTRIBUTE).length() == 0);
 
 			if (isVanillaObject) {
 				result = new Object();

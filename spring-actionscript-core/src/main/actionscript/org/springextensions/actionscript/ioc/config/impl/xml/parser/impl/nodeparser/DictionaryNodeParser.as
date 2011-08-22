@@ -54,8 +54,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 				n = XMLUtils.convertAttributeToNode(n, keyAttribute);
 				n = XMLUtils.convertAttributeToNode(n, valueAttribute);
 				// get the key and value from the childnodes
-				var key:* = xmlObjectDefinitionsParser.parsePropertyValue(n[keyAttribute][0]);
-				var value:* = xmlObjectDefinitionsParser.parsePropertyValue(n[valueAttribute][0]);
+				var desc:XMLList = n.child(new QName(node.inScopeNamespaces()[0], keyAttribute));
+				var key:* = xmlObjectDefinitionsParser.parsePropertyValue(desc[0]);
+				desc = n.child(new QName(node.inScopeNamespaces()[0], valueAttribute));
+				var value:* = xmlObjectDefinitionsParser.parsePropertyValue(desc[0]);
 				result[key] = value;
 			}
 

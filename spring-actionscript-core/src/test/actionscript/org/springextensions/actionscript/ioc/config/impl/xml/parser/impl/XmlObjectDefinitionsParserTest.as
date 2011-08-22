@@ -15,6 +15,12 @@
  */
 package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
+	import flash.utils.Dictionary;
+
+	import flashx.textLayout.debug.assert;
+
+	import mx.collections.ArrayCollection;
+
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertNull;
@@ -22,19 +28,58 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 	import org.flexunit.asserts.assertTrue;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
 	import org.springextensions.actionscript.test.testtypes.Person;
 
 	/**
-	 * <p>
-	 * <b>Author:</b> Christophe Herreman<br/>
-	 * <b>Version:</b> $Revision: 22 $, $Date: 2008-11-01 23:15:06 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
-	 * <b>Since:</b> 0.1
-	 * </p>
+	 * @author Christophe Herreman
+	 * @author Roland Zwaga
 	 */
 	public class XmlObjectDefinitionsParserTest {
+
+		private static const PERSON_XML_WITH_SIBLINGS:XML = <objects>
+				<object id="person" class="org.springextensions.actionscript.test.testtypes.Person">
+					<property name="name">
+						<value>Christophe</value>
+					</property>
+					<property name="isMarried">
+						<value>true</value>
+					</property>
+					<property name="friends">
+						<list/>
+					</property>
+					<property name="siblings">
+						<array>
+							<ref>__item0</ref>
+						</array>
+					</property>
+					<property name="age">
+						<value>26</value>
+					</property>
+				</object>
+				<object id="__item0" class="org.springextensions.actionscript.test.testtypes.Person">
+					<property name="name">
+						<value>David</value>
+					</property>
+					<property name="isMarried">
+						<value>false</value>
+					</property>
+					<property name="friends">
+						<list/>
+					</property>
+					<property name="siblings">
+						<array>
+							<ref>person</ref>
+						</array>
+					</property>
+					<property name="age">
+						<value>16</value>
+					</property>
+				</object>
+			</objects>;
 
 		private var _xml:XML = <objects>
 				<object id="christophe" class="org.springextensions.actionscript.test.testtypes.Person">
@@ -220,501 +265,321 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			assertNotNull(f);
 		}
 
-	/*public function testParseWithClassNameAsStringInValueElement():void {
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var objectFactory:IApplicationContext = parser.parse(_xmlClassStringTest2);
-		var f:PrototypeFactory = objectFactory.getObject("factoryTest");
-		assertTrue(objectFactory.containsObjectDefinition("factoryTest"));
-		assertNotNull(objectFactory);
-	}*/
+		[Test]
+		public function testParseWithClassNameAsStringInValueElement():void {
+			var context:IApplicationContext = new ApplicationContext();
+			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
+			var definitions:Object = parser.parse(_xmlClassStringTest2);
+			assertNotNull(definitions["factoryTest"]);
+		}
 
-	/*public function testParsePersonWithSiblings():void {
-	   var parser:XmlObjectDefinitionsParser = new XmlObjectDefinitionsParser();
-	   var container:ObjectContainer = parser.parse(PERSON_XML_WITH_SIBLINGS);
-	   var p:Person = container.getObject("person");
-	   assertNotNull(container);
-	 }*/
+		[Test]
+		public function testParsePersonWithSiblings():void {
+			var context:IApplicationContext = new ApplicationContext();
+			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
+			var definitions:Object = parser.parse(PERSON_XML_WITH_SIBLINGS);
+			assertNotNull(definitions["person"]);
+		}
 
-
-	/*public function testParseWithInnerObject():void {
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var result:IApplicationContext = parser.parse(<objects>
-				<object id="a" class="Array">
-					<constructor-arg>
-						<object class="String">
-							<constructor-arg value="hello"/>
-						</object>
-					</constructor-arg>
-				</object>
-			</objects>);
-
-		assertNotNull(result);
-
-		var a:Array = result.getObject("a");
-		assertNotNull(a);
-
-		var string:String = a[0];
-		assertNotNull(string);
-		assertEquals("hello", string);
-	}
-
-	public function testParseWithRefInObject():void {
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var result:IApplicationContext = parser.parse(<objects>
-				<object id="a" class="Object">
-					<property name="a_property_1">
-						<object>
-							<property name="key1" value="a value"/>
-							<property name="key2">
-								<ref>b</ref>
-							</property>
-							<property name="key3">
-								<ref>c</ref>
-							</property>
-						</object>
-					</property>
-				</object>
-				<object id="b" class="Array">
-					<constructor-arg value="1"/>
-					<constructor-arg value="aa"/>
-					<constructor-arg value="true"/>
-				</object>
-				<object id="c" class="String">
-					<constructor-arg value="hello"/>
-				</object>
-			</objects>);
-		assertNotNull(result);
-
-		var a:Object = result.getObject("a");
-		assertNotNull(a);
-
-		var a_property_1:Object = a.a_property_1;
-		assertNotNull(a_property_1);
-
-		var b:Array = result.getObject("b");
-		assertNotNull(b);
-
-		var c:String = result.getObject("c");
-		assertNotNull(c);
-
-		assertEquals(b, a_property_1.key2);
-		assertEquals(c, a_property_1.key3);
-	}
-
-	public function testParseWithMultipleRefsInObject():void {
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var result:IApplicationContext = parser.parse(<objects>
-				<object id="a" class="Object">
-					<property name="a_property_1">
-						<object>
-							<property name="key1" value="a value"/>
-							<property name="key2">
-								<ref>b</ref>
-							</property>
-							<property name="key3">
-								<ref>c</ref>
-							</property>
-						</object>
-					</property>
-				</object>
-				<object id="b" class="Array">
-					<constructor-arg value="1"/>
-					<constructor-arg ref="c"/>
-					<constructor-arg value="true"/>
-				</object>
-				<object id="c" class="String">
-					<constructor-arg value="hello"/>
-				</object>
-			</objects>);
-		assertNotNull(result);
-
-		var a:Object = result.getObject("a");
-		assertNotNull(a);
-
-		var a_property_1:Object = a.a_property_1;
-		assertNotNull(a_property_1);
-
-		var b:Array = result.getObject("b");
-		assertNotNull(b);
-		assertEquals(1, b[0]);
-		assertEquals("hello", b[1]);
-		assertEquals(true, b[2]);
-
-		var c:String = result.getObject("c");
-		assertNotNull(c);
-
-		assertEquals(b, a_property_1.key2);
-		assertEquals(c, a_property_1.key3);
-	}
-
-	// TODO test circular references
-	public function testParse_shouldThrowCircularRefenceError():void {
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var result:IApplicationContext = parser.parse(<objects>
-				<object id="a" class="Object">
-					<property name="b" ref="b" />
-				</object>
-				<object id="b" class="Object">
-					<property name="a" ref="a" />
-				</object>
-			</objects>);
-		//var a:Object = result.getObject("a");
-	}
-
-	/*public function testParseArrayCollection():void {
-	   var parser:XmlObjectDefinitionsParser = new XmlObjectDefinitionsParser();
-	   var result:ArrayCollection = parser.parseArrayCollection(
-	   <array-collection>
-	   <value>a</value>
-	   <value>1</value>
-	   <value>true</value>
-	   </array-collection>
-	   );
-	   assertNotNull(result);
-	   assertEquals(3, result.length);
-	   assertEquals("a", result[0]);
-	   assertEquals(1, result[1]);
-	   assertEquals(true, result[2]);
-	   }
-
-	   public function testParseArrayCollectionViaListElement():void {
-	   var parser:XmlObjectDefinitionsParser = new XmlObjectDefinitionsParser();
-	   var result:ArrayCollection = parser.parseArrayCollection(
-	   <list>
-	   <value>a</value>
-	   <value>1</value>
-	   <value>true</value>
-	   </list>
-	   );
-	   assertNotNull(result);
-	   assertEquals(3, result.length);
-	   assertEquals("a", result[0]);
-	   assertEquals(1, result[1]);
-	   assertEquals(true, result[2]);
-	 }*/
-
-	/*public function testParseWithRefInArrayCollection():void {
-	   var parser:XmlObjectDefinitionsParser = new XmlObjectDefinitionsParser();
-	   var result:XmlObjectFactory = parser.parse(
-	   <objects>
-	   <object id="a" class="Object">
-	   <property name="a_property_1">
-	   <array-collection>
-	   <value>a value</value>
-	   <ref>b</ref>
-	   </array-collection>
-	   </property>
-	   </object>
-	   <object id="b" class="Array">
-	   <constructor-arg value="1"/>
-	   <constructor-arg value="aa"/>
-	   <constructor-arg value="true"/>
-	   </object>
-	   </objects>
-	   );
-	   assertNotNull(result);
-
-	   var a:Object = result.getObject("a");
-	   assertNotNull(a);
-
-	   var a_property_1:ArrayCollection = a.a_property_1;
-	   assertNotNull(a_property_1);
-
-	   var b:Array = result.getObject("b");
-	   assertNotNull(b);
-
-	   assertEquals(b, a_property_1.getItemAt(1));
-	 }*/
-
-	/*public function testParseWithRefInDictionary():void {
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var result:IApplicationContext = parser.parse(<objects>
-				<object id="a" class="Object">
-					<property name="a_property_1">
-						<dictionary>
-							<entry>
-								<key>key1</key>
-								<value>
-									<ref>b</ref>
-								</value>
-							</entry>
-							<entry>
-								<key>
-									<ref>c</ref>
-								</key>
-								<value>value2</value>
-							</entry>
-						</dictionary>
-					</property>
-				</object>
-				<object id="b" class="Array">
-					<constructor-arg value="1"/>
-					<constructor-arg value="aa"/>
-					<constructor-arg value="true"/>
-				</object>
-				<object id="c" class="Array">
-					<constructor-arg value="2"/>
-					<constructor-arg value="bb"/>
-					<constructor-arg value="false"/>
-				</object>
-			</objects>);
-		assertNotNull(result);
-
-		var a:Object = result.getObject("a");
-		assertNotNull(a);
-
-		var dict:Dictionary = a.a_property_1;
-		assertNotNull(dict);
-
-		//		var b:Array = result.getObject("b");
-		//		assertNotNull(b);
-		//
-		//		assertEquals(b, dict["key1"]);
-		//
-		var c:Array = result.getObject("c");
-		assertNotNull(c);
-		//
-		//		assertEquals("value2", dict[c]);
-	}
-
-	//    private static const PERSON_XML_WITH_SIBLINGS:XML = <beans>
-	//                                <bean id="person" class="org.springextensions.actionscript.test.testtypes.Person">
-	//                                <property name="name">
-	//                                  <value>Christophe</value>
-	//                                </property>
-	//                                <property name="isMarried">
-	//                                  <value>true</value>
-	//                                </property>
-	//                                <property name="friends">
-	//                                  <list/>
-	//                                </property>
-	//                                <property name="siblings">
-	//                                  <list>
-	//                                  <ref bean="__item0"/>
-	//                                  </list>
-	//                                </property>
-	//                                <property name="age">
-	//                                  <value>26</value>
-	//                                </property>
-	//                                </bean>
-	//                                <bean id="__item0" class="org.springextensions.actionscript.test.testtypes.Person">
-	//                                <property name="name">
-	//                                  <value>David</value>
-	//                                </property>
-	//                                <property name="isMarried">
-	//                                  <value>false</value>
-	//                                </property>
-	//                                <property name="friends">
-	//                                  <list/>
-	//                                </property>
-	//                                <property name="siblings">
-	//                                  <list>
-	//                                  <ref bean="person"/>
-	//                                  </list>
-	//                                </property>
-	//                                <property name="age">
-	//                                  <value>16</value>
-	//                                </property>
-	//                                </bean>
-	//                              </beans>;
-	//
-	//    private static const INNER_PERSON_BEAN_XML:XML =
-	//    <beans>
-	//      <bean id="person" class="org.springextensions.actionscript.test.testtypes.Person">
-	//        <constructor-arg value="Christophe"/>
-	//        <property name="colleague">
-	//          <bean id="person" class="org.springextensions.actionscript.test.testtypes.Person">
-	//            <constructor-arg value="Bert"/>
-	//          </bean>
-	//        </property>
-	//      </bean>
-	//    </beans>;
-
-	/**
-	 * Tests parsing of lazy objects. Lazy objects should not be in internal cache after parsing. They are created
-	 * later on demand.
-	 */
-	/*public function testParse_lazyObjects():void {
-		var xml:XML = <objects>
-				<object id="bert" class="org.springextensions.actionscript.test.testtypes.Person" lazy-init="true">
-					<property name="name" value="Bert Vandamme"/>
-					<property name="age" value="25"/>
-					<property name="isMarried" value="false"/>
-				</object>
-			</objects>;
-
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var objectFactory:IApplicationContext = parser.parse(xml);
-
-		assertTrue(objectFactory.containsObjectDefinition("bert"));
-		// Check wether it is in cache. It should not be since it is lazy.
-		assertNull(objectFactory.clearObjectFromInternalCache("bert"));
-
-		// Crate lazy object and put it in cache.
-		assertNotNull(objectFactory.getObject("bert"));
-		// Check wether it is in cache. Now it should be there.
-		assertNotNull(objectFactory.clearObjectFromInternalCache("bert"));
-	}
-
-	public function testParse_withNullConstructorArgumentValue():void {
-		var xml:XML = <objects>
-				<object id="bert" class="org.springextensions.actionscript.test.testtypes.Person">
-					<constructor-arg><null/></constructor-arg>
-					<constructor-arg value="25"/>
-					<constructor-arg value="false"/>
-				</object>
-			</objects>;
-
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var objectFactory:IApplicationContext = parser.parse(xml);
-		var bert:Person = objectFactory.getObject("bert");
-		assertNull(bert.name);
-	}
-
-	public function testParse_shouldParseDependsOnAttribute():void {
-		var xml:XML = <objects>
-				<object id="a" class="org.springextensions.actionscript.test.testtypes.Person" depends-on="b,c"/>
-				<object id="b" class="org.springextensions.actionscript.test.testtypes.Person"/>
-				<object id="c" class="org.springextensions.actionscript.test.testtypes.Person"/>
-			</objects>;
-
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var objectFactory:IApplicationContext = parser.parse(xml);
-		var a:IObjectDefinition = objectFactory.getObjectDefinition("a");
-		assertNotNull(a.dependsOn);
-		assertEquals(2, a.dependsOn.length);
-		var a2:Person = objectFactory.getObject("a");
-	}
-
-	public function testParse_withDictionaryAsPropertyValue():void {
-		var xml:XML = <objects xmlns="http://www.springactionscript.org/schema/objects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.pranaframework.org/schema/objects/spring-actionscript-objects-1.0.xsd">
-				<object id="test" class="Object" singleton="true">
-					<property name="testprop">
-						<dictionary>
-							<entry>
-								<key>this_is_a_key</key>
-								<value>val</value>
-							</entry>
-						</dictionary>
-					</property>
-				</object>
-			</objects>;
-
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var objectFactory:IApplicationContext = parser.parse(xml);
-		assertTrue(objectFactory.numObjectDefinitions == 1);
-		var test:IObjectDefinition = objectFactory.getObjectDefinition("test");
-		assertNotNull(test);
-	}
-
-	// --------------------------------------------------------------------
-	//
-	// parseNode
-	//
-	// --------------------------------------------------------------------
-
-	public function testParseNode_shouldIgnoreAbstractNode():void {
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-
-		assertEquals(0, parser.applicationContext.numObjectDefinitions);
-
-		parser.parseNode(<object id="myAbstractObject" abstract="true"/>);
-
-		assertEquals(0, parser.applicationContext.numObjectDefinitions);
-
-		parser.parseNode(<object id="myObject" class="String"/>);
-
-		assertEquals(1, parser.applicationContext.numObjectDefinitions);
-	}
-
-	public function testParseObjectWithFieldRetrievingObjectResultAsProperty():void {
-		var xml:XML = <objects xmlns="http://www.springactionscript.org/schema/objects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.pranaframework.org/schema/objects/spring-actionscript-objects-1.0.xsd">
-				<object id="bert" class="org.springextensions.actionscript.test.testtypes.Person">
-					<property name="name" value="Bert Vandamme"/>
-					<property name="age">
-						<object class="org.springextensions.actionscript.ioc.factory.config.FieldRetrievingFactoryObject">
-							<property name="staticField" value="mx.core.FlexVersion.CURRENT_VERSION"/>
-						</object>
-					</property>
-					<property name="isMarried" value="false"/>
-				</object>
-			</objects>;
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var objectFactory:IApplicationContext = parser.parse(xml);
-
-		var bert:Person = objectFactory.getObject("bert") as Person;
-
-		assertEquals(bert.age, FlexVersion.CURRENT_VERSION);
-	}
-
-	public function testParseObjectWithFieldRetrievingObjectResultAsConstructorArg():void {
-		var xml:XML = <objects xmlns="http://www.springactionscript.org/schema/objects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.pranaframework.org/schema/objects/spring-actionscript-objects-1.0.xsd">
-				<object id="bert" class="org.springextensions.actionscript.test.testtypes.Person">
-					<constructor-arg value="Bert Vandamme"/>
-					<constructor-arg>
-						<object class="org.springextensions.actionscript.ioc.factory.config.FieldRetrievingFactoryObject">
-							<property name="staticField" value="mx.core.FlexVersion.CURRENT_VERSION"/>
-						</object>
-					</constructor-arg>
-					<constructor-arg value="false"/>
-				</object>
-			</objects>;
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var objectFactory:IApplicationContext = parser.parse(xml);
-
-		var bert:Person = objectFactory.getObject("bert") as Person;
-
-		assertEquals(bert.age, FlexVersion.CURRENT_VERSION);
-
-	}
-
-	public function testParseObject_shouldCreateMethodInvocations():void {
-		var xml:XML = <objects xmlns="http://www.springactionscript.org/schema/objects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.pranaframework.org/schema/objects/spring-actionscript-objects-1.0.xsd">
-				<object id="john" class="org.springextensions.actionscript.test.testtypes.Person">
-					<constructor-arg value="John"/>
-					<method-invocation name="addFriend">
-						<arg>
-							<object class="org.springextensions.actionscript.test.testtypes.Person">
-								<constructor-arg value="Peter"/>
+		[Test]
+		public function testParseWithInnerObject():void {
+			var context:IApplicationContext = new ApplicationContext();
+			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
+			var definitions:Object = parser.parse(<objects>
+					<object id="a" class="Array">
+						<constructor-arg>
+							<object class="String" id="stringArg">
+								<constructor-arg value="hello"/>
 							</object>
-						</arg>
-					</method-invocation>
-				</object>
-			</objects>;
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var objectFactory:IApplicationContext = parser.parse(xml);
+						</constructor-arg>
+					</object>
+				</objects>);
 
-		var john:Person = objectFactory.getObject("john") as Person;
+			assertNotNull(definitions);
+			assertNotNull(definitions["a"]);
+			var definition:IObjectDefinition = definitions["a"];
+			assertNotNull(definition);
+			assertNotNull(definition.constructorArguments);
+			assertEquals(1, definition.constructorArguments.length);
+			assertTrue(definition.constructorArguments[0] is RuntimeObjectReference);
+		}
 
-		assertNotNull(john);
-		assertNotNull(john.friends);
-		assertEquals(1, john.friends.length);
+		[Test]
+		public function testParseWithRefInObject():void {
+			var context:IApplicationContext = new ApplicationContext();
+			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
+			var definitions:Object = parser.parse(<objects>
+					<object id="a" class="Object">
+						<property name="a_property_1">
+							<object id="propertyValObject">
+								<property name="key1" value="a value"/>
+								<property name="key2">
+									<ref>b</ref>
+								</property>
+								<property name="key3">
+									<ref>c</ref>
+								</property>
+							</object>
+						</property>
+					</object>
+					<object id="b" class="Array">
+						<constructor-arg value="1"/>
+						<constructor-arg value="aa"/>
+						<constructor-arg value="true"/>
+					</object>
+					<object id="c" class="String">
+						<constructor-arg value="hello"/>
+					</object>
+				</objects>);
+			assertNotNull(definitions);
+			assertNotNull(definitions["a"]);
+			var definition:IObjectDefinition = definitions["a"];
+			assertNotNull(definition);
+			var propDef:PropertyDefinition = definition.getPropertyDefinitionByName("a_property_1");
+			assertNotNull(propDef);
+			assertTrue(propDef.value is Object);
+			assertNotNull(definitions["b"]);
+			definition = definitions["b"];
+			assertNotNull(definition);
+			assertNotNull(definition.constructorArguments);
+			assertEquals(3, definition.constructorArguments.length);
+			assertNotNull(definitions["c"]);
+			definition = definitions["c"];
+			assertNotNull(definition);
+			assertNotNull(definition.constructorArguments);
+			assertEquals(1, definition.constructorArguments.length);
+		}
 
-		var peter:Person = john.friends[0];
-		assertEquals("Peter", peter.name);
-	}
+		[Test]
+		public function testParseWithMultipleRefsInObject():void {
+			var context:IApplicationContext = new ApplicationContext();
+			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
+			var definitions:Object = parser.parse(<objects>
+					<object id="a" class="Object">
+						<property name="a_property_1">
+							<object id="propValue">
+								<property name="key1" value="a value"/>
+								<property name="key2">
+									<ref>b</ref>
+								</property>
+								<property name="key3">
+									<ref>c</ref>
+								</property>
+							</object>
+						</property>
+					</object>
+					<object id="b" class="Array">
+						<constructor-arg value="1"/>
+						<constructor-arg>
+							<ref>c</ref>
+						</constructor-arg>
+						<constructor-arg value="true"/>
+					</object>
+					<object id="c" class="String">
+						<constructor-arg value="hello"/>
+					</object>
+				</objects>);
+			assertNotNull(definitions);
+			assertNotNull(definitions["a"]);
+			var definition:IObjectDefinition = definitions["a"];
+			assertNotNull(definition);
+			var propDef:PropertyDefinition = definition.getPropertyDefinitionByName("a_property_1");
+			assertNotNull(propDef);
+			assertTrue(propDef.value is Object);
+			assertEquals("a value", propDef.value.key1);
+			assertTrue(propDef.value.key2 is RuntimeObjectReference);
+			assertTrue(propDef.value.key3 is RuntimeObjectReference);
+		}
 
-	/**
-	 * SESPRINGACTIONSCRIPTAS-125
-	 */
-	/*public function testParseObjectWithPropertyWithLeadingPlus():void {
-		var xml:XML = <objects xmlns="http://www.springactionscript.org/schema/objects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.pranaframework.org/schema/objects/spring-actionscript-objects-1.0.xsd">
-				<object id="bert" class="org.springextensions.actionscript.test.testtypes.Person">
-					<property name="name" value="+123456789" type="String"/>
-				</object>
-			</objects>;
-		var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser();
-		var objectFactory:IApplicationContext = parser.parse(xml);
+		[Test]
+		public function testParse_circularRefence():void {
+			var context:IApplicationContext = new ApplicationContext();
+			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
+			var definitions:Object = parser.parse(<objects>
+					<object id="a" class="Object">
+						<property name="b">
+							<ref>b</ref>
+						</property>
+					</object>
+					<object id="b" class="Object">
+						<property name="a">
+							<ref>a</ref>
+						</property>
+					</object>
+				</objects>);
+			assertNotNull(definitions);
+			assertNotNull(definitions["a"]);
+			var definition:IObjectDefinition = definitions["a"];
+			assertNotNull(definition);
+			var propDef:PropertyDefinition = definition.getPropertyDefinitionByName("b");
+			assertNotNull(propDef);
+			assertTrue(propDef.value is RuntimeObjectReference);
+			assertEquals("b", RuntimeObjectReference(propDef.value).objectName);
 
-		var person:Person = objectFactory.getObject("bert") as Person;
+			assertNotNull(definitions["b"]);
+			definition = definitions["b"];
+			assertNotNull(definition);
+			propDef = definition.getPropertyDefinitionByName("a");
+			assertNotNull(propDef);
+			assertTrue(propDef.value is RuntimeObjectReference);
+			assertEquals("a", RuntimeObjectReference(propDef.value).objectName);
+		}
 
-		assertEquals("+123456789", person.name);
-	}*/
+		[Test]
+		public function testParseWithRefInArrayCollection():void {
+			var context:IApplicationContext = new ApplicationContext();
+			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
+			var definitions:Object = parser.parse(<objects>
+					<object id="a" class="Object">
+						<property name="a_property_1">
+							<array-collection>
+								<value>a value</value>
+								<ref>b</ref>
+							</array-collection>
+						</property>
+					</object>
+					<object id="b" class="Array">
+						<constructor-arg value="1"/>
+						<constructor-arg value="aa"/>
+						<constructor-arg value="true"/>
+					</object>
+				</objects>);
+			assertNotNull(definitions);
+			assertNotNull(definitions["a"]);
+			var definition:IObjectDefinition = definitions["a"];
+			assertNotNull(definition);
+			var propDef:PropertyDefinition = definition.getPropertyDefinitionByName("a_property_1");
+			assertNotNull(propDef);
+			assertTrue(propDef.value is ArrayCollection);
+			var col:ArrayCollection = propDef.value as ArrayCollection;
+			assertEquals(2, col.length);
+			assertEquals("a value", col.getItemAt(0));
+			assertTrue(col.getItemAt(1) is RuntimeObjectReference);
+			var ref:RuntimeObjectReference = col.getItemAt(1) as RuntimeObjectReference;
+			assertEquals("b", ref.objectName);
+		}
+
+		[Test]
+		public function testParseWithRefInDictionary():void {
+			var context:IApplicationContext = new ApplicationContext();
+			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
+			var definitions:Object = parser.parse(<objects>
+					<object id="a" class="Object">
+						<property name="a_property_1">
+							<dictionary>
+								<entry>
+									<key>key1</key>
+									<value>
+										<ref>b</ref>
+									</value>
+								</entry>
+								<entry>
+									<key>
+										<ref>c</ref>
+									</key>
+									<value>value2</value>
+								</entry>
+							</dictionary>
+						</property>
+					</object>
+					<object id="b" class="Array">
+						<constructor-arg value="1"/>
+						<constructor-arg value="aa"/>
+						<constructor-arg value="true"/>
+					</object>
+					<object id="c" class="Array">
+						<constructor-arg value="2"/>
+						<constructor-arg value="bb"/>
+						<constructor-arg value="false"/>
+					</object>
+				</objects>);
+			assertNotNull(definitions);
+			assertNotNull(definitions["a"]);
+			var definition:IObjectDefinition = definitions["a"];
+			assertNotNull(definition);
+			var propDef:PropertyDefinition = definition.getPropertyDefinitionByName("a_property_1");
+			assertNotNull(propDef);
+			assertTrue(propDef.value is Dictionary);
+			var dict:Dictionary = propDef.value as Dictionary;
+			assertTrue(dict["key1"] is RuntimeObjectReference);
+			var ref:RuntimeObjectReference = RuntimeObjectReference(dict["key1"]);
+			assertEquals("b", ref.objectName);
+		}
+
+		[Test]
+		public function testParse_shouldParseDependsOnAttribute():void {
+			var xml:XML = <objects>
+					<object id="a" class="org.springextensions.actionscript.test.testtypes.Person" depends-on="b,c"/>
+					<object id="b" class="org.springextensions.actionscript.test.testtypes.Person"/>
+					<object id="c" class="org.springextensions.actionscript.test.testtypes.Person"/>
+				</objects>;
+			var context:IApplicationContext = new ApplicationContext();
+			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
+			var definitions:Object = parser.parse(xml);
+			assertNotNull(definitions);
+			assertNotNull(definitions["a"]);
+			var definition:IObjectDefinition = definitions["a"];
+			assertNotNull(definition);
+			assertNotNull(definition.dependsOn);
+			assertEquals(2, definition.dependsOn.length);
+			assertEquals("b", definition.dependsOn[0]);
+			assertEquals("c", definition.dependsOn[1]);
+		}
+
+		[Test]
+		public function testParse_withDictionaryAsPropertyValue():void {
+			var xml:XML = <objects xmlns="http://www.springactionscript.org/schema/objects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.pranaframework.org/schema/objects/spring-actionscript-objects-1.0.xsd">
+					<object id="a" class="Object" singleton="true">
+						<property name="testprop">
+							<dictionary>
+								<entry>
+									<key>this_is_a_key</key>
+									<value>val</value>
+								</entry>
+							</dictionary>
+						</property>
+					</object>
+				</objects>;
+
+			var context:IApplicationContext = new ApplicationContext();
+			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
+			var definitions:Object = parser.parse(xml);
+			assertNotNull(definitions);
+			assertNotNull(definitions["a"]);
+			var definition:IObjectDefinition = definitions["a"];
+			assertNotNull(definition);
+			var propDef:PropertyDefinition = definition.getPropertyDefinitionByName("testprop");
+			assertNotNull(propDef);
+			assertTrue(propDef.value is Dictionary);
+			var dict:Dictionary = propDef.value as Dictionary;
+			assertEquals("val", dict["this_is_a_key"]);
+		}
+
+
+		/**
+		 * SESPRINGACTIONSCRIPTAS-125
+		 */
+		public function testParseObjectWithPropertyWithLeadingPlus():void {
+			var xml:XML = <objects xmlns="http://www.springactionscript.org/schema/objects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.pranaframework.org/schema/objects/spring-actionscript-objects-1.0.xsd">
+					<object id="bert" class="org.springextensions.actionscript.test.testtypes.Person">
+						<property name="name" type="String">
+							<value>+123456789</value>
+						</property>
+					</object>
+				</objects>;
+			var context:IApplicationContext = new ApplicationContext();
+			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
+			var definitions:Object = parser.parse(xml);
+			assertNotNull(definitions);
+			assertNotNull(definitions["bert"]);
+			var definition:IObjectDefinition = definitions["bert"];
+			assertNotNull(definition);
+			var propDef:PropertyDefinition = definition.getPropertyDefinitionByName("name");
+			assertNotNull(propDef);
+			assertEquals("+123456789", propDef.value);
+		}
 
 	}
 }
