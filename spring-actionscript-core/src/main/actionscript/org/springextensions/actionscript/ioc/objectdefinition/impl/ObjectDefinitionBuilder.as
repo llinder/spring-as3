@@ -77,7 +77,8 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		 * Adds a constructor argument with a value.
 		 */
 		public function addConstructorArgValue(value:Object):ObjectDefinitionBuilder {
-			_objectDefinition.constructorArguments.push(value);
+			_objectDefinition.constructorArguments ||= [];
+			_objectDefinition.constructorArguments[_objectDefinition.constructorArguments.length] = value;
 			return this;
 		}
 

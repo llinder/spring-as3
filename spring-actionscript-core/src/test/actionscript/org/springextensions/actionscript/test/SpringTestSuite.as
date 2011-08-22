@@ -22,6 +22,14 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProviderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventHandlerNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventRouterNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.BlockNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.CompositeCommandNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.CountProviderNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.IfNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.LoadURLNodeParsertest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.LoadURLStreamNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.PauseCommandNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.TaskNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.AttributeToElementPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.IdAttributePreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.InnerObjectsPreprocessorTest;
@@ -95,6 +103,14 @@ package org.springextensions.actionscript.test {
 		public var t35:MetadataProcessorObjectPostProcessorTest;
 		public var t36:EventRouterNodeParserTest;
 		public var t37:EventHandlerNodeParserTest;
+		public var t38:BlockNodeParserTest;
+		public var t39:CompositeCommandNodeParserTest;
+		public var t40:CountProviderNodeParserTest;
+		public var t41:IfNodeParserTest;
+		public var t42:LoadURLNodeParsertest;
+		public var t43:LoadURLStreamNodeParserTest;
+		public var t44:PauseCommandNodeParserTest;
+		public var t45:TaskNodeParserTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 	}

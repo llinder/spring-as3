@@ -384,6 +384,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 * @param objectDefinition the object definition
 		 */
 		public function registerObjectDefinition(objectName:String, objectDefinition:IObjectDefinition):void {
+			_definitions ||= {};
 			_definitions[objectName] = objectDefinition;
 		}
 
