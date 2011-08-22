@@ -188,7 +188,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			assertEquals("prop1", config.properties[0]);
 			assertEquals("prop2", config.properties[1]);
 
-			var config:EventHandlerCustomConfigurator = EventHandlerCustomConfigurator(configs[1]);
+			config = EventHandlerCustomConfigurator(configs[1]);
 			assertStrictlyEquals(eventBusUserRegistry, config.eventBusUserRegistry);
 			assertNull(config.eventName);
 			assertEquals("eventHandler", config.eventHandlerMethodName);
