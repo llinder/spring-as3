@@ -500,10 +500,6 @@
 
 	<repositories>
 		<repository>
-			<id>flash-nexus-repository</id>
-			<url>http://www.flashnexus.org/nexus/content/groups/public</url>
-		</repository>
-		<repository>
 			<id>cairngorm3-repository</id>
 			<url>http://opensource.adobe.com/svn/opensource/cairngorm3/maven-repository</url>
 			<releases>
