@@ -234,7 +234,7 @@ The file attribute will take precedence over the name and value attributes.
 				<xs:documentation xml:lang="en">A reference to another object defined in the container.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="is-static" type="xs:boolean" use="optional" default="false">
+		<xs:attribute name="static" type="xs:boolean" use="optional" default="false">
 			<xs:annotation>
 				<xs:documentation xml:lang="en">Determines if the specified property is static.</xs:documentation>
 			</xs:annotation>

@@ -65,7 +65,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		public static const FACTORY_OBJECT_ATTRIBUTE:String = "factory-object";
 		public static const ID_ATTRIBUTE:String = "id";
 		public static const INIT_METHOD_ATTRIBUTE:String = "init-method";
-		public static const ISSTATIC_ATTRIBUTE:String = "is-static";
+		public static const STATIC_ATTRIBUTE:String = "static";
 		public static const KEY_ATTRIBUTE:String = "key";
 		public static const KEY_ELEMENT:String = "key";
 		public static const LAZY_INIT_ATTRIBUTE:String = "lazy-init";
@@ -527,7 +527,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			var propertyNodes:XMLList = xml.property;
 
 			for each (var node:XML in propertyNodes) {
-				var isStatic:Boolean = (node.attribute(ISSTATIC_ATTRIBUTE).length() > 0) ? (String(node.attribute(ISSTATIC_ATTRIBUTE)) == TRUE_VALUE) : false;
+				var isStatic:Boolean = (node.attribute(STATIC_ATTRIBUTE).length() > 0) ? (String(node.attribute(STATIC_ATTRIBUTE)) == TRUE_VALUE) : false;
 				var ns:String = (node.attribute(NAMESPACE_ATTRIBUTE).length() > 0) ? String(node.attribute(NAMESPACE_ATTRIBUTE)) : null;
 				objectDefinition.addPropertyDefinition(new PropertyDefinition(node.@name.toString(), parseProperty(node), ns, isStatic));
 			}
