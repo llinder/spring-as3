@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	import flash.system.ApplicationDomain;
 	import flash.utils.Dictionary;
+
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
@@ -277,27 +278,30 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function registerObjectDefinition(objectName:String, objectDefinition:IObjectDefinition):void {
-			if (!containsObjectDefinition(objectName)) {
-				objectDefinition.registryId = id;
-				_objectDefinitionNameLookup[objectDefinition] = objectName;
-				_objectDefinitionList[_objectDefinitionList.length] = objectDefinition;
-				_objectDefinitions[objectName] = objectDefinition;
-				_objectDefinitionNames[_objectDefinitionNames.length] = objectName;
-				addToMetadataLookup(objectDefinition);
-				var cls:Class = (objectDefinition.clazz == null) ? ClassUtils.forName(objectDefinition.className, _applicationDomain) : objectDefinition.clazz;
-				if (_objectDefinitionClasses.indexOf(cls) < 0) {
-					_objectDefinitionClasses[_objectDefinitionClasses.length] = cls;
-				}
-				objectDefinition.clazz = cls;
-				objectDefinition.isInterface = ClassUtils.isInterface(cls);
-				if ((_customConfigurations != null) && (_customConfigurations.hasOwnProperty(objectName))) {
-					objectDefinition.customConfiguration = _customConfigurations[objectName];
-					delete _customConfigurations[objectName];
-				}
-			} else {
+		public function registerObjectDefinition(objectName:String, objectDefinition:IObjectDefinition, override:Boolean=true):void {
+			var contains:Boolean = containsObjectDefinition(objectName);
+			if (contains && override) {
+				removeObjectDefinition(objectName);
+			} else if (contains && !override) {
 				throw new Error(OBJECT_DEFINITION_NAME_EXISTS_ERROR);
 			}
+			objectDefinition.registryId = id;
+			_objectDefinitionNameLookup[objectDefinition] = objectName;
+			_objectDefinitionList[_objectDefinitionList.length] = objectDefinition;
+			_objectDefinitions[objectName] = objectDefinition;
+			_objectDefinitionNames[_objectDefinitionNames.length] = objectName;
+			addToMetadataLookup(objectDefinition);
+			var cls:Class = (objectDefinition.clazz == null) ? ClassUtils.forName(objectDefinition.className, _applicationDomain) : objectDefinition.clazz;
+			if (_objectDefinitionClasses.indexOf(cls) < 0) {
+				_objectDefinitionClasses[_objectDefinitionClasses.length] = cls;
+			}
+			objectDefinition.clazz = cls;
+			objectDefinition.isInterface = ClassUtils.isInterface(cls);
+			if ((_customConfigurations != null) && (_customConfigurations.hasOwnProperty(objectName))) {
+				objectDefinition.customConfiguration = _customConfigurations[objectName];
+				delete _customConfigurations[objectName];
+			}
+
 		}
 
 		/**

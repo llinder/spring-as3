@@ -15,15 +15,15 @@
  */
 package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	import flash.utils.Dictionary;
-
 	import org.as3commons.lang.Assert;
+	import org.as3commons.lang.ICloneable;
 	import org.as3commons.lang.IEquals;
 	import org.as3commons.lang.builder.EqualsBuilder;
 	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
+	import org.springextensions.actionscript.ioc.objectdefinition.ChildContextObjectDefinitionAccess;
 	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
-	import org.springextensions.actionscript.ioc.objectdefinition.ObjectDefinitionAccess;
 	import org.springextensions.actionscript.ioc.objectdefinition.ObjectDefinitionScope;
 
 	/**
@@ -31,7 +31,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 	 * @author Christophe Herreman, Damir Murat
 	 * @docref container-documentation.html#the_objects
 	 */
-	public class ObjectDefinition implements IObjectDefinition, IEquals {
+	public class ObjectDefinition implements IObjectDefinition, IEquals, ICloneable {
 
 		private static const COLON:String = ':';
 
@@ -45,6 +45,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		}
 
 		private var _autoWireMode:AutowireMode;
+		private var _childContextAccess:ChildContextObjectDefinitionAccess;
 		private var _className:String;
 		private var _clazz:Class;
 		private var _constructorArguments:Array;
@@ -70,7 +71,6 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		private var _scope:ObjectDefinitionScope;
 		private var _skipMetadata:Boolean = false;
 		private var _skipPostProcessors:Boolean = false;
-		private var _access:ObjectDefinitionAccess;
 
 		/**
 		 * @default AutowireMode.NO
@@ -85,6 +85,20 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		 */
 		public function set autoWireMode(value:AutowireMode):void {
 			_autoWireMode = (value) ? value : AutowireMode.NO;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get childContextAccess():ChildContextObjectDefinitionAccess {
+			return _childContextAccess;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set childContextAccess(value:ChildContextObjectDefinitionAccess):void {
+			_childContextAccess = value;
 		}
 
 		/**
@@ -309,13 +323,6 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		}
 
 		/**
-		 * @private
-		 */
-		public function set methodInvocations(value:Vector.<MethodInvocation>):void {
-			_methodInvocations = value;
-		}
-
-		/**
 		 * @inheritDoc
 		 */
 		public function get parent():IObjectDefinition {
@@ -447,6 +454,36 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		}
 
 		/**
+		 * @inheritDoc
+		 */
+		public function clone():* {
+			var result:ObjectDefinition = new ObjectDefinition(this.className);
+			result.autoWireMode = this.autoWireMode;
+			result.childContextAccess = this.childContextAccess;
+			result.clazz = this.clazz;
+			result.constructorArguments = (this.constructorArguments != null) ? this.constructorArguments.concat() : null;
+			result.dependencyCheck = this.dependencyCheck;
+			result.dependsOn = this.dependsOn.concat();
+			result.destroyMethod = this.destroyMethod;
+			result.factoryMethod = this.factoryMethod;
+			result.factoryObjectName = this.factoryObjectName;
+			result.initMethod = this.initMethod;
+			result.isAbstract = this.isAbstract;
+			result.isAutoWireCandidate = this.isAutoWireCandidate;
+			result.isInterface = this.isInterface;
+			result.isLazyInit = this.isLazyInit;
+			result.isSingleton = this.isSingleton;
+			cloneMethodInvocations(this.methodInvocations, result);
+			result.parentName = this.parentName;
+			result.primary = this.primary;
+			cloneProperties(this.properties, result);
+			result.scope = this.scope;
+			result.skipMetadata = this.skipMetadata;
+			result.skipPostProcessors = this.skipPostProcessors;
+			return result;
+		}
+
+		/**
 		 *
 		 */
 		public function equals(object:Object):Boolean {
@@ -470,6 +507,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 				append(isAutoWireCandidate, that.isAutoWireCandidate). //
 				append(isLazyInit, that.isLazyInit). //
 				append(isSingleton, that.isSingleton). //
+				append(isAbstract, that.isAbstract). //
 				append(methodInvocations, that.methodInvocations). //
 				append(skipPostProcessors, that.skipPostProcessors). //
 				append(skipMetadata, that.skipMetadata). //
@@ -481,6 +519,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 				append(parentName, that.parentName). //
 				append(isInterface, that.isInterface). //
 				append(customConfiguration, that.customConfiguration). //
+				append(childContextAccess, that.childContextAccess). //
 				equals;
 		}
 
@@ -504,30 +543,39 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 
 		/**
 		 *
+		 * @param methodInvocations
+		 * @param destination
+		 */
+		protected function cloneMethodInvocations(methodInvocations:Vector.<MethodInvocation>, destination:IObjectDefinition):void {
+			for each (var mi:MethodInvocation in methodInvocations) {
+				destination.addMethodInvocation(mi.clone());
+			}
+		}
+
+		/**
+		 *
+		 * @param properties
+		 * @param destination
+		 */
+		protected function cloneProperties(properties:Vector.<PropertyDefinition>, destination:IObjectDefinition):void {
+			for each (var pd:PropertyDefinition in properties) {
+				destination.addPropertyDefinition(pd.clone());
+			}
+		}
+
+		/**
+		 *
 		 * @param className
 		 */
 		protected function initObjectDefinition(clazzName:String):void {
 			className = clazzName;
 			scope = ObjectDefinitionScope.SINGLETON;
+			childContextAccess = ChildContextObjectDefinitionAccess.FULL;
 			isLazyInit = false;
 			autoWireMode = AutowireMode.NO;
 			isAutoWireCandidate = true;
 			primary = false;
 			dependencyCheck = DependencyCheckMode.NONE;
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get access():ObjectDefinitionAccess {
-			return _access;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set access(value:ObjectDefinitionAccess):void {
-			_access = value;
 		}
 	}
 }

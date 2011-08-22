@@ -18,15 +18,18 @@ package org.springextensions.actionscript.context.impl {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
+
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.IOperationQueue;
 	import org.as3commons.async.operation.event.OperationEvent;
 	import org.as3commons.async.operation.impl.OperationQueue;
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
+	import org.as3commons.eventbus.IEventBusListener;
 	import org.as3commons.eventbus.impl.EventBus;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
+	import org.as3commons.lang.ICloneable;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.util.OrderedUtils;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistry;
@@ -359,8 +362,41 @@ package org.springextensions.actionscript.context.impl {
 			_childContexts ||= new Vector.<IApplicationContext>();
 			if (_childContexts.indexOf(childContext) < 0) {
 				childContexts[childContexts.length] = childContext;
+				addChildCOntextEventBusListener(childContext, eventBus);
+				addDefinitionsToChildContext(childContext, objectDefinitionRegistry);
+				addSingletonsToChildContext(childContext, cache);
 			}
 		}
+
+		protected function addSingletonsToChildContext(childContext:IApplicationContext, cache:IInstanceCache):void {
+			var cacheNames:Vector.<String> = cache.getCachedNames();
+			for each (var objectName:String in cacheNames) {
+				if (!childContext.cache.hasInstance(objectName)) {
+					childContext.cache.addInstance(objectName, cache.getInstance(objectName));
+				}
+			}
+		}
+
+		protected function addDefinitionsToChildContext(childContext:IApplicationContext, objectDefinitionRegistry:IObjectDefinitionRegistry):void {
+			var definitionNames:Vector.<String> = objectDefinitionRegistry.objectDefinitionNames;
+			for each (var name:String in definitionNames) {
+				if (!childContext.objectDefinitionRegistry.containsObjectDefinition(name)) {
+					var od:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(name);
+					if (od is ICloneable) {
+						childContext.objectDefinitionRegistry.registerObjectDefinition(name, ICloneable(od).clone());
+					}
+				}
+			}
+		}
+
+		protected function addChildCOntextEventBusListener(childContext:IApplicationContext, parentEventBus:IEventBus):void {
+			if ((childContext is IEventBusAware) && (IEventBusAware(childContext).eventBus is IEventBusListener)) {
+				if (parentEventBus != null) {
+					parentEventBus.addListener(IEventBusListener(IEventBusAware(childContext).eventBus));
+				}
+			}
+		}
+
 
 		/**
 		 * @inheritDoc

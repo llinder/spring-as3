@@ -73,10 +73,10 @@
 		<attribute name="isAbstract"
 				   type="Boolean"
 				   required="false"/>
-		<attribute name="access"
+		<attribute name="childContextAccess"
 				   type="String"
 				   required="false"
-				   values="private,public"
+				   values="none,definition,singleton,full"
 				   defaultValue="public"/>
 	</metadata>
 

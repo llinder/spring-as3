@@ -22,16 +22,20 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	 * @author Roland Zwaga
 	 *
 	 */
-	public final class ObjectDefinitionAccess {
+	public final class ChildContextObjectDefinitionAccess {
 
 		private static const _INSTANCES:Dictionary = new Dictionary();
 		private static var _enumCreated:Boolean;
 
-		public static const PRIVATE:ObjectDefinitionAccess = new ObjectDefinitionAccess(PRIVATE_NAME);
-		public static const PUBLIC:ObjectDefinitionAccess = new ObjectDefinitionAccess(PUBLIC_NAME);
+		public static const NONE:ChildContextObjectDefinitionAccess = new ChildContextObjectDefinitionAccess(NONE_NAME);
+		public static const DEFINITION:ChildContextObjectDefinitionAccess = new ChildContextObjectDefinitionAccess(DEFINITION_NAME);
+		public static const SINGLETON:ChildContextObjectDefinitionAccess = new ChildContextObjectDefinitionAccess(SINGLETON_NAME);
+		public static const FULL:ChildContextObjectDefinitionAccess = new ChildContextObjectDefinitionAccess(FULL_NAME);
 
-		private static const PRIVATE_NAME:String = "privateObjectDefinitionAccess";
-		private static const PUBLIC_NAME:String = "publicObjectDefinitionAccess";
+		private static const NONE_NAME:String = "none";
+		private static const DEFINITION_NAME:String = "definition";
+		private static const SINGLETON_NAME:String = "singleton";
+		private static const FULL_NAME:String = "full";
 
 		{
 			_enumCreated = true;
@@ -43,7 +47,7 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 			return _value;
 		}
 
-		public function ObjectDefinitionAccess(val:String) {
+		public function ChildContextObjectDefinitionAccess(val:String) {
 			super();
 			if (_enumCreated) {
 				throw new IllegalOperationError("ObjectDefinitionAccess has already been created");
@@ -52,8 +56,8 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 			_INSTANCES[val] = this;
 		}
 
-		public static function fromValue(val:String):ObjectDefinitionAccess {
-			return _INSTANCES[val] as ObjectDefinitionAccess;
+		public static function fromValue(val:String):ChildContextObjectDefinitionAccess {
+			return _INSTANCES[val] as ChildContextObjectDefinitionAccess;
 		}
 	}
 }

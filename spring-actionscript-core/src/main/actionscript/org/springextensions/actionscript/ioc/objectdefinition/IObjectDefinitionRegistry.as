@@ -188,7 +188,7 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @param objectName the name under which the object definition should be stored
 		 * @param objectDefinition the object definition to store
 		 */
-		function registerObjectDefinition(objectName:String, objectDefinition:IObjectDefinition):void;
+		function registerObjectDefinition(objectName:String, objectDefinition:IObjectDefinition, override:Boolean=true):void;
 
 		/**
 		 * Removes the definition with the given name from the registry
