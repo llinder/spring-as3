@@ -27,8 +27,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventRouterNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.NullReturningNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_eventbus;
-	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.IXMLObjectDefinitionsPreprocessor;
-	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.EventBusElementsPreprocessor;
 	import org.springextensions.actionscript.ioc.factory.IInitializingObject;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
@@ -36,7 +34,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class EventBusNamespacehandler extends AbstractNamespaceHandler implements IXMLObjectDefinitionsPreprocessor, IEventBusUserRegistryAware, IApplicationDomainAware, IInitializingObject {
+	public class EventBusNamespacehandler extends AbstractNamespaceHandler implements IEventBusUserRegistryAware, IApplicationDomainAware, IInitializingObject {
 
 		public static const EVENT_ROUTER_ELEMENT_NAME:String = "event-router";
 		public static const EVENT_HANDLER_ELEMENT_NAME:String = "event-handler";
@@ -45,7 +43,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		public static const EVENT_LISTENER_INTERCEPTOR_FIELD_NAME:String = "event-listener-interceptor";
 		public static const ROUTING_CONFIGURATION_ELEMENT_NAME:String = "routing-configuration";
 
-		private var _preprocessor:EventBusElementsPreprocessor;
 		private var _eventBusUserRegistry:IEventBusUserRegistry;
 		private var _applicationDomain:ApplicationDomain;
 		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
@@ -63,10 +60,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			_objectDefinitionRegistry = objectDefinitionRegistry;
 		}
 
-		public function preprocess(xml:XML):XML {
-			return _preprocessor.preprocess(xml);
-		}
-
 		public function get eventBusUserRegistry():IEventBusUserRegistry {
 			return _eventBusUserRegistry;
 		}
@@ -80,7 +73,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		}
 
 		public function afterPropertiesSet():void {
-			_preprocessor = new EventBusElementsPreprocessor();
 			registerObjectDefinitionParser(EVENT_ROUTER_ELEMENT_NAME, new EventRouterNodeParser(_objectDefinitionRegistry, eventBusUserRegistry, _applicationDomain));
 			registerObjectDefinitionParser(EVENT_HANDLER_ELEMENT_NAME, new EventHandlerNodeParser(_objectDefinitionRegistry, eventBusUserRegistry, _applicationDomain));
 			registerObjectDefinitionParser(EVENT_HANDLER_METHOD_ELEMENT_NAME, new NullReturningNodeParser());
