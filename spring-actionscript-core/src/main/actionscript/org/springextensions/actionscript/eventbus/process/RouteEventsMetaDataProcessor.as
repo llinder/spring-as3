@@ -124,7 +124,9 @@ package org.springextensions.actionscript.eventbus.process {
 		 * Creates a new <code>RouteEventsMetaDataPostProcessor</code> instance.
 		 */
 		public function RouteEventsMetaDataProcessor() {
-			super(false, new Vector.<String>([ROUTE_EVENTS_METADATA]));
+			var names:Vector.<String> = new Vector.<String>();
+			names[names.length] = ROUTE_EVENTS_METADATA;
+			super(false, names);
 		}
 
 		// --------------------------------------------------------------------

@@ -42,7 +42,9 @@ package org.springextensions.actionscript.eventbus.process {
 		private static const EVENT_INTERCEPTOR_METADATA_NAME:String = "EventInterceptor";
 
 		public function EventInterceptorMetadataProcessor() {
-			super(true, new Vector.<String>([EVENT_INTERCEPTOR_METADATA_NAME]));
+			var names:Vector.<String> = new Vector.<String>();
+			names[names.length] = EVENT_INTERCEPTOR_METADATA_NAME;
+			super(true, names);
 		}
 
 		override public function process(instance:Object, container:IMetadataContainer, name:String, objectName:String):void {

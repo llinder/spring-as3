@@ -15,6 +15,7 @@
  */
 package org.springextensions.actionscript.eventbus.process {
 	import flash.utils.Dictionary;
+
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.lang.ClassUtils;
@@ -118,7 +119,9 @@ package org.springextensions.actionscript.eventbus.process {
 		 * Creates a new <code>EventHandlerMetaDataPostProcessor</code> instance.
 		 */
 		public function EventHandlerMetadataProcessor() {
-			super(false, new Vector.<String>([EVENT_HANDLER_METADATA]));
+			var names:Vector.<String> = new Vector.<String>();
+			names[names.length] = EVENT_HANDLER_METADATA;
+			super(false, names);
 		}
 
 		// --------------------------------------------------------------------
