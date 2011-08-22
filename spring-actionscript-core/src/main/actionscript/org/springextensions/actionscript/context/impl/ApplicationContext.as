@@ -73,6 +73,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.process.impl.object.ApplicationContextAwareObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.object.ObjectFactoryAwarePostProcessor;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjector;
+	import org.springextensions.actionscript.ioc.objectdefinition.ChildContextObjectDefinitionAccess;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistry;
@@ -362,41 +363,63 @@ package org.springextensions.actionscript.context.impl {
 			_childContexts ||= new Vector.<IApplicationContext>();
 			if (_childContexts.indexOf(childContext) < 0) {
 				childContexts[childContexts.length] = childContext;
-				addChildCOntextEventBusListener(childContext, eventBus);
+				addChildContextEventBusListener(childContext, eventBus);
 				addDefinitionsToChildContext(childContext, objectDefinitionRegistry);
-				addSingletonsToChildContext(childContext, cache);
+				addSingletonsToChildContext(childContext, cache, objectDefinitionRegistry);
 			}
 		}
 
-		protected function addSingletonsToChildContext(childContext:IApplicationContext, cache:IInstanceCache):void {
+		/**
+		 *
+		 * @param childContext
+		 * @param cache
+		 * @param objectDefinitionRegistry
+		 */
+		protected function addSingletonsToChildContext(childContext:IApplicationContext, cache:IInstanceCache, objectDefinitionRegistry:IObjectDefinitionRegistry):void {
 			var cacheNames:Vector.<String> = cache.getCachedNames();
 			for each (var objectName:String in cacheNames) {
-				if (!childContext.cache.hasInstance(objectName)) {
+				var share:Boolean = true;
+				if (objectDefinitionRegistry.containsObjectDefinition(objectName)) {
+					var od:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(objectName);
+					share = ((od.childContextAccess === ChildContextObjectDefinitionAccess.DEFINITION) || (od.childContextAccess === ChildContextObjectDefinitionAccess.FULL));
+				}
+				if ((share) && (!childContext.cache.hasInstance(objectName))) {
 					childContext.cache.addInstance(objectName, cache.getInstance(objectName));
 				}
 			}
 		}
 
+		/**
+		 *
+		 * @param childContext
+		 * @param objectDefinitionRegistry
+		 */
 		protected function addDefinitionsToChildContext(childContext:IApplicationContext, objectDefinitionRegistry:IObjectDefinitionRegistry):void {
 			var definitionNames:Vector.<String> = objectDefinitionRegistry.objectDefinitionNames;
-			for each (var name:String in definitionNames) {
-				if (!childContext.objectDefinitionRegistry.containsObjectDefinition(name)) {
-					var od:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(name);
-					if (od is ICloneable) {
-						childContext.objectDefinitionRegistry.registerObjectDefinition(name, ICloneable(od).clone());
+			for each (var objectName:String in definitionNames) {
+				if (!childContext.objectDefinitionRegistry.containsObjectDefinition(objectName)) {
+					var od:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(objectName);
+					if ((od.childContextAccess === ChildContextObjectDefinitionAccess.DEFINITION) || (od.childContextAccess === ChildContextObjectDefinitionAccess.FULL)) {
+						if (od is ICloneable) {
+							childContext.objectDefinitionRegistry.registerObjectDefinition(objectName, ICloneable(od).clone());
+						}
 					}
 				}
 			}
 		}
 
-		protected function addChildCOntextEventBusListener(childContext:IApplicationContext, parentEventBus:IEventBus):void {
+		/**
+		 *
+		 * @param childContext
+		 * @param parentEventBus
+		 */
+		protected function addChildContextEventBusListener(childContext:IApplicationContext, parentEventBus:IEventBus):void {
 			if ((childContext is IEventBusAware) && (IEventBusAware(childContext).eventBus is IEventBusListener)) {
 				if (parentEventBus != null) {
 					parentEventBus.addListener(IEventBusListener(IEventBusAware(childContext).eventBus));
 				}
 			}
 		}
-
 
 		/**
 		 * @inheritDoc
