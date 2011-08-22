@@ -359,13 +359,19 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function addChildContext(childContext:IApplicationContext):void {
+		public function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:Boolean=true):void {
 			_childContexts ||= new Vector.<IApplicationContext>();
 			if (_childContexts.indexOf(childContext) < 0) {
 				childContexts[childContexts.length] = childContext;
-				addChildContextEventBusListener(childContext, eventBus);
-				addDefinitionsToChildContext(childContext, objectDefinitionRegistry);
-				addSingletonsToChildContext(childContext, cache, objectDefinitionRegistry);
+				if (shareEventBus) {
+					addChildContextEventBusListener(childContext, eventBus);
+				}
+				if (shareDefinitions) {
+					addDefinitionsToChildContext(childContext, objectDefinitionRegistry);
+				}
+				if (shareSingletons) {
+					addSingletonsToChildContext(childContext, cache, objectDefinitionRegistry);
+				}
 			}
 		}
 

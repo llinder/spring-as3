@@ -31,6 +31,11 @@ package org.springextensions.actionscript.context {
 	public interface IApplicationContext extends IObjectFactory, IStageObjectProcessorRegistryAware {
 		/**
 		 *
+		 * @return
+		 */
+		function get childContexts():Vector.<IApplicationContext>;
+		/**
+		 *
 		 */
 		function get definitionProviders():Vector.<IObjectDefinitionsProvider>;
 
@@ -64,6 +69,12 @@ package org.springextensions.actionscript.context {
 
 		/**
 		 *
+		 * @param objectFactory
+		 */
+		function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:Boolean=true):void;
+
+		/**
+		 *
 		 * @param provider
 		 */
 		function addDefinitionProvider(provider:IObjectDefinitionsProvider):void;
@@ -75,20 +86,13 @@ package org.springextensions.actionscript.context {
 
 		/**
 		 *
+		 * @param configurationPackage
+		 */
+		function configure(configurationPackage:IConfigurationPackage):void;
+
+		/**
+		 *
 		 */
 		function load():void;
-		/**
-		 *
-		 * @return
-		 */
-		function get childContexts():Vector.<IApplicationContext>;
-
-		/**
-		 *
-		 * @param objectFactory
-		 */
-		function addChildContext(childContext:IApplicationContext):void;
-
-		function configure(configurationPackage:IConfigurationPackage):void;
 	}
 }
