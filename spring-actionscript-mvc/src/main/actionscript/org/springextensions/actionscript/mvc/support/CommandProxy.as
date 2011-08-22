@@ -22,7 +22,7 @@ package org.springextensions.actionscript.mvc.support {
 	import org.as3commons.reflect.Field;
 	import org.as3commons.reflect.Method;
 	import org.as3commons.reflect.Type;
-	import org.springextensions.actionscript.ioc.factory.config.EventHandlerProxy;
+	import org.springextensions.actionscript.eventbus.process.EventHandlerProxy;
 
 	/**
 	 * Proxied method invoker for command objects.
@@ -34,7 +34,7 @@ package org.springextensions.actionscript.mvc.support {
 		/**
 		 * Creates a new <code>CommandProxy</code> instance.
 		 */
-		public function CommandProxy(target:Object, method:Method, properties:Array, event:Event, applicationDomain:ApplicationDomain) {
+		public function CommandProxy(target:Object, method:Method, properties:Vector.<String>, event:Event, applicationDomain:ApplicationDomain) {
 			Assert.notNull(target, "target argument must not be null");
 			Assert.notNull(method, "method argument must not be null");
 			Assert.notNull(event, "event argument must not be null");
@@ -65,7 +65,7 @@ package org.springextensions.actionscript.mvc.support {
 			return [];
 		}
 
-		public function setProperties(target:Object, properties:Array, values:Array):void {
+		public function setProperties(target:Object, properties:Vector.<String>, values:Array):void {
 			Assert.notNull(target, "target argument must not be null");
 			Assert.notNull(properties, "properties argument must not be null");
 			Assert.notNull(values, "values argument must not be null");

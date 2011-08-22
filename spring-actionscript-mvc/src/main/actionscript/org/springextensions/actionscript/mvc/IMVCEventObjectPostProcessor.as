@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.mvc {
+	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 
 	/**
 	 * Marker interface for an object postprocessor that processes [RouteEvent] metadata

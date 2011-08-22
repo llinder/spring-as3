@@ -23,13 +23,17 @@ package org.springextensions.actionscript.mvc.support {
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.ClassUtils;
-	import org.as3commons.logging.ILogger;
-	import org.as3commons.logging.LoggerFactory;
+	import org.as3commons.logging.api.ILogger;
+	import org.as3commons.logging.api.getClassLogger;
 	import org.as3commons.reflect.Method;
 	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
-	import org.springextensions.actionscript.operation.mvc.IController;
+	import org.springextensions.actionscript.mvc.IController;
+	import org.springextensions.actionscript.mvc.MVCControllerObjectFactoryPostProcessor;
+	import org.springextensions.actionscript.mvc.event.ControllerEvent;
+	import org.springextensions.actionscript.mvc.event.ControllerRegistrationEvent;
+	import org.springextensions.actionscript.mvc.event.MVCEvent;
 
 	/**
 	 * Dispatched when a command object is registered with the current <code>Controller</code>.
@@ -53,7 +57,7 @@ package org.springextensions.actionscript.mvc.support {
 	 */
 	public class Controller extends EventDispatcher implements IController, IApplicationContextAware {
 
-		private static const LOGGER:ILogger = LoggerFactory.getClassLogger(Controller);
+		private static const LOGGER:ILogger = getClassLogger(Controller);
 
 		private var _document:Object;
 
@@ -119,12 +123,6 @@ package org.springextensions.actionscript.mvc.support {
 		 */
 		public function set applicationContext(value:IApplicationContext):void {
 			_applicationContext = value;
-			var ownerModuleAware:IOwnerModuleAware = (_applicationContext as IOwnerModuleAware);
-			if (ownerModuleAware != null) {
-				_document = (ownerModuleAware.ownerModule != null) ? ownerModuleAware.ownerModule : ApplicationUtils.application;
-			} else {
-				_document = ApplicationUtils.application;
-			}
 		}
 
 		/**
@@ -138,11 +136,11 @@ package org.springextensions.actionscript.mvc.support {
 		/**
 		 * @inheritDoc
 		 */
-		public function registerCommandForEventType(eventType:String, commandName:String, executeMethodName:String, properties:Array = null, priority:uint = 0):void {
+		public function registerCommandForEventType(eventType:String, commandName:String, executeMethodName:String, properties:Vector.<String>=null, priority:uint=0):void {
 			Assert.hasText(eventType, "eventType argument must not be null or empty");
 			Assert.hasText(commandName, "commandName argument must not be null or empty");
 			Assert.hasText(executeMethodName, "executeMethodName argument must not be null or empty");
-			LOGGER.debug("command {0} registered for event type {1} with execute method {2} and priority {3}", commandName, eventType, executeMethodName, priority);
+			LOGGER.debug("command {0} registered for event type {1} with execute method {2} and priority {3}", [commandName, eventType, executeMethodName, priority]);
 			var reg:CommandRegistration = new CommandRegistration(commandName, executeMethodName, properties, priority);
 
 			if (_eventTypeRegistry[eventType] == null) {
@@ -158,11 +156,11 @@ package org.springextensions.actionscript.mvc.support {
 		/**
 		 * @inheritDoc
 		 */
-		public function registerCommandForEventClass(eventClass:Class, commandName:String, executeMethodName:String, properties:Array = null, priority:uint = 0):void {
+		public function registerCommandForEventClass(eventClass:Class, commandName:String, executeMethodName:String, properties:Vector.<String>=null, priority:uint=0):void {
 			Assert.notNull(eventClass, "eventClass argument must not be null");
 			Assert.notNull(eventClass, "commandName argument must not be null or empty");
 			Assert.hasText(executeMethodName, "executeMethodName argument must not be null or empty");
-			LOGGER.debug("command {0} registered for event class {1} with execute method {2} and priority {3}", commandName, eventClass, executeMethodName, priority);
+			LOGGER.debug("command {0} registered for event class {1} with execute method {2} and priority {3}", [commandName, eventClass, executeMethodName, priority]);
 			var reg:CommandRegistration = new CommandRegistration(commandName, executeMethodName, properties, priority);
 
 			if (_eventClassRegistry[eventClass] == null) {
@@ -218,7 +216,7 @@ package org.springextensions.actionscript.mvc.support {
 		public function onMVCEventHandler(event:MVCEvent):void {
 			Assert.notNull(event, "event argument must not be null");
 			if (event.document === _document) {
-				LOGGER.debug("Handling MVCEvent {0}", event);
+				LOGGER.debug("Handling MVCEvent {0}", [event]);
 				var registrations:Array = findCommandRegistrations(event.event);
 				if (registrations != null) {
 					//Sort the commands with the highest priority on top:
@@ -241,19 +239,19 @@ package org.springextensions.actionscript.mvc.support {
 			Assert.notNull(event, "event argument must not be null");
 			var commandRegistrations:Array = _eventTypeRegistry[event.type] as Array;
 			if (commandRegistrations != null) {
-				LOGGER.debug("Found event type registration for event {0}", event);
+				LOGGER.debug("Found event type registration for event {0}", [event]);
 				return commandRegistrations;
 			} else {
 				var cls:Class = ClassUtils.forInstance(event, _applicationContext.applicationDomain);
 				commandRegistrations = _eventClassRegistry[cls] as Array;
 				if (commandRegistrations != null) {
-					LOGGER.debug("Found event class registration for event {0}", event);
+					LOGGER.debug("Found event class registration for event {0}", [event]);
 					return commandRegistrations;
 				} else {
 					if (_failOnCommandNotFound) {
 						throw new IllegalOperationError("No event handler found for event " + event.toString());
 					} else {
-						LOGGER.debug("Found no registration for event {0}", event);
+						LOGGER.debug("Found no registration for event {0}", [event]);
 						return null;
 					}
 				}
@@ -278,7 +276,7 @@ package org.springextensions.actionscript.mvc.support {
 			proxy.invoke();
 
 			dispatchEvent(new ControllerEvent(ControllerEvent.AFTER_COMMAND_EXECUTED, commandInstance));
-			LOGGER.debug("executed command {0} for event {1}", commandInstance, event);
+			LOGGER.debug("executed command {0} for event {1}", [commandInstance, event]);
 		}
 
 		/**

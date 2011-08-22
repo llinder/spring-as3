@@ -17,7 +17,7 @@ package org.springextensions.actionscript.mvc.event {
 	import flash.events.Event;
 
 	import org.as3commons.lang.Assert;
-	import org.springextensions.actionscript.operation.mvc.support.CommandRegistration;
+	import org.springextensions.actionscript.mvc.support.CommandRegistration;
 
 	/**
 	 * Dispatched when a command is registered in a <code>Controller</code> instance.
@@ -52,7 +52,7 @@ package org.springextensions.actionscript.mvc.event {
 		 * @param eventType Not empty when the command registration is by type
 		 * @param eventClass Not <code>null</code> when the command registration is by <code>Class</code>
 		 */
-		public function ControllerRegistrationEvent(commandRegistration:CommandRegistration, eventType:String = "", eventClass:Class = null, bubbles:Boolean = false, cancelable:Boolean = false) {
+		public function ControllerRegistrationEvent(commandRegistration:CommandRegistration, eventType:String="", eventClass:Class=null, bubbles:Boolean=false, cancelable:Boolean=false) {
 			Assert.notNull(commandRegistration, "commandRegistration argument must not be null");
 			super(COMMAND_REGISTERED, bubbles, cancelable);
 			_commandRegistration = commandRegistration;

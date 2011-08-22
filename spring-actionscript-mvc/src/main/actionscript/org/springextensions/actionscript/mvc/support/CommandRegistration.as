@@ -52,14 +52,14 @@ package org.springextensions.actionscript.mvc.support {
 			return _priority;
 		}
 
-		private var _properties:Array;
+		private var _properties:Vector.<String>;
 
 		/**
 		 * A list of property names on the <code>Event</code> instance that will be mapped either to the arguments of the execution method or to properties on the command instance.
 		 * @return
 		 *
 		 */
-		public function get properties():Array {
+		public function get properties():Vector.<String> {
 			return _properties;
 		}
 
@@ -70,7 +70,7 @@ package org.springextensions.actionscript.mvc.support {
 		 * @param properties
 		 * @param priority
 		 */
-		public function CommandRegistration(commandName:String, executeMethodName:String, properties:Array = null, priority:uint = 0) {
+		public function CommandRegistration(commandName:String, executeMethodName:String, properties:Vector.<String>=null, priority:uint=0) {
 			Assert.hasText(commandName, "commandName argument must not be null or empty");
 			Assert.hasText(executeMethodName, "executeMethodName argument must not be null or empty");
 			_commandName = commandName;

@@ -28,13 +28,13 @@ package org.springextensions.actionscript.mvc {
 		 * @param eventType The specified event type.
 		 * @param commandName The specified command name.
 		 */
-		function registerCommandForEventType(eventType:String, commandName:String, executeMethodName:String, properties:Array = null, priority:uint = 0):void;
+		function registerCommandForEventType(eventType:String, commandName:String, executeMethodName:String, properties:Vector.<String>=null, priority:uint=0):void;
 		/**
 		 * Registers the specified command name for the specified event <code>Class</code>.
 		 * @param eventClass The specified event <code>Class</code>.
 		 * @param commandName The specified command name.
 		 */
-		function registerCommandForEventClass(eventClass:Class, commandName:String, executeMethodName:String, properties:Array = null, priority:uint = 0):void;
+		function registerCommandForEventClass(eventClass:Class, commandName:String, executeMethodName:String, properties:Vector.<String>=null, priority:uint=0):void;
 
 		/**
 		 * If the <code>true</code> the current <code>IController</code> will throw an error if no commands were

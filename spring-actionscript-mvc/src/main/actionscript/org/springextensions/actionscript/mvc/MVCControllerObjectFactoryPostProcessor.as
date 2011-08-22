@@ -17,14 +17,17 @@ package org.springextensions.actionscript.mvc {
 
 	import flash.system.ApplicationDomain;
 
+	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.reflect.Metadata;
 	import org.as3commons.reflect.Type;
-	import org.springextensions.actionscript.core.mvc.support.Controller;
-	import org.springextensions.actionscript.ioc.config.postprocess.IObjectDefinitionRegistryPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
+	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
+	import org.springextensions.actionscript.mvc.support.Controller;
 	import org.springextensions.actionscript.util.TypeUtils;
 
 	/**
@@ -79,7 +82,7 @@ package org.springextensions.actionscript.mvc {
 	 * @author Roland Zwaga
 	 * @sampleref cafe-townsend-mvc
 	 */
-	public class MVCControllerObjectFactoryPostProcessor implements IObjectDefinitionRegistryPostProcessor {
+	public class MVCControllerObjectFactoryPostProcessor implements IObjectFactoryPostProcessor {
 
 		/**
 		 * The object name that will be given to the controller instance in the object factory
@@ -113,22 +116,23 @@ package org.springextensions.actionscript.mvc {
 		 *
 		 * @param objectFactory The specified <code>IConfigurableListableObjectFactory</code> instance.
 		 */
-		public function postProcessObjectDefinitionRegistry(objectDefinitionRegistry:IObjectDefinitionRegistry):void {
-			Assert.notNull(objectDefinitionRegistry, "the objectDefinitionRegistry argument must not be null");
-			addRouteEventsMetaDataPostProcessor(objectDefinitionRegistry);
-			var controller:IController = addMVControllerInstance(objectDefinitionRegistry);
-			registerCommands(objectDefinitionRegistry, controller);
+		public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
+			Assert.notNull(objectFactory, "the objectFactory argument must not be null");
+			addRouteEventsMetaDataPostProcessor(objectFactory);
+			var controller:IController = addMVControllerInstance(objectFactory);
+			registerCommands(objectFactory, controller);
+			return null;
 		}
 
 		/**
 		 *
 		 * @param objectFactory The specified <code>IConfigurableListableObjectFactory</code> instance.
 		 */
-		public function addRouteEventsMetaDataPostProcessor(objectDefinitionRegistry:IObjectDefinitionRegistry):void {
-			Assert.notNull(objectDefinitionRegistry, "the objectDefinitionRegistry argument must not be null")
-			if (objectDefinitionRegistry.getObjectNamesForType(MVCRouteEventsMetaDataProcessor).length < 1) {
+		public function addRouteEventsMetaDataPostProcessor(objectFactory:IObjectFactory):void {
+			Assert.notNull(objectFactory, "the objectFactory argument must not be null")
+			if (objectFactory.objectDefinitionRegistry.getObjectNamesForType(MVCRouteEventsMetaDataProcessor).length < 1) {
 				var objectDefinition:ObjectDefinition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(MVCRouteEventsMetaDataProcessor, true));
-				objectDefinitionRegistry.registerObjectDefinition(METADATAPROCESSOR_OBJECT_NAME, objectDefinition);
+				objectFactory.objectDefinitionRegistry.registerObjectDefinition(METADATAPROCESSOR_OBJECT_NAME, objectDefinition);
 			}
 		}
 
@@ -139,15 +143,15 @@ package org.springextensions.actionscript.mvc {
 		 * @param objectFactory The specified <code>IConfigurableListableObjectFactory</code> instance.
 		 * @return The created or retrieved <code>IController</code> instance.
 		 */
-		public function addMVControllerInstance(objectDefinitionRegistry:IObjectDefinitionRegistry):IController {
-			Assert.notNull(objectDefinitionRegistry, "the objectDefinitionRegistry argument must not be null");
-			var names:Array = objectDefinitionRegistry.getObjectNamesForType(IController);
-			if (names.length < 1) {
-				var controller:Controller = objectDefinitionRegistry.createInstance(Controller);
-				objectDefinitionRegistry.registerSingleton(CONTROLLER_OBJECT_NAME, controller);
+		public function addMVControllerInstance(objectFactory:IObjectFactory):IController {
+			Assert.notNull(objectFactory, "the objectFactory argument must not be null");
+			var names:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IController);
+			if (names == null) {
+				var controller:Controller = objectFactory.createInstance(Controller);
+				objectFactory.cache.addInstance(CONTROLLER_OBJECT_NAME, controller);
 				return controller;
 			} else {
-				return objectDefinitionRegistry.getObject(String(names[0]));
+				return objectFactory.getObject(String(names[0]));
 			}
 		}
 
@@ -157,17 +161,17 @@ package org.springextensions.actionscript.mvc {
 		 * @param objectFactory The specified <code>IConfigurableListableObjectFactory</code>.
 		 * @param controller The specified <code>IController</code> instance used to register commands in.
 		 */
-		public function registerCommands(objectDefinitionRegistry:IObjectDefinitionRegistry, controller:IController):void {
-			Assert.notNull(objectDefinitionRegistry, "the objectDefinitionRegistry argument must not be null");
+		public function registerCommands(objectFactory:IObjectFactory, controller:IController):void {
+			Assert.notNull(objectFactory, "the objectFactory argument must not be null");
 			Assert.notNull(controller, "the controller argument must not be null");
-			for each (var key:String in objectDefinitionRegistry.objectDefinitionNames) {
-				var def:IObjectDefinition = IObjectDefinition(objectDefinitionRegistry.getObjectDefinition(key));
-				var type:Type = Type.forName(def.className, objectDefinitionRegistry.applicationDomain);
+			for each (var key:String in objectFactory.objectDefinitionRegistry.objectDefinitionNames) {
+				var def:IObjectDefinition = objectFactory.getObjectDefinition(key);
+				var type:Type = Type.forName(def.className, objectFactory.applicationDomain);
 				//simple types can't have metadata, so skip them
 				if (TypeUtils.isSimpleProperty(type)) {
 					continue;
 				}
-				processCommandMetaData(type, controller, key, objectDefinitionRegistry.applicationDomain);
+				processCommandMetaData(type, controller, key, objectFactory.applicationDomain);
 			}
 		}
 
@@ -207,7 +211,7 @@ package org.springextensions.actionscript.mvc {
 
 			var executeMethod:String = (metaData.hasArgumentWithKey(EXECUTE_METHOD_METADATA_KEY)) ? metaData.getArgument(EXECUTE_METHOD_METADATA_KEY).value : DEFAULT_EXECUTE_METHOD_NAME;
 
-			var properties:Array = getPropertiesFromMetaData(metaData);
+			var properties:Vector.<String> = getPropertiesFromMetaData(metaData);
 
 			if (metaData.hasArgumentWithKey(EVENT_TYPE_METADATA_KEY)) {
 				var eventType:String = metaData.getArgument(EVENT_TYPE_METADATA_KEY).value;
@@ -224,11 +228,16 @@ package org.springextensions.actionscript.mvc {
 		 * @param metaData The specified <code>MetaData</code> instance
 		 * @return An <code>Array</code> of property names or <code>null</code> when the properties key was not set.
 		 */
-		public function getPropertiesFromMetaData(metaData:Metadata):Array {
+		public function getPropertiesFromMetaData(metaData:Metadata):Vector.<String> {
 			Assert.notNull(metaData, "metaData argument must not be null");
 			if (metaData.hasArgumentWithKey(PROPERTIES_METADATA_KEY)) {
 				var value:String = metaData.getArgument(PROPERTIES_METADATA_KEY).value;
-				return value.split(' ').join('').split(',');
+				var arr:Array = value.split(' ').join('').split(',');
+				var result:Vector.<String> = new Vector.<String>();
+				for each (var s:String in arr) {
+					result[result.length] = s;
+				}
+				return result;
 			} else {
 				return null;
 			}

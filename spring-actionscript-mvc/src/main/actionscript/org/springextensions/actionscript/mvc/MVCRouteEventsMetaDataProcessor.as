@@ -17,12 +17,17 @@ package org.springextensions.actionscript.mvc {
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 
-	import org.as3commons.logging.ILogger;
-	import org.as3commons.logging.LoggerFactory;
+	import org.as3commons.eventbus.IEventBusAware;
+	import org.as3commons.logging.api.ILogger;
+	import org.as3commons.logging.api.getClassLogger;
 	import org.as3commons.reflect.IMetadataContainer;
 	import org.as3commons.reflect.Metadata;
 	import org.as3commons.reflect.MetadataArgument;
 	import org.as3commons.reflect.Type;
+	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.context.IApplicationContextAware;
+	import org.springextensions.actionscript.metadata.AbstractMetadataProcessor;
+	import org.springextensions.actionscript.mvc.event.MVCEvent;
 
 	/**
 	 * <code>IMetaDataProcessor</code> implementation that examines objects (that have been annotated with
@@ -34,7 +39,7 @@ package org.springextensions.actionscript.mvc {
 	 */
 	public class MVCRouteEventsMetaDataProcessor extends AbstractMetadataProcessor implements IApplicationContextAware {
 
-		private static const LOGGER:ILogger = LoggerFactory.getClassLogger(MVCRouteEventsMetaDataProcessor);
+		private static const LOGGER:ILogger = getClassLogger(MVCRouteEventsMetaDataProcessor);
 
 		/** The RouteEvents metadata */
 		private static const ROUTE_MVC_EVENTS_METADATA:String = "RouteMVCEvents";
@@ -49,7 +54,7 @@ package org.springextensions.actionscript.mvc {
 		protected static const NAME_KEY:String = "name";
 
 		public function MVCRouteEventsMetaDataProcessor() {
-			super(true, [ROUTE_MVC_EVENTS_METADATA]);
+			super(true, new Vector.<String>[ROUTE_MVC_EVENTS_METADATA]);
 		}
 
 		// ----------------------------
@@ -116,11 +121,7 @@ package org.springextensions.actionscript.mvc {
 		 * @see org.springextensions.actionscript.core.event.IEventBus IEventBus
 		 */
 		protected function rerouteToEventBus(event:Event):void {
-			var owner:Object = ApplicationUtils.application;
-			if ((_applicationContext != null) && (_applicationContext as IOwnerModuleAware).ownerModule != null) {
-				owner = (_applicationContext as IOwnerModuleAware).ownerModule;
-			}
-			applicationContext.eventBus.dispatchEvent(new MVCEvent(owner, event));
+			IEventBusAware(applicationContext).eventBus.dispatchEvent(new MVCEvent(_applicationContext.rootView, event));
 		}
 
 	}
