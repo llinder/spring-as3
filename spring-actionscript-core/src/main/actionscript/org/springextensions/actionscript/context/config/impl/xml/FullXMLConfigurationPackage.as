@@ -14,11 +14,35 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.context.config.impl.xml {
-	
+
 	import org.springextensions.actionscript.context.config.IXMLConfigurationPackage;
-	
-	
-	public interface FullXMLConfigurationPackage extends IXMLConfigurationPackage {
-		
+	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.context.impl.xml.XMLApplicationContext;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.EventBusNamespacehandler;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.StageProcessingNamespaceHandler;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.TaskNamespaceHandler;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.util.UtilNamespaceHandler;
+
+
+	/**
+	 *
+	 * @author Roland Zwaga
+	 */
+	public class FullXMLConfigurationPackage implements IXMLConfigurationPackage {
+
+		/**
+		 *
+		 * @param applicationContext
+		 */
+		public function execute(applicationContext:ApplicationContext):void {
+			var xmlContext:XMLApplicationContext = applicationContext as XMLApplicationContext;
+			if (xmlContext != null) {
+				xmlContext.addNamespaceHandler(new StageProcessingNamespaceHandler());
+				xmlContext.addNamespaceHandler(new EventBusNamespacehandler());
+				xmlContext.addNamespaceHandler(new TaskNamespaceHandler());
+				xmlContext.addNamespaceHandler(new UtilNamespaceHandler());
+			}
+		}
 	}
 }
