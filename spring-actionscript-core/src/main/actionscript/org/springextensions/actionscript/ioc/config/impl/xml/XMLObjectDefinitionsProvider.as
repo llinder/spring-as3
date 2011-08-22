@@ -46,6 +46,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
 	import org.springextensions.actionscript.util.ContextUtils;
 
 	/**
@@ -170,6 +171,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 */
 		public function addNamespaceHandler(namespaceHandler:INamespaceHandler):void {
 			Assert.notNull(namespaceHandler, "The namespaceHandler argument must not be null");
+			if (namespaceHandler is IObjectDefinitionRegistryAware) {
+				IObjectDefinitionRegistryAware(namespaceHandler).objectDefinitionRegistry = _applicationContext.objectDefinitionRegistry;
+			}
+			if (_applicationContext.dependencyInjector != null) {
+				_applicationContext.dependencyInjector.wire(namespaceHandler, _applicationContext);
+			}
 			_namespaceHandlers ||= new Vector.<INamespaceHandler>();
 			if (_namespaceHandlers.indexOf(namespaceHandler) < 0) {
 				_namespaceHandlers[_namespaceHandlers.length] = namespaceHandler;

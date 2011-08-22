@@ -14,9 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus {
-
 	import flash.system.ApplicationDomain;
-
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
@@ -29,35 +27,36 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_eventbus;
 	import org.springextensions.actionscript.ioc.factory.IInitializingObject;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
 
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class EventBusNamespacehandler extends AbstractNamespaceHandler implements IEventBusUserRegistryAware, IApplicationDomainAware, IInitializingObject {
-
-		public static const EVENT_ROUTER_ELEMENT_NAME:String = "event-router";
+	public class EventBusNamespacehandler extends AbstractNamespaceHandler implements IObjectDefinitionRegistryAware, IEventBusUserRegistryAware, IApplicationDomainAware, IInitializingObject {
 		public static const EVENT_HANDLER_ELEMENT_NAME:String = "event-handler";
 		public static const EVENT_HANDLER_METHOD_ELEMENT_NAME:String = "event-handler-method";
 		public static const EVENT_INTERCEPTOR_FIELD_NAME:String = "event-interceptor";
 		public static const EVENT_LISTENER_INTERCEPTOR_FIELD_NAME:String = "event-listener-interceptor";
-		public static const ROUTING_CONFIGURATION_ELEMENT_NAME:String = "routing-configuration";
 
-		private var _eventBusUserRegistry:IEventBusUserRegistry;
-		private var _applicationDomain:ApplicationDomain;
-		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
+		public static const EVENT_ROUTER_ELEMENT_NAME:String = "event-router";
+		public static const ROUTING_CONFIGURATION_ELEMENT_NAME:String = "routing-configuration";
 
 		/**
 		 * Creates a new <code>EventBusNamespacehandler</code> instance.
 		 * @param objectDefinitionRegistry
 		 */
-		public function EventBusNamespacehandler(objectDefinitionRegistry:IObjectDefinitionRegistry) {
+		public function EventBusNamespacehandler() {
 			super(spring_actionscript_eventbus);
-			initEventBusNamespacehandler(objectDefinitionRegistry);
 		}
 
-		protected function initEventBusNamespacehandler(objectDefinitionRegistry:IObjectDefinitionRegistry):void {
-			_objectDefinitionRegistry = objectDefinitionRegistry;
+		private var _applicationDomain:ApplicationDomain;
+
+		private var _eventBusUserRegistry:IEventBusUserRegistry;
+		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
+
+		public function set applicationDomain(value:ApplicationDomain):void {
+			_applicationDomain = value;
 		}
 
 		public function get eventBusUserRegistry():IEventBusUserRegistry {
@@ -68,8 +67,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			_eventBusUserRegistry = value;
 		}
 
-		public function set applicationDomain(value:ApplicationDomain):void {
-			_applicationDomain = value;
+		public function get objectDefinitionRegistry():IObjectDefinitionRegistry {
+			return _objectDefinitionRegistry;
+		}
+
+		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
+			_objectDefinitionRegistry = value;
 		}
 
 		public function afterPropertiesSet():void {

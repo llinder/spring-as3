@@ -291,7 +291,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 				}
 				objectDefinition.clazz = cls;
 				objectDefinition.isInterface = ClassUtils.isInterface(cls);
-				if (_customConfigurations.hasOwnProperty(objectName)) {
+				if ((_customConfigurations != null) && (_customConfigurations.hasOwnProperty(objectName))) {
 					objectDefinition.customConfiguration = _customConfigurations[objectName];
 					delete _customConfigurations[objectName];
 				}

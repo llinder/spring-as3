@@ -23,6 +23,7 @@ package org.springextensions.actionscript.context.impl.xml {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.StageProcessingNamespaceHandler;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
 
 
 	public class XMLApplicationContext extends ApplicationContext {
@@ -52,9 +53,6 @@ package org.springextensions.actionscript.context.impl.xml {
 		}
 
 		public function addNamespaceHandler(namespaceHandler:INamespaceHandler):void {
-			if (dependencyInjector != null) {
-				dependencyInjector.wire(namespaceHandler, this);
-			}
 			XMLObjectDefinitionsProvider(definitionProviders[0]).addNamespaceHandler(namespaceHandler);
 		}
 

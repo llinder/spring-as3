@@ -23,7 +23,6 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventHandlerNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventRouterNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.AttributeToElementPreprocessorTest;
-	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.EventBusElementsPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.IdAttributePreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.InnerObjectsPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.MethodInvocationPreprocessorTest;
@@ -94,9 +93,8 @@ package org.springextensions.actionscript.test {
 		public var t33:RegisterObjectFactoryPostProcessorsFactoryPostProcessorTest;
 		public var t34:MetadataProcessorObjectFactoryPostProcessorTest;
 		public var t35:MetadataProcessorObjectPostProcessorTest;
-		public var t36:EventBusElementsPreprocessorTest;
-		public var t37:EventRouterNodeParserTest;
-		public var t38:EventHandlerNodeParserTest;
+		public var t36:EventRouterNodeParserTest;
+		public var t37:EventHandlerNodeParserTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 	}
