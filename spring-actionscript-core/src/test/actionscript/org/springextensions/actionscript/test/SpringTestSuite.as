@@ -33,6 +33,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.LoadURLStreamNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.PauseCommandNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.TaskNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XmlObjectDefinitionsParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.AttributeToElementPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.IdAttributePreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.InnerObjectsPreprocessorTest;
@@ -116,6 +117,7 @@ package org.springextensions.actionscript.test {
 		public var t45:TaskNodeParserTest;
 		public var t46:TaskElementsPreprocessorTest;
 		public var t47:TaskNamespaceHandlerTest;
+		public var t48:XmlObjectDefinitionsParserTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 	}

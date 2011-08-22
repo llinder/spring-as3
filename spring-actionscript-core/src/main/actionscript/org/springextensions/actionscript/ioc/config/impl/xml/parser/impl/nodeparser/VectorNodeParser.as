@@ -46,7 +46,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 		/**
 		 * @inheritDoc
 		 */
-		override public function parse(node:XML):Object {
+		override public function parse(node:XML):* {
 			var type:String = node.attribute(TYPE_ATTRIBUTE_NAME).toString();
 			var className:String = StringUtils.substitute(AS3VEC_VECTOR_CLASS_TEMPLATE, type);
 			var cls:Class = ClassUtils.forName(className, _applicationDomain);

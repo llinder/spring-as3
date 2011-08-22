@@ -52,7 +52,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 		/**
 		 * @inheritDoc
 		 */
-		override public function parse(node:XML):Object {
+		override public function parse(node:XML):* {
 			if (_arrrayCollectionClass == null) {
 				if (!canCreate()) {
 					throw IllegalOperationError(ARRAY_COLLECTION_CLASS_CANNOT_BE_CREATED_ERROR);

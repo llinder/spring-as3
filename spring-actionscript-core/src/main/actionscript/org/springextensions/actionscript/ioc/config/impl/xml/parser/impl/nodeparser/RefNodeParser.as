@@ -40,7 +40,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 		/**
 		 * @inheritDoc
 		 */
-		override public function parse(node:XML):Object {
+		override public function parse(node:XML):* {
 			return new RuntimeObjectReference(node.toString());
 		}
 	}

@@ -39,7 +39,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser {
 		 *
 		 * @return the parsed node
 		 */
-		function parse(node:XML):Object;
+		function parse(node:XML):*;
 
 		/**
 		 * Will add an alias that this node parser will react upon. It has direct influence

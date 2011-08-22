@@ -25,7 +25,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 			super(xmlObjectDefinitionsParser, XMLObjectDefinitionsParser.NAN_ELEMENT);
 		}
 
-		override public function parse(node:XML):Object {
+		override public function parse(node:XML):* {
 			return NaN;
 		}
 

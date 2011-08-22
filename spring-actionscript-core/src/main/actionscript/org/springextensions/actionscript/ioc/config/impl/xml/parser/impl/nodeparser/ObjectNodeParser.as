@@ -41,7 +41,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 		/**
 		 * @inheritDoc
 		 */
-		override public function parse(node:XML):Object {
+		override public function parse(node:XML):* {
 			var result:Object;
 			var isVanillaObject:Boolean = (node.attribute(XMLObjectDefinitionsParser.CLASS_ATTRIBUTE) == undefined);
 

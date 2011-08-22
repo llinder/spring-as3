@@ -39,7 +39,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 		/**
 		 * @inheritDoc
 		 */
-		override public function parse(node:XML):Object {
+		override public function parse(node:XML):* {
 			var result:Array = [];
 
 			for each (var subNode:XML in node.children()) {

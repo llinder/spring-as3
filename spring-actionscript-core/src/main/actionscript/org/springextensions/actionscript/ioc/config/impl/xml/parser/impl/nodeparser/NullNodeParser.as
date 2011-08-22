@@ -27,7 +27,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 			super(xmlObjectDefinitionsParser, XMLObjectDefinitionsParser.NULL_ELEMENT);
 		}
 
-		override public function parse(node:XML):Object {
+		override public function parse(node:XML):* {
 			return null;
 		}
 	}

@@ -42,9 +42,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser {
 
 		function parseObjectDefinition(xml:XML, objectDefinition:IObjectDefinition=null):IObjectDefinition;
 
-		function parseProperty(node:XML):Object;
+		function parseProperty(node:XML):*;
 
-		function parsePropertyValue(node:XML):Object;
+		function parsePropertyValue(node:XML):*;
 
 		function get nodeParsers():Vector.<INodeParser>;
 

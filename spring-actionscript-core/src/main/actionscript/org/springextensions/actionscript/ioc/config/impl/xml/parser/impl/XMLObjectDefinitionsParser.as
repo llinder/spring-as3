@@ -315,8 +315,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 *
 		 * @see #parsePropertyValue()
 		 */
-		public function parseProperty(node:XML):Object {
-			var result:Object;
+		public function parseProperty(node:XML):* {
+			var result:*;
 
 			// move the "value" attribute to the a "value" node
 			if (node.@value != undefined) {
@@ -351,8 +351,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		 *
 		 * @return the value of the node after parsing
 		 */
-		public function parsePropertyValue(node:XML):Object {
-			var result:Object;
+		public function parsePropertyValue(node:XML):* {
+			var result:*;
 			var numNodeParsers:int = _nodeParsers.length;
 
 			for (var i:int = 0; i < numNodeParsers; i++) {

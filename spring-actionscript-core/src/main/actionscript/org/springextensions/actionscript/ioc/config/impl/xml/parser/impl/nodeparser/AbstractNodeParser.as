@@ -90,7 +90,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 		 *
 		 * @inheritDoc
 		 */
-		public function parse(node:XML):Object {
+		public function parse(node:XML):* {
 			throw new IllegalOperationError(PARSE_IS_ABSTRACT_ERROR);
 		}
 	}

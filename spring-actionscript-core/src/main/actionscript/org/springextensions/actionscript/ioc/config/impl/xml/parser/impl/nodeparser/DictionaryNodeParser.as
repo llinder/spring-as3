@@ -44,7 +44,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 		/**
 		 * @inheritDoc
 		 */
-		override public function parse(node:XML):Object {
+		override public function parse(node:XML):* {
 			var result:Dictionary = new Dictionary();
 			var keyAttribute:String = XMLObjectDefinitionsParser.KEY_ATTRIBUTE;
 			var valueAttribute:String = XMLObjectDefinitionsParser.VALUE_ATTRIBUTE;
