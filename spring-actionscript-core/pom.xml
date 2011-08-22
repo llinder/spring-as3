@@ -416,8 +416,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.adobe.flex.framework</groupId>
-			<artifactId>textlayout</artifactId>
-			<version>${flex-sdk.version}</version>
+			<artifactId>textLayout</artifactId>
+			<version>${flex-sdk.version}</version> <!-- 4.5.0.19786 -->
 			<type>swc</type>
 			<scope>test</scope>
 		</dependency>
