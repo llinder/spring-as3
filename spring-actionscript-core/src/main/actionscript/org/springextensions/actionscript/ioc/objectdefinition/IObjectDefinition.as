@@ -28,6 +28,15 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	public interface IObjectDefinition {
 
 		/**
+		 * Defines the way an object will be autowired (configured).
+		 */
+		function get autoWireMode():AutowireMode;
+		/**
+		 * @private
+		 */
+		function set autoWireMode(value:AutowireMode):void;
+
+		/**
 		 * Determines if the current <code>IObjectDefinition</code> will be injected into child contexts.
 		 */
 		function get childContextAccess():ChildContextObjectDefinitionAccess;
@@ -36,15 +45,6 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @private
 		 */
 		function set childContextAccess(value:ChildContextObjectDefinitionAccess):void;
-
-		/**
-		 * Defines the way an object will be autowired (configured).
-		 */
-		function get autoWireMode():AutowireMode;
-		/**
-		 * @private
-		 */
-		function set autoWireMode(value:AutowireMode):void;
 
 		/**
 		 * The classname of the object that the current <code>IObjectDefinition</code> describes.
@@ -234,6 +234,15 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		function get properties():Vector.<PropertyDefinition>;
 
 		/**
+		 * The id of the <code>IObjectDefinitionRegistry</code> that the current <code>IObjectDefinition</code> was first registered with.
+		 */
+		function get registryId():String;
+		/**
+		 * @private
+		 */
+		function set registryId(value:String):void;
+
+		/**
 		 * Defines the scope of the object, the object is either a singleton, a prototype or a stage object.
 		 */
 		function get scope():ObjectDefinitionScope;
@@ -288,14 +297,5 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 * @return
 		 */
 		function getPropertyDefinitionByName(name:String, namespace:String=null):PropertyDefinition;
-
-		/**
-		 * The id of the <code>IObjectDefinitionRegistry</code> that the current <code>IObjectDefinition</code> was first registered with.
-		 */
-		function get registryId():String;
-		/**
-		 * @private
-		 */
-		function set registryId(value:String):void;
 	}
 }

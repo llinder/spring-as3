@@ -38,11 +38,12 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		 */
 		override public function parse():void {
 			if (childContent) {
+				definition.isInterface = true;
 				for each (var obj:* in childContent) {
 					if (obj is Property) {
 						addProperty(obj);
 					} else if (obj is MethodInvocation) {
-						//addMethodInvocation(obj);
+						addMethodInvocation(obj);
 					} else {
 						throw new Error("Illegal child object for Interface: " + ClassUtils.getFullyQualifiedName(ClassUtils.forInstance(obj)));
 					}
