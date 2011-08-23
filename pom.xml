@@ -1,0 +1,259 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.springactionscript</groupId>
+	<artifactId>springactionscript-core</artifactId>
+	<packaging>swc</packaging>
+	<version>2.0-SNAPSHOT</version>
+	<name>Spring Actionscript Core</name>
+	<url>http://www.springactionscript.org</url>
+	<description>
+		Spring ActionScript is an offshoot of the Java-based Spring Framework written in ActionScript 3.
+		It is targeted for the Flash, Flex and AIR platforms. The framework contains a versatile Inversion of Control
+		Container, a micro MVC library and extensions for the Cairngorm and PureMVC frameworks.
+		and several other utilities.
+	</description>
+	<inceptionYear>2007</inceptionYear>
+	
+	<properties>
+		<maven-site-plugin-version>3.0-beta-3</maven-site-plugin-version>
+	</properties>
+
+	
+	<modules>
+		<module>spring-actionscript-core</module>
+		<module>spring-actionscript-flex</module>
+		<module>spring-actionscript-mvc</module>
+	</modules>
+
+	<build>
+		<plugins>
+		    <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-site-plugin</artifactId>
+			<inherited>false</inherited>
+			<version>${maven-site-plugin-version}</version>
+			<configuration>
+			    <templateDirectory>src/site</templateDirectory>
+			    <template>site.vm</template>
+			</configuration>
+		    </plugin>
+
+		    <plugin>
+			<inherited>false</inherited>
+			<groupId>com.agilejava.docbkx</groupId>
+			<artifactId>docbkx-maven-plugin</artifactId>
+			<version>2.0.10</version>
+			<executions>
+			    <execution>
+				<goals>
+				    <goal>generate-html</goal>
+				    <goal>generate-eclipse</goal>
+				    <goal>generate-pdf</goal>
+				</goals>
+				<phase>post-site</phase>
+			    </execution>
+			</executions>
+			<dependencies>
+			    <dependency>
+				<groupId>org.docbook</groupId>
+				<artifactId>docbook-xml</artifactId>
+				<version>4.4</version>
+				<scope>runtime</scope>
+			    </dependency>
+			    <dependency>
+				<groupId>javax.media</groupId>
+				<artifactId>jai_core</artifactId>
+				<version>1.1.3</version>
+				<type>jar</type>
+				<scope>runtime</scope>
+			    </dependency>
+			    <dependency>
+				<groupId>ant</groupId>
+				<artifactId>ant-optional</artifactId>
+				<version>1.5.2</version>
+			    </dependency>
+			</dependencies>
+			<configuration>
+			    <includes>springactionscript.xml</includes>
+			    <chunkedOutput>true</chunkedOutput>
+			    <htmlStylesheet>css/html.css</htmlStylesheet>
+			    <xincludeSupported>true</xincludeSupported>
+			    <htmlCustomization>src/docbkx/resources/xsl/html_chunk.xsl</htmlCustomization>
+			    <foCustomization>src/docbkx/resources/xsl/fopdf.xsl</foCustomization>
+			    <foCustomization>src/docbkx/resources/xsl/fopdf-asdoclinkresolver.xsl</foCustomization>
+			    <entities>
+				<entity>
+				    <name>version</name>
+				    <value>${version}</value>
+				</entity>
+			    </entities>
+			    <preProcess>
+				<xslt in="${basedir}/toplevel_files.xml" out="${basedir}/target/site/asdoc/toplevel.xml"
+				      style="${basedir}/src/docbkx/resources/xsl/combine_toplevels.xslt"
+				      reloadstylesheet="false" processor="trax">
+				    <param name="baseDir" expression="${basedir}"/>
+				</xslt>
+				<xslt in="${basedir}/toplevel_files.xml" out="${basedir}/target/site/asdoc/toplevel_classes.xml"
+				      style="${basedir}/src/docbkx/resources/xsl/combine_toplevel_classes.xslt"
+				      reloadstylesheet="false" processor="trax">
+				    <param name="baseDir" expression="${basedir}"/>
+				</xslt>
+
+				<xslt in="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-objects-1.0.xsd"
+				      out="${basedir}/src/docbkx/configuration-reference.xml"
+				      style="${basedir}/src/docbkx/resources/xsl/configuration-reference.xsl"
+				      reloadstylesheet="false" processor="trax"/>
+
+				<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+				      out="${basedir}/target/site/asdoc/all-classes.html"
+				      style="${basedir}/src/docbkx/resources/asdoctemplate/all-classes.xsl"
+				      reloadstylesheet="false" processor="trax"/>
+
+				<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+				      out="${basedir}/target/site/asdoc/delete-me.html"
+				      style="${basedir}/src/docbkx/resources/asdoctemplate/all-index.xsl"
+				      reloadstylesheet="false" processor="trax">
+				    <param name="overviewsFile"
+					   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+				    <param name="basedir" expression="${basedir}/src/docbkx/resources/asdoctemplate/"/>
+				    <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+				</xslt>
+
+				<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+				      out="${basedir}/target/site/asdoc/appendixes.html"
+				      style="${basedir}/src/docbkx/resources/asdoctemplate/appendixes.xsl"
+				      reloadstylesheet="false" processor="trax">
+				    <param name="overviewsFile"
+					   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+				</xslt>
+
+				<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+				      out="${basedir}/target/site/asdoc/class-summary.html"
+				      style="${basedir}/src/docbkx/resources/asdoctemplate/class-summary.xsl"
+				      reloadstylesheet="false" processor="trax">
+				    <param name="overviewsFile"
+					   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+				</xslt>
+
+				<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+				      out="${basedir}/target/site/asdoc/delete-me2.html"
+				      style="${basedir}/src/docbkx/resources/asdoctemplate/class-files.xsl"
+				      reloadstylesheet="false" processor="trax">
+				    <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+				</xslt>
+
+				<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+				      out="${basedir}/target/site/asdoc/class-list.html"
+				      style="${basedir}/src/docbkx/resources/asdoctemplate/class-list.xsl"
+				      reloadstylesheet="false" processor="trax">
+				    <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+				</xslt>
+
+				<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+				      out="${basedir}/target/site/asdoc/delete-me3.html"
+				      style="${basedir}/src/docbkx/resources/asdoctemplate/package.xsl" reloadstylesheet="false"
+				      processor="trax">
+				    <param name="overviewsFile"
+					   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+				    <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+				</xslt>
+
+				<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+				      out="${basedir}/target/site/asdoc/delete-me4.html"
+				      style="${basedir}/src/docbkx/resources/asdoctemplate/package-detail.xsl"
+				      reloadstylesheet="false" processor="trax">
+				    <param name="overviewsFile"
+					   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+				    <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+				</xslt>
+
+				<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+				      out="${basedir}/target/site/asdoc/package-list.html"
+				      style="${basedir}/src/docbkx/resources/asdoctemplate/package-list.xsl"
+				      reloadstylesheet="false" processor="trax">
+				</xslt>
+
+				<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+				      out="${basedir}/target/site/asdoc/package-summary.html"
+				      style="${basedir}/src/docbkx/resources/asdoctemplate/package-summary.xsl"
+				      reloadstylesheet="false" processor="trax">
+				    <param name="overviewsFile"
+					   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+				    <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+				</xslt>
+
+				<delete file="${basedir}/target/site/asdoc/index.html"/>
+
+				<copy todir="${basedir}/target/site/asdoc/images">
+				    <fileset dir="${basedir}/src/docbkx/resources/asdoctemplate/images">
+					<include name="**/*.png"/>
+					<include name="**/*.gif"/>
+					<include name="**/*.jpg"/>
+				    </fileset>
+				</copy>
+
+				<copy todir="${basedir}/target/site/asdoc">
+				    <fileset dir="${basedir}/src/docbkx/resources/asdoctemplate">
+					<include name="**/*.js"/>
+					<include name="**/*.html"/>
+					<include name="**/*.css"/>
+				    </fileset>
+				</copy>
+
+				<delete file="${basedir}/target/site/asdoc/delete-me.html"/>
+				<delete file="${basedir}/target/site/asdoc/delete-me2.html"/>
+				<delete file="${basedir}/target/site/asdoc/delete-me3.html"/>
+				<delete file="${basedir}/target/site/asdoc/delete-me4.html"/>
+
+			    </preProcess>
+			    <postProcess>
+				<copy todir="target/site/docs/reference">
+				    <fileset dir="target/docbkx">
+					<include name="**/*.html"/>
+					<include name="**/*.pdf"/>
+				    </fileset>
+				</copy>
+				<copy todir="target/site/docs/reference/html">
+				    <fileset dir="src/docbkx/resources">
+					<include name="**/*.air"/>
+					<include name="**/*.css"/>
+					<include name="**/*.js"/>
+					<include name="**/*.png"/>
+					<include name="**/*.gif"/>
+					<include name="**/*.jpg"/>
+				    </fileset>
+				</copy>
+				<copy todir="target/docbkx/html">
+				    <fileset dir="src/docbkx/resources">
+					<include name="**/*.air"/>
+					<include name="**/*.css"/>
+					<include name="**/*.js"/>
+					<include name="**/*.png"/>
+					<include name="**/*.gif"/>
+					<include name="**/*.jpg"/>
+				    </fileset>
+				</copy>
+				<copy todir="target/site/schema/messaging"
+				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-messaging-1.0.xsd"/>
+				<copy todir="target/site/schema/objects"
+				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-objects-1.0.xsd"/>
+				<copy todir="target/site/schema/rpc"
+				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-rpc-1.0.xsd"/>
+				<copy todir="target/site/schema/util"
+				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-util-1.0.xsd"/>
+				<copy todir="target/site/schema/stageprocessing"
+				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-stageprocessing-1.0.xsd"/>
+				<copy todir="target/site/schema/task"
+				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/core/task/xml/spring-actionscript-task-1.0.xsd"/>
+				<copy todir="target/site/schema/task"
+				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/core/task/xml/spring-actionscript-task-1.1.xsd"/>
+				<copy todir="target/site/schema/context"
+				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/context/config/spring-actionscript-context-2.0.xsd"/>
+			    </postProcess>
+			</configuration>
+
+		</plugins>
+	</build>
+</project>
