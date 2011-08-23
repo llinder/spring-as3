@@ -150,9 +150,9 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptor>
-						src/main/assembly/package.xml
+						src/main/assembly/sources.xml
 					</descriptor>
-					<finalName>as3commons-async-latest-snapshot</finalName>
+					<finalName>springactionscript-core-latest-snapshot</finalName>
 					<outputDirectory>target/site/downloads</outputDirectory>
 					<workDirectory>target/assembly/work</workDirectory>
 				</configuration>
@@ -472,7 +472,7 @@
 							<description>API documentation</description>
 							<mainTitle>API documentation</mainTitle>
 							<windowTitle>API documentation</windowTitle>
-							<name>As3CommonsDocs</name>
+							<name>SpringActionscriptDocs</name>
 						</configuration>
 					</reportSet>
 				</reportSets>

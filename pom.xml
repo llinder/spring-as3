@@ -3,8 +3,8 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springactionscript</groupId>
-	<artifactId>springactionscript-core</artifactId>
-	<packaging>swc</packaging>
+	<artifactId>springactionscript</artifactId>
+	<packaging>pom</packaging>
 	<version>2.0-SNAPSHOT</version>
 	<name>Spring Actionscript Core</name>
 	<url>http://www.springactionscript.org</url>
@@ -17,14 +17,19 @@
 	<inceptionYear>2007</inceptionYear>
 	
 	<properties>
+		<xsd-files-path>${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/config/impl/xml/xsd</xsd-files-path>
 		<maven-site-plugin-version>3.0-beta-3</maven-site-plugin-version>
+		<docbkx-maven-plugin.version>2.0.13</docbkx-maven-plugin.version>
+		<docbook-xml.version>4.5</docbook-xml.version>
+		<jai_core.version>1.1.3</jai_core.version>
+		<ant-optional.version>1.5.2</ant-optional.version>
 	</properties>
 
 	
 	<modules>
 		<module>spring-actionscript-core</module>
-		<module>spring-actionscript-flex</module>
-		<module>spring-actionscript-mvc</module>
+		<!--module>spring-actionscript-flex</module>
+		<module>spring-actionscript-mvc</module-->
 	</modules>
 
 	<build>
@@ -44,7 +49,7 @@
 			<inherited>false</inherited>
 			<groupId>com.agilejava.docbkx</groupId>
 			<artifactId>docbkx-maven-plugin</artifactId>
-			<version>2.0.10</version>
+			<version>${docbkx-maven-plugin.version}</version>
 			<executions>
 			    <execution>
 				<goals>
@@ -57,22 +62,22 @@
 			</executions>
 			<dependencies>
 			    <dependency>
-				<groupId>org.docbook</groupId>
+				<groupId>docbook</groupId>
 				<artifactId>docbook-xml</artifactId>
-				<version>4.4</version>
+				<version>${docbook-xml.version}</version>
 				<scope>runtime</scope>
 			    </dependency>
 			    <dependency>
 				<groupId>javax.media</groupId>
 				<artifactId>jai_core</artifactId>
-				<version>1.1.3</version>
+				<version>${jai_core.version}</version>
 				<type>jar</type>
 				<scope>runtime</scope>
 			    </dependency>
 			    <dependency>
 				<groupId>ant</groupId>
 				<artifactId>ant-optional</artifactId>
-				<version>1.5.2</version>
+				<version>${ant-optional.version}</version>
 			    </dependency>
 			</dependencies>
 			<configuration>
@@ -86,7 +91,7 @@
 			    <entities>
 				<entity>
 				    <name>version</name>
-				    <value>${version}</value>
+				    <value>${project.version}</value>
 				</entity>
 			    </entities>
 			    <preProcess>
@@ -235,25 +240,95 @@
 					<include name="**/*.jpg"/>
 				    </fileset>
 				</copy>
+				
 				<copy todir="target/site/schema/messaging"
-				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-messaging-1.0.xsd"/>
+				      file="${xsd-files-path}/spring-actionscript-messaging-1.0.xsd"/>
 				<copy todir="target/site/schema/objects"
-				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-objects-1.0.xsd"/>
+				      file="${xsd-files-path}/spring-actionscript-objects-1.0.xsd"/>
 				<copy todir="target/site/schema/rpc"
-				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-rpc-1.0.xsd"/>
+				      file="${xsd-files-path}/spring-actionscript-rpc-1.0.xsd"/>
 				<copy todir="target/site/schema/util"
-				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-util-1.0.xsd"/>
+				      file="${xsd-files-path}/spring-actionscript-util-1.0.xsd"/>
 				<copy todir="target/site/schema/stageprocessing"
-				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-stageprocessing-1.0.xsd"/>
+				      file="${xsd-files-path}/spring-actionscript-stageprocessing-1.0.xsd"/>
 				<copy todir="target/site/schema/task"
-				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/core/task/xml/spring-actionscript-task-1.0.xsd"/>
+				      file="${xsd-files-path}/spring-actionscript-task-1.0.xsd"/>
 				<copy todir="target/site/schema/task"
-				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/core/task/xml/spring-actionscript-task-1.1.xsd"/>
-				<copy todir="target/site/schema/context"
-				      file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/context/config/spring-actionscript-context-2.0.xsd"/>
+				      file="${xsd-files-path}/spring-actionscript-task-1.1.xsd"/>
+				<copy todir="target/site/schema/messaging"
+				      file="${xsd-files-path}/spring-actionscript-messaging-2.0.xsd"/>
+				<copy todir="target/site/schema/objects"
+				      file="${xsd-files-path}/spring-actionscript-objects-2.0.xsd"/>
+				<copy todir="target/site/schema/rpc"
+				      file="${xsd-files-path}/spring-actionscript-rpc-2.0.xsd"/>
+				<copy todir="target/site/schema/util"
+				      file="${xsd-files-path}/spring-actionscript-util-2.0.xsd"/>
+				<copy todir="target/site/schema/stageprocessing"
+				      file="${xsd-files-path}/spring-actionscript-stageprocessing-2.0.xsd"/>
+				<copy todir="target/site/schema/task"
+				      file="${xsd-files-path}/spring-actionscript-task-2.0.xsd"/>
 			    </postProcess>
 			</configuration>
+			</plugin>
 
 		</plugins>
 	</build>
+	
+	<repositories>
+		<repository>
+		    <id>jarvana-repository</id>
+		    <url>http://www.jarvana.com/jarvana</url>
+		    <releases>
+			<enabled>true</enabled>
+		    </releases>
+		</repository>
+		<repository>
+		    <id>flex-mojos-repository</id>
+		    <url>http://repository.sonatype.org/content/groups/public</url>
+		    <releases>
+			<enabled>true</enabled>
+		    </releases>
+		    <snapshots>
+			<enabled>true</enabled>
+		    </snapshots>
+		</repository>
+		<repository>
+			<id>flex-mojos-repository-flexgroup</id>
+			<url>http://repository.sonatype.org/content/groups/flexgroup</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>yoolab.org-releases</id>
+			<url>http://projects.yoolab.org/maven/content/repositories/releases</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>yoolab.org-snapshots</id>
+			<url>http://projects.yoolab.org/maven/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>flexmojos-plugin</id>
+			<url>http://repository.sonatype.org/content/groups/flexgroup</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
 </project>

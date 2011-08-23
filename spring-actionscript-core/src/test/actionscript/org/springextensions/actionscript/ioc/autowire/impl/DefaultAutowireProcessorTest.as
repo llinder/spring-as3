@@ -62,6 +62,10 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 			UnsatisfiedDependencyError;
 		}
 
+		public function DefaultAutowireProcessorTest() {
+			super();
+		}
+
 		[Before]
 		public function setUp():void {
 			cache = nice(IInstanceCache);
