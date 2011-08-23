@@ -18,6 +18,8 @@ package org.springextensions.actionscript.context.config.impl.xml {
 	import org.springextensions.actionscript.context.config.IXMLConfigurationPackage;
 	import org.springextensions.actionscript.context.impl.ApplicationContext;
 	import org.springextensions.actionscript.context.impl.xml.XMLApplicationContext;
+	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
+	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.EventBusNamespacehandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.StageProcessingNamespaceHandler;
@@ -36,12 +38,15 @@ package org.springextensions.actionscript.context.config.impl.xml {
 		 * @param applicationContext
 		 */
 		public function execute(applicationContext:ApplicationContext):void {
-			var xmlContext:XMLApplicationContext = applicationContext as XMLApplicationContext;
-			if (xmlContext != null) {
-				xmlContext.addNamespaceHandler(new StageProcessingNamespaceHandler());
-				xmlContext.addNamespaceHandler(new EventBusNamespacehandler());
-				xmlContext.addNamespaceHandler(new TaskNamespaceHandler());
-				xmlContext.addNamespaceHandler(new UtilNamespaceHandler());
+			for each (var definitionProvider:IObjectDefinitionsProvider in applicationContext.definitionProviders) {
+				if (definitionProvider is XMLObjectDefinitionsProvider) {
+					var xmlProvider:XMLObjectDefinitionsProvider = XMLObjectDefinitionsProvider(definitionProvider);
+					xmlProvider.addNamespaceHandler(new StageProcessingNamespaceHandler());
+					xmlProvider.addNamespaceHandler(new EventBusNamespacehandler());
+					xmlProvider.addNamespaceHandler(new TaskNamespaceHandler());
+					xmlProvider.addNamespaceHandler(new UtilNamespaceHandler());
+					break;
+				}
 			}
 		}
 	}

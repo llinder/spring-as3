@@ -36,7 +36,7 @@ package org.springextensions.actionscript.ioc.factory {
 		function clearCache():void;
 
 		/**
-		 * Returns a <code>Vector.<String></code> of all the names of the cached objects in the current <code>IInstanceCache</code>.
+		 * Returns a <code>Vector.&lt;String&gt;</code> of all the names of the cached objects in the current <code>IInstanceCache</code>.
 		 */
 		function getCachedNames():Vector.<String>;
 		/**
@@ -54,9 +54,9 @@ package org.springextensions.actionscript.ioc.factory {
 		 */
 		function getPreparedInstance(name:String):*;
 		/**
-		 * Returns <code>true</true> if an instance has been associated with the specified name
+		 * Returns <code>true</code> if an instance has been associated with the specified name
 		 * @param name The specified name
-		 * @return <code>true</true> if an instance has been associated with the specified name
+		 * @return <code>true</code> if an instance has been associated with the specified name
 		 */
 		function hasInstance(name:String):Boolean;
 

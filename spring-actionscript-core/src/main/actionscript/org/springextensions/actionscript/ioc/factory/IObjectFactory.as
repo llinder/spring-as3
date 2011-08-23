@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.factory {
+	import flash.events.IEventDispatcher;
 	import flash.system.ApplicationDomain;
 
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
@@ -29,7 +30,7 @@ package org.springextensions.actionscript.ioc.factory {
 	 * @author Christophe Herreman
 	 * @author Roland Zwaga
 	 */
-	public interface IObjectFactory extends IObjectDefinitionRegistryAware {
+	public interface IObjectFactory extends IObjectDefinitionRegistryAware, IEventDispatcher {
 
 		/**
 		 *

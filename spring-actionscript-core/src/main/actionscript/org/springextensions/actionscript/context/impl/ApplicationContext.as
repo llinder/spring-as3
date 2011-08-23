@@ -434,6 +434,9 @@ package org.springextensions.actionscript.context.impl {
 			if (provider is IApplicationDomainAware) {
 				IApplicationDomainAware(provider).applicationDomain = applicationDomain;
 			}
+			if (provider is IApplicationContextAware) {
+				IApplicationContextAware(provider).applicationContext = this;
+			}
 			definitionProviders[definitionProviders.length] = provider;
 		}
 
@@ -532,9 +535,6 @@ package org.springextensions.actionscript.context.impl {
 			if (!isReady) {
 				_operationQueue = new OperationQueue(DEFINITION_PROVIDER_QUEUE_NAME);
 				for each (var provider:IObjectDefinitionsProvider in definitionProviders) {
-					if (provider is IApplicationContextAware) {
-						IApplicationContextAware(provider).applicationContext = this;
-					}
 					var operation:IOperation = provider.createDefinitions();
 					if (operation != null) {
 						operation.addCompleteListener(providerCompleteHandler, false, 0, true);
@@ -794,14 +794,16 @@ package org.springextensions.actionscript.context.impl {
 			}
 		}
 
-		protected function resolveRootViewApplicationDomain(_rootView:DisplayObject):ApplicationDomain {
-			try {
-				var cls:Class = ClassUtils.forName(MXMODULES_MODULE_MANAGER_CLASS_NAME, applicationDomain);
-				var factory:Object = cls[GET_ASSOCIATED_FACTORY_METHOD_NAME](_rootView);
-				if (factory != null) {
-					return factory.info().currentDomain as ApplicationDomain;
+		protected function resolveRootViewApplicationDomain(view:DisplayObject):ApplicationDomain {
+			if (view != null) {
+				try {
+					var cls:Class = ClassUtils.forName(MXMODULES_MODULE_MANAGER_CLASS_NAME, applicationDomain);
+					var factory:Object = cls[GET_ASSOCIATED_FACTORY_METHOD_NAME](view);
+					if (factory != null) {
+						return ApplicationDomain(factory.info().currentDomain);
+					}
+				} catch (e:Error) {
 				}
-			} catch (e:Error) {
 			}
 			return ApplicationDomain.currentDomain;
 		}

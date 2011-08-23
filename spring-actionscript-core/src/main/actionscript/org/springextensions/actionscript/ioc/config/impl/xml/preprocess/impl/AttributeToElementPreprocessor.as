@@ -33,7 +33,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 	 * &lt;/object&gt;
 	 * </pre>
 	 * </p>
-	 * <p>
 	 * @author Christophe Herreman
 	 */
 	public class AttributeToElementPreprocessor implements IXMLObjectDefinitionsPreprocessor {
@@ -54,6 +53,11 @@ package org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl {
 			return xml;
 		}
 
+		/**
+		 *
+		 * @param node
+		 * @return
+		 */
 		protected function preprocessNode(node:XML):XML {
 			var attributes:Array = [XMLObjectDefinitionsParser.VALUE_ATTRIBUTE, XMLObjectDefinitionsParser.REF_ATTRIBUTE];
 
