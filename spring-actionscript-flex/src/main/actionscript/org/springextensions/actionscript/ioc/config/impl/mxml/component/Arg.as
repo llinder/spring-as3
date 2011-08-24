@@ -66,19 +66,19 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 			_type = value;
 		}
 
-		private var _ref:MXMLObjectDefinition;
+		private var _ref:*;
 
 		/**
 		 * A reference to another <code>ObjectDefinition</code> in the <code>MXMLApplicationContext</code>
 		 */
-		public function get ref():MXMLObjectDefinition {
+		public function get ref():* {
 			return _ref;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set ref(value:MXMLObjectDefinition):void {
+		public function set ref(value:*):void {
 			_ref = value;
 		}
 

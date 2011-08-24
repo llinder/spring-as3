@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.config.impl.mxml.component {
+	import flash.errors.IllegalOperationError;
 	import flash.system.ApplicationDomain;
 	import flash.utils.Dictionary;
 
@@ -675,7 +676,13 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 			}
 
 			if (arg.ref) {
-				return new RuntimeObjectReference(arg.ref.id);
+				if (arg.ref is MXMLObjectDefinition) {
+					return new RuntimeObjectReference(MXMLObjectDefinition(arg.ref).id);
+				} else if (arg.ref is String) {
+					return new RuntimeObjectReference(String(arg.ref));
+				} else {
+					throw new IllegalOperationError("The ref type must either be MXMLObjectdefinition or a String that represents the ID of a definition or singleton");
+				}
 			} else if (arg.type) {
 				if (String(arg.type).toLowerCase() == CLASS_TYPE_ATTR_NAME) {
 					return ClassUtils.forName(String(arg.value), _applicationDomain);

@@ -148,7 +148,7 @@ package org.springextensions.actionscript.context.impl.mxml {
 
 		protected function handleApplicationContextComplete(event:Event):void {
 			_applicationContext.removeEventListener(Event.COMPLETE, handleApplicationContextComplete);
-			dispatchEvent(new Event(Event.COMPLETE));
+			dispatchEvent(event);
 		}
 	}
 }

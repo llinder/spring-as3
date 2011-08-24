@@ -25,7 +25,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.component.MXMLObjectDefinition;
-	import org.springextensions.actionscript.ioc.config.impl.mxml.component.MXMLObjects;
+	import org.springextensions.actionscript.ioc.config.impl.mxml.component.SASObjects;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.component.PropertyPlaceholder;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
@@ -37,6 +37,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 	 * @author Roland Zwaga
 	 */
 	public class MXMLObjectDefinitionsProvider implements IObjectDefinitionsProvider, IDisposable, IApplicationContextAware {
+		private static const UNDERSCORE_CHAR:String = "_";
 		private var _applicationContext:IApplicationContext;
 		private var _isDisposed:Boolean;
 		private var _objectDefinitions:Object;
@@ -110,7 +111,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 		 * @private
 		 */
 		public function set applicationContext(value:IApplicationContext):void {
-			applicationContext = value;
+			_applicationContext = value;
 		}
 
 		/**
@@ -130,8 +131,8 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 		 */
 		protected function createDefinitionsFromConfigClass(cls:Class):void {
 			var instance:* = new cls();
-			if (instance is MXMLObjects) {
-				extractObjectDefinitionsFromConfigInstance(MXMLObjects(instance));
+			if (instance is SASObjects) {
+				extractObjectDefinitionsFromConfigInstance(SASObjects(instance));
 			}
 		}
 
@@ -139,11 +140,11 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 		 *
 		 * @param config
 		 */
-		protected function extractObjectDefinitionsFromConfigInstance(config:MXMLObjects):void {
+		protected function extractObjectDefinitionsFromConfigInstance(config:SASObjects):void {
 			var type:Type = Type.forInstance(config, _applicationContext.applicationDomain);
 
 			// read top-level attributes
-			var mxmlObjects:MXMLObjects = MXMLObjects(config);
+			var mxmlObjects:SASObjects = SASObjects(config);
 			/*result.defaultInitMethod = mxmlObjects.defaultInitMethod;
 			result.defaultLazyInit = mxmlObjects.defaultLazyInit;
 			result.defaultAutowire = AutowireMode.fromName(mxmlObjects.defaultAutowire);*/
@@ -153,8 +154,8 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 				// an accessor is only valid if:
 				// - it is readable
 				// - it is writable
-				// - its declaring class is not MXMLObjects: we don't want to parse the "defaultLazyInit" property, etc
-				if (accessor.readable && accessor.writeable && (accessor.declaringType.clazz != MXMLObjects)) {
+				// - its declaring class is not SASObjects: we don't want to parse the "defaultLazyInit" property, etc
+				if (accessor.readable && accessor.writeable && (accessor.declaringType.clazz == type.clazz)) {
 					parseObjectDefinition(_objectDefinitions, config, accessor);
 				}
 			}
@@ -163,7 +164,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 			for each (var variable:Variable in type.variables) {
 				// a variable is only valid if:
 				// - its (generated) id/name matches the pattern '_{CONTEXT_CLASS}_{VARIABLE_CLASS}{N}'
-				if (variable.name.indexOf("_" + type.name) > -1) {
+				if ((variable.name.indexOf(UNDERSCORE_CHAR + type.name) > -1) && (variable.declaringType.clazz == type.clazz)) {
 					parseObjectDefinition(_objectDefinitions, config, variable);
 				}
 			}
@@ -189,9 +190,12 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 			} else if (instance is PropertyPlaceholder) {
 				_propertyURIs ||= new Vector.<TextFileURI>();
 				_propertyURIs[_propertyURIs.length] = PropertyPlaceholder(instance).toTextFileURI();
+			} else if (instance is ICustomObjectDefinitionComponent) {
+				ICustomObjectDefinitionComponent(instance).execute(applicationContext);
 			} else {
 				// register a singleton for an explicit config object defined in mxml
-				// for instance: <mx:RemoteObject/>
+				// for instance: <mx:RemoteObject/>,
+				// or just a simple public property set to an object instance: public var myComplexSingleton:ComplextClass = new ComplextClass();
 				_applicationContext.cache.addInstance(field.name, instance);
 			}
 		}

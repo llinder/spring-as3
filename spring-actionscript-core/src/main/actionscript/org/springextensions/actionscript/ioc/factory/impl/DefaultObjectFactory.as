@@ -341,8 +341,8 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			var objectName:String = (isFactoryDereference ? name.substring(1) : name);
 
 			// try to get the object from the explicit singleton cache
-			if (_cache.isPrepared(objectName)) {
-				result = _cache.getPreparedInstance(objectName);
+			if (_cache.hasInstance(objectName)) {
+				result = _cache.getInstance(objectName);
 			} else {
 				// we don't have an object in the cache, so create it
 				result = buildObject(name, constructorArguments);

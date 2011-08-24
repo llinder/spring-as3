@@ -16,12 +16,13 @@
 package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 
 	import mx.core.IMXMLObject;
+	import mx.core.UIComponent;
 
 	/**
 	 *
 	 * @author Christophe Herreman
 	 */
-	public class MXMLObjects implements IMXMLObject {
+	public class SASObjects extends UIComponent {
 
 		// --------------------------------------------------------------------
 		//
@@ -29,7 +30,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		//
 		// --------------------------------------------------------------------
 
-		public function MXMLObjects() {
+		public function SASObjects() {
 			super();
 		}
 
@@ -107,14 +108,5 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 			}
 		}
 
-		// --------------------------------------------------------------------
-		//
-		// Implementation: IMXMLObject
-		//
-		// --------------------------------------------------------------------
-
-		public function initialized(document:Object, id:String):void {
-			trace("ini");
-		}
 	}
 }

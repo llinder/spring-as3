@@ -78,5 +78,10 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			return new PropertyDefinition(this.name, this.value, this.namespaceURI, this.isStatic);
 		}
 
+		public function toString():String {
+			return "PropertyDefinition{_name:\"" + _name + "\", _namespaceURI:\"" + _namespaceURI + "\", _value:" + _value + ", _isStatic:" + _isStatic + "}";
+		}
+
+
 	}
 }
