@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.context.config.impl.xml {
 
 	import org.springextensions.actionscript.context.config.IXMLConfigurationPackage;
+	import org.springextensions.actionscript.context.config.impl.FullConfigurationPackage;
 	import org.springextensions.actionscript.context.impl.ApplicationContext;
 	import org.springextensions.actionscript.context.impl.xml.XMLApplicationContext;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
@@ -28,26 +29,38 @@ package org.springextensions.actionscript.context.config.impl.xml {
 
 
 	/**
-	 *
+	 * <code>IXMLConfigurationPackage</code> that adds the <code>StageProcessingNamespaceHandler</code>, <code>EventBusNamespacehandler</code>, <code>TaskNamespaceHandler</code> and
+	 * <code>UtilNamespaceHandler</code>.
 	 * @author Roland Zwaga
 	 */
-	public class FullXMLConfigurationPackage implements IXMLConfigurationPackage {
+	public class FullXMLConfigurationPackage extends FullConfigurationPackage implements IXMLConfigurationPackage {
 
 		/**
 		 *
 		 * @param applicationContext
 		 */
-		public function execute(applicationContext:ApplicationContext):void {
+		override public function execute(applicationContext:ApplicationContext):void {
+			super.execute(applicationContext);
 			for each (var definitionProvider:IObjectDefinitionsProvider in applicationContext.definitionProviders) {
 				if (definitionProvider is XMLObjectDefinitionsProvider) {
 					var xmlProvider:XMLObjectDefinitionsProvider = XMLObjectDefinitionsProvider(definitionProvider);
-					xmlProvider.addNamespaceHandler(new StageProcessingNamespaceHandler());
-					xmlProvider.addNamespaceHandler(new EventBusNamespacehandler());
-					xmlProvider.addNamespaceHandler(new TaskNamespaceHandler());
-					xmlProvider.addNamespaceHandler(new UtilNamespaceHandler());
+					addNamespaceHandlers(xmlProvider);
 					break;
 				}
 			}
 		}
+
+		/**
+		 * Adds the <code>StageProcessingNamespaceHandler</code>, <code>EventBusNamespacehandler</code>, <code>TaskNamespaceHandler</code> and
+		 * <code>UtilNamespaceHandler</code>.
+		 * @param xmlProvider
+		 */
+		protected function addNamespaceHandlers(xmlProvider:XMLObjectDefinitionsProvider):void {
+			xmlProvider.addNamespaceHandler(new StageProcessingNamespaceHandler());
+			xmlProvider.addNamespaceHandler(new EventBusNamespacehandler());
+			xmlProvider.addNamespaceHandler(new TaskNamespaceHandler());
+			xmlProvider.addNamespaceHandler(new UtilNamespaceHandler());
+		}
+
 	}
 }

@@ -15,6 +15,8 @@
 */
 package org.springextensions.actionscript.context.impl {
 	import flash.display.DisplayObject;
+	import flash.display.LoaderInfo;
+	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
@@ -48,6 +50,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.impl.AsyncObjectDefinitionProviderResultOperation;
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoader;
+	import org.springextensions.actionscript.ioc.config.impl.metadata.ILoaderInfoAware;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
@@ -80,13 +83,14 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.metadata.MetadataProcessorObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.stage.StageProcessorFactoryPostprocessor;
 	import org.springextensions.actionscript.util.ContextUtils;
+	import org.springextensions.actionscript.util.Environment;
 
 	[Event(name="complete", type="flash.events.Event")]
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class ApplicationContext extends EventDispatcher implements IApplicationContext, IDisposable, IAutowireProcessorAware, IEventBusUserRegistryAware {
+	public class ApplicationContext extends EventDispatcher implements IApplicationContext, IDisposable, IAutowireProcessorAware, IEventBusAware, IEventBusUserRegistryAware, ILoaderInfoAware {
 
 		private static const APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME:String = "applicationContextTextFilesLoader";
 		private static const DEFINITION_PROVIDER_QUEUE_NAME:String = "definitionProviderQueue";
@@ -110,6 +114,7 @@ package org.springextensions.actionscript.context.impl {
 		private var _definitionProviders:Vector.<IObjectDefinitionsProvider>;
 		private var _eventBus:IEventBus;
 		private var _isDisposed:Boolean;
+		private var _loaderInfo:LoaderInfo;
 		private var _objectFactory:IObjectFactory;
 		private var _objectFactoryPostProcessors:Vector.<IObjectFactoryPostProcessor>;
 		private var _operationQueue:IOperationQueue;
@@ -239,6 +244,20 @@ package org.springextensions.actionscript.context.impl {
 		 */
 		public function set isReady(value:Boolean):void {
 			_objectFactory.isReady = true;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get loaderInfo():LoaderInfo {
+			return _loaderInfo;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set loaderInfo(value:LoaderInfo):void {
+			_loaderInfo = value;
 		}
 
 		/**
@@ -376,58 +395,6 @@ package org.springextensions.actionscript.context.impl {
 		}
 
 		/**
-		 *
-		 * @param childContext
-		 * @param cache
-		 * @param objectDefinitionRegistry
-		 */
-		protected function addSingletonsToChildContext(childContext:IApplicationContext, cache:IInstanceCache, objectDefinitionRegistry:IObjectDefinitionRegistry):void {
-			var cacheNames:Vector.<String> = cache.getCachedNames();
-			for each (var objectName:String in cacheNames) {
-				var share:Boolean = true;
-				if (objectDefinitionRegistry.containsObjectDefinition(objectName)) {
-					var od:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(objectName);
-					share = ((od.childContextAccess === ChildContextObjectDefinitionAccess.DEFINITION) || (od.childContextAccess === ChildContextObjectDefinitionAccess.FULL));
-				}
-				if ((share) && (!childContext.cache.hasInstance(objectName))) {
-					childContext.cache.addInstance(objectName, cache.getInstance(objectName));
-				}
-			}
-		}
-
-		/**
-		 *
-		 * @param childContext
-		 * @param objectDefinitionRegistry
-		 */
-		protected function addDefinitionsToChildContext(childContext:IApplicationContext, objectDefinitionRegistry:IObjectDefinitionRegistry):void {
-			var definitionNames:Vector.<String> = objectDefinitionRegistry.objectDefinitionNames;
-			for each (var objectName:String in definitionNames) {
-				if (!childContext.objectDefinitionRegistry.containsObjectDefinition(objectName)) {
-					var od:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(objectName);
-					if ((od.childContextAccess === ChildContextObjectDefinitionAccess.DEFINITION) || (od.childContextAccess === ChildContextObjectDefinitionAccess.FULL)) {
-						if (od is ICloneable) {
-							childContext.objectDefinitionRegistry.registerObjectDefinition(objectName, ICloneable(od).clone());
-						}
-					}
-				}
-			}
-		}
-
-		/**
-		 *
-		 * @param childContext
-		 * @param parentEventBus
-		 */
-		protected function addChildContextEventBusListener(childContext:IApplicationContext, parentEventBus:IEventBus):void {
-			if ((childContext is IEventBusAware) && (IEventBusAware(childContext).eventBus is IEventBusListener)) {
-				if (parentEventBus != null) {
-					parentEventBus.addListener(IEventBusListener(IEventBusAware(childContext).eventBus));
-				}
-			}
-		}
-
-		/**
 		 * @inheritDoc
 		 */
 		public function addDefinitionProvider(provider:IObjectDefinitionsProvider):void {
@@ -558,6 +525,58 @@ package org.springextensions.actionscript.context.impl {
 		 */
 		public function resolveReference(property:*):* {
 			return _objectFactory.resolveReference(property);
+		}
+
+		/**
+		 *
+		 * @param childContext
+		 * @param parentEventBus
+		 */
+		protected function addChildContextEventBusListener(childContext:IApplicationContext, parentEventBus:IEventBus):void {
+			if ((childContext is IEventBusAware) && (IEventBusAware(childContext).eventBus is IEventBusListener)) {
+				if (parentEventBus != null) {
+					parentEventBus.addListener(IEventBusListener(IEventBusAware(childContext).eventBus));
+				}
+			}
+		}
+
+		/**
+		 *
+		 * @param childContext
+		 * @param objectDefinitionRegistry
+		 */
+		protected function addDefinitionsToChildContext(childContext:IApplicationContext, objectDefinitionRegistry:IObjectDefinitionRegistry):void {
+			var definitionNames:Vector.<String> = objectDefinitionRegistry.objectDefinitionNames;
+			for each (var objectName:String in definitionNames) {
+				if (!childContext.objectDefinitionRegistry.containsObjectDefinition(objectName)) {
+					var od:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(objectName);
+					if ((od.childContextAccess === ChildContextObjectDefinitionAccess.DEFINITION) || (od.childContextAccess === ChildContextObjectDefinitionAccess.FULL)) {
+						if (od is ICloneable) {
+							childContext.objectDefinitionRegistry.registerObjectDefinition(objectName, ICloneable(od).clone());
+						}
+					}
+				}
+			}
+		}
+
+		/**
+		 *
+		 * @param childContext
+		 * @param cache
+		 * @param objectDefinitionRegistry
+		 */
+		protected function addSingletonsToChildContext(childContext:IApplicationContext, cache:IInstanceCache, objectDefinitionRegistry:IObjectDefinitionRegistry):void {
+			var cacheNames:Vector.<String> = cache.getCachedNames();
+			for each (var objectName:String in cacheNames) {
+				var share:Boolean = true;
+				if (objectDefinitionRegistry.containsObjectDefinition(objectName)) {
+					var od:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(objectName);
+					share = ((od.childContextAccess === ChildContextObjectDefinitionAccess.DEFINITION) || (od.childContextAccess === ChildContextObjectDefinitionAccess.FULL));
+				}
+				if ((share) && (!childContext.cache.hasInstance(objectName))) {
+					childContext.cache.addInstance(objectName, cache.getInstance(objectName));
+				}
+			}
 		}
 
 		/**
@@ -703,6 +722,8 @@ package org.springextensions.actionscript.context.impl {
 			stageProcessorRegistry = new FlashStageObjectProcessorRegistry();
 			_rootView = rootView;
 			applicationDomain = resolveRootViewApplicationDomain(_rootView);
+			loaderInfo = resolveRootViewLoaderInfo(_rootView);
+
 
 			addObjectFactoryPostProcessor(new RegisterObjectPostProcessorsFactoryPostProcessor(-100));
 			addObjectFactoryPostProcessor(new RegisterObjectFactoryPostProcessorsFactoryPostProcessor(-99));
@@ -722,6 +743,18 @@ package org.springextensions.actionscript.context.impl {
 			if (ArrayCollectionReferenceResolver.canCreate(applicationDomain)) {
 				_objectFactory.addReferenceResolver(new ArrayCollectionReferenceResolver(this));
 			}
+		}
+
+		protected function resolveRootViewLoaderInfo(view:DisplayObject):LoaderInfo {
+			if (view == null) {
+				var stage:Stage = Environment.getCurrentStage();
+				if (stage != null) {
+					return stage.loaderInfo;
+				}
+			} else {
+				return view.loaderInfo;
+			}
+			return null;
 		}
 
 		/**

@@ -32,6 +32,7 @@
 					    <goal>copy-dependencies</goal>
 					</goals>
 					<configuration>
+						<includeGroupIds>org.as3commons</includeGroupIds>
 						<includeScope>runtime</includeScope> 
 						<excludeScope>test</excludeScope>
 						<excludeScope>external</excludeScope>

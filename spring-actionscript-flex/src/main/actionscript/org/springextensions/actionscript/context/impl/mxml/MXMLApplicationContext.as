@@ -16,8 +16,10 @@
 package org.springextensions.actionscript.context.impl.mxml {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 
 	import mx.core.IMXMLObject;
+	import mx.events.FlexEvent;
 
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
@@ -47,8 +49,8 @@ package org.springextensions.actionscript.context.impl.mxml {
 		private var _configurations:Array;
 		private var _configurationPackage:IConfigurationPackage;
 		private var _document:Object;
-
 		private var _id:String;
+		private var _initialized:Boolean;
 
 
 		[Bindable(event="configurationPackageChanged")]
@@ -56,7 +58,7 @@ package org.springextensions.actionscript.context.impl.mxml {
 			return _configurationPackage;
 		}
 
-		public function set configurationPacks(value:IConfigurationPackage):void {
+		public function set configurationPackage(value:IConfigurationPackage):void {
 			if (_configurationPackage !== value) {
 				_configurationPackage = value;
 				dispatchEvent(new Event(CONFIGURATIONPACKAGE_CHANGED_EVENT));
@@ -122,19 +124,34 @@ package org.springextensions.actionscript.context.impl.mxml {
 		public function initialized(document:Object, id:String):void {
 			_document = document;
 			_id = id;
-			_applicationContext = new ApplicationContext();
-			_applicationContext.addDefinitionProvider(new MXMLObjectDefinitionsProvider());
-			if (_configurationPackage != null) {
-				_applicationContext.configure(_configurationPackage);
-			}
-			ContextUtils.disposeInstance(_configurationPackage);
-			_configurationPackage = null;
-			if (autoLoad) {
-				doLoad();
+			IEventDispatcher(_document).addEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
+		}
+
+		protected function onComplete(event:FlexEvent):void {
+			IEventDispatcher(_document).removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
+			initializeContext();
+		}
+
+		protected function initializeContext():void {
+			if (!_initialized) {
+				_applicationContext = new ApplicationContext();
+				_applicationContext.addDefinitionProvider(new MXMLObjectDefinitionsProvider());
+				if (_configurationPackage != null) {
+					_applicationContext.configure(_configurationPackage);
+				}
+				ContextUtils.disposeInstance(_configurationPackage);
+				_configurationPackage = null;
+				_initialized = true;
+				if (autoLoad) {
+					doLoad();
+				}
 			}
 		}
 
 		public function load():void {
+			if (_initialized == false) {
+				initializeContext();
+			}
 			doLoad();
 		}
 

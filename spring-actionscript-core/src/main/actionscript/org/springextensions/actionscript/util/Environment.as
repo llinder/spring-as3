@@ -15,6 +15,7 @@
  */
 package org.springextensions.actionscript.util {
 
+	import flash.display.Stage;
 	import flash.system.Security;
 
 	import org.as3commons.lang.ClassNotFoundError;
@@ -31,12 +32,20 @@ package org.springextensions.actionscript.util {
 
 		private static const APPLICATION_SANDBOX_TYPE:String = "application";
 		private static const MXCORE_FLEX_VERSION:String = "mx.core::FlexVersion";
+		private static const CURRENT_VERSION_FIELD_NAME:String = "CURRENT_VERSION";
+		private static const MXCORE_APPLICATION:String = "mx.core.Application";
+		private static const APPLICATION_FIELD_NAME:String = "Application";
+		private static const MXCORE_FLEX_GLOBALS:String = "mx.core.FlexGlobals";
+		private static const TOP_LEVEL_APPLICATION:String = "topLevelApplication";
+		private static const SYSTEM_MANAGER_FIELD_NAME:String = "systemManager";
+		private static const STAGE_FIELD_NAME:String = "stage";
 
 		// --------------------------------------------------------------------
 		//
 		// Public Static Properties
 		//
 		// --------------------------------------------------------------------
+		private static var _flexVersion:uint = uint.MAX_VALUE;
 
 		/**
 		 * Returns whether or not the application is running in an AIR environment.
@@ -53,13 +62,55 @@ package org.springextensions.actionscript.util {
 		 * @return true if running in Flex; false if not
 		 */
 		public static function get isFlex():Boolean {
-			try {
-				ClassUtils.forName(MXCORE_FLEX_VERSION);
-			} catch (e:ClassNotFoundError) {
-				return false;
-			}
-			return true;
+			return (flexVersion > 0);
 		}
+
+		/**
+		 * Returns the current flex version that the application is running in. Returns 0 if Flex is not present.
+		 */
+		public static function get flexVersion():uint {
+			if (_flexVersion == uint.MAX_VALUE) {
+				try {
+					var cls:Class = ClassUtils.forName(MXCORE_FLEX_VERSION);
+					_flexVersion = cls[CURRENT_VERSION_FIELD_NAME];
+				} catch (e:Error) {
+					_flexVersion = 0;
+				}
+			}
+			return _flexVersion;
+		}
+
+		/**
+		 * Returns the current <code>Application</code>, this can be either an MX Application or a Spark Application,
+		 * depending on the current flex version that is running.<br/>
+		 * If Flex is not running, null will be returned.
+		 */
+		public static function getCurrentApplication():Object {
+			var fxVersion:uint = flexVersion;
+			if (fxVersion > 0) {
+				if (_flexVersion < 0x04000000) {
+					var applicationClass:Class = ClassUtils.forName(MXCORE_APPLICATION);
+					return applicationClass[APPLICATION_FIELD_NAME];
+				} else {
+					var flexGlobalsClass:Class = ClassUtils.forName(MXCORE_FLEX_GLOBALS);
+					return flexGlobalsClass[TOP_LEVEL_APPLICATION];
+				}
+			}
+			return null;
+		}
+
+		/**
+		 * If Flex is running, the current stage is resolved using the current <code>Application.systemManager.stage</code> property,
+		 * otherwise <code>null</code> is returned.
+		 */
+		public static function getCurrentStage():Stage {
+			var app:Object = getCurrentApplication();
+			if ((app != null) && (app[SYSTEM_MANAGER_FIELD_NAME] != null)) {
+				return app[SYSTEM_MANAGER_FIELD_NAME][STAGE_FIELD_NAME] as Stage;
+			}
+			return null;
+		}
+
 
 		/**
 		 * Returns whether or not the application is running in a Flash environment.

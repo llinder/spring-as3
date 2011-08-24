@@ -122,7 +122,9 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		}
 
 		public function set abstract(value:Boolean):void {
-			_definition.isAbstract = true;
+			_definition.isAbstract = value;
+			delete _defaultedProperties[IS_ABSTRACT_FIELD_NAME];
+			_explicitProperties[IS_ABSTRACT_FIELD_NAME] = true;
 		}
 
 		/**
@@ -616,21 +618,6 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 				}
 			}
 		}
-
-		/*protected function getApplicationDomain():ApplicationDomain {
-			var parent:Object = _document;
-			while ((parent != null) && (parent != ApplicationUtils.application)) {
-				if (parent is Module) {
-					return Module(parent).moduleFactory.info().currentDomain as ApplicationDomain;
-				}
-				if (parent.hasOwnProperty(PARENT_DOCUMENT_FIELD_NAME)) {
-					parent = parent.parentDocument;
-				} else {
-					parent = null;
-				}
-			}
-			return ApplicationDomain.currentDomain;
-		}*/
 
 		protected function initMXMLObjectDefinition():void {
 			_objectDefinitions = {};

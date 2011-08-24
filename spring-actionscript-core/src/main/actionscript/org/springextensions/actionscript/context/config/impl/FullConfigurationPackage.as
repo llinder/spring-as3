@@ -17,6 +17,7 @@ package org.springextensions.actionscript.context.config.impl {
 
 	import org.springextensions.actionscript.context.config.IConfigurationPackage;
 	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.ioc.factory.process.impl.factory.ClassScannerObjectFactoryPostProcessor;
 
 
 	public class FullConfigurationPackage implements IConfigurationPackage {
@@ -26,6 +27,7 @@ package org.springextensions.actionscript.context.config.impl {
 		}
 
 		public function execute(applicationContext:ApplicationContext):void {
+			applicationContext.addObjectFactoryPostProcessor(new ClassScannerObjectFactoryPostProcessor());
 		}
 	}
 }
