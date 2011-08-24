@@ -100,7 +100,7 @@
 
 		<sourceDirectory>src/main/actionscript</sourceDirectory>
 		<testSourceDirectory>src/test/actionscript</testSourceDirectory>
-		<defaultGoal>install</defaultGoal>
+		<defaultGoal>compile</defaultGoal>
 
 		<plugins>
 			<plugin>
@@ -115,6 +115,13 @@
 						<type>pom</type>
 					</dependency>
 				</dependencies>
+				<executions>
+					<execution>
+						<goals>
+							<goal>sources</goal>
+						</goals>
+					</execution>
+				</executions>
 				<extensions>true</extensions>
 				<configuration>
 					<locales>
