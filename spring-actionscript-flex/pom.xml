@@ -28,7 +28,7 @@
 					<namespaces>
 						<namespace>
 							<uri>http://www.springactionscript.org/mxml/config</uri>
-							<manifest>manifest.xml</manifest>
+							<manifest>src/main/actionscript/manifest.xml</manifest>
 						</namespace>
 					</namespaces>
 					<includeNamespaces>
@@ -52,7 +52,7 @@
 			<groupId>org.springextensions.actionscript</groupId>
 			<artifactId>springactionscript-core</artifactId>
 			<version>${project.version}</version>
-			<type>swc</type>
+			<type>pom</type>
 			<scope>merge</scope>
 		</dependency>
 	</dependencies>

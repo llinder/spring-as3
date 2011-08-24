@@ -153,7 +153,7 @@
 				</configuration>
 			</plugin>
 
-			<!--plugin>
+			<plugin>
 				<groupId>org.sonatype.flexmojos</groupId>
 				<artifactId>flexmojos-maven-plugin</artifactId>
 				<version>${flex-mojos.version}</version>
@@ -199,8 +199,7 @@
 					<showWarnings>true</showWarnings>
 					<lenient>true</lenient>
 				</configuration>
-
-			</plugin-->
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
