@@ -19,7 +19,6 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 	import flash.utils.Dictionary;
 
 	import mx.core.IMXMLObject;
-	import mx.modules.Module;
 	import mx.utils.UIDUtil;
 
 	import org.as3commons.lang.Assert;
@@ -34,7 +33,6 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 	import org.springextensions.actionscript.ioc.objectdefinition.ObjectDefinitionScope;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
-	import org.springextensions.actionscript.util.ApplicationUtils;
 
 	[DefaultProperty("childContent")]
 	/**
@@ -598,7 +596,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		 */
 		public function initialized(document:Object, id:String):void {
 			_document = document;
-			_applicationDomain = getApplicationDomain();
+			_applicationDomain ||= ApplicationDomain.currentDomain;
 			_id = (id != null) ? id : UIDUtil.createUID();
 		}
 
@@ -619,7 +617,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 			}
 		}
 
-		protected function getApplicationDomain():ApplicationDomain {
+		/*protected function getApplicationDomain():ApplicationDomain {
 			var parent:Object = _document;
 			while ((parent != null) && (parent != ApplicationUtils.application)) {
 				if (parent is Module) {
@@ -632,7 +630,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 				}
 			}
 			return ApplicationDomain.currentDomain;
-		}
+		}*/
 
 		protected function initMXMLObjectDefinition():void {
 			_objectDefinitions = {};

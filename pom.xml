@@ -12,7 +12,6 @@
 		Spring ActionScript is an offshoot of the Java-based Spring Framework written in ActionScript 3.
 		It is targeted for the Flash, Flex and AIR platforms. The framework contains a versatile Inversion of Control
 		Container, a micro MVC library and extensions for the Cairngorm and PureMVC frameworks.
-		and several other utilities.
 	</description>
 	<inceptionYear>2007</inceptionYear>
 
