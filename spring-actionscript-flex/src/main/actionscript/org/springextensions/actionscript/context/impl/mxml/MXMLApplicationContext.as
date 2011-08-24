@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.context.impl.mxml {
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
@@ -35,10 +36,10 @@ package org.springextensions.actionscript.context.impl.mxml {
 	 */
 	public class MXMLApplicationContext extends EventDispatcher implements IMXMLObject, IApplicationContextAware {
 		public static const AUTOLOAD_CHANGED_EVENT:String = "autoLoadChanged";
+		public static const CONFIGURATIONPACKAGE_CHANGED_EVENT:String = "configurationPackageChanged";
 		public static const CONFIGURATIONS_CHANGED_EVENT:String = "configurationsChanged";
 		public static const DOCUMENT_CHANGED_EVENT:String = "documentChanged";
 		public static const ID_CHANGED_EVENT:String = "idChanged";
-		public static const CONFIGURATIONPACKAGE_CHANGED_EVENT:String = "configurationPackageChanged";
 
 		public function MXMLApplicationContext() {
 			super();
@@ -46,24 +47,11 @@ package org.springextensions.actionscript.context.impl.mxml {
 
 		private var _applicationContext:IApplicationContext;
 		private var _autoLoad:Boolean = false;
-		private var _configurations:Array;
 		private var _configurationPackage:IConfigurationPackage;
+		private var _configurations:Array;
 		private var _document:Object;
 		private var _id:String;
 		private var _initialized:Boolean;
-
-
-		[Bindable(event="configurationPackageChanged")]
-		public function get configurationPackage():IConfigurationPackage {
-			return _configurationPackage;
-		}
-
-		public function set configurationPackage(value:IConfigurationPackage):void {
-			if (_configurationPackage !== value) {
-				_configurationPackage = value;
-				dispatchEvent(new Event(CONFIGURATIONPACKAGE_CHANGED_EVENT));
-			}
-		}
 
 		public function get applicationContext():IApplicationContext {
 			return _applicationContext;
@@ -82,6 +70,19 @@ package org.springextensions.actionscript.context.impl.mxml {
 			if (_autoLoad != value) {
 				_autoLoad = value;
 				dispatchEvent(new Event(AUTOLOAD_CHANGED_EVENT));
+			}
+		}
+
+
+		[Bindable(event="configurationPackageChanged")]
+		public function get configurationPackage():IConfigurationPackage {
+			return _configurationPackage;
+		}
+
+		public function set configurationPackage(value:IConfigurationPackage):void {
+			if (_configurationPackage !== value) {
+				_configurationPackage = value;
+				dispatchEvent(new Event(CONFIGURATIONPACKAGE_CHANGED_EVENT));
 			}
 		}
 
@@ -121,20 +122,9 @@ package org.springextensions.actionscript.context.impl.mxml {
 			}
 		}
 
-		public function initialized(document:Object, id:String):void {
-			_document = document;
-			_id = id;
-			IEventDispatcher(_document).addEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
-		}
-
-		protected function onComplete(event:FlexEvent):void {
-			IEventDispatcher(_document).removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
-			initializeContext();
-		}
-
-		protected function initializeContext():void {
+		public function initializeContext():void {
 			if (!_initialized) {
-				_applicationContext = new ApplicationContext();
+				_applicationContext = new ApplicationContext(null, (_document as DisplayObject));
 				_applicationContext.addDefinitionProvider(new MXMLObjectDefinitionsProvider());
 				if (_configurationPackage != null) {
 					_applicationContext.configure(_configurationPackage);
@@ -145,6 +135,14 @@ package org.springextensions.actionscript.context.impl.mxml {
 				if (autoLoad) {
 					doLoad();
 				}
+			}
+		}
+
+		public function initialized(document:Object, id:String):void {
+			_document = document;
+			_id = id;
+			if (_document is IEventDispatcher) {
+				IEventDispatcher(_document).addEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			}
 		}
 
@@ -166,6 +164,11 @@ package org.springextensions.actionscript.context.impl.mxml {
 		protected function handleApplicationContextComplete(event:Event):void {
 			_applicationContext.removeEventListener(Event.COMPLETE, handleApplicationContextComplete);
 			dispatchEvent(event);
+		}
+
+		protected function onComplete(event:FlexEvent):void {
+			IEventDispatcher(_document).removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
+			initializeContext();
 		}
 	}
 }
