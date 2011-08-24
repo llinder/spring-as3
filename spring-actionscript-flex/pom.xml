@@ -22,6 +22,28 @@
 	<build>
 		<plugins>
 			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+				    <execution>
+					<id>copy-dependencies</id>
+					<phase>process-sources</phase>
+					<!-- site -->
+					<goals>
+					    <goal>copy-dependencies</goal>
+					</goals>
+					<configuration>
+						<includeScope>runtime</includeScope> 
+						<excludeScope>test</excludeScope>
+						<excludeScope>external</excludeScope>
+						<includeTypes>swc</includeTypes>
+						<overWriteIfNewer>true</overWriteIfNewer>
+						<excludeTransitive>true</excludeTransitive>
+					</configuration>
+				    </execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<groupId>org.sonatype.flexmojos</groupId>
 				<artifactId>flexmojos-maven-plugin</artifactId>
 				<configuration>
@@ -34,6 +56,8 @@
 					<includeNamespaces>
 						<namespace>http://www.springactionscript.org/mxml/config</namespace>
 					</includeNamespaces>
+					<includeFiles>
+					</includeFiles>
 				</configuration>
 				<executions>
 					<execution>
@@ -52,7 +76,7 @@
 		    <groupId>org.springextensions.actionscript</groupId>
 		    <artifactId>springactionscript-core</artifactId>
 		    <type>swc</type>
-		    <scope>merged</scope>
+		    <scope>external</scope>
 		    <version>${project.version}</version>
 		</dependency>
 		
@@ -61,7 +85,7 @@
 			<artifactId>framework</artifactId>
 			<version>${flex-sdk.version}</version>
 			<type>swc</type>
-			<scope>compile</scope>
+			<scope>external</scope>
 		</dependency>
 
 	</dependencies>
