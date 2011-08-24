@@ -46,6 +46,16 @@
 
 		</plugins>
 	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.springextensions.actionscript</groupId>
+			<artifactId>springactionscript-core</artifactId>
+			<version>${project.version}</version>
+			<type>swc</type>
+			<scope>merge</scope>
+		</dependency>
+	</dependencies>
 
 	<scm>
 		<developerConnection>scm:svn:https://src.springframework.org/svn/se-springactionscript-as/tags/${project.version}/springactionscript-flex/</developerConnection>
