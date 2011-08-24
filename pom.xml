@@ -100,13 +100,13 @@
 
 		<sourceDirectory>src/main/actionscript</sourceDirectory>
 		<testSourceDirectory>src/test/actionscript</testSourceDirectory>
-		<defaultGoal>compile</defaultGoal>
+		<defaultGoal>install</defaultGoal>
 
 		<plugins>
 			<plugin>
 				<groupId>org.sonatype.flexmojos</groupId>
 				<artifactId>flexmojos-maven-plugin</artifactId>
-				<version>${flexmojos.version}</version>
+				<version>${flex-mojos.version}</version>
 				<dependencies>
 					<dependency>
 						<groupId>com.adobe.flex</groupId>
@@ -153,7 +153,7 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
+			<!--plugin>
 				<groupId>org.sonatype.flexmojos</groupId>
 				<artifactId>flexmojos-maven-plugin</artifactId>
 				<version>${flex-mojos.version}</version>
@@ -200,7 +200,7 @@
 					<lenient>true</lenient>
 				</configuration>
 
-			</plugin>
+			</plugin-->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -768,6 +768,17 @@
 
 	<repositories>
 		<repository>
+			<id>flex-mojos-repository</id>
+			<url>http://repository.sonatype.org/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+			<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
 			<id>jarvana-repository</id>
 			<url>http://www.jarvana.com/jarvana</url>
 			<releases>
@@ -785,7 +796,7 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>flex-mojos-repository</id>
+			<id>flex-mojos-flex-repository</id>
 			<url>http://repository.sonatype.org/content/groups/flexgroup</url>
 			<releases>
 				<enabled>true</enabled>
