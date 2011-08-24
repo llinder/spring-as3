@@ -22,30 +22,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-copy-dependencies</id>
-						<phase>site</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<excludeGroupIds>
-								com.adobe.flex.framework,org.sonatype.flexmojos,org.springextensions.actionscript,com.adobe.flexunit
-							</excludeGroupIds>
-							<excludeTransitive>true</excludeTransitive>
-							<outputDirectory>${project.build.directory}/dependency</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			
-			<plugin>
 				<groupId>org.sonatype.flexmojos</groupId>
 				<artifactId>flexmojos-maven-plugin</artifactId>
 				<configuration>

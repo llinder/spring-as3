@@ -19,41 +19,6 @@
 		<assembly.file.name>springactionscript-core-latest-snapshot</assembly.file.name>
 	</properties>
 	
-	<reporting>
-		<plugins>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-			</plugin>
-			<!--
-			<plugin>
-				<groupId>org.sonatype.flexmojos</groupId>
-				<artifactId>flexmojos-maven-plugin</artifactId>
-				<version>${flex-mojos.version}</version>
-				<inherited>true</inherited>
-				<reportSets>
-					<reportSet>
-						<id>flex-reports</id>
-						<reports>
-							<report>asdoc-report</report>
-						</reports>
-						<configuration>
-							<templateDirectory>asdoctemplates/flex4/templates</templateDirectory>
-							<reportOutputDirectory>target/site/docs/asdoc2</reportOutputDirectory>
-							<description>API documentation</description>
-							<mainTitle>API documentation</mainTitle>
-							<windowTitle>API documentation</windowTitle>
-							<name>SpringActionscriptDocs</name>
-						</configuration>
-					</reportSet>
-				</reportSets>
-			</plugin>
-			-->
-
-		</plugins>
-	</reporting>
-
 	<scm>
 		<developerConnection>scm:svn:https://src.springframework.org/svn/se-springactionscript-as/tags/${project.version}/springactionscript-core/</developerConnection>
 		<connection>scm:svn:https://src.springframework.org/svn/se-springactionscript-as</connection>
