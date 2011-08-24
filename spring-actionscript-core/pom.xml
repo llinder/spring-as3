@@ -19,6 +19,32 @@
 		<assembly.file.name>springactionscript-core-latest-snapshot</assembly.file.name>
 	</properties>
 	
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+				    <execution>
+					<id>copy-dependencies</id>
+					<phase>process-sources</phase>
+					<!-- site -->
+					<goals>
+					    <goal>copy-dependencies</goal>
+					</goals>
+					<configuration>
+						<includeScope>runtime</includeScope> 
+						<excludeScope>test</excludeScope>
+						<excludeScope>external</excludeScope>
+						<includeTypes>swc</includeTypes>
+						<overWriteIfNewer>true</overWriteIfNewer>
+						<excludeTransitive>true</excludeTransitive>
+					</configuration>
+				    </execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
 	<scm>
 		<developerConnection>scm:svn:https://src.springframework.org/svn/se-springactionscript-as/tags/${project.version}/springactionscript-core/</developerConnection>
 		<connection>scm:svn:https://src.springframework.org/svn/se-springactionscript-as</connection>

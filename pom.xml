@@ -435,28 +435,6 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-				    <execution>
-					<id>copy-dependencies</id>
-					<phase>process-sources</phase>
-					<!-- site -->
-					<goals>
-					    <goal>copy-dependencies</goal>
-					</goals>
-					<configuration>
-						<includeScope>runtime</includeScope> 
-						<excludeScope>test</excludeScope>
-						<excludeScope>external</excludeScope>
-						<includeTypes>swc</includeTypes>
-						<overWriteIfNewer>true</overWriteIfNewer>
-						<excludeTransitive>true</excludeTransitive>
-					</configuration>
-				    </execution>
-				</executions>
-			</plugin>
-
 		</plugins>
 	</build>
 	
