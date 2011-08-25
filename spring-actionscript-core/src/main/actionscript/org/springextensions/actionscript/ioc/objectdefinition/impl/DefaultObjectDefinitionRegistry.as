@@ -307,9 +307,10 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function removeObjectDefinition(objectName:String):void {
+		public function removeObjectDefinition(objectName:String):IObjectDefinition {
+			var definition:IObjectDefinition;
 			if (containsObjectDefinition(objectName)) {
-				var definition:IObjectDefinition = getObjectDefinition(objectName);
+				definition = getObjectDefinition(objectName);
 				var idx:int;
 				var list:Vector.<String> = getObjectNamesForType(definition.clazz);
 				var deleteClass:Boolean = ((list != null) && (list.length == 1));
@@ -335,6 +336,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 					_objectDefinitionNames.splice(idx, 1);
 				}
 			}
+			return definition;
 		}
 
 		/**

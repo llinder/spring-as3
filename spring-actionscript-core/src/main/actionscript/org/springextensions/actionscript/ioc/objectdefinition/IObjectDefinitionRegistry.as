@@ -195,6 +195,6 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		 *
 		 * @param objectName  The name/id of the definition to remove
 		 */
-		function removeObjectDefinition(objectName:String):void;
+		function removeObjectDefinition(objectName:String):IObjectDefinition;
 	}
 }
