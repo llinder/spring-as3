@@ -131,6 +131,7 @@
 						<param>Inject</param>
 						<param>Command</param>
 						<param>Component</param>
+						<param>ExternalProperties</param>
 						<param>Constructor</param>
 						<param>Event</param>
 						<param>EventHandler</param>
