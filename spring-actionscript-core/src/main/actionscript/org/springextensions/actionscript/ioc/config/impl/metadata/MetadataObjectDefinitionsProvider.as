@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.ioc.config.impl.metadata {
 	import flash.display.DisplayObject;
 	import flash.display.LoaderInfo;
+	import flash.errors.IllegalOperationError;
 	import flash.system.ApplicationDomain;
 
 	import org.as3commons.async.operation.IOperation;
@@ -64,6 +65,9 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		/** The Component metadata. */
 		public static const COMPONENT_METADATA:String = "Component";
+
+		/** The Configuration metadata. */
+		public static const EXTERNAL_PROPERTIES_METADATA:String = "ExternalProperties";
 
 		/** The Constructor metadata. */
 		public static const CONSTRUCTOR_METADATA:String = "Constructor";
@@ -135,6 +139,9 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		private static const TRUE_VALUE:String = "true";
 		private static const UNKNOWN_METADATA_ARGUMENT_ERROR:String = "Unknown metadata argument '{0}' encountered on class {1}.";
 		private static const EMPTY:String = '';
+		private static const LOCATION_ATTR:String = "location";
+		private static const REQUIRED_ATTR:String = "required";
+		private static const PREVENTCACHE_ATTR:String = "prevent-cache";
 
 		/** The number of generated components by scanning, used to generate unique object names. */
 		private static var _numScannedComponents:uint = 0;
@@ -220,8 +227,47 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			if (loaderInfo != null) {
 				ByteCodeType.metaDataLookupFromLoader(loaderInfo);
 			}
-			_objectDefinitions = createObjectDefinitions(ByteCodeType.getCache());
+			var cache:ByteCodeTypeCache = ByteCodeType.getCache();
+			_objectDefinitions = createObjectDefinitions(cache);
+			createPropertyObjects(cache);
 			return null;
+		}
+
+		protected function createPropertyObjects(cache:ByteCodeTypeCache):void {
+			var classNames:Array = cache.getClassesWithMetadata(EXTERNAL_PROPERTIES_METADATA);
+			for each (var name:String in classNames) {
+				extractExternalPropertyMetadata(name);
+			}
+		}
+
+		protected function extractExternalPropertyMetadata(className:String):void {
+			var type:Type = Type.forName(className, applicationContext.applicationDomain);
+			var metadatas:Array = type.getMetadata(EXTERNAL_PROPERTIES_METADATA);
+			for each (var metadata:Metadata in metadatas) {
+				createPropertyURI(metadata);
+			}
+		}
+
+		protected function createPropertyURI(metadata:Metadata):void {
+			var URI:String;
+			var isRequired:Boolean = true;
+			var preventCache:Boolean = true;
+			if (metadata.hasArgumentWithKey(LOCATION_ATTR)) {
+				URI = metadata.getArgument(LOCATION_ATTR).value;
+			} else if (metadata.hasArgumentWithKey(EMPTY)) {
+				URI = metadata.getArgument(EMPTY).value;
+			} else {
+				throw new IllegalOperationError("ExternalProperty metadata does not have a valid 'location' argument defined");
+			}
+			if (metadata.hasArgumentWithKey(REQUIRED_ATTR)) {
+				isRequired = (metadata.getArgument(REQUIRED_ATTR).value.toLowerCase() == TRUE_VALUE);
+			}
+			if (metadata.hasArgumentWithKey(PREVENTCACHE_ATTR)) {
+				preventCache = (metadata.getArgument(PREVENTCACHE_ATTR).value.toLowerCase() == TRUE_VALUE);
+			}
+			var propertyURI:TextFileURI = new TextFileURI(URI, isRequired, preventCache);
+			_propertyURIs ||= new Vector.<TextFileURI>();
+			_propertyURIs[_propertyURIs.length] = propertyURI;
 		}
 
 		/**
@@ -239,6 +285,10 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			for each (var className:String in classNames) {
 				scan(className);
 			}
+			return createResult();
+		}
+
+		protected function createResult():Object {
 			var result:Object;
 			var names:Vector.<String> = _internalRegistry.objectDefinitionNames;
 			for each (var name:String in _internalRegistry) {
@@ -249,6 +299,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			}
 			return result;
 		}
+
 
 		protected function getClassesFromClassNames(classNames:Array):Vector.<Class> {
 			var result:Vector.<Class> = new Vector.<Class>();
