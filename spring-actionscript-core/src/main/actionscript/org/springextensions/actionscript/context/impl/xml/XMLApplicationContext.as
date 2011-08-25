@@ -35,7 +35,6 @@ package org.springextensions.actionscript.context.impl.xml {
 
 		protected function initXMLApplicationContext(configLocation:*):void {
 			var provider:XMLObjectDefinitionsProvider = new XMLObjectDefinitionsProvider((configLocation != null) ? [configLocation] : null);
-			provider.applicationContext = this;
 			addDefinitionProvider(provider);
 		}
 
