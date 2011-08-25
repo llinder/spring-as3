@@ -49,7 +49,12 @@
 			<plugin>
 				<groupId>org.sonatype.flexmojos</groupId>
 				<artifactId>flexmojos-maven-plugin</artifactId>
+      
 				<configuration>
+					<includeFiles>
+  						<include>design.xml</include>
+  						<include>manifest.xml</include>
+  					</includeFiles>
 					<namespaces>
 						<namespace>
 							<uri>http://www.springactionscript.org/mxml/config</uri>
@@ -62,7 +67,7 @@
 					<includeSources>
 						<param>src/main/actionscript</param>
 					</includeSources>
-				</configuration>
+            			</configuration>
 				<executions>
 					<execution>
 						<goals>
@@ -91,7 +96,20 @@
 			<type>swc</type>
 			<scope>external</scope>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.adobe.flex.framework</groupId>
+			<artifactId>mx</artifactId>
+			<version>${flex-sdk.version}</version>
+			<type>swc</type>
+			<scope>external</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.adobe.flex.framework</groupId>
+			<artifactId>rpc</artifactId>
+			<version>${flex-sdk.version}</version>
+			<type>swc</type>
+			<scope>external</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.as3commons</groupId>
 			<artifactId>flex-async</artifactId>

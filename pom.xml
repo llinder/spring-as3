@@ -744,8 +744,6 @@
 			<type>rb.swc</type>
 			<scope>test</scope>
 		</dependency>
-
-
 	</dependencies>
 
 	<distributionManagement>
