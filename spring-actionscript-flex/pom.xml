@@ -18,6 +18,7 @@
 
 	<properties>
 		<assembly.file.name>springactionscript-flex-latest-snapshot</assembly.file.name>
+		<as3commons-async-flex.version>1.0-RC2-SNAPSHOT</as3commons-async-flex.version>
 	</properties>
 	
 	<build>
@@ -52,14 +53,15 @@
 					<namespaces>
 						<namespace>
 							<uri>http://www.springactionscript.org/mxml/config</uri>
-							<manifest>src/main/actionscript/manifest.xml</manifest>
+							<manifest>src/main/resources/manifest.xml</manifest>
 						</namespace>
 					</namespaces>
 					<includeNamespaces>
 						<namespace>http://www.springactionscript.org/mxml/config</namespace>
 					</includeNamespaces>
-					<includeFiles>
-					</includeFiles>
+					<includeSources>
+						<param>src/main/actionscript</param>
+					</includeSources>
 				</configuration>
 				<executions>
 					<execution>
@@ -88,6 +90,24 @@
 			<version>${flex-sdk.version}</version>
 			<type>swc</type>
 			<scope>external</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.as3commons</groupId>
+			<artifactId>flex-async</artifactId>
+			<version>${as3commons-async-flex.version}</version>
+			<type>swc</type>
+			<scope>external</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.adobe.flex.framework</groupId>
+					<artifactId>playerglobal</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.adobe.flex.framework</groupId>
+					<artifactId>common-framework</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 	</dependencies>
