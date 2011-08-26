@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <annotations version="1.1">
 
+	<metadata name="ExternalProperties"
+			  description="Describes a location (URI) of an external properties file">
+		<context name="class"/>
+		<attribute name="location"
+				   type="String"
+				   required="true"/>
+		<attribute name="required"
+				   type="Boolean"
+				   required="false"
+				   defaultValue="true"/>
+		<attribute name="preventCache"
+				   type="Boolean"
+				   required="false"
+				   defaultValue="true"/>
+	</metadata>
+
 	<metadata name="Component"
 			  description="Used to define object definitions on a class which will be used by the class scaning system in Spring Actionscript">
 		<context name="class"/>

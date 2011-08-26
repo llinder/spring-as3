@@ -134,7 +134,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		private static const MULTIPLE_COMPONENT_METADATA_ERROR:String = "Only one Component metadata annotation can be used";
 		private static const OBJECT_DEFINITION_ALREADY_EXISTS:String = "Object definition for class '{0}' already exists.";
 		private static const PARENT_NAME_ATTR:String = "parentName";
-		private static const PREVENTCACHE_ATTR:String = "prevent-cache";
+		private static const PREVENTCACHE_ATTR:String = "preventCache";
 		/** Regular expression to resolve property placeholder with the pattern ${...} */
 		private static const PROPERTY_REGEXP:RegExp = /\$\{[^}]+\}/g;
 		/** Regular expression to resolve property placeholder with the pattern $(...) */
