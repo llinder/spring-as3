@@ -43,6 +43,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 	import org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
+	import org.springextensions.actionscript.ioc.objectdefinition.ChildContextObjectDefinitionAccess;
 	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -64,6 +65,9 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		/** The "autowireCandidate" attribute. */
 		public static const AUTOWIRE_CANDIDATE_ATTR:String = "autowireCandidate";
+
+		/** The "childContextAccess" attribute. */
+		public static const CHILD_CONTEXT_ACCESS_ATTR:String = "childContextAccess";
 
 		/** The Component metadata. */
 		public static const COMPONENT_METADATA:String = "Component";
@@ -98,8 +102,20 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		/** The Invoke metadata. */
 		public static const INVOKE_METADATA:String = "Invoke";
 
+		/** The "isAbstract" attribute. */
+		public static const IS_ABSTRACT_ATTR:String = "isAbstract";
+
 		/** The "lazyInit" attribute. */
 		public static const LAZY_INIT_ATTR:String = "lazyInit";
+
+		/** The "location" attribute. */
+		public static const LOCATION_ATTR:String = "location";
+
+		/** The "parentName" attribute. */
+		public static const PARENT_NAME_ATTR:String = "parentName";
+
+		/** The "preventCache" attribute. */
+		public static const PREVENTCACHE_ATTR:String = "preventCache";
 
 		/** The "primary" attribute. */
 		public static const PRIMARY_ATTR:String = "primary";
@@ -109,6 +125,9 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		/** The "ref" attribute. */
 		public static const REF_ATTR:String = "ref";
+
+		/** The "required" attribute. */
+		public static const REQUIRED_ATTR:String = "required";
 
 		/** The prefix used when generating object definition names. */
 		public static const SCANNED_COMPONENT_NAME_PREFIX:String = "scannedComponent#";
@@ -128,24 +147,15 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		private static const CREATING_OBJECT_DEFINITION:String = "Creating object definition for class '{0}'.";
 		private static const EMPTY:String = '';
 		private static const EQUALS:String = '=';
-		private static const IS_ABSTRACT_ATTR:String = "isAbstract";
-		private static const LOCATION_ATTR:String = "location";
 		private static const LOGGER:ILogger = getLogger(MetadataObjectDefinitionsProvider);
 		private static const MULTIPLE_COMPONENT_METADATA_ERROR:String = "Only one Component metadata annotation can be used";
 		private static const OBJECT_DEFINITION_ALREADY_EXISTS:String = "Object definition for class '{0}' already exists.";
-		private static const PARENT_NAME_ATTR:String = "parentName";
-		private static const PREVENTCACHE_ATTR:String = "preventCache";
-		/** Regular expression to resolve property placeholder with the pattern ${...} */
 		private static const PROPERTY_REGEXP:RegExp = /\$\{[^}]+\}/g;
-		/** Regular expression to resolve property placeholder with the pattern $(...) */
 		private static const PROPERTY_REGEXP2:RegExp = /\$\([^)]+\)/g;
-		private static const REQUIRED_ATTR:String = "required";
 		private static const SCANNING_CLASS:String = "Scanning class '{0}' for Component metadata.";
-		private static const SKIPPING_INTERFACE:String = "Skipping component scan on interface '{0}'.";
+		private static const SPACE:String = ' ';
 		private static const TRUE_VALUE:String = "true";
 		private static const UNKNOWN_METADATA_ARGUMENT_ERROR:String = "Unknown metadata argument '{0}' encountered on class {1}.";
-
-		/** The number of generated components by scanning, used to generate unique object names. */
 		private static var _numScannedComponents:uint = 0;
 
 		/**
@@ -176,6 +186,11 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 */
 		public function set applicationContext(value:IApplicationContext):void {
 			_applicationContext = value;
+		}
+
+
+		public function get internalRegistry():IObjectDefinitionRegistry {
+			return _internalRegistry;
 		}
 
 		/**
@@ -236,11 +251,96 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		}
 
 		/**
+		 *
+		 * @param cache
+		 * @return
+		 */
+		public function createObjectDefinitions(cache:ByteCodeTypeCache):Object {
+			var classNames:Array = cache.getClassesWithMetadata(COMPONENT_METADATA);
+			_classBeingScanned = getClassesFromClassNames(classNames);
+			for each (var className:String in classNames) {
+				scan(className);
+			}
+			return createResult();
+		}
+
+		/**
+		 *
+		 * @param cache
+		 */
+		public function createPropertyObjects(cache:ByteCodeTypeCache):void {
+			var classNames:Array = cache.getClassesWithMetadata(EXTERNAL_PROPERTIES_METADATA);
+			for each (var name:String in classNames) {
+				extractExternalPropertyMetadata(name);
+			}
+		}
+
+		/**
 		 * @inheritDoc
 		 */
 		public function dispose():void {
 			if (!_isDisposed) {
 				_isDisposed = true;
+			}
+		}
+
+		/**
+		 *
+		 * @param className
+		 */
+		public function extractExternalPropertyMetadata(className:String):void {
+			var type:Type = Type.forName(className, applicationContext.applicationDomain);
+			var metadatas:Array = type.getMetadata(EXTERNAL_PROPERTIES_METADATA);
+			for each (var metadata:Metadata in metadatas) {
+				createPropertyURI(metadata);
+			}
+		}
+
+		/**
+		 *
+		 * @param className
+		 */
+		public function scan(className:String):void {
+			var clazz:Class = ClassUtils.forName(className, applicationContext.applicationDomain);
+
+			var type:Type = Type.forClass(clazz, applicationContext.applicationDomain);
+
+			LOGGER.debug(SCANNING_CLASS, [className]);
+
+			if (type.hasMetadata(COMPONENT_METADATA)) {
+				var metadata:Array = type.getMetadata(COMPONENT_METADATA);
+
+				if (metadata.length > 1) {
+					throw new Error(MULTIPLE_COMPONENT_METADATA_ERROR);
+				}
+
+				var componentMetaData:Metadata = Metadata(metadata[0]);
+				var componentId:String = getComponentIdFromMetaData(componentMetaData);
+				var objectDefinitionExists:Boolean = false;
+
+				if (componentId) {
+					objectDefinitionExists = _internalRegistry.containsObjectDefinition(componentId);
+				}
+
+				if (objectDefinitionExists) {
+					LOGGER.debug(OBJECT_DEFINITION_ALREADY_EXISTS, [className]);
+				} else {
+					LOGGER.debug(CREATING_OBJECT_DEFINITION, [className]);
+
+					var definition:ObjectDefinition = new ObjectDefinition(className);
+					definition.isInterface = ClassUtils.isInterface(clazz);
+					definition.isSingleton = !ClassUtils.isSubclassOf(clazz, DisplayObject, applicationContext.applicationDomain);
+					resolveDefinitionProperties(componentMetaData, definition, className);
+
+					if (componentId == null) {
+						componentId = SCANNED_COMPONENT_NAME_PREFIX + ++_numScannedComponents;
+					}
+					_internalRegistry.registerObjectDefinition(componentId, definition);
+
+					resolveConstructorArgs(type, definition, componentId);
+					resolveMethods(type, definition);
+					resolveProperties(type, definition, componentId);
+				}
 			}
 		}
 
@@ -271,31 +371,6 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			}
 			var propertyDef:PropertyDefinition = new PropertyDefinition(field.name, propertyValue, field.namespaceURI, field.isStatic);
 			definition.addPropertyDefinition(propertyDef);
-		}
-
-		/**
-		 *
-		 * @param cache
-		 * @return
-		 */
-		protected function createObjectDefinitions(cache:ByteCodeTypeCache):Object {
-			var classNames:Array = cache.getClassesWithMetadata(COMPONENT_METADATA);
-			_classBeingScanned = getClassesFromClassNames(classNames);
-			for each (var className:String in classNames) {
-				scan(className);
-			}
-			return createResult();
-		}
-
-		/**
-		 *
-		 * @param cache
-		 */
-		protected function createPropertyObjects(cache:ByteCodeTypeCache):void {
-			var classNames:Array = cache.getClassesWithMetadata(EXTERNAL_PROPERTIES_METADATA);
-			for each (var name:String in classNames) {
-				extractExternalPropertyMetadata(name);
-			}
 		}
 
 		/**
@@ -338,18 +413,6 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 				result[name] = definition;
 			}
 			return result;
-		}
-
-		/**
-		 *
-		 * @param className
-		 */
-		protected function extractExternalPropertyMetadata(className:String):void {
-			var type:Type = Type.forName(className, applicationContext.applicationDomain);
-			var metadatas:Array = type.getMetadata(EXTERNAL_PROPERTIES_METADATA);
-			for each (var metadata:Metadata in metadatas) {
-				createPropertyURI(metadata);
-			}
 		}
 
 
@@ -503,11 +566,10 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 					var constructorArg:Parameter = type.constructor.parameters[i];
 					var constructorArgClass:Class = constructorArg.type.clazz;
 					var objectDefinitionsThatMatchConstructorArgClass:Vector.<String> = getObjectDefinitionsThatMatchClass(constructorArgClass, objectDefinitionId);
-					var numObjectDefinitions:int = objectDefinitionsThatMatchConstructorArgClass.length;
 
-					if (numObjectDefinitions == 0) {
+					if (objectDefinitionsThatMatchConstructorArgClass == null) {
 						throw new Error("Unsatisfied dependency");
-					} else if (numObjectDefinitions == 1) {
+					} else if (objectDefinitionsThatMatchConstructorArgClass.length == 1) {
 						definition.constructorArguments ||= [];
 
 						var constructorArgDefinitionId:String = objectDefinitionsThatMatchConstructorArgClass[0];
@@ -563,11 +625,14 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 					case DEPENDENCY_CHECK_ATTR:
 						definition.dependencyCheck = DependencyCheckMode.fromName(arg.value);
 					case DEPENDS_ON_ATTR:
-						var depends:Array = arg.value.split(' ').join(EMPTY).split(COMMA);
+						var depends:Array = arg.value.split(SPACE).join(EMPTY).split(COMMA);
 						definition.dependsOn = new Vector.<String>();
 						for each (var name:String in depends) {
 							definition.dependsOn[definition.dependsOn.length] = name;
 						}
+						break;
+					case CHILD_CONTEXT_ACCESS_ATTR:
+						definition.childContextAccess = ChildContextObjectDefinitionAccess.fromValue(arg.key.toLowerCase());
 						break;
 					case PARENT_NAME_ATTR:
 						definition.parentName = arg.value;
@@ -616,54 +681,6 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			for each (var container:IMetadataContainer in containers) {
 				if (container is Field) {
 					addProperty(Field(container), definition);
-				}
-			}
-		}
-
-		/**
-		 *
-		 * @param className
-		 */
-		protected function scan(className:String):void {
-			var clazz:Class = ClassUtils.forName(className, applicationContext.applicationDomain);
-
-			var type:Type = Type.forClass(clazz, applicationContext.applicationDomain);
-
-			LOGGER.debug(SCANNING_CLASS, [className]);
-
-			if (type.hasMetadata(COMPONENT_METADATA)) {
-				var metadata:Array = type.getMetadata(COMPONENT_METADATA);
-
-				if (metadata.length > 1) {
-					throw new Error(MULTIPLE_COMPONENT_METADATA_ERROR);
-				}
-
-				var componentMetaData:Metadata = Metadata(metadata[0]);
-				var componentId:String = getComponentIdFromMetaData(componentMetaData);
-				var objectDefinitionExists:Boolean = false;
-
-				if (componentId) {
-					objectDefinitionExists = _internalRegistry.containsObjectDefinition(componentId);
-				}
-
-				if (objectDefinitionExists) {
-					LOGGER.debug(OBJECT_DEFINITION_ALREADY_EXISTS, [className]);
-				} else {
-					LOGGER.debug(CREATING_OBJECT_DEFINITION, [className]);
-
-					var definition:ObjectDefinition = new ObjectDefinition(className);
-					definition.isInterface = ClassUtils.isInterface(clazz);
-					_applicationContext.objectDefinitionRegistry.registerObjectDefinition(componentId, definition);
-					definition.isSingleton = !ClassUtils.isSubclassOf(clazz, DisplayObject, applicationContext.applicationDomain);
-					resolveDefinitionProperties(componentMetaData, definition, className);
-
-					if (componentId == null) {
-						componentId = SCANNED_COMPONENT_NAME_PREFIX + ++_numScannedComponents;
-					}
-
-					resolveConstructorArgs(type, definition, componentId);
-					resolveMethods(type, definition);
-					resolveProperties(type, definition, componentId);
 				}
 			}
 		}

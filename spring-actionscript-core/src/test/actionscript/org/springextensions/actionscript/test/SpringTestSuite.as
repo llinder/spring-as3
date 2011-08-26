@@ -16,10 +16,10 @@
 package org.springextensions.actionscript.test {
 	import integration.objectfactory.ObjectFactoryIntegrationTest;
 
-	import org.as3commons.async.task.impl.Task;
 	import org.springextensions.actionscript.context.impl.ApplicationContextTest;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoaderTest;
+	import org.springextensions.actionscript.ioc.config.impl.metadata.MetadataObjectDefinitionsProviderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProviderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventHandlerNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventRouterNodeParserTest;
@@ -118,6 +118,7 @@ package org.springextensions.actionscript.test {
 		public var t46:TaskElementsPreprocessorTest;
 		public var t47:TaskNamespaceHandlerTest;
 		public var t48:XmlObjectDefinitionsParserTest;
+		public var t49:MetadataObjectDefinitionsProviderTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 	}

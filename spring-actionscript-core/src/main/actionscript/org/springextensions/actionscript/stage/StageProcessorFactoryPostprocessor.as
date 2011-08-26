@@ -34,17 +34,16 @@ package org.springextensions.actionscript.stage {
 	 * from the <code>IConfigurableListableObjectFactory</code> instance and registers them by invoking the
 	 * <code>registerStageProcessor()</code> method on the <code>IStageProcessorRegistry</code> instance.</p>
 	 * @author Roland Zwaga
-	 * @docref container-documentation.html#the_istageprocessor_interface
-	 * @sampleref stagewiring
 	 */
 	public class StageProcessorFactoryPostprocessor implements IObjectFactoryPostProcessor {
+
+		private var _defaultObjectSelector:IObjectSelector;
 
 		// --------------------------------------------------------------------
 		//
 		// Constructor
 		//
 		// --------------------------------------------------------------------
-		private var _defaultObjectSelector:IObjectSelector;
 
 		/**
 		 * Creates a new <code>StageProcessorFactoryPostprocessor</code> instance.

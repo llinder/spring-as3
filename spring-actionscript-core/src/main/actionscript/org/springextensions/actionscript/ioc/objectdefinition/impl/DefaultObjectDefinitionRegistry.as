@@ -36,6 +36,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		private static const CHARACTERS:String = "abcdefghijklmnopqrstuvwxys";
 		private static const IS_SINGLETON_FIELD_NAME:String = "isSingleton";
 		private static const OBJECT_DEFINITION_NAME_EXISTS_ERROR:String = "Object definition with that name has already been registered";
+		private static const METADATA_KEY_SUFFIX:String = '____';
 
 		public static function generateRegistryId():String {
 			var len:int = 20;
@@ -184,7 +185,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		public function getObjectDefinitionsWithMetadata(metadataNames:Vector.<String>):Vector.<IObjectDefinition> {
 			var result:Vector.<IObjectDefinition>;
 			for each (var name:String in metadataNames) {
-				name = name.toLowerCase();
+				name = name.toLowerCase() + METADATA_KEY_SUFFIX;
 				var list:Vector.<IObjectDefinition> = _objectDefinitionMetadataLookup[name] as Vector.<IObjectDefinition>;
 				if (list != null) {
 					result ||= new Vector.<IObjectDefinition>();
@@ -346,9 +347,9 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		protected function addToMetadataLookup(objectDefinition:IObjectDefinition):void {
 			var type:Type = Type.forName(objectDefinition.className, _applicationDomain);
 			for each (var metadata:Metadata in type.metadata) {
-				var name:String = metadata.name.toLowerCase();
-				_objectDefinitionMetadataLookup[name] ||= new Vector.<IObjectDefinition>();
-				_objectDefinitionMetadataLookup[name].push(objectDefinition);
+				var name:String = metadata.name.toLowerCase() + METADATA_KEY_SUFFIX;
+				var vec:Vector.<IObjectDefinition> = _objectDefinitionMetadataLookup[name] ||= new Vector.<IObjectDefinition>();
+				vec[vec.length] = objectDefinition;
 			}
 		}
 
