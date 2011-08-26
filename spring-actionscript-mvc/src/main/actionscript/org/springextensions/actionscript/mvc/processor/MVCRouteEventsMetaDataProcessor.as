@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springextensions.actionscript.mvc {
+package org.springextensions.actionscript.mvc.processor {
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 
@@ -35,7 +35,6 @@ package org.springextensions.actionscript.mvc {
 	 * so they can be picked up the an <code>IController</code> instance that, in turn, can execute any associated
 	 * commands.
 	 * @author Roland Zwaga
-	 * @sampleref cafe-townsend-mvc
 	 */
 	public class MVCRouteEventsMetaDataProcessor extends AbstractMetadataProcessor implements IApplicationContextAware {
 

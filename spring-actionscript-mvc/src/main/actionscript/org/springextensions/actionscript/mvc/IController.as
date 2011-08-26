@@ -20,7 +20,6 @@ package org.springextensions.actionscript.mvc {
 	 * Describes an object that acts as a registry for command classes that need to be
 	 * instantiated and executed in response to the dispatching of an event.
 	 * @author Roland Zwaga
-	 * @sampleref cafe-townsend-mvc
 	 */
 	public interface IController extends IEventDispatcher {
 		/**

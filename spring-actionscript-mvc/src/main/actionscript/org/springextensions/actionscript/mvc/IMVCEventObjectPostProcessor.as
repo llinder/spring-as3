@@ -20,7 +20,6 @@ package org.springextensions.actionscript.mvc {
 	 * Marker interface for an object postprocessor that processes [RouteEvent] metadata
 	 * used by an <code>IController</code> interface.
 	 * @author Roland Zwaga
-	 * @sampleref cafe-townsend-mvc
 	 */
 	public interface IMVCEventObjectPostProcessor extends IObjectPostProcessor {
 

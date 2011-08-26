@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springextensions.actionscript.mvc {
+package org.springextensions.actionscript.mvc.processor {
 
 	import flash.system.ApplicationDomain;
 
@@ -25,9 +25,9 @@ package org.springextensions.actionscript.mvc {
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
-	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
-	import org.springextensions.actionscript.mvc.support.Controller;
+	import org.springextensions.actionscript.mvc.IController;
+	import org.springextensions.actionscript.mvc.impl.Controller;
 	import org.springextensions.actionscript.util.TypeUtils;
 
 	/**
@@ -80,7 +80,6 @@ package org.springextensions.actionscript.mvc {
 	 * the command instance.</p>
 	 * <p>[Command] annotations can be stacked, so one command class can be triggered by multiple <code>Events</code>.</p>
 	 * @author Roland Zwaga
-	 * @sampleref cafe-townsend-mvc
 	 */
 	public class MVCControllerObjectFactoryPostProcessor implements IObjectFactoryPostProcessor {
 

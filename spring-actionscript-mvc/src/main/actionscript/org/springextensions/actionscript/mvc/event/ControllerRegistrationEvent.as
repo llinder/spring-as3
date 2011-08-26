@@ -17,13 +17,11 @@ package org.springextensions.actionscript.mvc.event {
 	import flash.events.Event;
 
 	import org.as3commons.lang.Assert;
-	import org.springextensions.actionscript.mvc.support.CommandRegistration;
+	import org.springextensions.actionscript.mvc.impl.CommandRegistration;
 
 	/**
 	 * Dispatched when a command is registered in a <code>Controller</code> instance.
 	 * @author Roland Zwaga
-	 * @see org.springextensions.actionscript.core.mvc.support.Controller Controller
-	 * @sampleref cafe-townsend-mvc
 	 */
 	public class ControllerRegistrationEvent extends Event {
 
@@ -61,7 +59,7 @@ package org.springextensions.actionscript.mvc.event {
 		}
 
 		/**
-		 * @return An exact copy of the current <code>ControllerRegistrationEvent</code>.
+		 * An exact copy of the current <code>ControllerRegistrationEvent</code>.
 		 */
 		override public function clone():Event {
 			return new ControllerRegistrationEvent(_commandRegistration, _eventType, _eventClass, bubbles, cancelable);

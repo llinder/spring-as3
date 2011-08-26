@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springextensions.actionscript.mvc.support {
+package org.springextensions.actionscript.mvc.impl {
 
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
@@ -30,7 +30,6 @@ package org.springextensions.actionscript.mvc.support {
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.mvc.IController;
-	import org.springextensions.actionscript.mvc.MVCControllerObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.mvc.event.ControllerEvent;
 	import org.springextensions.actionscript.mvc.event.ControllerRegistrationEvent;
 	import org.springextensions.actionscript.mvc.event.MVCEvent;
@@ -39,17 +38,17 @@ package org.springextensions.actionscript.mvc.support {
 	 * Dispatched when a command object is registered with the current <code>Controller</code>.
 	 * @eventType org.springextensions.actionscript.core.mvc.event.ControllerRegistrationEvent.COMMAND_REGISTERED
 	 */
-	[Event(name="controllerCommandRegistered", type="org.springextensions.actionscript.operation.mvc.event.ControllerRegistrationEvent")]
+	[Event(name="controllerCommandRegistered", type="org.springextensions.actionscript.mvc.event.ControllerRegistrationEvent")]
 	/**
 	 * Dispatched before a command object is invoked by the current <code>Controller</code>.
 	 * @eventType org.springextensions.actionscript.core.mvc.event.ControllerEvent.BEFORE_COMMAND_EXECUTED
 	 */
-	[Event(name="controllerBeforeCommandExecuted", type="org.springextensions.actionscript.operation.mvc.event.ControllerEvent")]
+	[Event(name="controllerBeforeCommandExecuted", type="org.springextensions.actionscript.mvc.event.ControllerEvent")]
 	/**
 	 * Dispatched after a command object was invoked by the current <code>Controller</code>.
 	 * @eventType org.springextensions.actionscript.core.mvc.event.ControllerEvent.AFTER_COMMAND_EXECUTED
 	 */
-	[Event(name="controllerAfterCommandExecuted", type="org.springextensions.actionscript.operation.mvc.event.ControllerEvent")]
+	[Event(name="controllerAfterCommandExecuted", type="org.springextensions.actionscript.mvc.event.ControllerEvent")]
 	/**
 	 * <p><code>IController</code> implementation that uses an <code>IApplicationContext</code> instance
 	 * as its command factory.</p>
@@ -60,9 +59,7 @@ package org.springextensions.actionscript.mvc.support {
 		private static const LOGGER:ILogger = getClassLogger(Controller);
 
 		private var _document:Object;
-
 		private var _eventTypeRegistry:Dictionary;
-
 		private var _eventClassRegistry:Dictionary;
 
 		/**
@@ -143,10 +140,7 @@ package org.springextensions.actionscript.mvc.support {
 			LOGGER.debug("command {0} registered for event type {1} with execute method {2} and priority {3}", [commandName, eventType, executeMethodName, priority]);
 			var reg:CommandRegistration = new CommandRegistration(commandName, executeMethodName, properties, priority);
 
-			if (_eventTypeRegistry[eventType] == null) {
-				_eventTypeRegistry[eventType] = [];
-			}
-			var arr:Array = _eventTypeRegistry[eventType] as Array;
+			var arr:Vector.<CommandRegistration> = _eventTypeRegistry[eventType] ||= new Vector.<CommandRegistration>();
 
 			arr[arr.length] = reg;
 
@@ -163,10 +157,7 @@ package org.springextensions.actionscript.mvc.support {
 			LOGGER.debug("command {0} registered for event class {1} with execute method {2} and priority {3}", [commandName, eventClass, executeMethodName, priority]);
 			var reg:CommandRegistration = new CommandRegistration(commandName, executeMethodName, properties, priority);
 
-			if (_eventClassRegistry[eventClass] == null) {
-				_eventClassRegistry[eventClass] = [];
-			}
-			var arr:Array = _eventClassRegistry[eventClass] as Array;
+			var arr:Vector.<CommandRegistration> = _eventClassRegistry[eventClass] ||= new Vector.<CommandRegistration>();
 
 			arr[arr.length] = reg;
 
@@ -217,10 +208,10 @@ package org.springextensions.actionscript.mvc.support {
 			Assert.notNull(event, "event argument must not be null");
 			if (event.document === _document) {
 				LOGGER.debug("Handling MVCEvent {0}", [event]);
-				var registrations:Array = findCommandRegistrations(event.event);
+				var registrations:Vector.<CommandRegistration> = findCommandRegistrations(event.event);
 				if (registrations != null) {
 					//Sort the commands with the highest priority on top:
-					registrations.sortOn(MVCControllerObjectFactoryPostProcessor.PRIORITY_METADATA_KEY, Array.DESCENDING | Array.NUMERIC);
+					//registrations.sortOn(MVCControllerObjectFactoryPostProcessor.PRIORITY_METADATA_KEY, Array.DESCENDING | Array.NUMERIC);
 					for each (var registration:CommandRegistration in registrations) {
 						executeCommand(registration, event.event);
 					}
@@ -235,15 +226,15 @@ package org.springextensions.actionscript.mvc.support {
 		 * @return An <code>Array</code> of <code>CommandRegistration</code> instances or null if none were found.
 		 * @throw flash.errors.IllegalOperationError When no registrations were found and the <code>failOnCommandNotFound</code> is set to <code>true</code>.
 		 */
-		public function findCommandRegistrations(event:Event):Array {
+		public function findCommandRegistrations(event:Event):Vector.<CommandRegistration> {
 			Assert.notNull(event, "event argument must not be null");
-			var commandRegistrations:Array = _eventTypeRegistry[event.type] as Array;
+			var commandRegistrations:Vector.<CommandRegistration> = _eventTypeRegistry[event.type] as Vector.<CommandRegistration>;
 			if (commandRegistrations != null) {
 				LOGGER.debug("Found event type registration for event {0}", [event]);
 				return commandRegistrations;
 			} else {
 				var cls:Class = ClassUtils.forInstance(event, _applicationContext.applicationDomain);
-				commandRegistrations = _eventClassRegistry[cls] as Array;
+				commandRegistrations = _eventClassRegistry[cls] as Vector.<CommandRegistration>;
 				if (commandRegistrations != null) {
 					LOGGER.debug("Found event class registration for event {0}", [event]);
 					return commandRegistrations;

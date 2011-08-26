@@ -20,25 +20,43 @@ package org.springextensions.actionscript.mvc.event {
 	/**
 	 *
 	 * @author Roland Zwaga
-	 * @sampleref cafe-townsend-mvc
 	 */
 	public class ControllerEvent extends Event {
 
+		/**
+		 *
+		 */
 		public static const BEFORE_COMMAND_EXECUTED:String = "controllerBeforeCommandExecuted";
 
+		/**
+		 *
+		 */
 		public static const AFTER_COMMAND_EXECUTED:String = "controllerAfterCommandExecuted";
 
 		private var _command:Object;
 
+		/**
+		 *
+		 */
 		public function get command():Object {
 			return _command;
 		}
 
-		public function ControllerEvent(type:String, command:Object, bubbles:Boolean = false, cancelable:Boolean = false) {
+		/**
+		 *
+		 * @param type
+		 * @param command
+		 * @param bubbles
+		 * @param cancelable
+		 */
+		public function ControllerEvent(type:String, command:Object, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 			_command = command;
 		}
 
+		/**
+		 *
+		 */
 		override public function clone():Event {
 			return new ControllerEvent(this.type, _command, this.bubbles, this.cancelable);
 		}

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springextensions.actionscript.mvc.support {
+package org.springextensions.actionscript.mvc.impl {
 
 	import flash.events.Event;
 	import flash.system.ApplicationDomain;
@@ -27,7 +27,6 @@ package org.springextensions.actionscript.mvc.support {
 	/**
 	 * Proxied method invoker for command objects.
 	 * @author Roland Zwaga
-	 * @sampleref cafe-townsend-mvc
 	 */
 	public class CommandProxy extends EventHandlerProxy {
 

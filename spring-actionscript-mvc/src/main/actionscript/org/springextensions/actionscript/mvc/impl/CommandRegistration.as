@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springextensions.actionscript.mvc.support {
+package org.springextensions.actionscript.mvc.impl {
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.StringUtils;
 
 	/**
 	 * Describes the execution of an abritrary command class after an event was dispatched.
 	 * @author Roland Zwaga
-	 * @sampleref cafe-townsend-mvc
 	 */
 	public class CommandRegistration {
 
