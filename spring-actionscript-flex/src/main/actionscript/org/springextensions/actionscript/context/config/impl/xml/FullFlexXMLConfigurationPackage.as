@@ -36,7 +36,7 @@ package org.springextensions.actionscript.context.config.impl.xml {
 		 * <code>UtilNamespaceHandler</code>, <code>MessagingNamespaceHandler</code> and <code>RPCNamespaceHandler</code>.
 		 * @param xmlProvider
 		 */
-		protected function addNamespaceHandlers(xmlProvider:XMLObjectDefinitionsProvider):void {
+		override protected function addNamespaceHandlers(xmlProvider:XMLObjectDefinitionsProvider):void {
 			xmlProvider.addNamespaceHandler(new StageProcessingNamespaceHandler());
 			xmlProvider.addNamespaceHandler(new EventBusNamespacehandler());
 			xmlProvider.addNamespaceHandler(new FlexTaskNamespaceHandler());

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.mvc.support {
-	import mx.utils.StringUtil;
-
 	import org.as3commons.lang.Assert;
+	import org.as3commons.lang.StringUtils;
 
 	/**
 	 * Describes the execution of an abritrary command class after an event was dispatched.
@@ -83,7 +82,7 @@ package org.springextensions.actionscript.mvc.support {
 		 * @return A <code>String</code> representation of the current <code>CommandRegistration</code>.
 		 */
 		public function toString():String {
-			return StringUtil.substitute("[CommandRegistration(commandName={0},executeMethodName={1},priority={2),properties={3})]", _commandName, _executeMethodName, _priority, _properties.join(','));
+			return StringUtils.substitute("[CommandRegistration(commandName={0},executeMethodName={1},priority={2),properties={3})]", _commandName, _executeMethodName, _priority, _properties.join(','));
 		}
 	}
 }

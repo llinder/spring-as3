@@ -18,7 +18,7 @@
 	<modules>
 		<module>spring-actionscript-core</module>
 		<module>spring-actionscript-flex</module>
-		<!--module>spring-actionscript-mvc</module-->
+		<module>spring-actionscript-mvc</module>
 	</modules>
 
 	<properties>
