@@ -15,7 +15,9 @@
 */
 package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.mxml.MXMLObjectDefinitionsProviderTest;
+	import org.springextensions.actionscript.ioc.config.impl.mxml.component.InterfaceTest;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.component.MXMLObjectDefinitionTest;
+	import org.springextensions.actionscript.ioc.config.impl.mxml.component.MethodInvocationTest;
 
 	[Suite]
 	[RunWith("org.flexunit.runners.Suite")]
@@ -23,5 +25,7 @@ package org.springextensions.actionscript.test {
 		//Unit tests
 		public var t1:MXMLObjectDefinitionsProviderTest;
 		public var t2:MXMLObjectDefinitionTest;
+		public var t3:InterfaceTest;
+		public var t4:MethodInvocationTest;
 	}
 }

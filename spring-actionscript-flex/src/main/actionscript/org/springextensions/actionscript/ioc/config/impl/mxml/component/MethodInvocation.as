@@ -36,7 +36,6 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		}
 
 		private var _arguments:Array;
-
 		private var _methodName:String;
 		private var _namespaceURI:String;
 
@@ -99,7 +98,13 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		}
 
 		public function toMethodInvocation():org.springextensions.actionscript.ioc.impl.MethodInvocation {
-			return new org.springextensions.actionscript.ioc.impl.MethodInvocation(_methodName, [], _namespaceURI);
+			var args:Array;
+			for each (var arg:Arg in _arguments) {
+				args ||= [];
+				arg.initializeComponent();
+				args[args.length] = (arg.ref != null) ? arg.ref : arg.value;
+			}
+			return new org.springextensions.actionscript.ioc.impl.MethodInvocation(_methodName, args, _namespaceURI);
 		}
 	}
 }

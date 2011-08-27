@@ -182,16 +182,16 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 
 			if (instance is MXMLObjectDefinition) {
 				var mxmlDefinition:MXMLObjectDefinition = MXMLObjectDefinition(instance);
-				mxmlDefinition.parse();
-				_applicationContext.objectDefinitionRegistry.registerObjectDefinition(field.name, mxmlDefinition.definition);
+				mxmlDefinition.initializeComponent();
+				_objectDefinitions[field.name] = mxmlDefinition.definition;
 				for (var name:String in mxmlDefinition.objectDefinitions) {
-					_applicationContext.objectDefinitionRegistry.registerObjectDefinition(name, IObjectDefinition(mxmlDefinition.objectDefinitions[name]));
+					_objectDefinitions[name] = mxmlDefinition.objectDefinitions[name];
 				}
 			} else if (instance is PropertyPlaceholder) {
 				_propertyURIs ||= new Vector.<TextFileURI>();
 				_propertyURIs[_propertyURIs.length] = PropertyPlaceholder(instance).toTextFileURI();
 			} else if (instance is ICustomObjectDefinitionComponent) {
-				ICustomObjectDefinitionComponent(instance).execute(applicationContext);
+				ICustomObjectDefinitionComponent(instance).execute(applicationContext, _objectDefinitions);
 			} else {
 				// register a singleton for an explicit config object defined in mxml
 				// for instance: <mx:RemoteObject/>,

@@ -69,7 +69,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		private var _ref:*;
 
 		/**
-		 * A reference to another <code>ObjectDefinition</code> in the <code>MXMLApplicationContext</code>
+		 * A reference to another <code>ObjectDefinition</code> in the <code>MXMLApplicationContext</code> or the id of another <code>MXMLApplicationContext</code>.
 		 */
 		public function get ref():* {
 			return _ref;

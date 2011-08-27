@@ -61,7 +61,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom {
 			_document = document;
 		}
 
-		public function execute(applicationContext:IApplicationContext):void {
+		public function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void {
 			throw new IllegalOperationError("execute() not implemented in abstract base class");
 		}
 	}

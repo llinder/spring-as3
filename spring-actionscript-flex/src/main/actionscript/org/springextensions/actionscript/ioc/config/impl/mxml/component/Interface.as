@@ -37,8 +37,8 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		 * @throws Error When an MXML child is encountered other than <code>Property</code> or <code>MethodInvocation</code> an error is thrown
 		 */
 		override public function parse():void {
+			definition.isInterface = true;
 			if (childContent) {
-				definition.isInterface = true;
 				for each (var obj:* in childContent) {
 					if (obj is Property) {
 						addProperty(obj);

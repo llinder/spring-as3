@@ -13,17 +13,26 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.impl.mxml {
-
-	import mx.core.IMXMLObject;
-
-	import org.springextensions.actionscript.context.IApplicationContext;
+package org.springextensions.actionscript.ioc.config.impl.mxml.component {
+	import org.flexunit.asserts.assertEquals;
 
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public interface ICustomObjectDefinitionComponent extends IMXMLObject {
-		function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void;
+	public class InterfaceTest {
+		/**
+		 * Creates a new <code>InterfaceTest</code> instance.
+		 */
+		public function InterfaceTest() {
+			super();
+		}
+
+		[Test]
+		public function testIsInterface():void {
+			var intf:Interface = new Interface();
+			intf.parse();
+			assertEquals(true, intf.definition.isInterface);
+		}
 	}
 }
