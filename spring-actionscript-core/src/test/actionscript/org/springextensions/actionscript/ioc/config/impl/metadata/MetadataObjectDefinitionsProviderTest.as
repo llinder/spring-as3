@@ -57,6 +57,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 	import org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedNamedComponent2;
 	import org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedScopedComponent;
 	import org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithConstructorArguments;
+	import org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithConstructorArgumentsTypedToInterface;
 
 	/**
 	 *
@@ -270,64 +271,64 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			assertEquals("objectName1", RuntimeObjectReference(objDef.constructorArguments[0]).objectName);
 		}
 
-	/*[Test]
-	public function testScan_shouldResolveConstructorArgumentsViaReflection():void {
-		_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithConstructorArguments");
+		[Test]
+		public function testScan_shouldResolveConstructorArgumentsViaReflection():void {
+			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithConstructorArguments");
 
-		var registry:IObjectDefinitionRegistry = _provider.internalRegistry;
+			var registry:IObjectDefinitionRegistry = _provider.internalRegistry;
 
-		assertEquals(3, registry.numObjectDefinitions);
+			assertEquals(3, registry.numObjectDefinitions);
 
-		var names:Vector.<String> = registry.objectDefinitionNames;
-		var objectDefinitions:Vector.<IObjectDefinition> = registry.getObjectDefinitionsForType(ComponentWithConstructorArguments);
+			var names:Vector.<String> = registry.objectDefinitionNames;
+			var objectDefinitions:Vector.<IObjectDefinition> = registry.getObjectDefinitionsForType(ComponentWithConstructorArguments);
 
-		assertEquals(1, objectDefinitions.length);
+			assertEquals(1, objectDefinitions.length);
 
-		var objectDefinition:IObjectDefinition = objectDefinitions[0];
+			var objectDefinition:IObjectDefinition = objectDefinitions[0];
 
-		assertNotNull(objectDefinition.constructorArguments);
-		assertEquals(2, objectDefinition.constructorArguments.length);
-		assertTrue(objectDefinition.constructorArguments[0] is RuntimeObjectReference);
-		assertTrue(objectDefinition.constructorArguments[1] is RuntimeObjectReference);
+			assertNotNull(objectDefinition.constructorArguments);
+			assertEquals(2, objectDefinition.constructorArguments.length);
+			assertTrue(objectDefinition.constructorArguments[0] is RuntimeObjectReference);
+			assertTrue(objectDefinition.constructorArguments[1] is RuntimeObjectReference);
 
-		var objectRef1:RuntimeObjectReference = objectDefinition.constructorArguments[0];
-		var constructorArg1Definition:IObjectDefinition = registry.getObjectDefinition(objectRef1.objectName);
-		assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedComponent, true), constructorArg1Definition.className);
+			var objectRef1:RuntimeObjectReference = objectDefinition.constructorArguments[0];
+			var constructorArg1Definition:IObjectDefinition = registry.getObjectDefinition(objectRef1.objectName);
+			assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedComponent, true), constructorArg1Definition.className);
 
-		var objectRef2:RuntimeObjectReference = objectDefinition.constructorArguments[1];
-		var constructorArg2Definition:IObjectDefinition = registry.getObjectDefinition(objectRef2.objectName);
-		assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedNamedComponent, true), constructorArg2Definition.className);
-	}*/
+			var objectRef2:RuntimeObjectReference = objectDefinition.constructorArguments[1];
+			var constructorArg2Definition:IObjectDefinition = registry.getObjectDefinition(objectRef2.objectName);
+			assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedNamedComponent, true), constructorArg2Definition.className);
+		}
 
-	/*public function testScan_shouldResolvePropertiesViaReflection():void {
-		_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithProperties");
+		/*public function testScan_shouldResolvePropertiesViaReflection():void {
+			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithProperties");
 
-		var appContext:IApplicationContext = _scanner.applicationContext;
+			var appContext:IApplicationContext = _scanner.applicationContext;
 
-		assertEquals(3, appContext.numObjectDefinitions);
+			assertEquals(3, appContext.numObjectDefinitions);
 
-		var names:Vector.<String> = appContext.objectDefinitionNames;
-		var objectDefinitions:Array = appContext.getObjectDefinitionsOfType(ComponentWithProperties);
+			var names:Vector.<String> = appContext.objectDefinitionNames;
+			var objectDefinitions:Array = appContext.getObjectDefinitionsOfType(ComponentWithProperties);
 
-		assertEquals(1, objectDefinitions.length);
+			assertEquals(1, objectDefinitions.length);
 
-		var objectDefinition:IObjectDefinition = objectDefinitions[0];
+			var objectDefinition:IObjectDefinition = objectDefinitions[0];
 
-		assertNotNull(objectDefinition.properties);
-		assertEquals(2, ObjectUtils.getNumProperties(objectDefinition.properties));
+			assertNotNull(objectDefinition.properties);
+			assertEquals(2, ObjectUtils.getNumProperties(objectDefinition.properties));
 
-		var propertyNames:Array = ObjectUtils.getKeys(objectDefinition.properties);
-		assertTrue(objectDefinition.properties[propertyNames[0]] is RuntimeObjectReference);
-		assertTrue(objectDefinition.properties[propertyNames[1]] is RuntimeObjectReference);
+			var propertyNames:Array = ObjectUtils.getKeys(objectDefinition.properties);
+			assertTrue(objectDefinition.properties[propertyNames[0]] is RuntimeObjectReference);
+			assertTrue(objectDefinition.properties[propertyNames[1]] is RuntimeObjectReference);
 
-		var objectRef1:RuntimeObjectReference = objectDefinition.properties["property1"];
-		var property1Definition:IObjectDefinition = appContext.getObjectDefinition(objectRef1.objectName);
-		assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedComponent, true), property1Definition.className);
+			var objectRef1:RuntimeObjectReference = objectDefinition.properties["property1"];
+			var property1Definition:IObjectDefinition = appContext.getObjectDefinition(objectRef1.objectName);
+			assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedComponent, true), property1Definition.className);
 
-		var objectRef2:RuntimeObjectReference = objectDefinition.properties["property2"];
-		var constructorArg2Definition:IObjectDefinition = appContext.getObjectDefinition(objectRef2.objectName);
-		assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedNamedComponent, true), constructorArg2Definition.className);
-	}*/
+			var objectRef2:RuntimeObjectReference = objectDefinition.properties["property2"];
+			var constructorArg2Definition:IObjectDefinition = appContext.getObjectDefinition(objectRef2.objectName);
+			assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedNamedComponent, true), constructorArg2Definition.className);
+		}*/
 
 		// --------------------------------------------------------------------
 		//
@@ -335,38 +336,40 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		//
 		// --------------------------------------------------------------------
 
-	/*public function testScan_shouldResolveConstructorArgumentsTypedToInterfaceViaReflection():void {
-		var classNames:Array = [];
-		classNames.push("org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithConstructorArgumentsTypedToInterface");
-		classNames.push("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponent");
-		classNames.push("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedNamedComponent");
+		[Test]
+		public function testScan_shouldResolveConstructorArgumentsTypedToInterfaceViaReflection():void {
+			var classNames:Array = [];
+			classNames.push("org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithConstructorArgumentsTypedToInterface");
+			classNames.push("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponent");
+			classNames.push("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedNamedComponent");
 
-		_provider.scanClassNames(classNames);
+			_provider.scanClassNames(classNames);
+			var registry:IObjectDefinitionRegistry = _provider.internalRegistry;
 
-		var appContext:IApplicationContext = _scanner.applicationContext;
 
-		assertEquals(3, appContext.numObjectDefinitions);
+			assertEquals(4, registry.numObjectDefinitions);
 
-		var names:Vector.<String> = appContext.objectDefinitionNames;
-		var objectDefinitions:Array = appContext.getObjectDefinitionsOfType(ComponentWithConstructorArgumentsTypedToInterface);
+			var names:Vector.<String> = registry.objectDefinitionNames;
+			var objectDefinitions:Vector.<IObjectDefinition> = registry.getObjectDefinitionsForType(ComponentWithConstructorArgumentsTypedToInterface);
 
-		assertEquals(1, objectDefinitions.length);
+			assertNotNull(objectDefinitions);
+			assertEquals(1, objectDefinitions.length);
 
-		var objectDefinition:IObjectDefinition = objectDefinitions[0];
+			var objectDefinition:IObjectDefinition = objectDefinitions[0];
 
-		assertNotNull(objectDefinition.constructorArguments);
-		assertEquals(2, objectDefinition.constructorArguments.length);
-		assertTrue(objectDefinition.constructorArguments[0] is RuntimeObjectReference);
-		assertTrue(objectDefinition.constructorArguments[1] is RuntimeObjectReference);
+			assertNotNull(objectDefinition.constructorArguments);
+			assertEquals(2, objectDefinition.constructorArguments.length);
+			assertTrue(objectDefinition.constructorArguments[0] is RuntimeObjectReference);
+			assertTrue(objectDefinition.constructorArguments[1] is RuntimeObjectReference);
 
-		var objectRef1:RuntimeObjectReference = objectDefinition.constructorArguments[0];
-		var constructorArg1Definition:IObjectDefinition = appContext.getObjectDefinition(objectRef1.objectName);
-		assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedComponent, true), constructorArg1Definition.className);
+			var objectRef1:RuntimeObjectReference = objectDefinition.constructorArguments[0];
+			var constructorArg1Definition:IObjectDefinition = registry.getObjectDefinition(objectRef1.objectName);
+			assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedComponent, true), constructorArg1Definition.className);
 
-		var objectRef2:RuntimeObjectReference = objectDefinition.constructorArguments[1];
-		var constructorArg2Definition:IObjectDefinition = appContext.getObjectDefinition(objectRef2.objectName);
-		assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedNamedComponent, true), constructorArg2Definition.className);
-	}*/
+			var objectRef2:RuntimeObjectReference = objectDefinition.constructorArguments[1];
+			var constructorArg2Definition:IObjectDefinition = registry.getObjectDefinition(objectRef2.objectName);
+			assertEquals(ClassUtils.getFullyQualifiedName(AnnotatedNamedComponent, true), constructorArg2Definition.className);
+		}
 
 	}
 }

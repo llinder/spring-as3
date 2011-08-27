@@ -257,11 +257,19 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 */
 		public function createObjectDefinitions(cache:ByteCodeTypeCache):Object {
 			var classNames:Array = cache.getClassesWithMetadata(COMPONENT_METADATA);
+			scanClassNames(classNames);
+			return createResult();
+		}
+
+		/**
+		 *
+		 * @param classNames
+		 */
+		public function scanClassNames(classNames:Array):void {
 			_classBeingScanned = getClassesFromClassNames(classNames);
 			for each (var className:String in classNames) {
 				scan(className);
 			}
-			return createResult();
 		}
 
 		/**
@@ -483,12 +491,12 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			var result:Vector.<String> = _internalRegistry.getObjectNamesForType(clazz);
 
 			// no definition for class, perhaps the class has not been scanned yet
-			if (result != null) {
+			if (result == null) {
 				// if this clazz is an interface, look up an implementation in the classes that are currently being scanned
 				if (ClassUtils.isInterface(clazz)) {
 					var implementationClasses:Vector.<Class> = getInterfaceImplementations(clazz, _classBeingScanned);
 
-					if (implementationClasses != null) {
+					if (implementationClasses == null) {
 						throw new UnsatisfiedDependencyError(objectDefinitionId, propertyName, "No implementation of interface '" + clazz + "' found.");
 					} else if (implementationClasses.length == 1) {
 						scan(ClassUtils.getFullyQualifiedName(implementationClasses[0], true));
@@ -562,13 +570,13 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			if (type.constructor && type.constructor.parameters) {
 				var numConstructorArgs:uint = type.constructor.parameters.length;
 
-				for (var i:int = 0; i < numConstructorArgs; i++) {
+				for (var i:int = 0; i < numConstructorArgs; ++i) {
 					var constructorArg:Parameter = type.constructor.parameters[i];
 					var constructorArgClass:Class = constructorArg.type.clazz;
 					var objectDefinitionsThatMatchConstructorArgClass:Vector.<String> = getObjectDefinitionsThatMatchClass(constructorArgClass, objectDefinitionId);
 
 					if (objectDefinitionsThatMatchConstructorArgClass == null) {
-						throw new Error("Unsatisfied dependency");
+						throw new UnsatisfiedDependencyError(objectDefinitionId, "constructor arg#" + i.toString());
 					} else if (objectDefinitionsThatMatchConstructorArgClass.length == 1) {
 						definition.constructorArguments ||= [];
 
