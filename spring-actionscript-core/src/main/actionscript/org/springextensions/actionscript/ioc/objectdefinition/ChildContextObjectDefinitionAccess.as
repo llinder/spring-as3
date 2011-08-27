@@ -52,7 +52,7 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 			if (_enumCreated) {
 				throw new IllegalOperationError("ObjectDefinitionAccess has already been created");
 			}
-			_value = value;
+			_value = val;
 			_INSTANCES[val] = this;
 		}
 

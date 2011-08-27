@@ -25,6 +25,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.as3commons.bytecode.reflect.ByteCodeType;
 	import org.as3commons.bytecode.reflect.ByteCodeTypeCache;
 	import org.as3commons.lang.IApplicationDomainAware;
+	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.IOrdered;
 	import org.as3commons.lang.util.OrderedUtils;
 	import org.springextensions.actionscript.context.IApplicationContext;
@@ -34,6 +35,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.metadata.classscanner.IClassScanner;
+	import org.springextensions.actionscript.util.ContextUtils;
 	import org.springextensions.actionscript.util.Environment;
 
 	/**
@@ -43,7 +45,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	 * @author Christophe Herreman
 	 * @author Roland Zwaga
 	 */
-	public class ClassScannerObjectFactoryPostProcessor implements IObjectFactoryPostProcessor, IApplicationDomainAware, IOrdered {
+	public class ClassScannerObjectFactoryPostProcessor implements IObjectFactoryPostProcessor, IApplicationDomainAware, IOrdered, IDisposable {
 
 		// --------------------------------------------------------------------
 		//
@@ -58,14 +60,18 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			super();
 		}
 
-		private var _applicationDomain:ApplicationDomain;
-
 		// --------------------------------------------------------------------
 		//
 		// Private Variables
 		//
 		// --------------------------------------------------------------------
 
+		private var _applicationDomain:ApplicationDomain;
+		private var _isDisposed:Boolean;
+		private var _order:int = 0;
+		private var _scanners:Vector.<IClassScanner>;
+		private var _timeOutToken:uint = 0;
+		private var _waitingOperation:WaitingOperation;
 		private var _objectFactory:IObjectFactory;
 
 		// --------------------------------------------------------------------
@@ -74,12 +80,6 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		//
 		// --------------------------------------------------------------------
 
-		private var _order:int = 0;
-
-		private var _scanners:Vector.<IClassScanner>;
-		private var _waitingOperation:WaitingOperation;
-		private var _timeOutToken:uint = 0;
-
 		/**
 		 * @inheritDoc
 		 */
@@ -87,18 +87,37 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			_applicationDomain = value;
 		}
 
+		/**
+		 *
+		 */
+		public function get isDisposed():Boolean {
+			return _isDisposed;
+		}
+
+		/**
+		 *
+		 */
 		public function get order():int {
 			return _order;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set order(value:int):void {
 			_order = value;
 		}
 
+		/**
+		 *
+		 */
 		public function get scanners():Vector.<IClassScanner> {
 			return _scanners;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set scanners(value:Vector.<IClassScanner>):void {
 			_scanners = value;
 		}
@@ -109,10 +128,33 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		//
 		// --------------------------------------------------------------------
 
+		/**
+		 *
+		 * @param scanner
+		 */
 		public function addScanner(scanner:IClassScanner):void {
 			_scanners ||= new Vector.<IClassScanner>();
 			if (_scanners.indexOf(scanner) < 0) {
 				_scanners[_scanners.length] = scanner;
+			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function dispose():void {
+			if (!_isDisposed) {
+				_applicationDomain = null;
+				for each (var scanner:IClassScanner in _scanners) {
+					ContextUtils.disposeInstance(scanner);
+				}
+				if (_timeOutToken > 0) {
+					clearTimeout(_timeOutToken);
+				}
+				ContextUtils.disposeInstance(_waitingOperation);
+				_waitingOperation = null;
+				_objectFactory = null;
+				_isDisposed = true;
 			}
 		}
 
@@ -136,6 +178,11 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		//
 		// --------------------------------------------------------------------
 
+		/**
+		 *
+		 * @param loaderInfo
+		 * @return
+		 */
 		protected function doMetaDataScan(loaderInfo:LoaderInfo):IOperation {
 			if (loaderInfo != null) {
 				ByteCodeType.metaDataLookupFromLoader(loaderInfo);
@@ -151,27 +198,9 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			}
 		}
 
-		protected function waitForStage():IOperation {
-			_waitingOperation = new WaitingOperation();
-			setStageTimer();
-			return _waitingOperation;
-		}
-
-		protected function setStageTimer():void {
-			if (_timeOutToken < 1) {
-				_timeOutToken = setTimeout(function():void {
-					clearTimeout(_timeOutToken);
-					_timeOutToken = 0;
-					var stage:Stage = Environment.getCurrentStage();
-					if (stage == null) {
-						setStageTimer();
-					} else {
-						doMetaDataScan(stage.loaderInfo);
-					}
-				}, 500);
-			}
-		}
-
+		/**
+		 *
+		 */
 		protected function doScans():void {
 			var typeCache:ByteCodeTypeCache = (ByteCodeType.getTypeProvider().getTypeCache() as ByteCodeTypeCache);
 			_scanners = _scanners.sort(OrderedUtils.orderedCompareFunction);
@@ -195,11 +224,43 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			}
 		}
 
+		/**
+		 *
+		 * @param objectFactory
+		 */
 		protected function registerClassScanners(objectFactory:IObjectFactory):void {
 			var scanners:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IClassScanner);
 			for each (var scannerName:String in scanners) {
 				addScanner(objectFactory.getObject(scannerName));
 			}
+		}
+
+		/**
+		 *
+		 */
+		protected function setStageTimer():void {
+			if (_timeOutToken < 1) {
+				_timeOutToken = setTimeout(function():void {
+					clearTimeout(_timeOutToken);
+					_timeOutToken = 0;
+					var stage:Stage = Environment.getCurrentStage();
+					if (stage == null) {
+						setStageTimer();
+					} else {
+						doMetaDataScan(stage.loaderInfo);
+					}
+				}, 500);
+			}
+		}
+
+		/**
+		 *
+		 * @return
+		 */
+		protected function waitForStage():IOperation {
+			_waitingOperation = new WaitingOperation();
+			setStageTimer();
+			return _waitingOperation;
 		}
 	}
 }

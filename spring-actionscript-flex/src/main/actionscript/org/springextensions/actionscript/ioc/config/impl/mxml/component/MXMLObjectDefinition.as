@@ -89,7 +89,6 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		protected var _isInitialized:Boolean = false;
 		private var _applicationDomain:ApplicationDomain;
 		private var _childContent:Array;
-		private var _clazz:Class;
 		private var _defaultedProperties:Dictionary;
 		private var _definition:IObjectDefinition;
 		private var _dependsOn:Vector.<MXMLObjectDefinition> = new Vector.<MXMLObjectDefinition>();
@@ -117,11 +116,11 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 			_definition.childContextAccess = ChildContextObjectDefinitionAccess.fromValue(value);
 		}
 
-		public function get abstract():Boolean {
+		public function get isAbstract():Boolean {
 			return _definition.isAbstract;
 		}
 
-		public function set abstract(value:Boolean):void {
+		public function set isAbstract(value:Boolean):void {
 			_definition.isAbstract = value;
 			delete _defaultedProperties[IS_ABSTRACT_FIELD_NAME];
 			_explicitProperties[IS_ABSTRACT_FIELD_NAME] = true;
@@ -203,15 +202,15 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		 * The <code>Class</code> of the object that the current <code>ObjectDefinition</code> describes.
 		 */
 		public function get clazz():Class {
-			return _clazz;
+			return _definition.clazz;
 		}
 
 		/**
 		 * @private
 		 */
 		public function set clazz(value:Class):void {
-			_clazz = value;
-			_definition.className = (_clazz != null) ? ClassUtils.getFullyQualifiedName(_clazz, true) : null;
+			_definition.clazz = value;
+			_definition.className = (_definition.clazz != null) ? ClassUtils.getFullyQualifiedName(_definition.clazz, true) : null;
 			delete _defaultedProperties[CLAZZ_FIELD_NAME];
 			delete _defaultedProperties[CLASS_NAME_FIELD_NAME];
 			_explicitProperties[CLAZZ_FIELD_NAME] = true;
@@ -486,6 +485,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		public function set parentObject(value:MXMLObjectDefinition):void {
 			_parentObject = value;
 			_definition.parentName = value.id;
+			_definition.parent = _parentObject.definition;
 			delete _defaultedProperties[PARENT_OBJECT_FIELD_NAME];
 			_explicitProperties[PARENT_OBJECT_FIELD_NAME] = true;
 		}
