@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.metadata {
+	import flash.display.DisplayObject;
 	import flash.utils.Dictionary;
 
 	import org.as3commons.lang.util.OrderedUtils;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getLogger;
 	import org.as3commons.reflect.IMetadataContainer;
+	import org.as3commons.reflect.MetadataContainer;
 	import org.as3commons.reflect.Type;
+	import org.as3commons.stageprocessing.IStageObjectDestroyer;
 	import org.springextensions.actionscript.ioc.factory.IInitializingObject;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
@@ -31,10 +34,8 @@ package org.springextensions.actionscript.metadata {
 	 * Default implementation of the <code>IMetaDataProcessorObjectPostProcessor</code> which acts as the main
 	 * registry for <code>IMetaDataProcessor</code> definitions that are found in the specified <code>IObjectFactory</code>.
 	 * @author Roland Zwaga
-	 * @docref annotations.html
-	 * @sampleref metadataprocessor
 	 */
-	public class MetadataProcessorObjectPostProcessor implements IMetaDataProcessorObjectPostProcessor, IInitializingObject, IObjectFactoryAware {
+	public class MetadataProcessorObjectPostProcessor implements IMetaDataProcessorObjectPostProcessor, IInitializingObject, IObjectFactoryAware, IStageObjectDestroyer {
 
 		private static var LOGGER:ILogger = getLogger(MetadataProcessorObjectPostProcessor);
 
@@ -44,7 +45,8 @@ package org.springextensions.actionscript.metadata {
 		//
 		// --------------------------------------------------------------------
 
-		private var _procs:Dictionary;
+		private var _metadataProcessors:Dictionary;
+		private var _metadataDestroyers:Dictionary;
 
 		// --------------------------------------------------------------------
 		//
@@ -65,7 +67,8 @@ package org.springextensions.actionscript.metadata {
 		 *
 		 */
 		protected function initMetadataProcessorObjectPostProcessor():void {
-			_procs = new Dictionary();
+			_metadataProcessors = new Dictionary();
+			_metadataDestroyers = new Dictionary();
 		}
 
 		// --------------------------------------------------------------------
@@ -95,7 +98,7 @@ package org.springextensions.actionscript.metadata {
 		 */
 		public function postProcessBeforeInitialization(object:*, objectName:String):* {
 			if (!(object is IMetadataProcessor)) {
-				return processObject(_procs[true], object, objectName);
+				return processObject(_metadataProcessors[true], object, objectName);
 			}
 			return object;
 		}
@@ -115,7 +118,7 @@ package org.springextensions.actionscript.metadata {
 				return object;
 			}
 
-			return processObject(_procs[false], object, objectName);
+			return processObject(_metadataProcessors[false], object, objectName);
 		}
 
 		/**
@@ -125,16 +128,17 @@ package org.springextensions.actionscript.metadata {
 		public function afterPropertiesSet():void {
 			addMetadataProcessorsFromObjectPostProcessors();
 			addMetadataProcessorsFromObjectDefinitions();
+			addMetadataDestroyersFromObjectDefinitions();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function addProcessor(metaDataName:String, metaDataProcessor:IMetadataProcessor):void {
-			var processorLookup:Dictionary = _procs[metaDataProcessor.processBeforeInitialization];
+			var processorLookup:Dictionary = _metadataProcessors[metaDataProcessor.processBeforeInitialization];
 			if (processorLookup == null) {
 				processorLookup = new Dictionary();
-				_procs[metaDataProcessor.processBeforeInitialization] = processorLookup;
+				_metadataProcessors[metaDataProcessor.processBeforeInitialization] = processorLookup;
 			}
 			var processorVector:Vector.<IMetadataProcessor> = processorLookup[metaDataName];
 			if (processorVector == null) {
@@ -145,6 +149,15 @@ package org.springextensions.actionscript.metadata {
 				processorLookup[metaDataName] = processorVector.sort(OrderedUtils.orderedCompareFunction);
 			}
 		}
+
+		protected function addDestroyer(metaDataName:String, metaDataDestroyer:IMetadataDestroyer):void {
+			var destroyerVector:Vector.<IMetadataDestroyer> = _metadataDestroyers[metaDataName] ||= new Vector.<IMetadataDestroyer>();
+			if (destroyerVector.indexOf(metaDataDestroyer) < 0) {
+				destroyerVector[destroyerVector.length] = metaDataDestroyer;
+				_metadataDestroyers[metaDataName] = destroyerVector.sort(OrderedUtils.orderedCompareFunction);
+			}
+		}
+
 
 		// --------------------------------------------------------------------
 		//
@@ -163,7 +176,7 @@ package org.springextensions.actionscript.metadata {
 			for (var name:String in names) {
 				//LOGGER.debug("Invoking IMetadataProcessors for {0} metadata", name);
 				var processors:Vector.<IMetadataProcessor> = names[name] as Vector.<IMetadataProcessor>;
-				var containers:Array = [];
+				var containers:Vector.<MetadataContainer> = new Vector.<MetadataContainer>();
 				if (type.hasMetadata(name)) {
 					containers[containers.length] = type;
 				}
@@ -195,12 +208,25 @@ package org.springextensions.actionscript.metadata {
 			var processors:Vector.<String> = _objectFactory.objectDefinitionRegistry.getObjectNamesForType(IMetadataProcessor);
 
 			if (processors != null) {
-				LOGGER.debug("{0} IMetadataProcessor found in object definitions, adding them to the current MetadataProcessorObjectPostProcessor.", [processors.length]);
+				LOGGER.debug("{0} IMetadataProcessors found in object definitions, adding them to the current MetadataProcessorObjectPostProcessor.", [processors.length]);
 				for each (var name:String in processors) {
 					var metaDataProcessor:IMetadataProcessor = IMetadataProcessor(_objectFactory.getObject(name));
 					registerMetadataProcessor(metaDataProcessor);
 				}
 			}
+		}
+
+		protected function addMetadataDestroyersFromObjectDefinitions():void {
+			var destroyers:Vector.<String> = _objectFactory.objectDefinitionRegistry.getObjectNamesForType(IMetadataDestroyer);
+
+			if (destroyers != null) {
+				LOGGER.debug("{0} IMetadataDestroyers found in object definitions, adding them to the current MetadataProcessorObjectPostProcessor.", [destroyers.length]);
+				for each (var name:String in destroyers) {
+					var metaDataDestroyer:IMetadataDestroyer = IMetadataDestroyer(_objectFactory.getObject(name));
+					registerMetadataDestroyer(metaDataDestroyer);
+				}
+			}
+
 		}
 
 		protected function getMetadataProcessors(objectPostProcessors:Vector.<IObjectPostProcessor>):Vector.<IMetadataProcessor> {
@@ -221,6 +247,42 @@ package org.springextensions.actionscript.metadata {
 				LOGGER.debug("Registered metadata '[{0}]' with processor '{1}'", [metaDataName, metadataProcessor]);
 				addProcessor(metaDataName, metadataProcessor);
 			}
+		}
+
+		protected function registerMetadataDestroyer(metaDataDestroyer:IMetadataDestroyer):void {
+			for each (var metaDataName:String in metaDataDestroyer.metadataNames) {
+				LOGGER.debug("Registered metadata '[{0}]' with destroyer '{1}'", [metaDataName, metaDataDestroyer]);
+				addDestroyer(metaDataName, metaDataDestroyer);
+			}
+		}
+
+		public function destroy(displayObject:DisplayObject):DisplayObject {
+			var type:Type = Type.forInstance(displayObject, _objectFactory.applicationDomain);
+			if (TypeUtils.isSimpleProperty(type)) {
+				return displayObject;
+			}
+			for (var name:String in _metadataDestroyers) {
+				var destroyers:Vector.<IMetadataDestroyer> = _metadataDestroyers[name] as Vector.<IMetadataDestroyer>;
+				var containers:Array = [];
+				if (type.hasMetadata(name)) {
+					containers[containers.length] = type;
+				}
+				var otherContainers:Array = type.getMetadataContainers(name);
+				if (otherContainers != null) {
+					containers = containers.concat(otherContainers);
+				}
+				for each (var container:IMetadataContainer in containers) {
+					for each (var destroyer:IMetadataDestroyer in destroyers) {
+						destroyer.destroy(displayObject, container, name, null);
+					}
+				}
+
+			}
+			return displayObject;
+		}
+
+		public function process(displayObject:DisplayObject):DisplayObject {
+			return displayObject;
 		}
 
 	}
