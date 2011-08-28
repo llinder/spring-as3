@@ -53,19 +53,31 @@ package org.springextensions.actionscript.context.impl.mxml {
 		private var _id:String;
 		private var _initialized:Boolean;
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get applicationContext():IApplicationContext {
 			return _applicationContext;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set applicationContext(value:IApplicationContext):void {
 			_applicationContext = value;
 		}
 
 		[Bindable(event="autoLoadChanged")]
+		/**
+		 * @inheritDoc
+		 */
 		public function get autoLoad():Boolean {
 			return _autoLoad;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set autoLoad(value:Boolean):void {
 			if (_autoLoad != value) {
 				_autoLoad = value;
@@ -73,12 +85,17 @@ package org.springextensions.actionscript.context.impl.mxml {
 			}
 		}
 
-
 		[Bindable(event="configurationPackageChanged")]
+		/**
+		 * @inheritDoc
+		 */
 		public function get configurationPackage():IConfigurationPackage {
 			return _configurationPackage;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set configurationPackage(value:IConfigurationPackage):void {
 			if (_configurationPackage !== value) {
 				_configurationPackage = value;
@@ -87,10 +104,16 @@ package org.springextensions.actionscript.context.impl.mxml {
 		}
 
 		[Bindable(event="configurationsChanged")]
+		/**
+		 *
+		 */
 		public function get configurations():Array {
 			return _configurations;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set configurations(value:Array):void {
 			if (_configurations != value) {
 				_configurations = value;
@@ -99,10 +122,16 @@ package org.springextensions.actionscript.context.impl.mxml {
 		}
 
 		[Bindable(event="documentChanged")]
+		/**
+		 * @inheritDoc
+		 */
 		public function get document():Object {
 			return _document;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set document(value:Object):void {
 			if (_document != value) {
 				_document = value;
@@ -111,10 +140,16 @@ package org.springextensions.actionscript.context.impl.mxml {
 		}
 
 		[Bindable(event="idChanged")]
+		/**
+		 * @inheritDoc
+		 */
 		public function get id():String {
 			return _id;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set id(value:String):void {
 			if (_id != value) {
 				_id = value;
@@ -122,6 +157,9 @@ package org.springextensions.actionscript.context.impl.mxml {
 			}
 		}
 
+		/**
+		 *
+		 */
 		public function initializeContext():void {
 			if (!_initialized) {
 				_applicationContext = new ApplicationContext(null, (_document as DisplayObject));
@@ -138,6 +176,11 @@ package org.springextensions.actionscript.context.impl.mxml {
 			}
 		}
 
+		/**
+		 *
+		 * @param document
+		 * @param id
+		 */
 		public function initialized(document:Object, id:String):void {
 			_document = document;
 			_id = id;
@@ -146,6 +189,9 @@ package org.springextensions.actionscript.context.impl.mxml {
 			}
 		}
 
+		/**
+		 *
+		 */
 		public function load():void {
 			if (_initialized == false) {
 				initializeContext();
@@ -153,6 +199,9 @@ package org.springextensions.actionscript.context.impl.mxml {
 			doLoad();
 		}
 
+		/**
+		 *
+		 */
 		protected function doLoad():void {
 			for each (var cls:Class in _configurations) {
 				MXMLObjectDefinitionsProvider(_applicationContext.definitionProviders[0]).addConfiguration(cls);
@@ -161,11 +210,19 @@ package org.springextensions.actionscript.context.impl.mxml {
 			_applicationContext.load();
 		}
 
+		/**
+		 *
+		 * @param event
+		 */
 		protected function handleApplicationContextComplete(event:Event):void {
 			_applicationContext.removeEventListener(Event.COMPLETE, handleApplicationContextComplete);
 			dispatchEvent(event);
 		}
 
+		/**
+		 *
+		 * @param event
+		 */
 		protected function onComplete(event:FlexEvent):void {
 			IEventDispatcher(_document).removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			initializeContext();

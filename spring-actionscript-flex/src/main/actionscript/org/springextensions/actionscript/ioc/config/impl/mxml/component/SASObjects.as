@@ -18,11 +18,15 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 	import mx.core.IMXMLObject;
 	import mx.core.UIComponent;
 
+	import org.as3commons.lang.IDisposable;
+
 	/**
 	 *
 	 * @author Christophe Herreman
 	 */
-	public class SASObjects extends UIComponent {
+	public class SASObjects extends UIComponent implements IDisposable {
+
+		private var _isDisposed:Boolean;
 
 		// --------------------------------------------------------------------
 		//
@@ -40,71 +44,13 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		//
 		// --------------------------------------------------------------------
 
-		// ----------------------------
-		// defaultInitMethod
-		// ----------------------------
-
-		private var _defaultInitMethod:String;
-
-		public function get defaultInitMethod():String {
-			return _defaultInitMethod;
+		public function get isDisposed():Boolean {
+			return _isDisposed;
 		}
 
-		public function set defaultInitMethod(value:String):void {
-			if (value !== _defaultInitMethod) {
-				_defaultInitMethod = value;
-			}
-		}
-
-		// ----------------------------
-		// defaultLazyInit
-		// ----------------------------
-
-		private var _defaultLazyInit:Boolean;
-
-		public function get defaultLazyInit():Boolean {
-			return _defaultLazyInit;
-		}
-
-		public function set defaultLazyInit(value:Boolean):void {
-			if (value !== _defaultLazyInit) {
-				_defaultLazyInit = value;
-			}
-		}
-
-		// ----------------------------
-		// defaultDependencyCheck
-		// ----------------------------
-
-		private var _defaultDependencyCheck:String;
-
-		[Inspectable(enumeration="none,simple,objects,all", defaultValue="none")]
-
-		public function get defaultDependencyCheck():String {
-			return _defaultDependencyCheck;
-		}
-
-		public function set defaultDependencyCheck(value:String):void {
-			if (value !== _defaultDependencyCheck) {
-				_defaultDependencyCheck = value;
-			}
-		}
-
-		// ----------------------------
-		// defaultAutowire
-		// ----------------------------
-
-		private var _defaultAutowire:String;
-
-		[Inspectable(enumeration="no,byName,byType,constructor,autodetect", defaultValue="no")]
-
-		public function get defaultAutowire():String {
-			return _defaultAutowire;
-		}
-
-		public function set defaultAutowire(value:String):void {
-			if (value !== _defaultAutowire) {
-				_defaultAutowire = value;
+		public function dispose():void {
+			if (!isDisposed) {
+				_isDisposed = true;
 			}
 		}
 

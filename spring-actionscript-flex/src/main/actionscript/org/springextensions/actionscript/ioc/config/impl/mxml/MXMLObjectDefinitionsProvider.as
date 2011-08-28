@@ -133,6 +133,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 			var instance:* = new cls();
 			if (instance is SASObjects) {
 				extractObjectDefinitionsFromConfigInstance(SASObjects(instance));
+				instance.dispose();
 			}
 		}
 
