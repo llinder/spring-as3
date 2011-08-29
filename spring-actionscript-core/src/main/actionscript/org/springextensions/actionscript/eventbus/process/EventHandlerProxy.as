@@ -21,6 +21,7 @@ package org.springextensions.actionscript.eventbus.process {
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
+	import org.as3commons.lang.IEquals;
 	import org.as3commons.lang.IllegalArgumentError;
 	import org.as3commons.reflect.Accessor;
 	import org.as3commons.reflect.Method;
@@ -34,7 +35,7 @@ package org.springextensions.actionscript.eventbus.process {
 	 * @author Christophe Herreman
 	 * @docref the_eventbus.html#eventbus_event_handling_using_metadata_annotations
 	 */
-	public class EventHandlerProxy extends MethodInvoker implements IApplicationDomainAware {
+	public class EventHandlerProxy extends MethodInvoker implements IApplicationDomainAware, IEquals {
 
 		protected var event:Event;
 		protected var methodInstance:Method;
@@ -236,6 +237,27 @@ package org.springextensions.actionscript.eventbus.process {
 			}
 
 			throw new IllegalArgumentError("The event class '" + eventType.clazz + "' does not have a property of " + "type '" + type.clazz + "'");
+		}
+
+		public function equals(other:Object):Boolean {
+			var otherProxy:EventHandlerProxy = EventHandlerProxy(other);
+			return ((otherProxy.target === this.target) && (otherProxy.method == this.method) && propertiesAreEqual(otherProxy.properties, this.properties));
+		}
+
+		protected function propertiesAreEqual(properties:Vector.<String>, otherProperties:Vector.<String>):Boolean {
+			if ((properties == null) && (otherProperties == null)) {
+				return true;
+			} else if ((properties == null) || (otherProperties == null)) {
+				return false;
+			} else if ((properties.length != otherProperties.length)) {
+				return false;
+			}
+			for each (var item:String in properties) {
+				if (otherProperties.indexOf(item) < 0) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }

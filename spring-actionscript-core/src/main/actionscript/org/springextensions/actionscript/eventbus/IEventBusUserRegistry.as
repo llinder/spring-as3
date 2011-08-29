@@ -19,6 +19,7 @@ package org.springextensions.actionscript.eventbus {
 	import org.as3commons.eventbus.IEventInterceptor;
 	import org.as3commons.eventbus.IEventListenerInterceptor;
 	import org.as3commons.reflect.MethodInvoker;
+	import org.springextensions.actionscript.eventbus.process.EventHandlerProxy;
 
 	/**
 	 *
@@ -37,5 +38,8 @@ package org.springextensions.actionscript.eventbus {
 		function addListenerInterceptor(interceptor:IEventListenerInterceptor, topic:Object=null):void;
 		function addEventListenerInterceptor(type:String, interceptor:IEventListenerInterceptor, topic:Object=null):void;
 		function addEventClassListenerInterceptor(eventClass:Class, interceptor:IEventListenerInterceptor, topic:Object=null):void;
+
+		function removeEventListenerProxy(type:String, proxy:EventHandlerProxy, topic:Object=null):void;
+		function removeEventClassListenerProxy(eventClass:Class, proxy:EventHandlerProxy, topic:Object=null):void;
 	}
 }

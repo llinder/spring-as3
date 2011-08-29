@@ -21,14 +21,16 @@ package org.springextensions.actionscript.eventbus.process {
 	import org.as3commons.lang.StringUtils;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getLogger;
+	import org.as3commons.reflect.IMetadataContainer;
 	import org.as3commons.reflect.Metadata;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
 	import org.springextensions.actionscript.metadata.AbstractMetadataProcessor;
+	import org.springextensions.actionscript.metadata.IMetadataDestroyer;
 
-	public class AbstractEventBusMetadataProcessor extends AbstractMetadataProcessor implements IObjectFactoryAware {
+	public class AbstractEventBusMetadataProcessor extends AbstractMetadataProcessor implements IObjectFactoryAware, IMetadataDestroyer {
 		/** The "clazz" property of the EventHandler metadata */
 		protected static const CLASS_KEY:String = "clazz";
 		protected static const COMMA:String = ",";
@@ -92,6 +94,10 @@ package org.springextensions.actionscript.eventbus.process {
 				}
 			}
 			return result;
+		}
+
+		public function destroy(instance:Object, container:IMetadataContainer, metadataName:String, objectName:String):void {
+			throw new IllegalOperationError("Not implemented in abstract base class");
 		}
 	}
 }
