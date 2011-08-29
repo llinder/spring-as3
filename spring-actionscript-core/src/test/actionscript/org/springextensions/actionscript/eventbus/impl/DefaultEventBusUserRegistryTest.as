@@ -23,6 +23,7 @@ package org.springextensions.actionscript.eventbus.impl {
 
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventInterceptor;
+	import org.as3commons.eventbus.IEventListenerInterceptor;
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertNull;
@@ -43,6 +44,8 @@ package org.springextensions.actionscript.eventbus.impl {
 		public var eventBus:IEventBus;
 		[Mock]
 		public var eventInterceptor:IEventInterceptor;
+		[Mock]
+		public var eventListenerInterceptor:IEventListenerInterceptor;
 
 		/**
 		 * Creates a new <code>DefaultEventBusUserRegistryTest</code> instance.
@@ -71,5 +74,50 @@ package org.springextensions.actionscript.eventbus.impl {
 			assertStrictlyEquals(Event, entry.classEntries[0].clazz);
 			assertNull(entry.classEntries[0].topic);
 		}
+
+		[Test]
+		public function testAddEventClassInterceptorWithTopic():void {
+			var topic:Object = {};
+			eventInterceptor = nice(IEventInterceptor);
+			mock(eventBus).method("addEventClassInterceptor").args(Event, eventInterceptor, topic).once();
+			_registry.addEventClassInterceptor(Event, eventInterceptor, topic);
+			verify(eventBus);
+			var entry:EventBusRegistryEntry = _registry.eventBusRegistryEntryCache[eventInterceptor];
+			assertNotNull(entry);
+			assertEquals(0, entry.eventTypeEntries.length);
+			assertEquals(1, entry.classEntries.length);
+			assertStrictlyEquals(Event, entry.classEntries[0].clazz);
+			assertStrictlyEquals(topic, entry.classEntries[0].topic);
+		}
+
+		[Test]
+		public function testAddEventClassListenerInterceptorWithoutTopic():void {
+			eventListenerInterceptor = nice(IEventListenerInterceptor);
+			mock(eventBus).method("addEventClassListenerInterceptor").args(Event, eventListenerInterceptor, null).once();
+			_registry.addEventClassListenerInterceptor(Event, eventListenerInterceptor);
+			verify(eventBus);
+			var entry:EventBusRegistryEntry = _registry.eventBusRegistryEntryCache[eventListenerInterceptor];
+			assertNotNull(entry);
+			assertEquals(0, entry.eventTypeEntries.length);
+			assertEquals(1, entry.classEntries.length);
+			assertStrictlyEquals(Event, entry.classEntries[0].clazz);
+			assertNull(entry.classEntries[0].topic);
+		}
+
+		[Test]
+		public function testAddEventClassListenerInterceptorWithTopic():void {
+			var topic:Object = {};
+			eventListenerInterceptor = nice(IEventListenerInterceptor);
+			mock(eventBus).method("addEventClassListenerInterceptor").args(Event, eventListenerInterceptor, topic).once();
+			_registry.addEventClassListenerInterceptor(Event, eventListenerInterceptor, topic);
+			verify(eventBus);
+			var entry:EventBusRegistryEntry = _registry.eventBusRegistryEntryCache[eventListenerInterceptor];
+			assertNotNull(entry);
+			assertEquals(0, entry.eventTypeEntries.length);
+			assertEquals(1, entry.classEntries.length);
+			assertStrictlyEquals(Event, entry.classEntries[0].clazz);
+			assertStrictlyEquals(topic, entry.classEntries[0].topic);
+		}
+
 	}
 }
