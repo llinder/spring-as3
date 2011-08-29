@@ -51,6 +51,11 @@ package org.springextensions.actionscript.eventbus.impl {
 		private var _proxyLookup:Dictionary;
 		private var _typesLookup:Dictionary;
 
+
+		public function get eventBusRegistryEntryCache():Dictionary {
+			return _eventBusRegistryEntryCache;
+		}
+
 		/**
 		 * @inheritDoc
 		 */

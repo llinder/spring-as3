@@ -17,6 +17,8 @@ package org.springextensions.actionscript.test {
 	import integration.objectfactory.ObjectFactoryIntegrationTest;
 
 	import org.springextensions.actionscript.context.impl.ApplicationContextTest;
+	import org.springextensions.actionscript.eventbus.impl.DefaultEventBusUserRegistry;
+	import org.springextensions.actionscript.eventbus.impl.DefaultEventBusUserRegistryTest;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoaderTest;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.MetadataObjectDefinitionsProviderTest;
@@ -119,6 +121,7 @@ package org.springextensions.actionscript.test {
 		public var t47:TaskNamespaceHandlerTest;
 		public var t48:XmlObjectDefinitionsParserTest;
 		public var t49:MetadataObjectDefinitionsProviderTest;
+		public var t50:DefaultEventBusUserRegistryTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 	}
