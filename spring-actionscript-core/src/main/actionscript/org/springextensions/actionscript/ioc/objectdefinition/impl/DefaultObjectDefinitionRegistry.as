@@ -372,6 +372,7 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 		 * @param definition
 		 */
 		protected function removeFromMetadataLookup(name:String, definition:IObjectDefinition):void {
+			name += METADATA_KEY_SUFFIX;
 			var list:Vector.<IObjectDefinition> = _objectDefinitionMetadataLookup[name];
 			if (list != null) {
 				var idx:int = list.indexOf(definition);

@@ -104,6 +104,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		protected function getPropertyNames(node:XML):Vector.<String> {
 			var result:Vector.<String>;
 			if (node.attribute(EVENT_NAMES_ATTRIBUTE_NAME).length() > 0) {
+				result = new Vector.<String>();
 				var arr:Array = String(node.attribute(EVENT_NAMES_ATTRIBUTE_NAME)[0]).split(SPACE).join(EMPTY).split(COMMA);
 				for each (var str:String in arr) {
 					result[result.length] = str;
