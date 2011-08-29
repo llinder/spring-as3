@@ -32,19 +32,19 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param topics
 		 * @param topicProperties
 		 */
-		public function RouteEventsCustomConfigurator(eventBusUserRegistry:IEventBusUserRegistry, eventNames:Array=null, topics:Vector.<String>=null, topicProperties:Vector.<String>=null) {
+		public function RouteEventsCustomConfigurator(eventBusUserRegistry:IEventBusUserRegistry, eventNames:Vector.<String>=null, topics:Vector.<String>=null, topicProperties:Vector.<String>=null) {
 			super(eventBusUserRegistry);
 			initRouteEventsCustomConfigurator(eventNames, topics, topicProperties);
 		}
 
-		private var _eventNames:Array;
+		private var _eventNames:Vector.<String>;
 		private var _topicProperties:Vector.<String>;
 		private var _topics:Vector.<String>;
 
 		/**
 		 *
 		 */
-		public function get eventNames():Array {
+		public function get eventNames():Vector.<String> {
 			return _eventNames;
 		}
 
@@ -87,7 +87,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param topics
 		 * @param topicProperties
 		 */
-		protected function initRouteEventsCustomConfigurator(eventNames:Array, topics:Vector.<String>, topicProperties:Vector.<String>):void {
+		protected function initRouteEventsCustomConfigurator(eventNames:Vector.<String>, topics:Vector.<String>, topicProperties:Vector.<String>):void {
 			_eventNames = eventNames;
 			_topics = topics;
 			_topicProperties = topicProperties;

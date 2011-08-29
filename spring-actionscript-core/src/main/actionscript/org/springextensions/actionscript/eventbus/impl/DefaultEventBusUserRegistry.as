@@ -156,16 +156,13 @@ package org.springextensions.actionscript.eventbus.impl {
 		 * @param eventTypes
 		 * @param topics
 		 */
-		public function addEventListeners(eventDispatcher:IEventDispatcher, eventTypes:Array, topics:Array):void {
+		public function addEventListeners(eventDispatcher:IEventDispatcher, eventTypes:Vector.<String>, topics:Array):void {
 			for each (var eventType:String in eventTypes) {
-				var types:Array = _listenerCache[eventDispatcher] as Array;
-				if (types == null) {
-					types = [];
-					_listenerCache[eventDispatcher] = types;
-				}
+				var types:Array = _listenerCache[eventDispatcher] ||= [];
 				types[types.length] = eventType;
-				if (topics.length > 0) {
-					_typesLookup[eventType] = topics;
+				if ((topics != null) && (topics.length > 0)) {
+					_typesLookup[eventType] ||= new Dictionary(true);
+					_typesLookup[eventType][eventDispatcher] = topics;
 				}
 				eventDispatcher.addEventListener(eventType, rerouteToEventBus, false, 0, true);
 				LOGGER.debug("added listener for event type '" + eventType + "' on " + eventDispatcher);
@@ -348,7 +345,10 @@ package org.springextensions.actionscript.eventbus.impl {
 		 * @param event
 		 */
 		protected function rerouteToEventBus(event:Event):void {
-			var topics:Array = _typesLookup[event.type] as Array;
+			var topics:Array;
+			if ((_typesLookup[event.type] != null) && (_typesLookup[event.type][event.target] != null)) {
+				topics = _typesLookup[event.type][event.target] as Array;
+			}
 			if (topics == null) {
 				eventBus.dispatchEvent(event);
 			} else {
@@ -369,6 +369,18 @@ package org.springextensions.actionscript.eventbus.impl {
 					topics.splice(topics.indexOf(item), 1);
 				}
 			}
+		}
+
+		public function removeInterceptor(interceptor:IEventInterceptor, topic:Object=null):void {
+			// TODO Auto-generated method stub
+		}
+
+		public function removeEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void {
+			// TODO Auto-generated method stub
+		}
+
+		public function removeEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void {
+			// TODO Auto-generated method stub
 		}
 	}
 }

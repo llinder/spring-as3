@@ -64,7 +64,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		protected function createConfigurations(customConfiguration:Vector.<ICustomConfigurator>, node:XML):void {
 			var QN:QName = new QName(spring_actionscript_eventbus, EventBusNamespacehandler.ROUTING_CONFIGURATION_ELEMENT_NAME);
 			for each (var child:XML in node.descendants(QN)) {
-				var names:Array = getPropertyNames(child);
+				var names:Vector.<String> = getPropertyNames(child);
 				var topics:Vector.<String> = commaSeparatedAttributeNameToStringVector(child, TOPICS_ATTRIBUTE_NAME);
 				var topicProperties:Vector.<String> = commaSeparatedAttributeNameToStringVector(child, TOPIC_PROPERTIES_ATTRIBUTE_NAME);
 				var configurator:RouteEventsCustomConfigurator = new RouteEventsCustomConfigurator(eventBusUserRegistry, names, topics, topicProperties);

@@ -105,6 +105,58 @@ package org.springextensions.actionscript.eventbus.process {
 			}
 		}
 
+		override public function destroy(instance:Object, container:IMetadataContainer, metadataName:String, objectName:String):void {
+			var type:Type = (container as Type);
+			if (type == null) {
+				return;
+			}
+			if (!ClassUtils.isImplementationOf(type.clazz, IEventInterceptor, objFactory.applicationDomain)) {
+				return;
+				logger.debug("{0} is not an IEventInterceptor implementation", type.clazz);
+			}
+			var metaDatas:Array = type.getMetadata(EVENT_INTERCEPTOR_METADATA_NAME);
+			for each (var metaData:Metadata in metaDatas) {
+				destroyMetaData(instance, type, metaData);
+			}
+		}
+
+		protected function destroyMetaData(instance:Object, type:Type, metaData:Metadata):void {
+			var interceptor:IEventInterceptor = IEventInterceptor(instance);
+			var className:String = getEventInterceptClassName(metaData);
+			var topics:Array = getTopics(metaData, interceptor);
+			var topic:Object;
+
+			if (className == null) {
+				var eventName:String = getEventName(metaData);
+				if (eventName == null) {
+					if ((topics == null) || (topics.length == 0)) {
+						eventBusUserRegistry.removeInterceptor(interceptor);
+					} else {
+						for each (topic in topics) {
+							eventBusUserRegistry.removeInterceptor(interceptor, topic);
+						}
+					}
+				} else {
+					if ((topics == null) || (topics.length == 0)) {
+						eventBusUserRegistry.removeEventInterceptor(eventName, interceptor);
+					} else {
+						for each (topic in topics) {
+							eventBusUserRegistry.removeEventInterceptor(eventName, interceptor, topic);
+						}
+					}
+				}
+			} else {
+				var clazz:Class = ClassUtils.forName(className, objFactory.applicationDomain);
+				if ((topics == null) || (topics.length == 0)) {
+					eventBusUserRegistry.removeEventClassInterceptor(clazz, interceptor);
+				} else {
+					for each (topic in topics) {
+						eventBusUserRegistry.removeEventClassInterceptor(clazz, interceptor, topic);
+					}
+				}
+			}
+		}
+
 		/**
 		 *
 		 * @param metaData

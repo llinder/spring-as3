@@ -26,7 +26,7 @@ package org.springextensions.actionscript.eventbus {
 	 * @author Roland Zwaga
 	 */
 	public interface IEventBusUserRegistry {
-		function addEventListeners(eventDispatcher:IEventDispatcher, eventTypes:Array, topics:Array):void;
+		function addEventListeners(eventDispatcher:IEventDispatcher, eventTypes:Vector.<String>, topics:Array):void;
 		function removeListeners(eventDispatcher:IEventDispatcher):void;
 		function addEventListenerProxy(type:String, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean;
 		function addEventClassListenerProxy(eventClass:Class, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean;
@@ -41,5 +41,9 @@ package org.springextensions.actionscript.eventbus {
 
 		function removeEventListenerProxy(type:String, proxy:EventHandlerProxy, topic:Object=null):void;
 		function removeEventClassListenerProxy(eventClass:Class, proxy:EventHandlerProxy, topic:Object=null):void;
+
+		function removeInterceptor(interceptor:IEventInterceptor, topic:Object=null):void;
+		function removeEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void;
+		function removeEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void;
 	}
 }

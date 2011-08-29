@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.eventbus.process {
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
+
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.SoftReference;
 	import org.as3commons.logging.api.ILogger;
@@ -111,8 +112,10 @@ package org.springextensions.actionscript.eventbus.process {
 		//
 		// --------------------------------------------------------------------
 
-		private static const COMMA:String = ",";
 		private static const LOGGER:ILogger = getLogger(RouteEventsMetaDataProcessor);
+		private static const COMMA:String = ',';
+		private static const SPACE_CHAR:String = ' ';
+		private static const EMPTY:String = '';
 
 		// --------------------------------------------------------------------
 		//
@@ -176,7 +179,7 @@ package org.springextensions.actionscript.eventbus.process {
 			if ((type != null) && (instance is IEventDispatcher)) {
 				var metadatas:Array = type.getMetadata(ROUTE_EVENTS_METADATA);
 				for each (var metadata:Metadata in metadatas) {
-					var eventTypes:Array;
+					var eventTypes:Vector.<String>;
 					if (metadata.hasArgumentWithKey(EVENTS_KEY)) {
 						eventTypes = extractEventTypeNamesFromMetaDataArgument(metadata.getArgument(EVENTS_KEY));
 					} else {
@@ -207,9 +210,9 @@ package org.springextensions.actionscript.eventbus.process {
 		 * @param type
 		 * @return
 		 */
-		protected function extractEventTypeNamesFromMetaData(type:Type):Array {
+		protected function extractEventTypeNamesFromMetaData(type:Type):Vector.<String> {
 			var events:Array = type.getMetadata(EVENT_METADATA);
-			var result:Array = [];
+			var result:Vector.<String> = new Vector.<String>();
 			for each (var metaData:Metadata in events) {
 				if (metaData.hasArgumentWithKey(NAME_KEY)) {
 					var arg:MetadataArgument = metaData.getArgument(NAME_KEY);
@@ -227,8 +230,13 @@ package org.springextensions.actionscript.eventbus.process {
 		 * @param metaDataArgument
 		 * @return
 		 */
-		protected function extractEventTypeNamesFromMetaDataArgument(metaDataArgument:MetadataArgument):Array {
-			return metaDataArgument.value.split(' ').join('').split(',');
+		protected function extractEventTypeNamesFromMetaDataArgument(metaDataArgument:MetadataArgument):Vector.<String> {
+			var arr:Array = metaDataArgument.value.split(SPACE_CHAR).join(EMPTY).split(COMMA);
+			var result:Vector.<String> = new Vector.<String>();
+			for each (var str:String in arr) {
+				result[result.length] = str;
+			}
+			return result;
 		}
 	}
 }

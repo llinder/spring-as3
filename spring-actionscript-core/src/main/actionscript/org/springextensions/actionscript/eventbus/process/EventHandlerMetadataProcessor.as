@@ -94,6 +94,8 @@ package org.springextensions.actionscript.eventbus.process {
 		public static const PROPERTIES_KEY:String = "properties";
 		public static const TRUE_VALUE:String = "true";
 		public static const USEWEAK_KEY:String = "useWeakReference";
+		private static const SPACE_CHAR:String = ' ';
+		private static const EMPTY:String = '';
 
 		// --------------------------------------------------------------------
 		//
@@ -314,7 +316,7 @@ package org.springextensions.actionscript.eventbus.process {
 		protected function getProperties(metaData:Metadata):Vector.<String> {
 			if (metaData.hasArgumentWithKey(PROPERTIES_KEY)) {
 				var propertiesValue:String = metaData.getArgument(PROPERTIES_KEY).value;
-				var parts:Array = propertiesValue.split(' ').join('').split(COMMA);
+				var parts:Array = propertiesValue.split(SPACE_CHAR).join(EMPTY).split(COMMA);
 				var result:Vector.<String> = new Vector.<String>();
 				for each (var part:String in parts) {
 					result[result.length] = part;
