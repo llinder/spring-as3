@@ -51,11 +51,6 @@ package org.springextensions.actionscript.eventbus.impl {
 		private var _proxyLookup:Dictionary;
 		private var _typesLookup:Dictionary;
 
-
-		public function get eventBusRegistryEntryCache():Dictionary {
-			return _eventBusRegistryEntryCache;
-		}
-
 		/**
 		 * @inheritDoc
 		 */
@@ -68,6 +63,11 @@ package org.springextensions.actionscript.eventbus.impl {
 		 */
 		public function set eventBus(value:IEventBus):void {
 			_eventBus = value;
+		}
+
+
+		public function get eventBusRegistryEntryCache():Dictionary {
+			return _eventBusRegistryEntryCache;
 		}
 
 		/**
@@ -240,6 +240,21 @@ package org.springextensions.actionscript.eventbus.impl {
 			}
 		}
 
+		public function removeEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor];
+			if (registryItem != null) {
+				var idx:int = 0;
+				for each (var entry:ClassEntry in registryItem.classEntries) {
+					if ((entry.clazz === eventClass) && (entry.topic == topic)) {
+						registryItem.classEntries.splice(idx, 1);
+						break;
+					}
+					idx++;
+				}
+			}
+			_eventBus.removeEventClassInterceptor(eventClass, interceptor, topic);
+		}
+
 		public function removeEventClassListenerProxy(eventClass:Class, proxy:EventHandlerProxy, topic:Object=null):void {
 			var proxies:Vector.<EventHandlerProxy> = _proxyLookup[proxy.target];
 			var proxy:EventHandlerProxy = findProxy(proxy, proxies);
@@ -258,6 +273,21 @@ package org.springextensions.actionscript.eventbus.impl {
 			}
 		}
 
+		public function removeEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor];
+			if (registryItem != null) {
+				var idx:int = 0;
+				for each (var entry:EventTypeEntry in registryItem.eventTypeEntries) {
+					if ((entry.eventType == type) && (entry.topic == topic)) {
+						registryItem.eventTypeEntries.splice(idx, 1);
+						break;
+					}
+					idx++;
+				}
+			}
+			_eventBus.removeEventInterceptor(type, interceptor, topic);
+		}
+
 		public function removeEventListenerProxy(type:String, proxy:EventHandlerProxy, topic:Object=null):void {
 			var proxies:Vector.<EventHandlerProxy> = _proxyLookup[proxy.target];
 			var proxy:EventHandlerProxy = findProxy(proxy, proxies);
@@ -274,6 +304,20 @@ package org.springextensions.actionscript.eventbus.impl {
 				}
 				--i;
 			}
+		}
+
+		public function removeInterceptor(interceptor:IEventInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor];
+			if (registryItem != null) {
+				var idx:int = 0;
+				for each (var entry:EventTypeEntry in registryItem.eventTypeEntries) {
+					if ((entry.eventType == null) && (entry.topic == null)) {
+						registryItem.eventTypeEntries.splice(idx, 1);
+					}
+					idx++;
+				}
+			}
+			_eventBus.removeInterceptor(interceptor, topic);
 		}
 
 		/**
@@ -374,18 +418,6 @@ package org.springextensions.actionscript.eventbus.impl {
 					topics.splice(topics.indexOf(item), 1);
 				}
 			}
-		}
-
-		public function removeInterceptor(interceptor:IEventInterceptor, topic:Object=null):void {
-			// TODO Auto-generated method stub
-		}
-
-		public function removeEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void {
-			// TODO Auto-generated method stub
-		}
-
-		public function removeEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void {
-			// TODO Auto-generated method stub
 		}
 	}
 }
