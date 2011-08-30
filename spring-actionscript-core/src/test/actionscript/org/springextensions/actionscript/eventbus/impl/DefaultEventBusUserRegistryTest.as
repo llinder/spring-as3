@@ -19,6 +19,7 @@ package org.springextensions.actionscript.eventbus.impl {
 	import mockolate.mock;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
+	import mockolate.stub;
 	import mockolate.verify;
 
 	import org.as3commons.eventbus.IEventBus;

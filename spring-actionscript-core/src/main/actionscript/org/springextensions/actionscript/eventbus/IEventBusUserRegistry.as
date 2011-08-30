@@ -45,5 +45,10 @@ package org.springextensions.actionscript.eventbus {
 		function removeInterceptor(interceptor:IEventInterceptor, topic:Object=null):void;
 		function removeEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void;
 		function removeEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void;
+
+		function removeListenerInterceptor(interceptor:IEventListenerInterceptor, topic:Object=null):void;
+		function removeEventListenerInterceptor(type:String, interceptor:IEventListenerInterceptor, topic:Object=null):void;
+		function removeEventClassListenerInterceptor(eventClass:Class, interceptor:IEventListenerInterceptor, topic:Object=null):void;
+
 	}
 }

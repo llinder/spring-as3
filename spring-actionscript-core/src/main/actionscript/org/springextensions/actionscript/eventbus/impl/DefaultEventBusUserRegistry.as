@@ -255,6 +255,20 @@ package org.springextensions.actionscript.eventbus.impl {
 			_eventBus.removeEventClassInterceptor(eventClass, interceptor, topic);
 		}
 
+		public function removeEventClassListenerInterceptor(eventClass:Class, interceptor:IEventListenerInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor];
+			if (registryItem != null) {
+				var idx:int = 0;
+				for each (var entry:ClassEntry in registryItem.classEntries) {
+					if ((entry.clazz === eventClass) && (entry.topic === topic)) {
+						registryItem.classEntries.splice(idx, 1);
+					}
+					idx++;
+				}
+			}
+			_eventBus.removeEventClassListenerInterceptor(eventClass, interceptor, topic);
+		}
+
 		public function removeEventClassListenerProxy(eventClass:Class, proxy:EventHandlerProxy, topic:Object=null):void {
 			var proxies:Vector.<EventHandlerProxy> = _proxyLookup[proxy.target];
 			var proxy:EventHandlerProxy = findProxy(proxy, proxies);
@@ -288,6 +302,20 @@ package org.springextensions.actionscript.eventbus.impl {
 			_eventBus.removeEventInterceptor(type, interceptor, topic);
 		}
 
+		public function removeEventListenerInterceptor(type:String, interceptor:IEventListenerInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor];
+			if (registryItem != null) {
+				var idx:int = 0;
+				for each (var entry:EventTypeEntry in registryItem.eventTypeEntries) {
+					if ((entry.eventType == type) && (entry.topic === topic)) {
+						registryItem.eventTypeEntries.splice(idx, 1);
+					}
+					idx++;
+				}
+			}
+			_eventBus.removeEventListenerInterceptor(type, interceptor, topic);
+		}
+
 		public function removeEventListenerProxy(type:String, proxy:EventHandlerProxy, topic:Object=null):void {
 			var proxies:Vector.<EventHandlerProxy> = _proxyLookup[proxy.target];
 			var proxy:EventHandlerProxy = findProxy(proxy, proxies);
@@ -318,6 +346,20 @@ package org.springextensions.actionscript.eventbus.impl {
 				}
 			}
 			_eventBus.removeInterceptor(interceptor, topic);
+		}
+
+		public function removeListenerInterceptor(interceptor:IEventListenerInterceptor, topic:Object=null):void {
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[interceptor];
+			if (registryItem != null) {
+				var idx:int = 0;
+				for each (var entry:EventTypeEntry in registryItem.eventTypeEntries) {
+					if ((entry.eventType == null) && (entry.topic === topic)) {
+						registryItem.eventTypeEntries.splice(idx, 1);
+					}
+					idx++;
+				}
+			}
+			_eventBus.removeListenerInterceptor(interceptor, topic);
 		}
 
 		/**
