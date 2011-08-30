@@ -14,7 +14,6 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.eventbus.process {
-
 	import flash.events.Event;
 	import flash.system.ApplicationDomain;
 
@@ -37,10 +36,6 @@ package org.springextensions.actionscript.eventbus.process {
 	 */
 	public class EventHandlerProxy extends MethodInvoker implements IApplicationDomainAware, IEquals {
 
-		protected var event:Event;
-		protected var methodInstance:Method;
-		protected var properties:Vector.<String>;
-
 		// --------------------------------------------------------------------
 		//
 		// Constructor
@@ -58,18 +53,9 @@ package org.springextensions.actionscript.eventbus.process {
 			initEventHandlerProxy(target, method, properties);
 		}
 
-		/**
-		 * Initializes the current <code>EventHandlerProxy</code>.
-		 * @param target
-		 * @param method
-		 * @param properties
-		 */
-		protected function initEventHandlerProxy(target:Object, method:Method, properties:Vector.<String>):void {
-			this.target = target;
-			this.method = method.name;
-			methodInstance = method;
-			this.properties = properties;
-		}
+		protected var event:Event;
+		protected var methodInstance:Method;
+		protected var properties:Vector.<String>;
 
 		private var _applicationDomain:ApplicationDomain;
 
@@ -108,6 +94,20 @@ package org.springextensions.actionscript.eventbus.process {
 		}
 
 		/**
+		 *
+		 * @param other
+		 * @return
+		 *
+		 */
+		public function equals(other:Object):Boolean {
+			var otherProxy:EventHandlerProxy = EventHandlerProxy(other);
+			return ((otherProxy.target === this.target) && //
+				(otherProxy.method == this.method) && //
+				(otherProxy.namespaceURI == this.namespaceURI) && //
+				propertiesAreEqual(otherProxy.properties, this.properties));
+		}
+
+		/**
 		 * Invokes the event handler for the proxied method and decides what arguments to use, based on the
 		 * metadata of event handler function.
 		 *
@@ -136,22 +136,6 @@ package org.springextensions.actionscript.eventbus.process {
 				return getArgumentsFromProperties(properties);
 			}
 			return getArgumentsFromMethod();
-		}
-
-		/**
-		 * Returns the arguments based on the 'properties' value of the EventHandler annotation.
-		 *
-		 * @param properties
-		 * @return
-		 */
-		protected function getArgumentsFromProperties(properties:Vector.<String>):Array {
-			var result:Array = [];
-
-			for each (var propertyName:String in properties) {
-				result[result.length] = event[propertyName];
-			}
-
-			return result;
 		}
 
 		/**
@@ -197,22 +181,19 @@ package org.springextensions.actionscript.eventbus.process {
 		}
 
 		/**
-		 * Returns <code>true</code> if the specified <code>Method</code> has multiple parameters of the same type.
-		 * @param method The specified <code>Method</code>.
-		 * @return <code>true</code> if the given method has multiple parameters of the same type.
+		 * Returns the arguments based on the 'properties' value of the EventHandler annotation.
+		 *
+		 * @param properties
+		 * @return
 		 */
-		protected function hasMultipleParametersOfSameType(method:Method):Boolean {
-			var types:Array = [];
+		protected function getArgumentsFromProperties(properties:Vector.<String>):Array {
+			var result:Array = [];
 
-			for each (var param:Parameter in method.parameters) {
-				if (types.indexOf(param.type) > -1) {
-					return true;
-				} else {
-					types[types.length] = param.type;
-				}
+			for each (var propertyName:String in properties) {
+				result[result.length] = event[propertyName];
 			}
 
-			return false;
+			return result;
 		}
 
 		/**
@@ -239,11 +220,45 @@ package org.springextensions.actionscript.eventbus.process {
 			throw new IllegalArgumentError("The event class '" + eventType.clazz + "' does not have a property of " + "type '" + type.clazz + "'");
 		}
 
-		public function equals(other:Object):Boolean {
-			var otherProxy:EventHandlerProxy = EventHandlerProxy(other);
-			return ((otherProxy.target === this.target) && (otherProxy.method == this.method) && propertiesAreEqual(otherProxy.properties, this.properties));
+		/**
+		 * Returns <code>true</code> if the specified <code>Method</code> has multiple parameters of the same type.
+		 * @param method The specified <code>Method</code>.
+		 * @return <code>true</code> if the given method has multiple parameters of the same type.
+		 */
+		protected function hasMultipleParametersOfSameType(method:Method):Boolean {
+			var types:Array = [];
+
+			for each (var param:Parameter in method.parameters) {
+				if (types.indexOf(param.type) > -1) {
+					return true;
+				} else {
+					types[types.length] = param.type;
+				}
+			}
+
+			return false;
 		}
 
+		/**
+		 * Initializes the current <code>EventHandlerProxy</code>.
+		 * @param target
+		 * @param method
+		 * @param properties
+		 */
+		protected function initEventHandlerProxy(target:Object, method:Method, properties:Vector.<String>):void {
+			this.target = target;
+			this.method = method.name;
+			methodInstance = method;
+			this.properties = properties;
+		}
+
+		/**
+		 *
+		 * @param properties
+		 * @param otherProperties
+		 * @return
+		 *
+		 */
 		protected function propertiesAreEqual(properties:Vector.<String>, otherProperties:Vector.<String>):Boolean {
 			if ((properties == null) && (otherProperties == null)) {
 				return true;

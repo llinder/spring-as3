@@ -15,7 +15,6 @@
 */
 package org.springextensions.actionscript.eventbus {
 	import flash.events.IEventDispatcher;
-
 	import org.as3commons.eventbus.IEventInterceptor;
 	import org.as3commons.eventbus.IEventListenerInterceptor;
 	import org.as3commons.reflect.MethodInvoker;
@@ -26,29 +25,30 @@ package org.springextensions.actionscript.eventbus {
 	 * @author Roland Zwaga
 	 */
 	public interface IEventBusUserRegistry {
-		function addEventListeners(eventDispatcher:IEventDispatcher, eventTypes:Vector.<String>, topics:Array):void;
-		function removeListeners(eventDispatcher:IEventDispatcher):void;
-		function addEventListenerProxy(type:String, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean;
+		function addEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void;
+		function addEventClassListenerInterceptor(eventClass:Class, interceptor:IEventListenerInterceptor, topic:Object=null):void;
 		function addEventClassListenerProxy(eventClass:Class, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean;
 
-		function addInterceptor(interceptor:IEventInterceptor, topic:Object=null):void;
 		function addEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void;
-		function addEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void;
 
-		function addListenerInterceptor(interceptor:IEventListenerInterceptor, topic:Object=null):void;
 		function addEventListenerInterceptor(type:String, interceptor:IEventListenerInterceptor, topic:Object=null):void;
-		function addEventClassListenerInterceptor(eventClass:Class, interceptor:IEventListenerInterceptor, topic:Object=null):void;
+		function addEventListenerProxy(type:String, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean;
+		function addEventListeners(eventDispatcher:IEventDispatcher, eventTypes:Vector.<String>, topics:Array):void;
 
-		function removeEventListenerProxy(type:String, proxy:EventHandlerProxy, topic:Object=null):void;
-		function removeEventClassListenerProxy(eventClass:Class, proxy:EventHandlerProxy, topic:Object=null):void;
+		function addInterceptor(interceptor:IEventInterceptor, topic:Object=null):void;
+		function addListenerInterceptor(interceptor:IEventListenerInterceptor, topic:Object=null):void;
 
-		function removeInterceptor(interceptor:IEventInterceptor, topic:Object=null):void;
-		function removeEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void;
 		function removeEventClassInterceptor(eventClass:Class, interceptor:IEventInterceptor, topic:Object=null):void;
+		function removeEventClassListenerInterceptor(eventClass:Class, interceptor:IEventListenerInterceptor, topic:Object=null):void;
+		function removeEventClassListenerProxy(eventClass:Class, proxy:MethodInvoker, topic:Object=null):void;
+
+		function removeEventInterceptor(type:String, interceptor:IEventInterceptor, topic:Object=null):void;
+
+		function removeEventListenerInterceptor(type:String, interceptor:IEventListenerInterceptor, topic:Object=null):void;
+		function removeEventListenerProxy(type:String, proxy:MethodInvoker, topic:Object=null):void;
+		function removeInterceptor(interceptor:IEventInterceptor, topic:Object=null):void;
 
 		function removeListenerInterceptor(interceptor:IEventListenerInterceptor, topic:Object=null):void;
-		function removeEventListenerInterceptor(type:String, interceptor:IEventListenerInterceptor, topic:Object=null):void;
-		function removeEventClassListenerInterceptor(eventClass:Class, interceptor:IEventListenerInterceptor, topic:Object=null):void;
-
+		function removeEventListeners(eventDispatcher:IEventDispatcher):void;
 	}
 }

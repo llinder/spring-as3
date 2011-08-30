@@ -23,12 +23,12 @@ package org.springextensions.actionscript.eventbus.impl {
 	import org.as3commons.eventbus.IEventInterceptor;
 	import org.as3commons.eventbus.IEventListenerInterceptor;
 	import org.as3commons.lang.IDisposable;
+	import org.as3commons.lang.IEquals;
 	import org.as3commons.lang.SoftReference;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getLogger;
 	import org.as3commons.reflect.MethodInvoker;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
-	import org.springextensions.actionscript.eventbus.process.EventHandlerProxy;
 
 	/**
 	 *
@@ -110,7 +110,7 @@ package org.springextensions.actionscript.eventbus.impl {
 		 * @return
 		 */
 		public function addEventClassListenerProxy(eventClass:Class, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean {
-			(_proxyLookup[proxy.target] ||= new Vector.<EventHandlerProxy>()).push(proxy);
+			(_proxyLookup[proxy.target] ||= new Vector.<MethodInvoker>()).push(proxy);
 			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy] ||= new EventBusRegistryEntry(proxy);
 			registryItem.classEntries[registryItem.classEntries.length] = new ClassEntry(eventClass, topic);
 			return _eventBus.addEventClassListenerProxy(eventClass, proxy, useWeakReference, topic);
@@ -149,7 +149,7 @@ package org.springextensions.actionscript.eventbus.impl {
 		 * @return
 		 */
 		public function addEventListenerProxy(type:String, proxy:MethodInvoker, useWeakReference:Boolean=false, topic:Object=null):Boolean {
-			(_proxyLookup[proxy.target] ||= new Vector.<EventHandlerProxy>()).push(proxy);
+			(_proxyLookup[proxy.target] ||= new Vector.<MethodInvoker>()).push(proxy);
 			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy] ||= new EventBusRegistryEntry(proxy);
 			registryItem.eventTypeEntries[registryItem.eventTypeEntries.length] = new EventTypeEntry(type, topic);
 			return _eventBus.addEventListenerProxy(type, proxy, useWeakReference, topic);
@@ -163,7 +163,7 @@ package org.springextensions.actionscript.eventbus.impl {
 		 */
 		public function addEventListeners(eventDispatcher:IEventDispatcher, eventTypes:Vector.<String>, topics:Array):void {
 			for each (var eventType:String in eventTypes) {
-				var types:Array = _listenerCache[eventDispatcher] ||= [];
+				var types:Vector.<String> = _listenerCache[eventDispatcher] ||= new Vector.<String>();
 				types[types.length] = eventType;
 				if ((topics != null) && (topics.length > 0)) {
 					_typesLookup[eventType] ||= new Dictionary(true);
@@ -203,7 +203,7 @@ package org.springextensions.actionscript.eventbus.impl {
 			if (!_isDisposed) {
 				for (var dispatcher:* in _listenerCache) {
 					if (dispatcher != null) {
-						removeListeners(dispatcher as IEventDispatcher);
+						removeEventListeners(dispatcher as IEventDispatcher);
 					}
 					delete _listenerCache[dispatcher];
 				}
@@ -269,18 +269,18 @@ package org.springextensions.actionscript.eventbus.impl {
 			_eventBus.removeEventClassListenerInterceptor(eventClass, interceptor, topic);
 		}
 
-		public function removeEventClassListenerProxy(eventClass:Class, proxy:EventHandlerProxy, topic:Object=null):void {
-			var proxies:Vector.<EventHandlerProxy> = _proxyLookup[proxy.target];
-			var proxy:EventHandlerProxy = findProxy(proxy, proxies);
-			if (proxy == null) {
+		public function removeEventClassListenerProxy(eventClass:Class, proxy:MethodInvoker, topic:Object=null):void {
+			var proxies:Vector.<MethodInvoker> = _proxyLookup[proxy.target];
+			var handlerProxy:MethodInvoker = findProxy(proxy, proxies);
+			if (handlerProxy == null) {
 				return;
 			}
-			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy];
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[handlerProxy];
 			var i:int = registryItem.classEntries.length - 1;
 			while (i > -1) {
 				var entry:ClassEntry = registryItem.classEntries[i];
 				if ((eventClass === entry.clazz) && (entry.topic == topic)) {
-					_eventBus.removeEventClassListenerProxy(eventClass, proxy, topic);
+					_eventBus.removeEventClassListenerProxy(eventClass, handlerProxy, topic);
 					registryItem.classEntries.splice(i, 1);
 				}
 				--i;
@@ -316,18 +316,18 @@ package org.springextensions.actionscript.eventbus.impl {
 			_eventBus.removeEventListenerInterceptor(type, interceptor, topic);
 		}
 
-		public function removeEventListenerProxy(type:String, proxy:EventHandlerProxy, topic:Object=null):void {
-			var proxies:Vector.<EventHandlerProxy> = _proxyLookup[proxy.target];
-			var proxy:EventHandlerProxy = findProxy(proxy, proxies);
-			if (proxy == null) {
+		public function removeEventListenerProxy(type:String, proxy:MethodInvoker, topic:Object=null):void {
+			var proxies:Vector.<MethodInvoker> = _proxyLookup[proxy.target];
+			var handlerProxy:MethodInvoker = findProxy(proxy, proxies);
+			if (handlerProxy == null) {
 				return;
 			}
-			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[proxy];
+			var registryItem:EventBusRegistryEntry = _eventBusRegistryEntryCache[handlerProxy];
 			var i:int = registryItem.eventTypeEntries.length - 1;
 			while (i > -1) {
 				var entry:EventTypeEntry = registryItem.eventTypeEntries[i];
-				if ((type == entry.eventType) && (entry.topic == topic)) {
-					_eventBus.removeEventListenerProxy(type, proxy, topic);
+				if ((type == entry.eventType) && (entry.topic === topic)) {
+					_eventBus.removeEventListenerProxy(type, handlerProxy, topic);
 					registryItem.eventTypeEntries.splice(i, 1);
 				}
 				--i;
@@ -339,7 +339,7 @@ package org.springextensions.actionscript.eventbus.impl {
 			if (registryItem != null) {
 				var idx:int = 0;
 				for each (var entry:EventTypeEntry in registryItem.eventTypeEntries) {
-					if ((entry.eventType == null) && (entry.topic == null)) {
+					if ((entry.eventType == null) && (entry.topic === topic)) {
 						registryItem.eventTypeEntries.splice(idx, 1);
 					}
 					idx++;
@@ -365,8 +365,8 @@ package org.springextensions.actionscript.eventbus.impl {
 		/**
 		 * Removes all the event listeners that were added to the specified <code>IEventDispatcher</code>.
 		 */
-		public function removeListeners(eventDispatcher:IEventDispatcher):void {
-			var types:Array = _listenerCache[eventDispatcher] as Array;
+		public function removeEventListeners(eventDispatcher:IEventDispatcher):void {
+			var types:Vector.<String> = _listenerCache[eventDispatcher] as Vector.<String>;
 			if (types != null) {
 				for each (var type:String in types) {
 					eventDispatcher.removeEventListener(type, rerouteToEventBus);
@@ -374,9 +374,13 @@ package org.springextensions.actionscript.eventbus.impl {
 			}
 		}
 
-		protected function findProxy(proxy:EventHandlerProxy, proxies:Vector.<EventHandlerProxy>):EventHandlerProxy {
-			for each (var ehp:EventHandlerProxy in proxies) {
-				if (ehp.equals(proxy)) {
+		protected function findProxy(proxy:MethodInvoker, proxies:Vector.<MethodInvoker>):MethodInvoker {
+			for each (var ehp:MethodInvoker in proxies) {
+				if (proxy is IEquals) {
+					if (IEquals(ehp).equals(proxy)) {
+						return ehp;
+					}
+				} else if ((ehp.target === proxy.target) && (ehp.method === proxy.method) && (ehp.namespaceURI === proxy.namespaceURI)) {
 					return ehp;
 				}
 			}
@@ -435,7 +439,7 @@ package org.springextensions.actionscript.eventbus.impl {
 		 *
 		 * @param event
 		 */
-		protected function rerouteToEventBus(event:Event):void {
+		public function rerouteToEventBus(event:Event):void {
 			var topics:Array;
 			if ((_typesLookup[event.type] != null) && (_typesLookup[event.type][event.target] != null)) {
 				topics = _typesLookup[event.type][event.target] as Array;
