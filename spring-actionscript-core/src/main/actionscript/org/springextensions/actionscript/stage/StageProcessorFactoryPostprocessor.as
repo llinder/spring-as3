@@ -61,15 +61,19 @@ package org.springextensions.actionscript.stage {
 		/**
 		 * <p>First checks if the <code>objectFactory</code> argument is an implementation of <code>IStageProcessorRegistry</code>, if not
 		 * the objectFactory is checked to see if it contains an object that implements <code>IStageProcessorRegistry</code>.</p>
-		 * If an <code>IStageProcessorRegistry</code> instance has been found the <code>objectFactory</code> is used to retrieve all
-		 * <code>IStageProcessor</code> instances which all are registered with the specified <code>IStageProcessorRegistry</code>.
+		 * <p>If an <code>IStageProcessorRegistry</code> instance has been found the <code>objectFactory</code> is used to retrieve all
+		 * <code>IStageProcessor</code> instances which all are registered with the specified <code>IStageProcessorRegistry</code>.</p>
+		 * <p>If no <code>IStageProcessors</code> are found in the current <code>IObjectFactory</code>, the <code>IStageProcessorRegistry</code>
+		 * will be disposed.</p>
 		 */
 		public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
 			var stageProcessorNames:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IStageObjectProcessor);
 			if (stageProcessorNames == null) {
 				if (objectFactory is IStageObjectProcessorRegistryAware) {
-					ContextUtils.disposeInstance(IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry);
-					IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry = null;
+					if (IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry.getAllStageObjectProcessors == null) {
+						ContextUtils.disposeInstance(IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry);
+						IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry = null;
+					}
 				}
 				return null;
 			}
