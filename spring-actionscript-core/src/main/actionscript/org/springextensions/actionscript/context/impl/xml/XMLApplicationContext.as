@@ -18,7 +18,7 @@ package org.springextensions.actionscript.context.impl.xml {
 	import flash.display.DisplayObject;
 
 	import org.springextensions.actionscript.context.IApplicationContext;
-	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.StageProcessingNamespaceHandler;
@@ -26,7 +26,7 @@ package org.springextensions.actionscript.context.impl.xml {
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
 
 
-	public class XMLApplicationContext extends ApplicationContext {
+	public class XMLApplicationContext extends DefaultApplicationContext {
 
 		public function XMLApplicationContext(configLocation:*=null, parent:IApplicationContext=null, rootView:DisplayObject=null, objFactory:IObjectFactory=null) {
 			super(parent, rootView, objFactory);

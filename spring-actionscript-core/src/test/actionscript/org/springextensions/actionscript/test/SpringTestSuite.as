@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.test {
+	import integration.eventbus.EventBusUserRegistryIntegrationTest;
 	import integration.objectfactory.ObjectFactoryIntegrationTest;
 
 	import org.springextensions.actionscript.context.impl.ApplicationContextTest;
@@ -124,5 +125,6 @@ package org.springextensions.actionscript.test {
 		public var t50:DefaultEventBusUserRegistryTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
+		public var i2:EventBusUserRegistryIntegrationTest;
 	}
 }

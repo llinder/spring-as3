@@ -69,7 +69,7 @@ package org.springextensions.actionscript.context.impl {
 		[Mock]
 		public var objectFactoryPostProcessor:IObjectFactoryPostProcessor;
 
-		private var _context:ApplicationContext;
+		private var _context:DefaultApplicationContext;
 
 		public function ApplicationContextTest() {
 			super();
@@ -84,7 +84,7 @@ package org.springextensions.actionscript.context.impl {
 
 		[Test]
 		public function testAddDefinitionProvider():void {
-			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var context:DefaultApplicationContext = new DefaultApplicationContext(null, null, objectFactory);
 			context.addDefinitionProvider(objectDefinitionProvider);
 			assertEquals(1, context.definitionProviders.length);
 			verify(objectFactory);
@@ -108,7 +108,7 @@ package org.springextensions.actionscript.context.impl {
 			mock(objectFactory).method("resolveReference").args("test").returns(null).once();
 			mock(objectFactory).getter("objectDefinitionRegistry").returns(null).once();
 
-			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var context:DefaultApplicationContext = new DefaultApplicationContext(null, null, objectFactory);
 			context.addObjectPostProcessor(null);
 			context.addReferenceResolver(null);
 			var applicationDomain:ApplicationDomain = context.applicationDomain;
@@ -149,7 +149,7 @@ package org.springextensions.actionscript.context.impl {
 			};
 			stub(objectDefinitionsRegistry).method("registerObjectDefinition").args("testName", def).calls(reg, ["testName", def]);
 			mock(objectFactory).setter("isReady").arg(true).once();
-			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var context:DefaultApplicationContext = new DefaultApplicationContext(null, null, objectFactory);
 			context.addDefinitionProvider(objectDefinitionProvider);
 			context.load();
 			assertStrictlyEquals(def, context.getObjectDefinition("testName"));
@@ -180,7 +180,7 @@ package org.springextensions.actionscript.context.impl {
 			stub(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
 			stub(objectDefinitionsRegistry).getter("objectDefinitions").returns(defs);
 
-			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var context:DefaultApplicationContext = new DefaultApplicationContext(null, null, objectFactory);
 			context.addDefinitionProvider(objectDefinitionProvider);
 			context.textFilesLoader = textFilesLoader;
 			context.propertiesParser = propertiesParser;
@@ -217,7 +217,7 @@ package org.springextensions.actionscript.context.impl {
 			stub(objectDefinitionsRegistry).method("registerObjectDefinition").args("testName", def).calls(reg, ["testName", def]);
 			mock(objectFactory).setter("isReady").arg(true).once();
 
-			_context = new ApplicationContext(null, null, objectFactory);
+			_context = new DefaultApplicationContext(null, null, objectFactory);
 			_context.addDefinitionProvider(objectDefinitionProvider);
 			_context.addEventListener(Event.COMPLETE, Async.asyncHandler(this, handleAsyncProvider, 500, def, handleAsyncProviderTimeOut), false, 0, true);
 			_context.load();
@@ -228,7 +228,7 @@ package org.springextensions.actionscript.context.impl {
 
 		[Test]
 		public function testAddObjectFactoryPostProcessor():void {
-			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var context:DefaultApplicationContext = new DefaultApplicationContext(null, null, objectFactory);
 			var processor:IObjectFactoryPostProcessor = nice(IObjectFactoryPostProcessor);
 			var originalLength:uint = context.objectFactoryPostProcessors.length;
 			context.addObjectFactoryPostProcessor(processor);

@@ -18,7 +18,7 @@ package org.springextensions.actionscript.context.impl.metadata {
 	import flash.display.DisplayObject;
 
 	import org.springextensions.actionscript.context.IApplicationContext;
-	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.MetadataObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 
@@ -26,7 +26,7 @@ package org.springextensions.actionscript.context.impl.metadata {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class MetadataApplicationContext extends ApplicationContext {
+	public class MetadataApplicationContext extends DefaultApplicationContext {
 
 		/**
 		 * Creates a new <code>MetadataApplicationContext</code> instance.

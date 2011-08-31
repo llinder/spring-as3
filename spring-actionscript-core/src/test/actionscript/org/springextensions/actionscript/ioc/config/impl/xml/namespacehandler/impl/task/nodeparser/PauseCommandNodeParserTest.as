@@ -16,7 +16,7 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser {
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNotNull;
-	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 
@@ -34,7 +34,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		[Test]
 		public function testParseWithPauseCommandXML():void {
-			var result:IObjectDefinition = _testParser.parse(_testPauseXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _testParser.parse(_testPauseXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertNotNull(result);
 			assertEquals("org.as3commons.async.task.command.PauseCommand", result.className);
 			assertEquals(1, result.constructorArguments.length);

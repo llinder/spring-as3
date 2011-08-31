@@ -13,14 +13,23 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.context.config {
-	import org.springextensions.actionscript.context.IApplicationContext;
+package integration.testtypes {
+
+	import flash.events.Event;
 
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public interface IConfigurationPackage {
-		function execute(applicationContext:IApplicationContext):void;
+	public class TestEvent extends Event {
+
+		public static const TEST_TYPE:String = "testType";
+
+		/**
+		 * Creates a new <code>TestEvent</code> instance.
+		 */
+		public function TestEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
+			super(type, bubbles, cancelable);
+		}
 	}
 }

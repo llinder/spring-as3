@@ -17,7 +17,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.as3commons.async.operation.impl.LoadURLOperation;
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertStrictlyEquals;
-	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 
@@ -38,7 +38,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		[Test]
 		public function testParse():void {
-			var result:IObjectDefinition = _nodeParser.parse(_testXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _nodeParser.parse(_testXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertEquals("org.as3commons.async.command.impl.GenericOperationCommand", result.className);
 			assertEquals(3, result.constructorArguments.length);
 			assertStrictlyEquals(LoadURLOperation, result.constructorArguments[0]);

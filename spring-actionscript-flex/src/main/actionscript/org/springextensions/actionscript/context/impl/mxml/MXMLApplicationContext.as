@@ -25,7 +25,7 @@ package org.springextensions.actionscript.context.impl.mxml {
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.context.config.IConfigurationPackage;
-	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.MXMLObjectDefinitionsProvider;
 	import org.springextensions.actionscript.util.ContextUtils;
 
@@ -162,7 +162,7 @@ package org.springextensions.actionscript.context.impl.mxml {
 		 */
 		public function initializeContext():void {
 			if (!_initialized) {
-				_applicationContext = new ApplicationContext(null, (_document as DisplayObject));
+				_applicationContext = new DefaultApplicationContext(null, (_document as DisplayObject));
 				_applicationContext.addDefinitionProvider(new MXMLObjectDefinitionsProvider());
 				if (_configurationPackage != null) {
 					_applicationContext.configure(_configurationPackage);

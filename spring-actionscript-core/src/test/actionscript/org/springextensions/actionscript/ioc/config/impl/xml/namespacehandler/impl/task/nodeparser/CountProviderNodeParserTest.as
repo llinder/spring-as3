@@ -20,7 +20,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertNull;
-	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 
@@ -38,7 +38,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		[Test]
 		public function testParseWithCountProviderXML():void {
-			var result:IObjectDefinition = _testParser.parse(_testCountProviderXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _testParser.parse(_testCountProviderXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertNotNull(result);
 			assertEquals("org.as3commons.async.task.impl.CountProvider", result.className);
 			assertEquals(1, result.constructorArguments.length);
@@ -47,7 +47,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		[Test]
 		public function testParseWithoutCountXML():void {
-			var result:IObjectDefinition = _testParser.parse(_testCountProviderWithoutCountXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _testParser.parse(_testCountProviderWithoutCountXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertNull(result);
 		}
 

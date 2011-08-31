@@ -17,7 +17,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 	import org.as3commons.lang.ClassUtils;
 	import org.flexunit.asserts.assertEquals;
-	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
@@ -46,13 +46,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		[Test]
 		public function testParseWithEmptyTask():void {
-			var result:IObjectDefinition = _testParser.parse(_emptyTaskXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _testParser.parse(_emptyTaskXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertEquals("org.as3commons.async.task.impl.Task", result.className);
 		}
 
 		[Test]
 		public function testParseWithOneAndElement():void {
-			var result:IObjectDefinition = _testParser.parse(_taskWithOneAndXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _testParser.parse(_taskWithOneAndXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertEquals("org.as3commons.async.task.impl.Task", result.className);
 			assertEquals(1, result.methodInvocations.length);
 			assertEquals(TaskNodeParser.andMethod, MethodInvocation(result.methodInvocations[0]).methodName);
@@ -64,7 +64,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		[Test]
 		public function testParseWithOneForElement():void {
-			var result:IObjectDefinition = _testParser.parse(_taskWithOneForXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _testParser.parse(_taskWithOneForXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertEquals("org.as3commons.async.task.impl.Task", result.className);
 			assertEquals(1, result.methodInvocations.length);
 			assertEquals(TaskNodeParser.forMethod, MethodInvocation(result.methodInvocations[0]).methodName);
@@ -76,7 +76,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		[Test]
 		public function testParseWithOneIfElement():void {
-			var result:IObjectDefinition = _testParser.parse(_taskWithOneIfXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _testParser.parse(_taskWithOneIfXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertEquals("org.as3commons.async.task.impl.Task", result.className);
 			assertEquals(1, result.methodInvocations.length);
 			assertEquals(TaskNodeParser.ifMethod, MethodInvocation(result.methodInvocations[0]).methodName);
@@ -88,7 +88,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		[Test]
 		public function testParseWithOneWhileElement():void {
-			var result:IObjectDefinition = _testParser.parse(_taskWithOneWhileXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _testParser.parse(_taskWithOneWhileXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertEquals("org.as3commons.async.task.impl.Task", result.className);
 			assertEquals(1, result.methodInvocations.length);
 			assertEquals(TaskNodeParser.whileMethod, MethodInvocation(result.methodInvocations[0]).methodName);
@@ -100,7 +100,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		[Test]
 		public function testParseWithAndLoadURLElement():void {
-			var result:IObjectDefinition = _testParser.parse(_taskWithAndLoadURLNodeXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _testParser.parse(_taskWithAndLoadURLNodeXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertEquals("org.as3commons.async.task.impl.Task", result.className);
 			assertEquals(1, result.methodInvocations.length);
 			assertEquals(TaskNodeParser.andMethod, MethodInvocation(result.methodInvocations[0]).methodName);

@@ -17,7 +17,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 	import org.as3commons.lang.ClassUtils;
 	import org.flexunit.asserts.assertEquals;
-	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
@@ -37,7 +37,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		[Test]
 		public function testWhileParse():void {
-			var result:IObjectDefinition = _testParser.parse(_testWhileXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _testParser.parse(_testWhileXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertEquals("org.as3commons.async.task.impl.WhileBlock", result.className);
 			assertEquals(1, result.constructorArguments.length);
 			assertEquals(RuntimeObjectReference, ClassUtils.forInstance(result.constructorArguments[0]));
@@ -47,7 +47,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		[Test]
 		public function testForParse():void {
-			var result:IObjectDefinition = _testParser.parse(_testForXML, new XMLObjectDefinitionsParser(new ApplicationContext()));
+			var result:IObjectDefinition = _testParser.parse(_testForXML, new XMLObjectDefinitionsParser(new DefaultApplicationContext()));
 			assertEquals("org.as3commons.async.task.impl.ForBlock", result.className);
 			assertEquals(1, result.constructorArguments.length);
 			assertEquals(RuntimeObjectReference, ClassUtils.forInstance(result.constructorArguments[0]));

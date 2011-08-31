@@ -15,13 +15,11 @@
 */
 package org.springextensions.actionscript.context.config.impl.xml {
 
+	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.config.IXMLConfigurationPackage;
 	import org.springextensions.actionscript.context.config.impl.FullConfigurationPackage;
-	import org.springextensions.actionscript.context.impl.ApplicationContext;
-	import org.springextensions.actionscript.context.impl.xml.XMLApplicationContext;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProvider;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.EventBusNamespacehandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.StageProcessingNamespaceHandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.TaskNamespaceHandler;
@@ -39,7 +37,7 @@ package org.springextensions.actionscript.context.config.impl.xml {
 		 *
 		 * @param applicationContext
 		 */
-		override public function execute(applicationContext:ApplicationContext):void {
+		override public function execute(applicationContext:IApplicationContext):void {
 			super.execute(applicationContext);
 			for each (var definitionProvider:IObjectDefinitionsProvider in applicationContext.definitionProviders) {
 				if (definitionProvider is XMLObjectDefinitionsProvider) {

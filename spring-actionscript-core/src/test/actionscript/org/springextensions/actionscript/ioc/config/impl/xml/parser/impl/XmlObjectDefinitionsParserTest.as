@@ -27,7 +27,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.flexunit.asserts.assertTrue;
 	import org.springextensions.actionscript.context.IApplicationContext;
-	import org.springextensions.actionscript.context.impl.ApplicationContext;
+	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
@@ -152,7 +152,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		[Test]
 		public function testNewWithContainerArgument():void {
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			assertNotNull(parser.applicationContext);
 			assertStrictlyEquals(context, parser.applicationContext);
@@ -160,7 +160,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		[Test]
 		public function testParse():void {
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(_xml);
 			assertNotNull(definitions["christophe"]);
@@ -178,7 +178,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 						<constructor-arg value=""/>
 					</object>
 				</objects>;
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(xml);
 
@@ -201,7 +201,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 						</constructor-arg>
 					</object>
 				</objects>;
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(xml);
 
@@ -221,7 +221,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 						</constructor-arg>
 					</object>
 				</objects>;
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(xml);
 
@@ -244,7 +244,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 						</constructor-arg>
 					</object>
 				</objects>;
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(xml);
 
@@ -258,7 +258,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		[Test]
 		public function testParseWithClassNameAsStringInValueAttribute():void {
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(_xmlClassStringTest);
 			var f:IObjectDefinition = definitions["factoryTest"];
@@ -267,7 +267,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		[Test]
 		public function testParseWithClassNameAsStringInValueElement():void {
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(_xmlClassStringTest2);
 			assertNotNull(definitions["factoryTest"]);
@@ -275,7 +275,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		[Test]
 		public function testParsePersonWithSiblings():void {
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(PERSON_XML_WITH_SIBLINGS);
 			assertNotNull(definitions["person"]);
@@ -283,7 +283,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		[Test]
 		public function testParseWithInnerObject():void {
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(<objects>
 					<object id="a" class="Array">
@@ -306,7 +306,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		[Test]
 		public function testParseWithRefInObject():void {
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(<objects>
 					<object id="a" class="Object">
@@ -352,7 +352,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		[Test]
 		public function testParseWithMultipleRefsInObject():void {
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(<objects>
 					<object id="a" class="Object">
@@ -393,7 +393,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		[Test]
 		public function testParse_circularRefence():void {
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(<objects>
 					<object id="a" class="Object">
@@ -427,7 +427,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		[Test]
 		public function testParseWithRefInArrayCollection():void {
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(<objects>
 					<object id="a" class="Object">
@@ -461,7 +461,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 
 		[Test]
 		public function testParseWithRefInDictionary():void {
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(<objects>
 					<object id="a" class="Object">
@@ -513,7 +513,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 					<object id="b" class="org.springextensions.actionscript.test.testtypes.Person"/>
 					<object id="c" class="org.springextensions.actionscript.test.testtypes.Person"/>
 				</objects>;
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(xml);
 			assertNotNull(definitions);
@@ -542,7 +542,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 					</object>
 				</objects>;
 
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(xml);
 			assertNotNull(definitions);
@@ -569,7 +569,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 						</property>
 					</object>
 				</objects>;
-			var context:IApplicationContext = new ApplicationContext();
+			var context:IApplicationContext = new DefaultApplicationContext();
 			var parser:XMLObjectDefinitionsParser = new XMLObjectDefinitionsParser(context);
 			var definitions:Object = parser.parse(xml);
 			assertNotNull(definitions);
