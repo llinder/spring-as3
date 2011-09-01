@@ -25,6 +25,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.metadata.MetadataObjectDefinitionsProviderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProviderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventHandlerNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventInterceptorNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventRouterNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.TaskElementsPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.TaskNamespaceHandlerTest;
@@ -123,6 +124,7 @@ package org.springextensions.actionscript.test {
 		public var t48:XmlObjectDefinitionsParserTest;
 		public var t49:MetadataObjectDefinitionsProviderTest;
 		public var t50:DefaultEventBusUserRegistryTest;
+		public var t51:EventInterceptorNodeParserTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;

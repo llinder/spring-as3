@@ -21,7 +21,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.INamespaceHandler;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.StageProcessingNamespaceHandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_objects;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.INodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
@@ -35,7 +34,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.RefNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.UndefinedNodeParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.VectorNodeParser;
-	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.IXMLObjectDefinitionsPreprocessor;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
 	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
@@ -65,7 +63,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		public static const FACTORY_OBJECT_ATTRIBUTE:String = "factory-object";
 		public static const ID_ATTRIBUTE:String = "id";
 		public static const INIT_METHOD_ATTRIBUTE:String = "init-method";
-		public static const STATIC_ATTRIBUTE:String = "static";
 		public static const KEY_ATTRIBUTE:String = "key";
 		public static const KEY_ELEMENT:String = "key";
 		public static const LAZY_INIT_ATTRIBUTE:String = "lazy-init";
@@ -84,6 +81,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		public static const SCOPE_ATTRIBUTE:String = "scope";
 		public static const SKIP_METADATA:String = "skip-metadata";
 		public static const SKIP_POSTPROCESSORS:String = "skip-postprocessors";
+		public static const STATIC_ATTRIBUTE:String = "static";
 		public static const UNDEFINED_ELEMENT:String = "undefined";
 		public static const VALUE_ATTRIBUTE:String = "value";
 		public static const VALUE_ELEMENT:String = "value";
@@ -114,12 +112,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		// --------------------------------------------------------------------
 
 		private var _applicationContext:IApplicationContext;
+		private var _definitions:Object;
 		private var _generatedObjectNames:Object = {};
 		private var _isDisposed:Boolean;
 		private var _namespaceHandlers:Object = {};
 		private var _nodeParsers:Vector.<INodeParser> = new Vector.<INodeParser>();
 		private var _preprocessorsInitialized:Boolean = false;
-		private var _definitions:Object;
 
 		/**
 		 * The current <code>IApplicationContext</code>
@@ -253,6 +251,32 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		}
 
 		/**
+		 * Will retrieve the constructor arguments and parses them as if they were property nodes.
+		 *
+		 * @param xml The xml to check for nodes
+		 *
+		 * @see #parseProperty()
+		 */
+		public function parseConstructorArguments(objectDefinition:IObjectDefinition, xml:XML):void {
+			var result:Array = [];
+
+			for each (var node:XML in xml.children().(name().localName == CONSTRUCTOR_ARG_ELEMENT)) {
+				result.push(parseProperty(node));
+			}
+
+			objectDefinition.constructorArguments = result;
+		}
+
+		/**
+		 * Parses the method invocations of the given definition.
+		 */
+		public function parseMethodInvocations(objectDefinition:IObjectDefinition, xml:XML):void {
+			for each (var node:XML in xml.children().(name().localName == METHOD_INVOCATION)) {
+				objectDefinition.addMethodInvocation(parseMethodInvocation(node));
+			}
+		}
+
+		/**
 		 *
 		 * @param node
 		 */
@@ -286,21 +310,18 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		}
 
 		/**
+		 * Parses the properties of the given definition.
 		 *
-		 * @param objectDefinition
 		 * @param xml
-		 *
 		 */
-		protected function createObjectDefinitionResult(objectDefinition:IObjectDefinition, xml:XML):IObjectDefinition {
-			var result:IObjectDefinition;
-			if (objectDefinition != null) {
-				result = objectDefinition;
-			} else if (xml.attribute(CLASS_ATTRIBUTE).length() == 0) {
-				result = new ObjectDefinition();
-			} else {
-				result = new ObjectDefinition(xml.attribute(CLASS_ATTRIBUTE)[0]);
+		public function parseProperties(objectDefinition:IObjectDefinition, xml:XML):void {
+			var propertyNodes:XMLList = xml.property;
+
+			for each (var node:XML in propertyNodes) {
+				var isStatic:Boolean = (node.attribute(STATIC_ATTRIBUTE).length() > 0) ? (String(node.attribute(STATIC_ATTRIBUTE)) == TRUE_VALUE) : false;
+				var ns:String = (node.attribute(NAMESPACE_ATTRIBUTE).length() > 0) ? String(node.attribute(NAMESPACE_ATTRIBUTE)) : null;
+				objectDefinition.addPropertyDefinition(new PropertyDefinition(node.@name.toString(), parseProperty(node), ns, isStatic));
 			}
-			return result;
 		}
 
 		/**
@@ -388,6 +409,24 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 			_definitions[objectName] = objectDefinition;
 		}
 
+		/**
+		 *
+		 * @param objectDefinition
+		 * @param xml
+		 *
+		 */
+		protected function createObjectDefinitionResult(objectDefinition:IObjectDefinition, xml:XML):IObjectDefinition {
+			var result:IObjectDefinition;
+			if (objectDefinition != null) {
+				result = objectDefinition;
+			} else if (xml.attribute(CLASS_ATTRIBUTE).length() == 0) {
+				result = new ObjectDefinition();
+			} else {
+				result = new ObjectDefinition(xml.attribute(CLASS_ATTRIBUTE)[0]);
+			}
+			return result;
+		}
+
 		protected function initXMLObjectDefinitionsParser(applicationContext:IApplicationContext):void {
 			Assert.notNull(applicationContext, "applicationContext argument must not be null");
 			_applicationContext = applicationContext;
@@ -439,23 +478,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		}
 
 		/**
-		 * Will retrieve the constructor arguments and parses them as if they were property nodes.
-		 *
-		 * @param xml The xml to check for nodes
-		 *
-		 * @see #parseProperty()
-		 */
-		protected function parseConstructorArguments(objectDefinition:IObjectDefinition, xml:XML):void {
-			var result:Array = [];
-
-			for each (var node:XML in xml.children().(name().localName == CONSTRUCTOR_ARG_ELEMENT)) {
-				result.push(parseProperty(node));
-			}
-
-			objectDefinition.constructorArguments = result;
-		}
-
-		/**
 		 *
 		 */
 		protected function parseCustomNode(node:XML):void {
@@ -502,35 +524,11 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		}
 
 		/**
-		 * Parses the method invocations of the given definition.
-		 */
-		protected function parseMethodInvocations(objectDefinition:IObjectDefinition, xml:XML):void {
-			for each (var node:XML in xml.children().(name().localName == METHOD_INVOCATION)) {
-				objectDefinition.addMethodInvocation(parseMethodInvocation(node));
-			}
-		}
-
-		/**
 		 *
 		 */
 		protected function parseObjectDefinitions(xml:XML):void {
 			for each (var node:XML in xml.children()) {
 				parseNode(node);
-			}
-		}
-
-		/**
-		 * Parses the properties of the given definition.
-		 *
-		 * @param xml
-		 */
-		protected function parseProperties(objectDefinition:IObjectDefinition, xml:XML):void {
-			var propertyNodes:XMLList = xml.property;
-
-			for each (var node:XML in propertyNodes) {
-				var isStatic:Boolean = (node.attribute(STATIC_ATTRIBUTE).length() > 0) ? (String(node.attribute(STATIC_ATTRIBUTE)) == TRUE_VALUE) : false;
-				var ns:String = (node.attribute(NAMESPACE_ATTRIBUTE).length() > 0) ? String(node.attribute(NAMESPACE_ATTRIBUTE)) : null;
-				objectDefinition.addPropertyDefinition(new PropertyDefinition(node.@name.toString(), parseProperty(node), ns, isStatic));
 			}
 		}
 

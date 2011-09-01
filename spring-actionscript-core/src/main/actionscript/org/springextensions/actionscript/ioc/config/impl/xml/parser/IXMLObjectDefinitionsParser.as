@@ -24,29 +24,34 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser {
 	 */
 	public interface IXMLObjectDefinitionsParser extends IApplicationContextAware {
 
-		function addNodeParser(parser:INodeParser):void;
+		function get nodeParsers():Vector.<INodeParser>;
 
 		function addNamespaceHandler(handler:INamespaceHandler):void;
 
 		function addNamespaceHandlers(handlers:Vector.<INamespaceHandler>):void;
 
+		function addNodeParser(parser:INodeParser):void;
+
 		function generateObjectName(definition:IObjectDefinition):String;
 
 		function parse(xml:XML):Object;
 
-		function parseNode(node:XML):void;
-
-		function registerObjectDefinition(objectName:String, objectDefinition:IObjectDefinition):void;
-
 		function parseAndRegisterObjectDefinition(node:XML):String;
 
+		function parseNode(node:XML):void;
+
 		function parseObjectDefinition(xml:XML, objectDefinition:IObjectDefinition=null):IObjectDefinition;
+
+		function parseProperties(objectDefinition:IObjectDefinition, xml:XML):void;
 
 		function parseProperty(node:XML):*;
 
 		function parsePropertyValue(node:XML):*;
 
-		function get nodeParsers():Vector.<INodeParser>;
+		function parseMethodInvocations(objectDefinition:IObjectDefinition, xml:XML):void;
 
+		function parseConstructorArguments(objectDefinition:IObjectDefinition, xml:XML):void;
+
+		function registerObjectDefinition(objectName:String, objectDefinition:IObjectDefinition):void;
 	}
 }
