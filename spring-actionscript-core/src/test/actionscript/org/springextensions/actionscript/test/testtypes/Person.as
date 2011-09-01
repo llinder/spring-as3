@@ -64,6 +64,10 @@ package org.springextensions.actionscript.test.testtypes {
 
 		[Ignore]
 		[Test]
+		public function testDummy():void {
+
+		}
+
 		public function helloWorld():String {
 			return "hello world";
 		}

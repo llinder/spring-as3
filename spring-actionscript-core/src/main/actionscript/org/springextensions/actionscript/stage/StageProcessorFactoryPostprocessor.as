@@ -69,7 +69,7 @@ package org.springextensions.actionscript.stage {
 		public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
 			var stageProcessorNames:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IStageObjectProcessor);
 			if (stageProcessorNames == null) {
-				if (objectFactory is IStageObjectProcessorRegistryAware) {
+				if ((objectFactory is IStageObjectProcessorRegistryAware) && (IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry != null)) {
 					if (IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry.getAllStageObjectProcessors == null) {
 						ContextUtils.disposeInstance(IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry);
 						IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry = null;
