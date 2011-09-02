@@ -68,6 +68,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessorTest;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjectorTest;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistryTest;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinitionTest;
 	import org.springextensions.actionscript.metadata.MetadataProcessorObjectFactoryPostProcessorTest;
 	import org.springextensions.actionscript.metadata.MetadataProcessorObjectPostProcessorTest;
 	import org.springextensions.actionscript.object.SimpleTypeConverterTest;
@@ -141,6 +142,7 @@ package org.springextensions.actionscript.test {
 		public var t57:AutowiringStageProcessorNodeParserTest;
 		public var t58:GenericStageProcessorNodeParserTest;
 		public var t59:StageProcessorNodeParserTest;
+		public var t60:ObjectDefinitionTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;
