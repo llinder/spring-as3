@@ -75,9 +75,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		[Test]
 		public function testParseWithXMLWithObjectSelectorName():void {
 			definitionsParser = nice(IXMLObjectDefinitionsParser);
-			mock(definitionsParser).method("parseConstructorArguments").args(anything(), SIMPLE_XML).once();
-			mock(definitionsParser).method("parseMethodInvocations").args(anything(), SIMPLE_XML).once();
-			mock(definitionsParser).method("parseProperties").args(anything(), SIMPLE_XML).once();
+			mock(definitionsParser).method("parseConstructorArguments").args(anything(), XMLWithObjectSelectorName).once();
+			mock(definitionsParser).method("parseMethodInvocations").args(anything(), XMLWithObjectSelectorName).once();
+			mock(definitionsParser).method("parseProperties").args(anything(), XMLWithObjectSelectorName).once();
 			var definition:IObjectDefinition = _parser.parse(XMLWithObjectSelectorName, definitionsParser);
 			assertEquals(_className, definition.className);
 			assertEquals('testName', definition.customConfiguration);
