@@ -27,6 +27,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfiguratorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventInterceptorCustomConfiguratorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventListenerInterceptorCustomConfiguratorTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.RouteEventsCustomConfigurator;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventHandlerNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventInterceptorNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventListenerInterceptorNodeParserTest;
@@ -133,6 +134,7 @@ package org.springextensions.actionscript.test {
 		public var t53:EventHandlerCustomConfiguratorTest;
 		public var t54:EventInterceptorCustomConfiguratorTest;
 		public var t55:EventListenerInterceptorCustomConfiguratorTest;
+		public var t56:RouteEventsCustomConfigurator;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;

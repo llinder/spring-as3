@@ -68,17 +68,19 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param objectDefinition
 		 */
 		override public function execute(instance:*, objectDefinition:IObjectDefinition):void {
-			var resolvedTopics:Array;
-			var topic:String;
-			for each (topic in _topics) {
-				resolvedTopics ||= [];
-				resolvedTopics[resolvedTopics.length] = topic;
+			if ((eventNames != null) && (eventNames.length > 0)) {
+				var resolvedTopics:Array;
+				var topic:String;
+				for each (topic in _topics) {
+					resolvedTopics ||= [];
+					resolvedTopics[resolvedTopics.length] = topic;
+				}
+				for each (topic in _topicProperties) {
+					resolvedTopics ||= [];
+					resolvedTopics[resolvedTopics.length] = instance[topic];
+				}
+				eventBusUserRegistry.addEventListeners(IEventDispatcher(instance), _eventNames, resolvedTopics);
 			}
-			for each (topic in _topicProperties) {
-				resolvedTopics ||= [];
-				resolvedTopics[resolvedTopics.length] = instance[topic];
-			}
-			eventBusUserRegistry.addEventListeners(IEventDispatcher(instance), _eventNames, resolvedTopics);
 		}
 
 		/**
