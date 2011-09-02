@@ -17,6 +17,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.as3commons.lang.StringUtils;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
 
 	/**
 	 * Provides utilities for parsing xml object definitions to object defintions.
@@ -69,7 +70,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 				var result:Array = [];
 
 				for each (var referenceName:String in names) {
-					result.push(new RuntimeObjectReference(StringUtils.trim(referenceName)));
+					result[result.length] = new RuntimeObjectReference(StringUtils.trim(referenceName));
 				}
 				return result;
 			});
@@ -92,9 +93,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 				var attributeName:String = (attribute is String) ? String(attribute) : AttributeToPropertyMapping(attribute).attribute;
 
 				// add the property to the object definition only if it is defined in the xml definition
-				if (node.attribute(attributeName) != undefined) {
+				if (node.attribute(attributeName).length() > 0) {
 					var propertyName:String = (attribute is String) ? attributeNameToPropertyName(attributeName) : AttributeToPropertyMapping(attribute).propertyName;
-					objectDefinition.properties[propertyName] = mapper(attributeName);
+					var propDef:PropertyDefinition = new PropertyDefinition(propertyName, mapper(attributeName));
+					objectDefinition.addPropertyDefinition(propDef);
 				}
 			}
 		}

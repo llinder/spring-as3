@@ -16,26 +16,30 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_stageprocessing;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinitionBuilder;
 	import org.springextensions.actionscript.stage.GenericStageProcessor;
 
+	use namespace spring_actionscript_stageprocessing;
+
 	/**
 	 * genericstageprocessor node parser
 	 * @author Roland Zwaga
-	 * @docref xml-schema-based-configuration.html#the_stage_interception_schema
 	 */
 	public class GenericStageProcessorNodeParser extends AbstractObjectDefinitionParser {
+
+		public static const OBJECT_SELECTOR_ATTR:String = "object-selector";
+
+		/** The target-method attribute */
+		public static const TARGET_METHOD_ATTR:String = "target-method";
 
 		/** The target-object attribute */
 		public static const TARGET_OBJECT_ATTR:String = "target-object";
 
 		/** The target-property attribute */
 		public static const TARGET_PROPERTY_ATTR:String = "target-property";
-
-		/** The target-method attribute */
-		public static const TARGET_METHOD_ATTR:String = "target-method";
 
 		/**
 		 * Creates a new <code>StageProcessorNodeParser</code> instance.
@@ -53,8 +57,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			ParsingUtils.mapProperties(result.objectDefinition, node, TARGET_PROPERTY_ATTR, TARGET_METHOD_ATTR);
 			ParsingUtils.mapReferences(result.objectDefinition, node, TARGET_OBJECT_ATTR);
 
+			if (node.attribute(OBJECT_SELECTOR_ATTR).length() > 0) {
+				var objectSelectorName:String = String(node.attribute(OBJECT_SELECTOR_ATTR)[0]);
+				result.objectDefinition.customConfiguration = objectSelectorName;
+			}
+
 			return result.objectDefinition;
 		}
-
 	}
 }

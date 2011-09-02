@@ -33,6 +33,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventListenerInterceptorNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventRouterNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser.AutowiringStageProcessorNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser.GenericStageProcessorNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.TaskElementsPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.TaskNamespaceHandlerTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.BlockNodeParserTest;
@@ -137,6 +138,7 @@ package org.springextensions.actionscript.test {
 		public var t55:EventListenerInterceptorCustomConfiguratorTest;
 		public var t56:RouteEventsCustomConfigurator;
 		public var t57:AutowiringStageProcessorNodeParserTest;
+		public var t58:GenericStageProcessorNodeParserTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;
