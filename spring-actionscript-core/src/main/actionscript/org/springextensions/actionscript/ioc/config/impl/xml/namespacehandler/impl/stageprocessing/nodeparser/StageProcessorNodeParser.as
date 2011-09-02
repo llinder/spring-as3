@@ -15,7 +15,10 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser {
 
+	import flash.errors.IllegalOperationError;
+
 	import org.as3commons.lang.ClassUtils;
+	import org.as3commons.stageprocessing.IStageObjectProcessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_stageprocessing;
@@ -47,6 +50,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 */
 		override protected function parseInternal(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var cls:Class = ClassUtils.forName(String(node.attribute("class")[0]));
+			if (ClassUtils.isImplementationOf(cls, IStageObjectProcessor) == false) {
+				throw new IllegalOperationError("The class defined in the <stageprocessor/> element is not an implementation of IStageObjectProcessor");
+			}
 			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(cls);
 
 			context.parseConstructorArguments(result.objectDefinition, node);
