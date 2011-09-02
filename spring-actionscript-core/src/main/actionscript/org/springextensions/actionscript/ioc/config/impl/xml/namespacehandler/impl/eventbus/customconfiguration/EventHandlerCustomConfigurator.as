@@ -14,12 +14,10 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration {
-	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.reflect.Method;
 	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.eventbus.process.EventHandlerProxy;
-	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 
 	/**
