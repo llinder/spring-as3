@@ -27,6 +27,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
+	use namespace spring_actionscript_eventbus;
+
 	/**
 	 *
 	 * @author Roland Zwaga

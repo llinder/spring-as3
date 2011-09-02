@@ -18,10 +18,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.as3commons.lang.ClassUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_stageprocessing;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinitionBuilder;
+
+	use namespace spring_actionscript_stageprocessing;
 
 	/**
 	 *
@@ -45,6 +48,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		override protected function parseInternal(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var cls:Class = ClassUtils.forName(String(node.attribute("class")[0]));
 			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(cls);
+
+			context.parseConstructorArguments(result.objectDefinition, node);
+			context.parseMethodInvocations(result.objectDefinition, node);
+			context.parseProperties(result.objectDefinition, node);
 
 			var objectName:String = resolveID(node, result.objectDefinition, context);
 			context.registerObjectDefinition(objectName, result.objectDefinition);

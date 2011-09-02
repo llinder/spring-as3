@@ -39,6 +39,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * Creates a new <code>EventRouterNodeParser</code> instance.
 		 * @param objectDefinitionRegistry
 		 * @param eventBusUserRegistry
+		 * @param applicationDomain
 		 */
 		public function EventRouterNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry, applicationDomain:ApplicationDomain) {
 			super(objectDefinitionRegistry, eventBusUserRegistry, applicationDomain);

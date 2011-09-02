@@ -16,12 +16,14 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser {
 
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_stageprocessing;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinitionBuilder;
 	import org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor;
 
+	use namespace spring_actionscript_stageprocessing;
 
 	public class AutowiringStageProcessorNodeParser extends StageProcessorNodeParser {
 
@@ -32,11 +34,15 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		override protected function parseInternal(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(DefaultAutowiringStageProcessor);
 
+			context.parseConstructorArguments(result.objectDefinition, node);
+			context.parseMethodInvocations(result.objectDefinition, node);
+			context.parseProperties(result.objectDefinition, node);
+
 			var objectName:String = resolveID(node, result.objectDefinition, context);
 
 			if (node.attribute(OBJECT_SELECTOR_ATTR).length() > 0) {
 				var objectSelectorName:String = String(node.attribute(OBJECT_SELECTOR_ATTR)[0]);
-				result.objectDefinition.customConfiguration = objectSelectorName
+				result.objectDefinition.customConfiguration = objectSelectorName;
 			}
 
 			return result.objectDefinition;
