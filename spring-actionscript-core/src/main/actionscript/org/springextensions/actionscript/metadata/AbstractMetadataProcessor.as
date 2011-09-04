@@ -92,7 +92,7 @@ package org.springextensions.actionscript.metadata {
 		 * Throws an error when invoked directly, needs to be overriden by a subclass.
 		 * @throws flash.errors.IllegalOperationError
 		 */
-		public function process(instance:Object, container:IMetadataContainer, name:String, objectName:String):void {
+		public function process(instance:Object, container:IMetadataContainer, metadataName:String, objectName:String):void {
 			throw new IllegalOperationError("method process not implemented in abstract base class");
 		}
 	}

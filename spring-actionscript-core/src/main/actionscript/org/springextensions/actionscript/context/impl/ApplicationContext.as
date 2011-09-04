@@ -522,6 +522,7 @@ package org.springextensions.actionscript.context.impl {
 			return ApplicationDomain.currentDomain;
 		}
 
+		//TODO: check is rootView is a module, or part of a module and resolve its loaderInfo from that.
 		protected function resolveRootViewLoaderInfo(view:DisplayObject):LoaderInfo {
 			if (view == null) {
 				var stage:Stage = Environment.getCurrentStage();
