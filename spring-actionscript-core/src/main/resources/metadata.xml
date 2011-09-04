@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <annotations version="1.1">
 
+	<metadata name="Factory"
+			  description="Describes an object that can function as an object factory">
+		<context name="class"/>
+		<attribute name="factoryMethod"
+				   type="String"
+				   required="true"/>
+	</metadata>
+
 	<metadata name="ExternalProperties"
 			  description="Describes a location (URI) of an external properties file">
 		<context name="class"/>
