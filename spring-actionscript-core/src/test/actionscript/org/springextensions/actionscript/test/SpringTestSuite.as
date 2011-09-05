@@ -18,7 +18,6 @@ package org.springextensions.actionscript.test {
 	import integration.objectfactory.ObjectFactoryIntegrationTest;
 
 	import org.springextensions.actionscript.context.impl.ApplicationContextTest;
-	import org.springextensions.actionscript.eventbus.impl.DefaultEventBusUserRegistry;
 	import org.springextensions.actionscript.eventbus.impl.DefaultEventBusUserRegistryTest;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoaderTest;
@@ -63,6 +62,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.property.impl.PropertiesTest;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultInstanceCacheTest;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactoryTest;
+	import org.springextensions.actionscript.ioc.factory.impl.FieldRetrievingFactoryObjectTest;
 	import org.springextensions.actionscript.ioc.factory.impl.GenericFactoryObjectTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayCollectionReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayReferenceResolverTest;
@@ -155,6 +155,7 @@ package org.springextensions.actionscript.test {
 		public var t64:DictionaryNodeParserTest;
 		public var t65:KeyValueNodeParserTest;
 		public var t66:ObjectNodeParserTest;
+		public var t67:FieldRetrievingFactoryObjectTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;

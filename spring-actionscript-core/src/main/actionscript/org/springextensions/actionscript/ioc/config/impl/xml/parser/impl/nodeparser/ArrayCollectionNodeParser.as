@@ -25,11 +25,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 	/**
 	 * Parses an array-collection node.
 	 *
-	 * <p>
-	 * <b>Authors:</b> Christophe Herreman, Erik Westra<br/>
-	 * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
-	 * <b>Since:</b> 0.1
-	 * </p>
+	 * @author Christophe Herreman
+	 * @author Erik Westra
 	 */
 	public class ArrayCollectionNodeParser extends AbstractNodeParser {
 		private static const MXCOLLECTIONS_ARRAY_COLLECTION_CLASS_NAME:String = "mx.collections.ArrayCollection";
@@ -40,7 +37,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 		 * Constructs the ArrayCollectionNodeParser.
 		 *
 		 * @param xmlObjectDefinitionsParser  The definitions parser using this NodeParser
-		 *
 		 * @see org.springextensions.actionscript.ioc.factory.xml.parser.support.XMLObjectDefinitionsParser.#ARRAY_COLLECTION_ELEMENT
 		 * @see org.springextensions.actionscript.ioc.factory.xml.parser.support.XMLObjectDefinitionsParser.#LIST_ELEMENT
 		 */
@@ -71,10 +67,15 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 			return new _arrrayCollectionClass(parsedNodes);
 		}
 
+		/**
+		 * Returns <code>true</code> if the <code>mx.collections.ArrayCollection</code> class is available.
+		 * @param applicationDomain
+		 * @return <code>True</code> if the <code>mx.collections.ArrayCollection</code> class is available.
+		 */
 		public static function canCreate(applicationDomain:ApplicationDomain=null):Boolean {
 			applicationDomain ||= ApplicationDomain.currentDomain;
 			try {
-				var cls:Class = ClassUtils.forName(MXCOLLECTIONS_ARRAY_COLLECTION_CLASS_NAME);
+				var cls:Class = ClassUtils.forName(MXCOLLECTIONS_ARRAY_COLLECTION_CLASS_NAME, applicationDomain);
 				_arrrayCollectionClass = cls;
 				return true;
 			} catch (e:Error) {
