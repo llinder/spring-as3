@@ -103,14 +103,16 @@ package org.springextensions.actionscript.context.impl {
 		 * @inheritDoc
 		 */
 		public function get applicationDomain():ApplicationDomain {
-			return objectFactory.applicationDomain;
+			return (objectFactory != null) ? objectFactory.applicationDomain : null;
 		}
 
 		/**
 		 * @private
 		 */
 		public function set applicationDomain(value:ApplicationDomain):void {
-			objectFactory.applicationDomain = value;
+			if (objectFactory != null) {
+				objectFactory.applicationDomain = value;
+			}
 		}
 
 		/**
@@ -501,11 +503,11 @@ package org.springextensions.actionscript.context.impl {
 		}
 
 		protected function initApplicationContext(parent:IApplicationContext, rootView:DisplayObject, objFactory:IObjectFactory):void {
+			objectFactory = objFactory;
 			_definitionProviders = new Vector.<IObjectDefinitionsProvider>();
 			_rootView = rootView;
 			applicationDomain = resolveRootViewApplicationDomain(_rootView);
 			loaderInfo = resolveRootViewLoaderInfo(_rootView);
-			objectFactory = objFactory;
 		}
 
 		protected function resolveRootViewApplicationDomain(view:DisplayObject):ApplicationDomain {

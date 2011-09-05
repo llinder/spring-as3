@@ -47,6 +47,10 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.PauseCommandNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.TaskNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XmlObjectDefinitionsParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.ArrayNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.DictionaryNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.KeyValueNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.ObjectNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.AttributeToElementPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.IdAttributePreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.InnerObjectsPreprocessorTest;
@@ -147,6 +151,10 @@ package org.springextensions.actionscript.test {
 		public var t60:ObjectDefinitionTest;
 		public var t61:GenericFactoryObjectTest;
 		public var t62:ParsingUtilsTest;
+		public var t63:ArrayNodeParserTest;
+		public var t64:DictionaryNodeParserTest;
+		public var t65:KeyValueNodeParserTest;
+		public var t66:ObjectNodeParserTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;
