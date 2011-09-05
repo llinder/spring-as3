@@ -24,6 +24,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoaderTest;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.MetadataObjectDefinitionsProviderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProviderTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtilsTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfiguratorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventInterceptorCustomConfiguratorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventListenerInterceptorCustomConfiguratorTest;
@@ -58,6 +59,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.property.impl.PropertiesTest;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultInstanceCacheTest;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactoryTest;
+	import org.springextensions.actionscript.ioc.factory.impl.GenericFactoryObjectTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayCollectionReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ArrayReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.DictionaryReferenceResolverTest;
@@ -143,6 +145,8 @@ package org.springextensions.actionscript.test {
 		public var t58:GenericStageProcessorNodeParserTest;
 		public var t59:StageProcessorNodeParserTest;
 		public var t60:ObjectDefinitionTest;
+		public var t61:GenericFactoryObjectTest;
+		public var t62:ParsingUtilsTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;

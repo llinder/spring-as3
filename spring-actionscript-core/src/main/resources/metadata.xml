@@ -26,7 +26,7 @@
 	</metadata>
 
 	<metadata name="Component"
-			  description="Used to define object definitions on a class which will be used by the class scaning system in Spring Actionscript">
+			  description="Used to define object definitions on a class which will be used by the class scanning system in Spring Actionscript">
 		<context name="class"/>
 		<attribute name="id"
 				   type="String"

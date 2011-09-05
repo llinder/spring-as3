@@ -28,11 +28,13 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 
 	/**
 	 *
-	 * @author rolandzwaga
+	 * @author Roland Zwaga
 	 */
 	public class FactoryObjectFactoryPostProcessor implements IObjectFactoryPostProcessor {
 		private static const FACTORY_METADATA_NAME:String = "Factory";
 		private static const FACTORY_METHOD_FIELD_NAME:String = "factoryMethod";
+
+		private var _throwError:Boolean = true;
 
 		/**
 		 * Creates a new <code>FactoryObjectFactoryPostProcessor</code> instance.
@@ -41,25 +43,35 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			super();
 		}
 
+		public function get throwError():Boolean {
+			return _throwError;
+		}
+
+		public function set throwError(value:Boolean):void {
+			_throwError = value;
+		}
+
 		public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
 			var names:Vector.<String> = new Vector.<String>();
 			names[names.length] = FACTORY_METADATA_NAME;
 			var definitions:Vector.<IObjectDefinition> = objectFactory.objectDefinitionRegistry.getObjectDefinitionsWithMetadata(names);
 			for each (var definition:IObjectDefinition in definitions) {
 				var name:String = objectFactory.objectDefinitionRegistry.getObjectDefinitionName(definition);
-				definition.isSingleton = true;
 				var instance:Object = objectFactory.getObject(name);
 				var type:Type = Type.forInstance(instance, objectFactory.applicationDomain);
 				var md:Metadata = type.getMetadata(FACTORY_METADATA_NAME)[0];
 				if (md.hasArgumentWithKey(FACTORY_METHOD_FIELD_NAME)) {
+					definition.isSingleton = true;
 					var methodName:String = md.getArgument(FACTORY_METHOD_FIELD_NAME).value;
-					var genericFactory:GenericFactoryObject = new GenericFactoryObject(instance, methodName);
+					var genericFactory:GenericFactoryObject = new GenericFactoryObject(instance, methodName, definition.isSingleton);
 					if (objectFactory.cache.hasInstance(name)) {
 						objectFactory.cache.removeInstance(name);
 					}
 					objectFactory.cache.addInstance(name, genericFactory);
 				} else {
-					throw new IllegalOperationError(StringUtils.substitute("Class {0} contains [Factory] metadata but no factoryMethod argumnt", definition.clazz));
+					if (_throwError) {
+						throw new IllegalOperationError(StringUtils.substitute("Class {0} contains [Factory] metadata but no factoryMethod argumnt", definition.clazz));
+					}
 				}
 			}
 			return null;

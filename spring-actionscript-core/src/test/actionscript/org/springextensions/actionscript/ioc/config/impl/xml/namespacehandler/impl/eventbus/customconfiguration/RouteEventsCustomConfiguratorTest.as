@@ -21,6 +21,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import mockolate.runner.MockolateRule;
 	import mockolate.verify;
 
+	import org.flexunit.asserts.assertTrue;
 	import org.hamcrest.core.anything;
 	import org.hamcrest.object.notNullValue;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
@@ -57,6 +58,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var config:RouteEventsCustomConfigurator = new RouteEventsCustomConfigurator(eventbusUserRegistry);
 			config.execute(eventDispatcher, objectDefinition);
 			verify(eventbusUserRegistry);
+			assertTrue(true);
 		}
 
 		[Test]
@@ -69,6 +71,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var config:RouteEventsCustomConfigurator = new RouteEventsCustomConfigurator(eventbusUserRegistry, names);
 			config.execute(eventDispatcher, objectDefinition);
 			verify(eventbusUserRegistry);
+			assertTrue(true);
 		}
 
 		[Test]
@@ -83,6 +86,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var config:RouteEventsCustomConfigurator = new RouteEventsCustomConfigurator(eventbusUserRegistry, names, topics);
 			config.execute(eventDispatcher, objectDefinition);
 			verify(eventbusUserRegistry);
+			assertTrue(true);
 		}
 	}
 }

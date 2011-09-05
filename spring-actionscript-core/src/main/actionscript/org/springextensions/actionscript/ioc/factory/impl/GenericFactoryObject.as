@@ -27,30 +27,44 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _objectType:Class;
 		private var _methodInvoker:MethodInvoker;
 		private var _isSingleton:Boolean;
+		private var _singletonInstance:*;
 
 		/**
 		 * Creates a new <code>GenericFactoryObject</code> instance.
 		 */
-		public function GenericFactoryObject(wrappedFactory:Object, methodName:String) {
+		public function GenericFactoryObject(wrappedFactory:Object, methodName:String, singleton:Boolean=true) {
 			super();
-			initGenericFactoryObject(wrappedFactory, methodName);
+			initGenericFactoryObject(wrappedFactory, methodName, singleton);
 		}
 
-		protected function initGenericFactoryObject(wrappedFactory:Object, methodName:String):void {
+		protected function initGenericFactoryObject(wrappedFactory:Object, methodName:String, singleton:Boolean):void {
 			_methodInvoker = new MethodInvoker();
 			_methodInvoker.target = wrappedFactory;
 			_methodInvoker.method = methodName;
+			_isSingleton = singleton;
 		}
 
 		public function getObject():* {
+			if (_singletonInstance != null) {
+				return _singletonInstance;
+			} else {
+				return createInstance();
+			}
+		}
+
+		protected function createInstance():* {
 			var result:* = _methodInvoker.invoke();
 			if (_objectType == null) {
 				if (Object(result).hasOwnProperty(CONSTRUCTOR_FIELD_NAME)) {
 					_objectType = Object(result)[CONSTRUCTOR_FIELD_NAME] as Class;
 				}
 			}
+			if (_isSingleton) {
+				_singletonInstance = result;
+			}
 			return result;
 		}
+
 
 		public function getObjectType():Class {
 			return _objectType;

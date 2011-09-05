@@ -30,6 +30,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ObjectReferenceResolver;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ThisReferenceResolver;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.VectorReferenceResolver;
+	import org.springextensions.actionscript.ioc.factory.process.impl.factory.FactoryObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.ObjectDefinitonFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectFactoryPostProcessorsFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessor;
@@ -72,6 +73,7 @@ package org.springextensions.actionscript.context.impl {
 			addObjectFactoryPostProcessor(new ObjectDefinitonFactoryPostProcessor(1000));
 			addObjectFactoryPostProcessor(new StageProcessorFactoryPostprocessor());
 			addObjectFactoryPostProcessor(new MetadataProcessorObjectFactoryPostProcessor());
+			addObjectFactoryPostProcessor(new FactoryObjectFactoryPostProcessor());
 
 			objectFactory.addObjectPostProcessor(new ApplicationContextAwareObjectPostProcessor(this));
 			objectFactory.addObjectPostProcessor(new ObjectFactoryAwarePostProcessor(this));
