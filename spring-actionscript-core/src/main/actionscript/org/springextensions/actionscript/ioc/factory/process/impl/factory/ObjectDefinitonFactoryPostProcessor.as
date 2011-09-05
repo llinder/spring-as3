@@ -37,6 +37,10 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 
 		private static const IS_INTERFACE_FIELD_NAME:String = "isInterface";
 		private static const PARENT_FIELD_NAME:String = "parent";
+		private static const DESTROY_METHOD_FIELD_NAME:String = "destroyMethod";
+		private static const FACTORY_METHOD_FIELD_NAME:String = "factoryMethod";
+		private static const FACTORY_OBJECT_NAME_FIELD_NAME:String = "factoryObjectName";
+		private static const INIT_METHOD_FIELD_NAME:String = "initMethod";
 
 		/**
 		 * Creates a new <code>ObjectDefinitonFactoryPostProcessor</code> instance.
@@ -63,29 +67,32 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 * @param registry
 		 * @param applicationDomain
 		 */
-		protected function mergeParentDefinitions(registry:IObjectDefinitionRegistry, applicationDomain:ApplicationDomain):void {
+		public function mergeParentDefinitions(registry:IObjectDefinitionRegistry, applicationDomain:ApplicationDomain):void {
 			var objectNames:Vector.<String> = registry.getDefinitionNamesWithPropertyValue(PARENT_FIELD_NAME, null, false);
 			for each (var name:String in objectNames) {
 				var objectDefinition:IObjectDefinition = registry.getObjectDefinition(name);
-				if ((objectDefinition.constructorArguments == null) && (objectDefinition.parent.constructorArguments != null)) {
-					objectDefinition.constructorArguments = objectDefinition.parent.constructorArguments.concat([]);
-				}
-				objectDefinition.autoWireMode = objectDefinition.parent.autoWireMode;
-				objectDefinition.dependencyCheck = objectDefinition.parent.dependencyCheck;
-				if (!StringUtils.hasText(objectDefinition.destroyMethod)) {
-					objectDefinition.destroyMethod = objectDefinition.parent.destroyMethod;
-				}
-				if (!StringUtils.hasText(objectDefinition.factoryMethod)) {
-					objectDefinition.factoryMethod = objectDefinition.parent.factoryMethod;
-				}
-				if (!StringUtils.hasText(objectDefinition.factoryObjectName)) {
-					objectDefinition.factoryObjectName = objectDefinition.parent.factoryObjectName;
-				}
-				if (!StringUtils.hasText(objectDefinition.initMethod)) {
-					objectDefinition.initMethod = objectDefinition.parent.initMethod;
-				}
-				objectDefinition.scope = objectDefinition.parent.scope;
+				mergeParentDefinition(registry, objectDefinition);
 				mergeObjectDefinitions(objectDefinition.parent, objectDefinition);
+			}
+		}
+
+		public function mergeParentDefinition(registry:IObjectDefinitionRegistry, objectDefinition:IObjectDefinition):void {
+			copyConstructorArguments(objectDefinition, objectDefinition.parent);
+			setParentProperty(objectDefinition, DESTROY_METHOD_FIELD_NAME)
+			setParentProperty(objectDefinition, FACTORY_METHOD_FIELD_NAME)
+			setParentProperty(objectDefinition, FACTORY_OBJECT_NAME_FIELD_NAME)
+			setParentProperty(objectDefinition, INIT_METHOD_FIELD_NAME)
+		}
+
+		public function copyConstructorArguments(objectDefinition:IObjectDefinition, parentDefinition:IObjectDefinition):void {
+			if ((objectDefinition.constructorArguments == null) && (parentDefinition.constructorArguments != null)) {
+				objectDefinition.constructorArguments = parentDefinition.constructorArguments.concat([]);
+			}
+		}
+
+		public function setParentProperty(objectDefinition:IObjectDefinition, propertyName:String):void {
+			if (!StringUtils.hasText(objectDefinition[propertyName])) {
+				objectDefinition[propertyName] = objectDefinition.parent[propertyName];
 			}
 		}
 
@@ -94,7 +101,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 * @param registry
 		 * @param applicationDomain
 		 */
-		protected function mergeInterfaceDefinitions(registry:IObjectDefinitionRegistry, applicationDomain:ApplicationDomain):void {
+		public function mergeInterfaceDefinitions(registry:IObjectDefinitionRegistry, applicationDomain:ApplicationDomain):void {
 			var interfaces:Vector.<String> = registry.getDefinitionNamesWithPropertyValue(IS_INTERFACE_FIELD_NAME, true);
 			var objects:Vector.<String> = registry.getDefinitionNamesWithPropertyValue(IS_INTERFACE_FIELD_NAME, false);
 			if ((interfaces != null) && (objects != null)) {
@@ -112,7 +119,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 * @param interfaceDefinition
 		 * @param implementations
 		 */
-		protected function mergeInterfaceDefinitionWithObjectDefinitions(interfaceDefinition:IObjectDefinition, implementations:Vector.<IObjectDefinition>):void {
+		public function mergeInterfaceDefinitionWithObjectDefinitions(interfaceDefinition:IObjectDefinition, implementations:Vector.<IObjectDefinition>):void {
 			for each (var objectDefinition:IObjectDefinition in implementations) {
 				mergeObjectDefinitions(interfaceDefinition, objectDefinition);
 			}
@@ -123,7 +130,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 * @param sourceDefinition
 		 * @param destinationDefinition
 		 */
-		protected function mergeObjectDefinitions(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
+		public function mergeObjectDefinitions(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
 			mergeProperties(sourceDefinition, destinationDefinition);
 			mergeMethodInvocations(sourceDefinition, destinationDefinition);
 		}
@@ -133,7 +140,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 * @param sourceDefinition
 		 * @param destinationDefinition
 		 */
-		protected function mergeMethodInvocations(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
+		public function mergeMethodInvocations(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
 			for each (var methodInvocation:MethodInvocation in sourceDefinition.methodInvocations) {
 				if (destinationDefinition.getMethodInvocationByName(methodInvocation.methodName, methodInvocation.namespaceURI) == null) {
 					destinationDefinition.addMethodInvocation(methodInvocation);
@@ -146,7 +153,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 * @param sourceDefinition
 		 * @param destinationDefinition
 		 */
-		protected function mergeProperties(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
+		public function mergeProperties(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
 			for each (var propertyDefinition:PropertyDefinition in sourceDefinition.properties) {
 				if (destinationDefinition.getPropertyDefinitionByName(propertyDefinition.name, propertyDefinition.namespaceURI) == null) {
 					destinationDefinition.addPropertyDefinition(PropertyDefinition(propertyDefinition.clone()));
@@ -162,7 +169,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 * @param applicationDomain
 		 * @return
 		 */
-		protected function getImplementations(objectNames:Vector.<String>, interfaceClass:Class, registry:IObjectDefinitionRegistry, applicationDomain:ApplicationDomain):Vector.<IObjectDefinition> {
+		public function getImplementations(objectNames:Vector.<String>, interfaceClass:Class, registry:IObjectDefinitionRegistry, applicationDomain:ApplicationDomain):Vector.<IObjectDefinition> {
 			var result:Vector.<IObjectDefinition>;
 			for each (var objectName:String in objectNames) {
 				var definition:IObjectDefinition = registry.getObjectDefinition(objectName);
@@ -178,7 +185,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 *
 		 * @param registry
 		 */
-		protected function resolveParentDefinitions(registry:IObjectDefinitionRegistry):void {
+		public function resolveParentDefinitions(registry:IObjectDefinitionRegistry):void {
 			for each (var name:String in registry.objectDefinitionNames) {
 				var objectDefinition:IObjectDefinition = registry.getObjectDefinition(name);
 				if (StringUtils.hasText(objectDefinition.parentName)) {

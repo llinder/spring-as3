@@ -69,27 +69,13 @@ package org.springextensions.actionscript.context.impl {
 	 * @author Roland Zwaga
 	 */
 	public class ApplicationContext extends EventDispatcher implements IApplicationContext, IDisposable, IAutowireProcessorAware, IEventBusAware, IEventBusUserRegistryAware, ILoaderInfoAware {
+		private static const APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME:String = "applicationContextTextFilesLoader";
+		private static const DEFINITION_PROVIDER_QUEUE_NAME:String = "definitionProviderQueue";
 
 		private static const GET_ASSOCIATED_FACTORY_METHOD_NAME:String = "getAssociatedFactory";
 		private static const MXMODULES_MODULE_MANAGER_CLASS_NAME:String = "mx.modules.ModuleManager";
-		private static const APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME:String = "applicationContextTextFilesLoader";
-		private static const DEFINITION_PROVIDER_QUEUE_NAME:String = "definitionProviderQueue";
 		private static const NEWLINE_CHAR:String = "\n";
 		private static const OBJECT_FACTORY_POST_PROCESSOR_QUEUE_NAME:String = "objectFactoryPostProcessorQueue";
-
-		private var _definitionProviders:Vector.<IObjectDefinitionsProvider>;
-		private var _rootView:DisplayObject;
-		private var _childContexts:Vector.<IApplicationContext>;
-		private var _eventBus:IEventBus;
-		private var _isDisposed:Boolean;
-		private var _loaderInfo:LoaderInfo;
-		private var _objectFactoryPostProcessors:Vector.<IObjectFactoryPostProcessor>;
-		private var _operationQueue:IOperationQueue;
-		private var _propertiesParser:IPropertiesParser;
-		private var _stageProcessorRegistry:IStageObjectProcessorRegistry;
-		private var _textFilesLoader:ITextFilesLoader;
-
-		protected var objectFactory:IObjectFactory;
 
 		/**
 		 * Creates a new <code>ApplicationContext</code> instance.
@@ -98,6 +84,20 @@ package org.springextensions.actionscript.context.impl {
 			super();
 			initApplicationContext(parent, rootView, objFactory);
 		}
+
+		protected var objectFactory:IObjectFactory;
+		private var _childContexts:Vector.<IApplicationContext>;
+
+		private var _definitionProviders:Vector.<IObjectDefinitionsProvider>;
+		private var _eventBus:IEventBus;
+		private var _isDisposed:Boolean;
+		private var _loaderInfo:LoaderInfo;
+		private var _objectFactoryPostProcessors:Vector.<IObjectFactoryPostProcessor>;
+		private var _operationQueue:IOperationQueue;
+		private var _propertiesParser:IPropertiesParser;
+		private var _rootView:DisplayObject;
+		private var _stageProcessorRegistry:IStageObjectProcessorRegistry;
+		private var _textFilesLoader:ITextFilesLoader;
 
 		/**
 		 * @inheritDoc
@@ -502,39 +502,13 @@ package org.springextensions.actionscript.context.impl {
 			return objectFactory.resolveReference(property);
 		}
 
-		protected function initApplicationContext(parent:IApplicationContext, rootView:DisplayObject, objFactory:IObjectFactory):void {
-			objectFactory = objFactory;
-			_definitionProviders = new Vector.<IObjectDefinitionsProvider>();
-			_rootView = rootView;
-			applicationDomain = resolveRootViewApplicationDomain(_rootView);
-			loaderInfo = resolveRootViewLoaderInfo(_rootView);
-		}
-
-		protected function resolveRootViewApplicationDomain(view:DisplayObject):ApplicationDomain {
-			if (view != null) {
-				try {
-					var cls:Class = ClassUtils.forName(MXMODULES_MODULE_MANAGER_CLASS_NAME, applicationDomain);
-					var factory:Object = cls[GET_ASSOCIATED_FACTORY_METHOD_NAME](view);
-					if (factory != null) {
-						return ApplicationDomain(factory.info().currentDomain);
-					}
-				} catch (e:Error) {
-				}
-			}
-			return ApplicationDomain.currentDomain;
-		}
-
-		//TODO: check is rootView is a module, or part of a module and resolve its loaderInfo from that.
-		protected function resolveRootViewLoaderInfo(view:DisplayObject):LoaderInfo {
-			if (view == null) {
-				var stage:Stage = Environment.getCurrentStage();
-				if (stage != null) {
-					return stage.loaderInfo;
-				}
-			} else {
-				return view.loaderInfo;
-			}
-			return null;
+		/**
+		 *
+		 * @param references
+		 * @return
+		 */
+		public function resolveReferences(references:Array):Array {
+			return objectFactory.resolveReferences(references);
 		}
 
 		/**
@@ -704,6 +678,14 @@ package org.springextensions.actionscript.context.impl {
 		protected function handleObjectFactoriesError(error:*):void {
 		}
 
+		protected function initApplicationContext(parent:IApplicationContext, rootView:DisplayObject, objFactory:IObjectFactory):void {
+			objectFactory = objFactory;
+			_definitionProviders = new Vector.<IObjectDefinitionsProvider>();
+			_rootView = rootView;
+			applicationDomain = resolveRootViewApplicationDomain(_rootView);
+			loaderInfo = resolveRootViewLoaderInfo(_rootView);
+		}
+
 		/**
 		 *
 		 */
@@ -774,5 +756,31 @@ package org.springextensions.actionscript.context.impl {
 			}
 		}
 
+		protected function resolveRootViewApplicationDomain(view:DisplayObject):ApplicationDomain {
+			if (view != null) {
+				try {
+					var cls:Class = ClassUtils.forName(MXMODULES_MODULE_MANAGER_CLASS_NAME, applicationDomain);
+					var factory:Object = cls[GET_ASSOCIATED_FACTORY_METHOD_NAME](view);
+					if (factory != null) {
+						return ApplicationDomain(factory.info().currentDomain);
+					}
+				} catch (e:Error) {
+				}
+			}
+			return ApplicationDomain.currentDomain;
+		}
+
+		//TODO: check is rootView is a module, or part of a module and resolve its loaderInfo from that.
+		protected function resolveRootViewLoaderInfo(view:DisplayObject):LoaderInfo {
+			if (view == null) {
+				var stage:Stage = Environment.getCurrentStage();
+				if (stage != null) {
+					return stage.loaderInfo;
+				}
+			} else {
+				return view.loaderInfo;
+			}
+			return null;
+		}
 	}
 }

@@ -89,11 +89,11 @@ package org.springextensions.actionscript.ioc.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function wire(instance:*, objectFactory:IObjectFactory, objectDefinition:IObjectDefinition=null, objectName:String=null):void {
+		public function wire(instance:*, objectFactory:IObjectFactory, objectDefinition:IObjectDefinition=null, objectName:String=null):Object {
 			if (objectDefinition == null) {
-				wireWithoutObjectDefinition(instance, objectName, objectFactory);
+				return wireWithoutObjectDefinition(instance, objectName, objectFactory);
 			} else {
-				wireWithObjectDefinition(instance, objectFactory, objectName, objectDefinition);
+				return wireWithObjectDefinition(instance, objectFactory, objectName, objectDefinition);
 			}
 		}
 
@@ -204,10 +204,11 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param objectName
 		 * @param objectPostProcessors
 		 */
-		protected function postProcessingAfterInitialization(instance:*, objectName:String, objectPostProcessors:Vector.<IObjectPostProcessor>):void {
+		protected function postProcessingAfterInitialization(instance:*, objectName:String, objectPostProcessors:Vector.<IObjectPostProcessor>):Object {
 			for each (var processor:IObjectPostProcessor in objectPostProcessors) {
-				processor.postProcessAfterInitialization(instance, objectName);
+				instance = processor.postProcessAfterInitialization(instance, objectName);
 			}
+			return instance;
 		}
 
 		/**
@@ -216,10 +217,11 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param objectName
 		 * @param objectPostProcessors
 		 */
-		protected function postProcessingBeforeInitialization(instance:*, objectName:String, objectPostProcessors:Vector.<IObjectPostProcessor>):void {
+		protected function postProcessingBeforeInitialization(instance:*, objectName:String, objectPostProcessors:Vector.<IObjectPostProcessor>):Object {
 			for each (var processor:IObjectPostProcessor in objectPostProcessors) {
-				processor.postProcessBeforeInitialization(instance, objectName);
+				instance = processor.postProcessBeforeInitialization(instance, objectName);
 			}
+			return instance;
 		}
 
 		/**
@@ -252,10 +254,10 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param objectFactory
 		 * @return
 		 */
-		protected function resolveReferences(properties:Array, objectFactory:IObjectFactory):Array {
+		protected function resolveReferences(references:Array, objectFactory:IObjectFactory):Array {
 			var result:Array = [];
-			for each (var p:Object in properties) {
-				result[result.length] = objectFactory.resolveReference(p);
+			for each (var r:* in references) {
+				result[result.length] = objectFactory.resolveReference(r);
 			}
 			return result;
 		}
@@ -313,7 +315,7 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param objectName
 		 * @param objectDefinition
 		 */
-		protected function wireWithObjectDefinition(instance:*, objectFactory:IObjectFactory, objectName:String, objectDefinition:IObjectDefinition):void {
+		protected function wireWithObjectDefinition(instance:*, objectFactory:IObjectFactory, objectName:String, objectDefinition:IObjectDefinition):Object {
 			objectName ||= objectDefinition.className;
 
 			prepareSingleton(objectDefinition, objectFactory.cache, instance, objectName);
@@ -325,7 +327,7 @@ package org.springextensions.actionscript.ioc.impl {
 			setPropertiesFromObjectDefinition(instance, objectDefinition, objectName, objectFactory);
 
 			if (!objectDefinition.skipPostProcessors) {
-				postProcessingBeforeInitialization(instance, objectName, objectFactory.objectPostProcessors);
+				instance = postProcessingBeforeInitialization(instance, objectName, objectFactory.objectPostProcessors);
 			}
 
 			checkDependencies(objectDefinition, instance, objectName);
@@ -335,12 +337,14 @@ package org.springextensions.actionscript.ioc.impl {
 			executeMethodInvocations(objectDefinition, instance, objectFactory);
 
 			if (!objectDefinition.skipPostProcessors) {
-				postProcessingAfterInitialization(instance, objectName, objectFactory.objectPostProcessors);
+				instance = postProcessingAfterInitialization(instance, objectName, objectFactory.objectPostProcessors);
 			}
 
 			executeCustomConfiguration(instance, objectDefinition);
 
 			cacheSingleton(objectDefinition, objectFactory.cache, objectName, instance);
+
+			return instance;
 		}
 
 		/**
@@ -365,18 +369,20 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param objectName
 		 * @param objectFactory
 		 */
-		protected function wireWithoutObjectDefinition(instance:*, objectName:String, objectFactory:IObjectFactory):void {
+		protected function wireWithoutObjectDefinition(instance:*, objectName:String, objectFactory:IObjectFactory):Object {
 			objectName = resolveObjectName(objectName, instance);
 
 			autowireInstance(instance, objectName, objectFactory);
 
 			var processors:Vector.<IObjectPostProcessor> = objectFactory.objectPostProcessors;
 
-			postProcessingBeforeInitialization(instance, objectName, processors);
+			instance = postProcessingBeforeInitialization(instance, objectName, processors);
 
 			initializeInstance(instance);
 
-			postProcessingAfterInitialization(instance, objectName, processors);
+			instance = postProcessingAfterInitialization(instance, objectName, processors);
+
+			return instance;
 		}
 	}
 }

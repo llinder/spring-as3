@@ -68,11 +68,11 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 
 		private var _applicationDomain:ApplicationDomain;
 		private var _isDisposed:Boolean;
+		private var _objectFactory:IObjectFactory;
 		private var _order:int = 0;
 		private var _scanners:Vector.<IClassScanner>;
 		private var _timeOutToken:uint = 0;
 		private var _waitingOperation:WaitingOperation;
-		private var _objectFactory:IObjectFactory;
 
 		// --------------------------------------------------------------------
 		//
@@ -172,21 +172,27 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			return operation;
 		}
 
-		// --------------------------------------------------------------------
-		//
-		// Protected Methods
-		//
-		// --------------------------------------------------------------------
+		/**
+		 *
+		 * @param objectFactory
+		 */
+		public function registerClassScanners(objectFactory:IObjectFactory):void {
+			var scanners:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IClassScanner);
+			for each (var scannerName:String in scanners) {
+				addScanner(objectFactory.getObject(scannerName));
+			}
+		}
 
 		/**
 		 *
 		 * @param loaderInfo
 		 * @return
 		 */
-		protected function doMetaDataScan(loaderInfo:LoaderInfo):IOperation {
+		public function doMetaDataScan(loaderInfo:LoaderInfo):IOperation {
 			if (loaderInfo != null) {
 				ByteCodeType.metaDataLookupFromLoader(loaderInfo);
-				doScans();
+				var typeCache:ByteCodeTypeCache = (ByteCodeType.getTypeProvider().getTypeCache() as ByteCodeTypeCache);
+				doScans(typeCache);
 				if (_waitingOperation != null) {
 					_waitingOperation.dispatchCompleteEvent();
 				}
@@ -200,40 +206,40 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 
 		/**
 		 *
+		 * @param typeCache
 		 */
-		protected function doScans():void {
-			var typeCache:ByteCodeTypeCache = (ByteCodeType.getTypeProvider().getTypeCache() as ByteCodeTypeCache);
+		public function doScans(typeCache:ByteCodeTypeCache):void {
 			_scanners = _scanners.sort(OrderedUtils.orderedCompareFunction);
 			for each (var scanner:IClassScanner in _scanners) {
-				if (scanner is IApplicationDomainAware) {
-					var aa:IApplicationDomainAware = IApplicationDomainAware(scanner);
-					aa.applicationDomain = _applicationDomain;
-				}
-				if (scanner is IApplicationContextAware) {
-					var aca:IApplicationContextAware = IApplicationContextAware(scanner);
-					if (aca.applicationContext == null) {
-						aca.applicationContext = _objectFactory as IApplicationContext;
-					}
-				}
-				for each (var name:String in scanner.metaDataNames) {
-					var classNames:Array = typeCache.getClassesWithMetadata(name);
-					for each (var className:String in classNames) {
-						scanner.scan(className);
-					}
-				}
+				doScan(scanner, typeCache);
 			}
 		}
 
 		/**
 		 *
-		 * @param objectFactory
+		 * @param scanner
+		 * @param typeCache
 		 */
-		protected function registerClassScanners(objectFactory:IObjectFactory):void {
-			var scanners:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IClassScanner);
-			for each (var scannerName:String in scanners) {
-				addScanner(objectFactory.getObject(scannerName));
+		public function doScan(scanner:IClassScanner, typeCache:ByteCodeTypeCache):void {
+			if (scanner is IApplicationDomainAware) {
+				IApplicationDomainAware(scanner).applicationDomain = _applicationDomain;
+			}
+			if (scanner is IApplicationContextAware) {
+				IApplicationContextAware(scanner).applicationContext = _objectFactory as IApplicationContext;
+			}
+			for each (var name:String in scanner.metaDataNames) {
+				var classNames:Array = typeCache.getClassesWithMetadata(name);
+				for each (var className:String in classNames) {
+					scanner.scan(className);
+				}
 			}
 		}
+
+		// --------------------------------------------------------------------
+		//
+		// Protected Methods
+		//
+		// --------------------------------------------------------------------
 
 		/**
 		 *

@@ -14,21 +14,68 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.process.impl.factory {
+	import mockolate.mock;
+	import mockolate.nice;
+	import mockolate.runner.MockolateRule;
+	import mockolate.stub;
+
+	import org.hamcrest.core.anything;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
 	/**
 	 *
-	 * @author rolandzwaga
-	 *
+	 * @author Roland Zwaga
 	 */
 	public class ObjectDefinitonFactoryPostProcessorTest {
+
+		[Rule]
+		public var mockolateRule:MockolateRule = new MockolateRule();
+
+		[Mock]
+		public var registry:IObjectDefinitionRegistry;
+		[Mock]
+		public var objectDefinition:IObjectDefinition;
+		public var parentDefinition:IObjectDefinition;
+
+		private var _processor:ObjectDefinitonFactoryPostProcessor;
 
 		public function ObjectDefinitonFactoryPostProcessorTest() {
 			super();
 		}
 
-		[Test]
-		public function testPostProcessObjectFactory():void {
+		[Before]
+		public function setUp():void {
+			registry = nice(IObjectDefinitionRegistry);
+			objectDefinition = nice(IObjectDefinition);
+			parentDefinition = nice(IObjectDefinition);
+			stub(objectDefinition).getter("parent").returns(parentDefinition);
+			_processor = new ObjectDefinitonFactoryPostProcessor(1);
+		}
 
+		[Test]
+		public function testCopyConstructorArgumentsWithAllNullArgs():void {
+			mock(objectDefinition).getter("constructorArguments").returns(null);
+			mock(parentDefinition).getter("constructorArguments").returns(null);
+			mock(objectDefinition).setter("constructorArguments").never();
+			_processor.copyConstructorArguments(objectDefinition, parentDefinition);
+		}
+
+		[Test]
+		public function testCopyConstructorArgumentsWitAllNotnUllArgs():void {
+			mock(objectDefinition).getter("constructorArguments").returns([]);
+			mock(parentDefinition).getter("constructorArguments").returns([]);
+			mock(objectDefinition).setter("constructorArguments").never();
+			_processor.copyConstructorArguments(objectDefinition, parentDefinition);
+		}
+
+		[Test]
+		public function testCopyConstructorArgumentsWitParentNotnUllArgs():void {
+			var args:Array = [];
+			mock(objectDefinition).getter("constructorArguments").returns(null);
+			mock(parentDefinition).getter("constructorArguments").returns(args);
+			mock(objectDefinition).setter("constructorArguments").arg(args).once();
+			_processor.copyConstructorArguments(objectDefinition, parentDefinition);
 		}
 	}
 }

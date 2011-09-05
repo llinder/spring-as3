@@ -296,7 +296,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			Assert.notNull(clazz, "The clazz arguments must not be null");
 			var result:* = ClassUtils.newInstance(clazz, constructorArguments);
 			if (dependencyInjector != null) {
-				dependencyInjector.wire(result, this);
+				result = dependencyInjector.wire(result, this);
 			}
 			return result;
 		}
@@ -373,28 +373,28 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function resolveReference(property:*):* {
-			if (property == null) { // note: don't change this to !property since we might pass in empty strings here
+		public function resolveReference(reference:*):* {
+			if (reference == null) { // note: don't change this to !reference since we might pass in empty strings here
 				return null;
 			}
 			for each (var referenceResolver:IReferenceResolver in referenceResolvers) {
-				if (referenceResolver.canResolve(property)) {
-					return referenceResolver.resolve(property);
+				if (referenceResolver.canResolve(reference)) {
+					return referenceResolver.resolve(reference);
 				}
 			}
-			return property;
+			return reference;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public function resolveReferences(properties:Array):Array {
-			if ((!properties) || (properties.length == 0)) {
+		public function resolveReferences(references:Array):Array {
+			if ((!references) || (references.length == 0)) {
 				return null;
 			}
 			var result:Array = [];
-			for each (var prop:* in properties) {
-				result[result.length] = resolveReference(prop);
+			for each (var ref:* in references) {
+				result[result.length] = resolveReference(ref);
 			}
 			return result;
 		}
@@ -413,7 +413,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				dispatchEvent(evt1);
 				dispatchEventThroughEventBus(evt1);
 				if (dependencyInjector != null) {
-					dependencyInjector.wire(result, this, objectDefinition, objectName);
+					result = dependencyInjector.wire(result, this, objectDefinition, objectName);
 					var evt2:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_WIRED, result, name, constructorArguments);
 					dispatchEvent(evt2);
 					dispatchEventThroughEventBus(evt2);

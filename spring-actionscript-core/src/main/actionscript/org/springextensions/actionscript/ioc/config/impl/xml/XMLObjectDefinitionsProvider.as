@@ -20,6 +20,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.IOperationQueue;
+	import org.as3commons.async.operation.event.OperationEvent;
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IDisposable;
@@ -315,7 +316,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 *
 		 * @param result
 		 */
-		protected function handleXMLLoadQueueComplete(result:Vector.<String>):void {
+		protected function handleXMLLoadQueueComplete(event:OperationEvent):void {
+			var result:Vector.<String> = event.result as Vector.<String>;
 			for each (var xmlFile:String in result) {
 				addXMLConfig(new XML(xmlFile));
 			}
@@ -326,8 +328,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 *
 		 * @param error
 		 */
-		protected function handleXMLLoadQueueError(error:*):void {
-			_asyncOperation.dispatchErrorEvent(error);
+		protected function handleXMLLoadQueueError(event:OperationEvent):void {
+			_asyncOperation.dispatchErrorEvent(event.error);
 		}
 
 		/**

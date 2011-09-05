@@ -19,8 +19,6 @@ package org.springextensions.actionscript.ioc.factory {
 
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
-	import org.springextensions.actionscript.ioc.config.property.impl.Properties;
-	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
@@ -31,18 +29,6 @@ package org.springextensions.actionscript.ioc.factory {
 	 * @author Roland Zwaga
 	 */
 	public interface IObjectFactory extends IObjectDefinitionRegistryAware, IEventDispatcher {
-
-		/**
-		 *
-		 * @param objectPostProcessor
-		 */
-		function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void;
-
-		/**
-		 *
-		 * @param referenceResolver
-		 */
-		function addReferenceResolver(referenceResolver:IReferenceResolver):void;
 
 		/**
 		 * The <code>ApplicationDomain</code> that is associated with the current <code>IObjectFactory</code>
@@ -59,16 +45,6 @@ package org.springextensions.actionscript.ioc.factory {
 		function get cache():IInstanceCache;
 
 		/**
-		 * Creates an instance of the specified <code>Class</code>, wires the instance and returns it.
-		 * Useful for creating objects that have only been annotated with [Autowired] metadata and need
-		 * no object definition.
-		 * @param clazz The specified <code>Class</code>.
-		 * @param constructorArguments Optional <code>Array</code> of constructor arguments to be used for the instance.
-		 * @return The created and wired instance of the specified <code>Class</code>.
-		 */
-		function createInstance(clazz:Class, constructorArguments:Array=null):*;
-
-		/**
 		 *
 		 */
 		function get dependencyInjector():IDependencyInjector;
@@ -77,6 +53,66 @@ package org.springextensions.actionscript.ioc.factory {
 		 * @private
 		 */
 		function set dependencyInjector(value:IDependencyInjector):void;
+
+		/**
+		 * Returns <code>true</code> when the current <code>IObjectFactory</code> is fully initialized and ready for use.
+		 */
+		function get isReady():Boolean;
+
+		/**
+		 * @private
+		 */
+		function set isReady(value:Boolean):void;
+
+		/**
+		 *
+		 */
+		function get objectPostProcessors():Vector.<IObjectPostProcessor>;
+
+		/**
+		 * Optional parent factory that can be used to create objects that can't be created by the current instance.
+		 */
+		function get parent():IObjectFactory;
+
+		/**
+		 * @private
+		 */
+		function set parent(value:IObjectFactory):void;
+
+		/**
+		 *
+		 */
+		function get propertiesProvider():IPropertiesProvider;
+		/**
+		 * @private
+		 */
+		function set propertiesProvider(value:IPropertiesProvider):void;
+
+		/**
+		 */
+		function get referenceResolvers():Vector.<IReferenceResolver>;
+
+		/**
+		 *
+		 * @param objectPostProcessor
+		 */
+		function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void;
+
+		/**
+		 *
+		 * @param referenceResolver
+		 */
+		function addReferenceResolver(referenceResolver:IReferenceResolver):void;
+
+		/**
+		 * Creates an instance of the specified <code>Class</code>, wires the instance and returns it.
+		 * Useful for creating objects that have only been annotated with [Autowired] metadata and need
+		 * no object definition.
+		 * @param clazz The specified <code>Class</code>.
+		 * @param constructorArguments Optional <code>Array</code> of constructor arguments to be used for the instance.
+		 * @return The created and wired instance of the specified <code>Class</code>.
+		 */
+		function createInstance(clazz:Class, constructorArguments:Array=null):*;
 		/**
 		 * Will retrieve an object by it's name/id If the definition is a singleton it will be retrieved from
 		 * cache if possible. If the definition defines an init method, the init method will be called after
@@ -128,50 +164,18 @@ package org.springextensions.actionscript.ioc.factory {
 		function getObjectDefinition(objectName:String):IObjectDefinition;
 
 		/**
-		 * Returns <code>true</code> when the current <code>IObjectFactory</code> is fully initialized and ready for use.
-		 */
-		function get isReady():Boolean;
-
-		/**
-		 * @private
-		 */
-		function set isReady(value:Boolean):void;
-
-		/**
-		 *
-		 */
-		function get objectPostProcessors():Vector.<IObjectPostProcessor>;
-
-		/**
-		 * Optional parent factory that can be used to create objects that can't be created by the current instance.
-		 */
-		function get parent():IObjectFactory;
-
-		/**
-		 * @private
-		 */
-		function set parent(value:IObjectFactory):void;
-
-		/**
-		 *
-		 */
-		function get propertiesProvider():IPropertiesProvider;
-		/**
-		 * @private
-		 */
-		function set propertiesProvider(value:IPropertiesProvider):void;
-
-		/**
-		 */
-		function get referenceResolvers():Vector.<IReferenceResolver>;
-
-		/**
 		 *
 		 * @param property
 		 * @return
 		 *
 		 */
-		function resolveReference(property:*):*;
+		function resolveReference(reference:*):*;
 
+		/**
+		 *
+		 * @param references
+		 * @return
+		 */
+		function resolveReferences(references:Array):Array;
 	}
 }

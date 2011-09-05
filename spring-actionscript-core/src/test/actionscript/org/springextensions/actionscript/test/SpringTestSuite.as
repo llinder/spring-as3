@@ -46,10 +46,16 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.PauseCommandNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.TaskNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XmlObjectDefinitionsParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.ArrayCollectionNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.ArrayNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.DictionaryNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.KeyValueNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.NanNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.NullNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.ObjectNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.RefNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.UndefinedNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.VectorNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.AttributeToElementPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.IdAttributePreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.InnerObjectsPreprocessorTest;
@@ -70,8 +76,12 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ObjectReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ThisReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.VectorReferenceResolverTest;
+	import org.springextensions.actionscript.ioc.factory.process.impl.factory.ObjectDefinitonFactoryPostProcessorTest;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectFactoryPostProcessorsFactoryPostProcessorTest;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessorTest;
+	import org.springextensions.actionscript.ioc.factory.process.impl.object.ApplicationContextAwareObjectPostProcessorTest;
+	import org.springextensions.actionscript.ioc.factory.process.impl.object.ApplicationDomainAwarePostProcessorTest;
+	import org.springextensions.actionscript.ioc.factory.process.impl.object.ObjectFactoryAwarePostProcessorTest;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjectorTest;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistryTest;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinitionTest;
@@ -156,6 +166,16 @@ package org.springextensions.actionscript.test {
 		public var t65:KeyValueNodeParserTest;
 		public var t66:ObjectNodeParserTest;
 		public var t67:FieldRetrievingFactoryObjectTest;
+		public var t68:NanNodeParserTest;
+		public var t69:RefNodeParserTest;
+		public var t70:NullNodeParserTest;
+		public var t71:UndefinedNodeParserTest;
+		public var t72:VectorNodeParserTest;
+		public var t73:ArrayCollectionNodeParserTest;
+		public var t74:ApplicationContextAwareObjectPostProcessorTest;
+		public var t75:ApplicationDomainAwarePostProcessorTest;
+		public var t76:ObjectFactoryAwarePostProcessorTest;
+		public var t77:ObjectDefinitonFactoryPostProcessorTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;

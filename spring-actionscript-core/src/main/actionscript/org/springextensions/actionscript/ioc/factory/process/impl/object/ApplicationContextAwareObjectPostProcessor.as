@@ -23,11 +23,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.object {
 	/**
 	 * <code>IObjectPostProcessor</code> implementation that checks for objects that implement the <code>IApplicationContextAware</code>
 	 * interface and injects them with the provided <code>IApplicationContext</code> instance.
-	 * <p>
-	 * <b>Author:</b> Christophe Herreman<br/>
-	 * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
-	 * <b>Since:</b> 0.1
-	 * </p>
+	 * @author Christophe Herreman
 	 * @inheritDoc
 	 */
 	public class ApplicationContextAwareObjectPostProcessor implements IObjectPostProcessor {
