@@ -104,7 +104,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		/**
 		 * Assertion to validate an array of properties
 		 */
-		private function assertPropertiesArray(objectDefinition:IObjectDefinition, property:String, referenceNames:Array):void {
+		public static function assertPropertiesArray(objectDefinition:IObjectDefinition, property:String, referenceNames:Array):void {
 			assertNotNull(objectDefinition.getPropertyDefinitionByName(property));
 			assertTrue(objectDefinition.getPropertyDefinitionByName(property).value is Array);
 
@@ -116,9 +116,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		}
 
 		/**
-		 * Assertion to validate an array of RuntimeReference objects
+		 * Assertion to validate an array of <code>RuntimeReference</code> objects
 		 */
-		private function assertReferenceArray(objectDefinition:IObjectDefinition, property:String, referenceNames:Array):void {
+		public static function assertReferenceArray(objectDefinition:IObjectDefinition, property:String, referenceNames:Array):void {
 			assertNotNull(objectDefinition.getPropertyDefinitionByName(property));
 			assertTrue(objectDefinition.getPropertyDefinitionByName(property).value is Array);
 
