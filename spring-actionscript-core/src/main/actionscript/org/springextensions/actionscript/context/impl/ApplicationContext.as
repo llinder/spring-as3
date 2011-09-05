@@ -103,7 +103,7 @@ package org.springextensions.actionscript.context.impl {
 		 * @inheritDoc
 		 */
 		public function get applicationDomain():ApplicationDomain {
-			return (objectFactory != null) ? objectFactory.applicationDomain : null;
+			return (objectFactory != null) ? objectFactory.applicationDomain : ApplicationDomain.currentDomain;
 		}
 
 		/**
