@@ -39,11 +39,29 @@ package org.springextensions.actionscript.ioc.config.impl {
 			_textFilesLoader.addURI("testfile1.txt", false);
 		}
 
+		[Test(async, timeout="1000")]
+		public function testLoadMultipleFiles():void {
+			_textFilesLoader = new TextFilesLoader("multipleFileTest");
+			_textFilesLoader.addCompleteListener(handleMultipleFileComplete);
+			_textFilesLoader.addURI("testfile1.txt", false);
+			_textFilesLoader.addURI("testfile2.txt", false);
+			_textFilesLoader.addURI("testfile3.txt", false);
+		}
+
 		protected function handleSingleFileComplete(event:OperationEvent):void {
 			var result:Vector.<String> = event.result;
 			assertNotNull(result);
 			assertEquals(1, result.length);
 			assertEquals("test1", result[0]);
+		}
+
+		protected function handleMultipleFileComplete(event:OperationEvent):void {
+			var result:Vector.<String> = event.result;
+			assertNotNull(result);
+			assertEquals(3, result.length);
+			assertEquals("test1", result[0]);
+			assertEquals("test2", result[1]);
+			assertEquals("test3", result[2]);
 		}
 	}
 }
