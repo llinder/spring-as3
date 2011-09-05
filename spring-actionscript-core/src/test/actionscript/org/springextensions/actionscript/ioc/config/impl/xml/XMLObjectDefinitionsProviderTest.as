@@ -20,10 +20,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 	import mockolate.mock;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
+	import mockolate.stub;
 	import mockolate.verify;
 
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.event.OperationEvent;
+	import org.as3commons.async.operation.impl.AbstractOperation;
 	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertTrue;
@@ -46,6 +48,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		public var parser:IXMLObjectDefinitionsParser;
 		[Mock]
 		public var loader:ITextFilesLoader;
+		[Mock]
+		public var operation:IOperation;
 
 		public function XMLObjectDefinitionsProviderTest() {
 			super();
@@ -95,9 +99,14 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			_xmlObjectDefinitionProvider.addLocation(uri);
 			mock(parser).method("parse").args(anything()).once();
 			var result:IOperation = _xmlObjectDefinitionProvider.createDefinitions();
-			_func(vec);
+			operation = nice(IOperation);
+			mock(operation).getter("result").returns(vec);
+			var operationEvent:OperationEvent = new OperationEvent("complete", operation);
+			stub(operation).getter("result").returns(vec);
+			_func(operationEvent);
 			verify(loader);
 			verify(parser);
+			verify(operation);
 			assertNotNull(result);
 			assertTrue(result is AsyncObjectDefinitionProviderResultOperation);
 		}
