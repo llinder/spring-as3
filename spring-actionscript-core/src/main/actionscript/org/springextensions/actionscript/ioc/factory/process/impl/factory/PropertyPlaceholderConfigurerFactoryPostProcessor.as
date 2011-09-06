@@ -20,6 +20,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.as3commons.lang.ObjectUtils;
 	import org.as3commons.reflect.Accessor;
 	import org.as3commons.reflect.Type;
+	import org.as3commons.reflect.Variable;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.IPropertyPlaceholderResolver;
 	import org.springextensions.actionscript.ioc.config.property.impl.PropertyPlaceholderResolver;
@@ -216,6 +217,14 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 							if ((property.type.clazz == String) && property.writeable && property.readable) {
 								instance[property.name] = resolver.resolvePropertyPlaceholders(instance[property.name], PROPERTY_REGEXP);
 								instance[property.name] = resolver.resolvePropertyPlaceholders(instance[property.name], PROPERTY_REGEXP2);
+							}
+						}
+					}
+					for each (var variable:Variable in type.variables) {
+						if ((variable) && (variable.type)) {
+							if (variable.type.clazz == String) {
+								instance[variable.name] = resolver.resolvePropertyPlaceholders(instance[variable.name], PROPERTY_REGEXP);
+								instance[variable.name] = resolver.resolvePropertyPlaceholders(instance[variable.name], PROPERTY_REGEXP2);
 							}
 						}
 					}
