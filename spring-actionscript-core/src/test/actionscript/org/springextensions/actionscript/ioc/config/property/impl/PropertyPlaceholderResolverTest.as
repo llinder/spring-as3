@@ -30,6 +30,7 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 	public class PropertyPlaceholderResolverTest {
 
 		private var _testPropertyPlaceHolder:String = "${propertyName}";
+		private var _testPropertyPlaceHolder2:String = "${propertyName}_${propertyName2}";
 		private var _resolver:PropertyPlaceholderResolver;
 		private var _regexp:RegExp = PropertyPlaceholderConfigurerFactoryPostProcessor.PROPERTY_REGEXP;
 
@@ -60,10 +61,20 @@ package org.springextensions.actionscript.ioc.config.property.impl {
 		[Test]
 		public function testReplacePropertyPlaceholder():void {
 			properties = nice(IPropertiesProvider);
-			mock(properties).method("getProperty").args("propertyName").returns("propertyValue");
+			mock(properties).method("getProperty").args("propertyName").returns("propertyValue").once();
 			var value:String = _resolver.replacePropertyPlaceholder(_testPropertyPlaceHolder, _regexp, properties);
 			verify(properties);
 			assertEquals("propertyValue", value);
+		}
+
+		[Test]
+		public function testResolvePropertyPlaceholders():void {
+			properties = nice(IPropertiesProvider);
+			mock(properties).method("getProperty").args("propertyName").returns("propertyValue").once();
+			mock(properties).method("getProperty").args("propertyName2").returns("propertyValue2").once();
+			var value:String = _resolver.resolvePropertyPlaceholders(_testPropertyPlaceHolder2, _regexp, properties);
+			verify(properties);
+			assertEquals("propertyValue_propertyValue2", value);
 		}
 	}
 }
