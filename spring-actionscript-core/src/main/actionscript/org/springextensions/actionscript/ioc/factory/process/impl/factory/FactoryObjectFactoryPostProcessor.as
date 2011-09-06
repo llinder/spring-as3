@@ -21,6 +21,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.as3commons.lang.StringUtils;
 	import org.as3commons.reflect.Metadata;
 	import org.as3commons.reflect.Type;
+	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.impl.GenericFactoryObject;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
@@ -31,8 +32,9 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	 * @author Roland Zwaga
 	 */
 	public class FactoryObjectFactoryPostProcessor implements IObjectFactoryPostProcessor {
-		private static const FACTORY_METADATA_NAME:String = "Factory";
-		private static const FACTORY_METHOD_FIELD_NAME:String = "factoryMethod";
+
+		public static const FACTORY_METADATA_NAME:String = "Factory";
+		public static const FACTORY_METHOD_FIELD_NAME:String = "factoryMethod";
 
 		private var _throwError:Boolean = true;
 
@@ -51,30 +53,57 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			_throwError = value;
 		}
 
+		/**
+		 *
+		 * @param objectFactory
+		 * @return
+		 */
 		public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
 			var names:Vector.<String> = new Vector.<String>();
 			names[names.length] = FACTORY_METADATA_NAME;
 			var definitions:Vector.<IObjectDefinition> = objectFactory.objectDefinitionRegistry.getObjectDefinitionsWithMetadata(names);
 			for each (var definition:IObjectDefinition in definitions) {
-				var name:String = objectFactory.objectDefinitionRegistry.getObjectDefinitionName(definition);
-				var instance:Object = objectFactory.getObject(name);
-				var type:Type = Type.forInstance(instance, objectFactory.applicationDomain);
-				var md:Metadata = type.getMetadata(FACTORY_METADATA_NAME)[0];
-				if (md.hasArgumentWithKey(FACTORY_METHOD_FIELD_NAME)) {
-					definition.isSingleton = true;
-					var methodName:String = md.getArgument(FACTORY_METHOD_FIELD_NAME).value;
-					var genericFactory:GenericFactoryObject = new GenericFactoryObject(instance, methodName, definition.isSingleton);
-					if (objectFactory.cache.hasInstance(name)) {
-						objectFactory.cache.removeInstance(name);
-					}
-					objectFactory.cache.addInstance(name, genericFactory);
-				} else {
-					if (_throwError) {
-						throw new IllegalOperationError(StringUtils.substitute("Class {0} contains [Factory] metadata but no factoryMethod argumnt", definition.clazz));
-					}
-				}
+				processObjectDefinitionWithFactoryMetadata(objectFactory, definition);
 			}
 			return null;
 		}
+
+		/**
+		 *
+		 * @param objectFactory
+		 * @param definition
+		 */
+		public function processObjectDefinitionWithFactoryMetadata(objectFactory:IObjectFactory, definition:IObjectDefinition):void {
+			var name:String = objectFactory.objectDefinitionRegistry.getObjectDefinitionName(definition);
+			var instance:Object = objectFactory.getObject(name);
+			var type:Type = Type.forInstance(instance, objectFactory.applicationDomain);
+			var md:Metadata = type.getMetadata(FACTORY_METADATA_NAME)[0];
+			if (md.hasArgumentWithKey(FACTORY_METHOD_FIELD_NAME)) {
+				replaceFactoryInstance(definition, md, instance, objectFactory.cache, name);
+			} else {
+				if (_throwError) {
+					throw new IllegalOperationError(StringUtils.substitute("Class {0} contains [Factory] metadata but no factoryMethod argumnt", definition.clazz));
+				}
+			}
+		}
+
+		/**
+		 *
+		 * @param definition
+		 * @param metadata
+		 * @param instance
+		 * @param objectFactory
+		 * @param objectName
+		 */
+		public function replaceFactoryInstance(definition:IObjectDefinition, metadata:Metadata, instance:Object, cache:IInstanceCache, objectName:String):void {
+			var methodName:String = metadata.getArgument(FACTORY_METHOD_FIELD_NAME).value;
+			var genericFactory:GenericFactoryObject = new GenericFactoryObject(instance, methodName, definition.isSingleton);
+			definition.isSingleton = true;
+			if (cache.hasInstance(objectName)) {
+				cache.removeInstance(objectName);
+			}
+			cache.addInstance(objectName, genericFactory);
+		}
+
 	}
 }

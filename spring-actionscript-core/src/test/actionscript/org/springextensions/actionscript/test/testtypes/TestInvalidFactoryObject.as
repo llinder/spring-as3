@@ -15,16 +15,16 @@
 */
 package org.springextensions.actionscript.test.testtypes {
 
-	[Factory(factoryMethod="createInstance")]
+	[Factory]
 	/**
 	 *
 	 * @author rolandzwaga
 	 */
-	public class TestFactoryObject {
+	public class TestInvalidFactoryObject {
 		/**
 		 * Creates a new <code>TestFactoryObject</code> instance.
 		 */
-		public function TestFactoryObject() {
+		public function TestInvalidFactoryObject() {
 			super();
 		}
 
