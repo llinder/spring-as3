@@ -66,6 +66,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.xml.preprocess.impl.SpringNamesPreprocessorTest;
 	import org.springextensions.actionscript.ioc.config.property.impl.KeyValuePropertiesParserTest;
 	import org.springextensions.actionscript.ioc.config.property.impl.PropertiesTest;
+	import org.springextensions.actionscript.ioc.config.property.impl.PropertyPlaceholderResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultInstanceCacheTest;
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactoryTest;
 	import org.springextensions.actionscript.ioc.factory.impl.FieldRetrievingFactoryObjectTest;
@@ -181,6 +182,7 @@ package org.springextensions.actionscript.test {
 		public var t77:ObjectDefinitonFactoryPostProcessorTest;
 		public var t78:ClassScannerObjectFactoryPostProcessorTest;
 		public var t79:FactoryObjectFactoryPostProcessorTest;
+		public var t80:PropertyPlaceholderResolverTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;

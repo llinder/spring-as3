@@ -40,10 +40,10 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		// --------------------------------------------------------------------
 
 		/** Regular expression to resolve property placeholder with the pattern ${...} */
-		private static const PROPERTY_REGEXP:RegExp = /\$\{[^}]+\}/g;
+		public static const PROPERTY_REGEXP:RegExp = /\$\{[^}]+\}/g;
 
 		/** Regular expression to resolve property placeholder with the pattern $(...) */
-		private static const PROPERTY_REGEXP2:RegExp = /\$\([^)]+\)/g;
+		public static const PROPERTY_REGEXP2:RegExp = /\$\([^)]+\)/g;
 
 		// --------------------------------------------------------------------
 		//
@@ -114,18 +114,10 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 
 			var resolver:IPropertyPlaceholderResolver = new PropertyPlaceholderResolver(null, _properties, _ignoreUnresolvablePlaceholders);
 
-			// resolve property placeholders in the object definitions of the factory
 			for each (var objectName:String in objectFactory.objectDefinitionRegistry.objectDefinitionNames) {
 				resolvePropertyPlaceholdersForObjectName(resolver, objectName);
 			}
 
-			// resolve property placeholders in the explicit singleton objects of the factory
-			//var explicitSingletonNames:Array = objectFactory.explicitSingletonNames;
-
-			//for each (var explicitSingletonName:String in explicitSingletonNames) {
-			//	var singleton:Object = objectFactory.getObject(explicitSingletonName);
-			//	resolvePropertyPlaceholdersForInstance(resolver, singleton);
-			//}
 			return null;
 		}
 
