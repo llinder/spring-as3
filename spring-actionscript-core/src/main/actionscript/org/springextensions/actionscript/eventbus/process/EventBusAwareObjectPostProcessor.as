@@ -44,6 +44,7 @@ package org.springextensions.actionscript.eventbus.process {
 			if (ebura != null) {
 				ebura.eventBusUserRegistry = IEventBusUserRegistryAware(_objectFactory).eventBusUserRegistry;
 			}
+			return object;
 		}
 
 		public function postProcessAfterInitialization(object:*, objectName:String):* {

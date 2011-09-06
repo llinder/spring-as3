@@ -277,8 +277,12 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @inheritDoc
 		 */
 		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void {
-			objectPostProcessors[objectPostProcessors.length] = objectPostProcessor;
-			_objectPostProcessors.sort(OrderedUtils.orderedCompareFunction);
+			if (objectPostProcessor != null) {
+				objectPostProcessors[objectPostProcessors.length] = objectPostProcessor;
+				_objectPostProcessors.sort(OrderedUtils.orderedCompareFunction);
+			} else {
+				//TODO: log error
+			}
 		}
 
 		/**

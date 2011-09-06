@@ -11,6 +11,7 @@
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 
+			import org.springextensions.actionscript.context.config.impl.xml.FullXMLConfigurationPackage;
 			import org.springextensions.actionscript.context.impl.xml.XMLApplicationContext;
 			import org.springextensions.actionscript.eventbus.process.EventHandlerMetadataProcessor;
 			import org.springextensions.actionscript.samples.cafetownsend.application.ApplicationController;
@@ -38,6 +39,7 @@
 				_appContext.addLocation("application-context.xml");
 				_appContext.addEventListener(Event.COMPLETE, applicationContext_completeHandler);
 				_appContext.addEventListener(IOErrorEvent.IO_ERROR, applicationContext_ioErrorHandler);
+				_appContext.configure(new FullXMLConfigurationPackage());
 				_appContext.load();
 			}
 

@@ -123,7 +123,7 @@ package org.springextensions.actionscript.stage {
 		 */
 		protected function findStageProcessorRegistryInFactory(objectFactory:IObjectFactory):IStageObjectProcessorRegistry {
 			var stageProcessorRegistryNames:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectNamesForType(IStageObjectProcessorRegistry);
-			return (stageProcessorRegistryNames.length > 0) ? objectFactory.getObject(stageProcessorRegistryNames[0]) as IStageObjectProcessorRegistry : null;
+			return (stageProcessorRegistryNames && stageProcessorRegistryNames.length > 0) ? objectFactory.getObject(stageProcessorRegistryNames[0]) as IStageObjectProcessorRegistry : null;
 		}
 
 		/**

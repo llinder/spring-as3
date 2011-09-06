@@ -322,6 +322,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 				addXMLConfig(new XML(xmlFile));
 			}
 			parseXML(_xmlConfiguration);
+			_asyncOperation.dispatchCompleteEvent(this);
 		}
 
 		/**
