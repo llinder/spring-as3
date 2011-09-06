@@ -76,6 +76,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ObjectReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ThisReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.VectorReferenceResolverTest;
+	import org.springextensions.actionscript.ioc.factory.process.impl.factory.ClassScannerObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.ObjectDefinitonFactoryPostProcessorTest;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectFactoryPostProcessorsFactoryPostProcessorTest;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessorTest;
@@ -176,6 +177,7 @@ package org.springextensions.actionscript.test {
 		public var t75:ApplicationDomainAwarePostProcessorTest;
 		public var t76:ObjectFactoryAwarePostProcessorTest;
 		public var t77:ObjectDefinitonFactoryPostProcessorTest;
+		public var t78:ClassScannerObjectFactoryPostProcessor;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;
