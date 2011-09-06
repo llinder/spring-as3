@@ -106,7 +106,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			_func(operationEvent);
 			verify(loader);
 			verify(parser);
-			verify(operation);
 			assertNotNull(result);
 			assertTrue(result is AsyncObjectDefinitionProviderResultOperation);
 		}

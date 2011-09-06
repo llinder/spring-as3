@@ -76,23 +76,39 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			}
 		}
 
+		/**
+		 *
+		 * @param registry
+		 * @param objectDefinition
+		 */
 		public function mergeParentDefinition(registry:IObjectDefinitionRegistry, objectDefinition:IObjectDefinition):void {
-			copyConstructorArguments(objectDefinition, objectDefinition.parent);
-			setParentProperty(objectDefinition, DESTROY_METHOD_FIELD_NAME)
-			setParentProperty(objectDefinition, FACTORY_METHOD_FIELD_NAME)
-			setParentProperty(objectDefinition, FACTORY_OBJECT_NAME_FIELD_NAME)
-			setParentProperty(objectDefinition, INIT_METHOD_FIELD_NAME)
+			copyConstructorArguments(objectDefinition.parent, objectDefinition);
+			copyDefinitionProperty(objectDefinition.parent, objectDefinition, DESTROY_METHOD_FIELD_NAME)
+			copyDefinitionProperty(objectDefinition.parent, objectDefinition, FACTORY_METHOD_FIELD_NAME)
+			copyDefinitionProperty(objectDefinition.parent, objectDefinition, FACTORY_OBJECT_NAME_FIELD_NAME)
+			copyDefinitionProperty(objectDefinition.parent, objectDefinition, INIT_METHOD_FIELD_NAME)
 		}
 
-		public function copyConstructorArguments(objectDefinition:IObjectDefinition, parentDefinition:IObjectDefinition):void {
-			if ((objectDefinition.constructorArguments == null) && (parentDefinition.constructorArguments != null)) {
-				objectDefinition.constructorArguments = parentDefinition.constructorArguments.concat([]);
+		/**
+		 *
+		 * @param objectDefinition
+		 * @param parentDefinition
+		 */
+		public function copyConstructorArguments(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
+			if ((destinationDefinition.constructorArguments == null) && (sourceDefinition.constructorArguments != null)) {
+				destinationDefinition.constructorArguments = sourceDefinition.constructorArguments.concat([]);
 			}
 		}
 
-		public function setParentProperty(objectDefinition:IObjectDefinition, propertyName:String):void {
-			if (!StringUtils.hasText(objectDefinition[propertyName])) {
-				objectDefinition[propertyName] = objectDefinition.parent[propertyName];
+		/**
+		 *
+		 * @param objectDefinition
+		 * @param parentDefinition
+		 * @param propertyName
+		 */
+		public function copyDefinitionProperty(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition, propertyName:String):void {
+			if (!StringUtils.hasText(destinationDefinition[propertyName])) {
+				destinationDefinition[propertyName] = sourceDefinition[propertyName];
 			}
 		}
 
@@ -142,9 +158,13 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 */
 		public function mergeMethodInvocations(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
 			for each (var methodInvocation:MethodInvocation in sourceDefinition.methodInvocations) {
-				if (destinationDefinition.getMethodInvocationByName(methodInvocation.methodName, methodInvocation.namespaceURI) == null) {
-					destinationDefinition.addMethodInvocation(methodInvocation);
-				}
+				copyMethodInvocation(destinationDefinition, methodInvocation);
+			}
+		}
+
+		public function copyMethodInvocation(destinationDefinition:IObjectDefinition, methodInvocation:MethodInvocation):void {
+			if (destinationDefinition.getMethodInvocationByName(methodInvocation.methodName, methodInvocation.namespaceURI) == null) {
+				destinationDefinition.addMethodInvocation(methodInvocation.clone());
 			}
 		}
 
@@ -155,11 +175,21 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 */
 		public function mergeProperties(sourceDefinition:IObjectDefinition, destinationDefinition:IObjectDefinition):void {
 			for each (var propertyDefinition:PropertyDefinition in sourceDefinition.properties) {
-				if (destinationDefinition.getPropertyDefinitionByName(propertyDefinition.name, propertyDefinition.namespaceURI) == null) {
-					destinationDefinition.addPropertyDefinition(PropertyDefinition(propertyDefinition.clone()));
-				}
+				copyProperty(destinationDefinition, propertyDefinition);
 			}
 		}
+
+		/**
+		 *
+		 * @param destinationDefinition
+		 * @param propertyDefinition
+		 */
+		public function copyProperty(destinationDefinition:IObjectDefinition, propertyDefinition:PropertyDefinition):void {
+			if (destinationDefinition.getPropertyDefinitionByName(propertyDefinition.name, propertyDefinition.namespaceURI) == null) {
+				destinationDefinition.addPropertyDefinition(PropertyDefinition(propertyDefinition.clone()));
+			}
+		}
+
 
 		/**
 		 *

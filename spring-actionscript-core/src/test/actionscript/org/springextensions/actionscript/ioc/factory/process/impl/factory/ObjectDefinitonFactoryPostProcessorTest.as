@@ -18,10 +18,13 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
 	import mockolate.stub;
+	import mockolate.verify;
 
 	import org.hamcrest.core.anything;
+	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
 
 	/**
 	 *
@@ -36,6 +39,11 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		public var registry:IObjectDefinitionRegistry;
 		[Mock]
 		public var objectDefinition:IObjectDefinition;
+		[Mock]
+		public var methodInvocation:MethodInvocation;
+		[Mock]
+		public var propertyDefinition:PropertyDefinition;
+
 		public var parentDefinition:IObjectDefinition;
 
 		private var _processor:ObjectDefinitonFactoryPostProcessor;
@@ -58,15 +66,18 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			mock(objectDefinition).getter("constructorArguments").returns(null);
 			mock(parentDefinition).getter("constructorArguments").returns(null);
 			mock(objectDefinition).setter("constructorArguments").never();
-			_processor.copyConstructorArguments(objectDefinition, parentDefinition);
+			_processor.copyConstructorArguments(parentDefinition, objectDefinition);
+			verify(objectDefinition);
+			verify(parentDefinition);
 		}
 
 		[Test]
 		public function testCopyConstructorArgumentsWitAllNotnUllArgs():void {
 			mock(objectDefinition).getter("constructorArguments").returns([]);
-			mock(parentDefinition).getter("constructorArguments").returns([]);
+			stub(parentDefinition).getter("constructorArguments").returns([]);
 			mock(objectDefinition).setter("constructorArguments").never();
-			_processor.copyConstructorArguments(objectDefinition, parentDefinition);
+			_processor.copyConstructorArguments(parentDefinition, objectDefinition);
+			verify(objectDefinition);
 		}
 
 		[Test]
@@ -75,7 +86,111 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			mock(objectDefinition).getter("constructorArguments").returns(null);
 			mock(parentDefinition).getter("constructorArguments").returns(args);
 			mock(objectDefinition).setter("constructorArguments").arg(args).once();
-			_processor.copyConstructorArguments(objectDefinition, parentDefinition);
+			_processor.copyConstructorArguments(parentDefinition, objectDefinition);
+			verify(objectDefinition);
+			verify(parentDefinition);
+		}
+
+		[Test]
+		public function testCopyConstructorArgumentsWitBothNotnUllArgs():void {
+			var args:Array = [];
+			var args2:Array = [];
+			mock(objectDefinition).getter("constructorArguments").returns(args2).once();
+			stub(parentDefinition).getter("constructorArguments").returns(args).once();
+			mock(objectDefinition).setter("constructorArguments").arg(args).never();
+			_processor.copyConstructorArguments(parentDefinition, objectDefinition);
+			verify(objectDefinition);
+		}
+
+		[Test]
+		public function testSetParentPropertyWithBothSet():void {
+			mock(objectDefinition).getter("destroyMethod").returns("myMethod").once();
+			stub(parentDefinition).getter("destroyMethod").returns("myOtherMethod");
+			mock(objectDefinition).setter("destroyMethod").arg(anything()).never();
+			_processor.copyDefinitionProperty(parentDefinition, objectDefinition, "destroyMethod");
+			verify(objectDefinition);
+		}
+
+		[Test]
+		public function testSetParentPropertyWithParentSet():void {
+			mock(objectDefinition).getter("destroyMethod").returns(null).once();
+			mock(parentDefinition).getter("destroyMethod").returns("myOtherMethod");
+			mock(objectDefinition).setter("destroyMethod").arg("myOtherMethod").once();
+			_processor.copyDefinitionProperty(parentDefinition, objectDefinition, "destroyMethod");
+			verify(objectDefinition);
+			verify(parentDefinition);
+		}
+
+		[Test]
+		public function testCopyMethodInvocation():void {
+			methodInvocation = nice(MethodInvocation);
+			var methodInvocation2:MethodInvocation = nice(MethodInvocation);
+			mock(methodInvocation).getter("methodName").returns("methodName").once();
+			mock(methodInvocation).getter("namespaceURI").returns(null).once();
+			mock(methodInvocation).method("clone").returns(methodInvocation2).once();
+			mock(objectDefinition).method("getMethodInvocationByName").args("methodName", null).returns(null).once();
+			mock(objectDefinition).method("addMethodInvocation").args(methodInvocation2).once();
+			_processor.copyMethodInvocation(objectDefinition, methodInvocation);
+			verify(methodInvocation);
+			verify(objectDefinition);
+		}
+
+		[Test]
+		public function testCopyMethodInvocationWhenDestinationHasInvocationAlready():void {
+			methodInvocation = nice(MethodInvocation);
+			var methodInvocation2:MethodInvocation = nice(MethodInvocation);
+			mock(methodInvocation).getter("methodName").returns("methodName").once();
+			mock(methodInvocation).getter("namespaceURI").returns(null).once();
+			mock(objectDefinition).method("getMethodInvocationByName").args("methodName", null).returns(methodInvocation2).once();
+			mock(objectDefinition).method("addMethodInvocation").args(anything()).never();
+			_processor.copyMethodInvocation(objectDefinition, methodInvocation);
+			verify(methodInvocation);
+			verify(objectDefinition);
+		}
+
+		[Test]
+		public function testCopyProperty():void {
+			propertyDefinition = nice(PropertyDefinition);
+			var propertyDefinition2:PropertyDefinition = nice(PropertyDefinition);
+			mock(propertyDefinition).getter("name").returns("propertyName").once();
+			mock(propertyDefinition).getter("namespaceURI").returns(null).once();
+			mock(propertyDefinition).method("clone").returns(propertyDefinition2).once();
+			mock(objectDefinition).method("getPropertyDefinitionByName").args("propertyName", null).returns(null).once();
+			mock(objectDefinition).method("addPropertyDefinition").args(propertyDefinition2).once();
+			_processor.copyProperty(objectDefinition, propertyDefinition);
+			verify(propertyDefinition);
+			verify(objectDefinition);
+		}
+
+		[Test]
+		public function testCopyPropertyWhenDestinationHasPropertyAlready():void {
+			propertyDefinition = nice(PropertyDefinition);
+			var propertyDefinition2:PropertyDefinition = nice(PropertyDefinition);
+			mock(propertyDefinition).getter("name").returns("propertyName").once();
+			mock(propertyDefinition).getter("namespaceURI").returns(null).once();
+			mock(propertyDefinition).method("clone").returns(propertyDefinition2).never();
+			mock(objectDefinition).method("getPropertyDefinitionByName").args("propertyName", null).returns(propertyDefinition2).once();
+			mock(objectDefinition).method("addPropertyDefinition").args(propertyDefinition2).never();
+			_processor.copyProperty(objectDefinition, propertyDefinition);
+			verify(propertyDefinition);
+			verify(objectDefinition);
+		}
+
+		[Test]
+		public function testResolveParentDefinitions():void {
+			var parentDefinition:IObjectDefinition = nice(IObjectDefinition);
+			registry = nice(IObjectDefinitionRegistry);
+			var names:Vector.<String> = new Vector.<String>();
+			names[names.length] = "objectName";
+			mock(registry).getter("objectDefinitionNames").returns(names).once();
+			mock(registry).method("getObjectDefinition").args("objectName").returns(objectDefinition).once();
+			mock(objectDefinition).getter("parentName").returns("parentName").twice();
+			mock(registry).method("getObjectDefinition").args("parentName").returns(parentDefinition).once();
+			mock(objectDefinition).setter("parent").arg(parentDefinition).once();
+			_processor.resolveParentDefinitions(registry);
+			verify(registry);
+			verify(objectDefinition);
+			verify(parentDefinition);
 		}
 	}
 }
