@@ -3,6 +3,8 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 
+	import org.as3commons.eventbus.IEventBus;
+	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getClassLogger;
 	import org.springextensions.actionscript.samples.cafetownsend.application.ApplicationEvents;
@@ -12,7 +14,7 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 	 *
 	 * @author Christophe Herreman
 	 */
-	public class MainViewPresentationModel extends EventDispatcher {
+	public class MainViewPresentationModel extends EventDispatcher implements IEventBusAware {
 
 		// --------------------------------------------------------------------
 		//
@@ -38,8 +40,8 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		// --------------------------------------------------------------------
 
 		public function MainViewPresentationModel() {
-			EventBus.addEventListener(ApplicationEvents.LOGGED_IN, eventBus_loggedInHandler);
-			EventBus.addEventListener(ApplicationEvents.LOGGED_OUT, eventBus_loggedOutHandler);
+			_eventBus.addEventListener(ApplicationEvents.LOGGED_IN, eventBus_loggedInHandler);
+			_eventBus.addEventListener(ApplicationEvents.LOGGED_OUT, eventBus_loggedOutHandler);
 		}
 
 		// --------------------------------------------------------------------
@@ -53,6 +55,7 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		// ----------------------------
 
 		private var m_selectedViewIndex:uint = 0;
+		private var _eventBus:IEventBus;
 
 		[Bindable(event="selectedViewIndexChange")]
 		public function get selectedViewIndex():uint {
@@ -80,6 +83,14 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		private function eventBus_loggedOutHandler(event:Event):void {
 			logger.debug("Received loggedOut event from EventBus");
 			private::selectedViewIndex = LOGIN_VIEW_INDEX;
+		}
+
+		public function get eventBus():IEventBus {
+			return _eventBus;
+		}
+
+		public function set eventBus(value:IEventBus):void {
+			_eventBus = value;
 		}
 	}
 }

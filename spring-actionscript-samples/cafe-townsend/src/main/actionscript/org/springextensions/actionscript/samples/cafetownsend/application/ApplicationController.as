@@ -2,9 +2,10 @@ package org.springextensions.actionscript.samples.cafetownsend.application {
 
 	import flash.events.Event;
 
+	import org.as3commons.async.operation.IOperation;
+	import org.as3commons.eventbus.IEventBus;
+	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.lang.Assert;
-	import org.springextensions.actionscript.core.event.EventBus;
-	import org.springextensions.actionscript.core.operation.IOperation;
 	import org.springextensions.actionscript.samples.cafetownsend.application.service.IAuthenticationService;
 
 	/**
@@ -12,7 +13,7 @@ package org.springextensions.actionscript.samples.cafetownsend.application {
 	 *
 	 * @author Christophe Herreman
 	 */
-	public class ApplicationController {
+	public class ApplicationController implements IEventBusAware {
 
 		// --------------------------------------------------------------------
 		//
@@ -27,6 +28,7 @@ package org.springextensions.actionscript.samples.cafetownsend.application {
 		// Constructor
 		//
 		// --------------------------------------------------------------------
+		private var _eventBus:IEventBus;
 
 		public function ApplicationController(authenticationService:IAuthenticationService) {
 			Assert.notNull("The authentication service should not be null");
@@ -52,7 +54,15 @@ package org.springextensions.actionscript.samples.cafetownsend.application {
 		// --------------------------------------------------------------------
 
 		private function logout_completeHandler(event:Event):void {
-			EventBus.dispatch(ApplicationEvents.LOGGED_OUT);
+			eventBus.dispatch(ApplicationEvents.LOGGED_OUT);
+		}
+
+		public function get eventBus():IEventBus {
+			return _eventBus;
+		}
+
+		public function set eventBus(value:IEventBus):void {
+			_eventBus = value;
 		}
 
 	}
