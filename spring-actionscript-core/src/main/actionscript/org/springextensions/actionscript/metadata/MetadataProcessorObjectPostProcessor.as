@@ -167,7 +167,7 @@ package org.springextensions.actionscript.metadata {
 
 		protected function processObject(names:Dictionary, object:*, objectName:String):* {
 			if (names == null) {
-				return;
+				return object;
 			}
 			var type:Type = Type.forInstance(object, _objectFactory.applicationDomain);
 			if (TypeUtils.isSimpleProperty(type)) {

@@ -43,6 +43,9 @@
 		<constructor-arg ref="authenticationService"/>
 	</object>
 
+	<object class="org.springextensions.actionscript.samples.cafetownsend.presentation.MainViewPresentationModel"
+			init-method="init"/>
+
 	<object class="org.springextensions.actionscript.samples.cafetownsend.presentation.EmployeeListPresentationModel">
 		<constructor-arg ref="employeeService"/>
 	</object>

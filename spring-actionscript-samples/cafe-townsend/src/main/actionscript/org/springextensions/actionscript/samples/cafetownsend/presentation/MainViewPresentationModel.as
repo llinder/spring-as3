@@ -40,6 +40,10 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		// --------------------------------------------------------------------
 
 		public function MainViewPresentationModel() {
+			super();
+		}
+
+		public function init():void {
 			_eventBus.addEventListener(ApplicationEvents.LOGGED_IN, eventBus_loggedInHandler);
 			_eventBus.addEventListener(ApplicationEvents.LOGGED_OUT, eventBus_loggedOutHandler);
 		}

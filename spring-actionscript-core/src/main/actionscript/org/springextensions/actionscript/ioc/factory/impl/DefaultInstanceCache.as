@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl {
+	import flash.errors.IllegalOperationError;
 	import flash.events.EventDispatcher;
 
 	import org.as3commons.lang.IDisposable;
@@ -62,6 +63,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @inheritDoc
 		 */
 		public function addInstance(name:String, instance:*):void {
+			if ((instance == null) || (instance === undefined)) {
+				throw new IllegalOperationError("Null or undefined values are not allowed to be added to the instance cache");
+			}
 			if (!hasInstance(name)) {
 				_cachedNames[_cachedNames.length] = name;
 			}

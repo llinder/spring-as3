@@ -205,8 +205,12 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param objectPostProcessors
 		 */
 		protected function postProcessingAfterInitialization(instance:*, objectName:String, objectPostProcessors:Vector.<IObjectPostProcessor>):Object {
+			var result:*;
 			for each (var processor:IObjectPostProcessor in objectPostProcessors) {
-				instance = processor.postProcessAfterInitialization(instance, objectName);
+				result = processor.postProcessAfterInitialization(instance, objectName);
+				if (result != null) {
+					instance = result;
+				}
 			}
 			return instance;
 		}
@@ -218,8 +222,12 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param objectPostProcessors
 		 */
 		protected function postProcessingBeforeInitialization(instance:*, objectName:String, objectPostProcessors:Vector.<IObjectPostProcessor>):Object {
+			var result:*;
 			for each (var processor:IObjectPostProcessor in objectPostProcessors) {
-				instance = processor.postProcessBeforeInitialization(instance, objectName);
+				result = processor.postProcessBeforeInitialization(instance, objectName);
+				if (result != null) {
+					instance = result;
+				}
 			}
 			return instance;
 		}
