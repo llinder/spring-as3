@@ -176,17 +176,13 @@ package org.springextensions.actionscript.metadata {
 			for (var name:String in names) {
 				//LOGGER.debug("Invoking IMetadataProcessors for {0} metadata", name);
 				var processors:Vector.<IMetadataProcessor> = names[name] as Vector.<IMetadataProcessor>;
-				var containers:Vector.<MetadataContainer> = new Vector.<MetadataContainer>();
+				var containers:Array = type.getMetadataContainers(name);
 				if (type.hasMetadata(name)) {
 					containers[containers.length] = type;
 				}
-				var otherContainers:Array = type.getMetadataContainers(name);
-				if (otherContainers != null) {
-					containers = containers.concat(otherContainers);
-				}
-				for each (var container:IMetadataContainer in containers) {
+				for each (var cont:MetadataContainer in containers) {
 					for each (var proc:IMetadataProcessor in processors) {
-						proc.process(object, container, name, objectName);
+						proc.process(object, cont, name, objectName);
 					}
 				}
 			}

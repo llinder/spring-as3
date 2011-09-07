@@ -24,8 +24,7 @@
 	-->
 
 	<object id="applicationController"
-			class="org.springextensions.actionscript.samples.cafetownsend.application.ApplicationController"
-			lazy-init="true">
+			class="org.springextensions.actionscript.samples.cafetownsend.application.ApplicationController">
 		<constructor-arg ref="authenticationService"/>
 	</object>
 

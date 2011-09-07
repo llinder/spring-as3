@@ -46,7 +46,7 @@ package org.springextensions.actionscript.metadata {
 		 * @param metadataNames value to be assigned to the <code>metadataNames</code> property.
 		 */
 		protected function init(processBefore:Boolean, metadataNames:Vector.<String>):void {
-			_metadataNames ||= new Vector.<String>();
+			_metadataNames = metadataNames ||= new Vector.<String>();
 			_processBeforeInitialization = processBefore;
 		}
 
