@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.factory.impl {
+
 	import mockolate.mock;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
@@ -54,6 +55,16 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			assertEquals(1, _cache.numInstances());
 			_cache.addInstance("test2", {});
 			assertEquals(2, _cache.numInstances());
+		}
+
+		[Test(expects="flash.errors.IllegalOperationError")]
+		public function testAddNullInstance():void {
+			_cache.addInstance("test", null);
+		}
+
+		[Test(expects="flash.errors.IllegalOperationError")]
+		public function testAddUndefinedInstance():void {
+			_cache.addInstance("test", undefined);
 		}
 
 		[Test]

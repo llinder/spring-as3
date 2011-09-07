@@ -177,6 +177,7 @@ package org.springextensions.actionscript.metadata {
 				//LOGGER.debug("Invoking IMetadataProcessors for {0} metadata", name);
 				var processors:Vector.<IMetadataProcessor> = names[name] as Vector.<IMetadataProcessor>;
 				var containers:Array = type.getMetadataContainers(name);
+				containers ||= [];
 				if (type.hasMetadata(name)) {
 					containers[containers.length] = type;
 				}
