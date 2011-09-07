@@ -18,7 +18,12 @@
 			import org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryAuthenticationService;
 			import org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryEmployeeService;
 			import org.springextensions.actionscript.samples.cafetownsend.presentation.MainView;
+			import org.springextensions.actionscript.samples.cafetownsend.stage.TownsendViewSelector;
 			import org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor;
+
+			{
+				TownsendViewSelector;
+			}
 
 			// --------------------------------------------------------------------
 			//

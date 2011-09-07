@@ -11,7 +11,10 @@
 		Spring ActionScript config
 	-->
 
-	<stage:autowiringstageprocessor/>
+	<stage:autowiringstageprocessor object-selector="viewSelector"/>
+
+	<object id="viewSelector"
+			class="org.springextensions.actionscript.samples.cafetownsend.stage.TownsendViewSelector"/>
 
 	<object id="eventHandlerProcessor"
 			class="org.springextensions.actionscript.eventbus.process.EventHandlerMetadataProcessor"/>

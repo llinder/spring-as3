@@ -2,7 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 width="100%"
 		 horizontalAlign="center"
-		 implements="org.as3commons.eventbus.IEventBusAware">
+		 implements="org.as3commons.eventbus.IEventBusAware,org.springextensions.actionscript.samples.cafetownsend.ITownsendView">
 
 	<mx:Script>
 		<![CDATA[
