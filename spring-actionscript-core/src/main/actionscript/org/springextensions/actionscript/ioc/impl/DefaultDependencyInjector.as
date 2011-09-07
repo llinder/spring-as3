@@ -245,6 +245,12 @@ package org.springextensions.actionscript.ioc.impl {
 			}
 		}
 
+		/**
+		 *
+		 * @param objectName
+		 * @param instance
+		 * @return
+		 */
 		protected function resolveObjectName(objectName:String, instance:*):String {
 			if (!StringUtils.hasText(objectName)) {
 				if (instance.hasOwnProperty(ID_FIELD_NAME)) {

@@ -6,7 +6,7 @@
 		<![CDATA[
 			[Autowired]
 			[Bindable]
-			private var _presentationModel:MainViewPresentationModel;
+			public var presentationModel:MainViewPresentationModel;
 		]]>
 	</mx:Script>
 
@@ -27,7 +27,7 @@
 						  paddingBottom="10"
 						  paddingTop="10"
 						  resizeToContent="true"
-						  selectedIndex="{_presentationModel.selectedViewIndex}">
+						  selectedIndex="{presentationModel.selectedViewIndex}">
 				<view:EmployeeLogin/>
 				<view:EmployeeList/>
 			</mx:ViewStack>

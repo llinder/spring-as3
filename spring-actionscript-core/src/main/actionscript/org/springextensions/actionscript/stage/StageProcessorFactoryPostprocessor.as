@@ -21,6 +21,7 @@ package org.springextensions.actionscript.stage {
 	import org.as3commons.stageprocessing.IStageObjectProcessor;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistry;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
+	import org.as3commons.stageprocessing.impl.FlashStageObjectProcessorRegistry;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser.StageProcessorNodeParser;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
@@ -86,6 +87,12 @@ package org.springextensions.actionscript.stage {
 
 			if (stageProcessorRegistry == null) {
 				stageProcessorRegistry = findStageProcessorRegistryInFactory(objectFactory);
+				if (stageProcessorRegistry == null) {
+					stageProcessorRegistry = new FlashStageObjectProcessorRegistry();
+					if (objectFactory is IStageObjectProcessorRegistryAware) {
+						IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry = stageProcessorRegistry;
+					}
+				}
 			}
 
 			if (stageProcessorRegistry) {
@@ -97,7 +104,7 @@ package org.springextensions.actionscript.stage {
 					} else {
 						objectSelector = getDefaultObjectSelector();
 					}
-					registerProcessor(stageProcessorRegistry, name, IStageObjectProcessor(objectFactory.getObject(name)), rootView, objectSelector);
+					registerProcessor(stageProcessorRegistry, IStageObjectProcessor(objectFactory.getObject(name)), rootView, objectSelector);
 				}
 				stageProcessorRegistry.initialize();
 			}
@@ -135,7 +142,7 @@ package org.springextensions.actionscript.stage {
 		 * @param document The specified <code>document</code> instance.
 		 *
 		 */
-		protected function registerProcessor(stageProcessorRegistry:IStageObjectProcessorRegistry, name:String, stageProcessor:IStageObjectProcessor, rootView:DisplayObject, objectSelector:IObjectSelector):void {
+		protected function registerProcessor(stageProcessorRegistry:IStageObjectProcessorRegistry, stageProcessor:IStageObjectProcessor, rootView:DisplayObject, objectSelector:IObjectSelector):void {
 			stageProcessorRegistry.registerStageObjectProcessor(stageProcessor, objectSelector, rootView);
 		}
 

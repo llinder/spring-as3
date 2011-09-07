@@ -21,7 +21,8 @@
 	-->
 
 	<object id="applicationController"
-			class="org.springextensions.actionscript.samples.cafetownsend.application.ApplicationController">
+			class="org.springextensions.actionscript.samples.cafetownsend.application.ApplicationController"
+			lazy-init="true">
 		<constructor-arg ref="authenticationService"/>
 	</object>
 
@@ -30,23 +31,28 @@
 	-->
 
 	<object id="authenticationService"
-			class="org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryAuthenticationService"/>
+			class="org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryAuthenticationService"
+			lazy-init="true"/>
 
 	<object id="employeeService"
-			class="org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryEmployeeService"/>
+			class="org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryEmployeeService"
+			lazy-init="true"/>
 
 	<!--
 		Presentation: presentation models
 	-->
 
-	<object class="org.springextensions.actionscript.samples.cafetownsend.presentation.EmployeeLoginPresentationModel">
+	<object class="org.springextensions.actionscript.samples.cafetownsend.presentation.EmployeeLoginPresentationModel"
+			lazy-init="true">
 		<constructor-arg ref="authenticationService"/>
 	</object>
 
 	<object class="org.springextensions.actionscript.samples.cafetownsend.presentation.MainViewPresentationModel"
+			lazy-init="true"
 			init-method="init"/>
 
-	<object class="org.springextensions.actionscript.samples.cafetownsend.presentation.EmployeeListPresentationModel">
+	<object class="org.springextensions.actionscript.samples.cafetownsend.presentation.EmployeeListPresentationModel"
+			lazy-init="true">
 		<constructor-arg ref="employeeService"/>
 	</object>
 

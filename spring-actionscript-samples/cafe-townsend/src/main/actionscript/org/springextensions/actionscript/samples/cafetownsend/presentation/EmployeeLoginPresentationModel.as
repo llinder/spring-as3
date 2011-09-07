@@ -170,7 +170,7 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		// --------------------------------------------------------------------
 
 		private function loginOperation_completeHandler(event:OperationEvent):void {
-			logger.info("Received result '{0}' from login method.", event.result);
+			logger.info("Received result '{0}' from login method.", [event.result]);
 
 			loggingIn = false;
 
