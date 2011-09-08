@@ -454,7 +454,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl {
 		/**
 		 * Parses the attributes of an object node into an object definition.
 		 */
-		protected function parseAttributes(objectDefinition:IObjectDefinition, xml:XML):void {
+		public function parseAttributes(objectDefinition:IObjectDefinition, xml:XML):void {
 			objectDefinition.factoryMethod = (xml.attribute(FACTORY_METHOD_ATTRIBUTE) == undefined) ? null : xml.attribute(FACTORY_METHOD_ATTRIBUTE);
 			objectDefinition.factoryObjectName = (xml.attribute(FACTORY_OBJECT_ATTRIBUTE) == undefined) ? null : xml.attribute(FACTORY_OBJECT_ATTRIBUTE);
 			objectDefinition.initMethod = (xml.attribute(INIT_METHOD_ATTRIBUTE) == undefined) ? null : xml.attribute(INIT_METHOD_ATTRIBUTE);

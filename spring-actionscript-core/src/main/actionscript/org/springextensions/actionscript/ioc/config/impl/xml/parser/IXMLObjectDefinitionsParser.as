@@ -53,5 +53,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser {
 		function parseConstructorArguments(objectDefinition:IObjectDefinition, xml:XML):void;
 
 		function registerObjectDefinition(objectName:String, objectDefinition:IObjectDefinition):void;
+
+		function parseAttributes(objectDefinition:IObjectDefinition, xml:XML):void;
 	}
 }

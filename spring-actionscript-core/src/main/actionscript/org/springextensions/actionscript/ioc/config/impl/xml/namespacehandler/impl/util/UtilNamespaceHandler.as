@@ -37,10 +37,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	public class UtilNamespaceHandler extends AbstractNamespaceHandler implements IObjectDefinitionRegistryAware, IApplicationDomainAware, IInitializingObject {
 
 		public static const CONSTANT:String = "constant";
-
 		public static const INVOKE:String = "invoke";
-
 		public static const FACTORY:String = "factory";
+
 		private var _applicationDomain:ApplicationDomain;
 		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
 

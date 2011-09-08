@@ -45,6 +45,8 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.LoadURLStreamNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.PauseCommandNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.task.nodeparser.TaskNodeParserTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.util.customconfiguration.FactoryObjectCustomConfiguratorTest;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.util.nodeparser.FactoryNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XmlObjectDefinitionsParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.ArrayCollectionNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodeparser.ArrayNodeParserTest;
@@ -183,6 +185,8 @@ package org.springextensions.actionscript.test {
 		public var t78:ClassScannerObjectFactoryPostProcessorTest;
 		public var t79:FactoryObjectFactoryPostProcessorTest;
 		public var t80:PropertyPlaceholderResolverTest;
+		public var t81:FactoryObjectCustomConfiguratorTest;
+		public var t82:FactoryNodeParserTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;

@@ -55,6 +55,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			}
 			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(cls);
 
+			context.parseAttributes(result.objectDefinition, node);
 			context.parseConstructorArguments(result.objectDefinition, node);
 			context.parseMethodInvocations(result.objectDefinition, node);
 			context.parseProperties(result.objectDefinition, node);

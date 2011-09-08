@@ -34,11 +34,11 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	 * @author Roland Zwaga
 	 */
 	public class EventBusNamespacehandler extends AbstractNamespaceHandler implements IObjectDefinitionRegistryAware, IEventBusUserRegistryAware, IApplicationDomainAware, IInitializingObject {
+
 		public static const EVENT_HANDLER_ELEMENT_NAME:String = "event-handler";
 		public static const EVENT_HANDLER_METHOD_ELEMENT_NAME:String = "event-handler-method";
 		public static const EVENT_INTERCEPTOR_FIELD_NAME:String = "event-interceptor";
 		public static const EVENT_LISTENER_INTERCEPTOR_FIELD_NAME:String = "event-listener-interceptor";
-
 		public static const EVENT_ROUTER_ELEMENT_NAME:String = "event-router";
 		public static const ROUTING_CONFIGURATION_ELEMENT_NAME:String = "routing-configuration";
 

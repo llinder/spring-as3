@@ -20,11 +20,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.IObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.util.customconfiguration.FactoryObjectCustomConfigurator;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_util;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinitionBuilder;
 
+	use namespace spring_actionscript_util;
 
 	/**
 	 *
@@ -49,6 +51,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var cls:Class = ClassUtils.forName(String(node.attribute(CLASS_ATTR)[0]), _applicationDomain);
 			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(cls);
 
+			context.parseAttributes(result.objectDefinition, node);
 			context.parseConstructorArguments(result.objectDefinition, node);
 			context.parseMethodInvocations(result.objectDefinition, node);
 			context.parseProperties(result.objectDefinition, node);

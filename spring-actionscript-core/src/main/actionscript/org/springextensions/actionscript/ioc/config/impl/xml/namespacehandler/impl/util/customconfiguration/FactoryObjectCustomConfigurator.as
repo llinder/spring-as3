@@ -34,6 +34,11 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			_factoryMethod = factoryMethodName;
 		}
 
+
+		public function get factoryMethod():String {
+			return _factoryMethod;
+		}
+
 		/**
 		 *
 		 * @param instance
