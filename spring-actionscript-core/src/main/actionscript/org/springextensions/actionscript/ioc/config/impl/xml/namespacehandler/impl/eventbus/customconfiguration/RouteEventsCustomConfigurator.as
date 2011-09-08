@@ -67,7 +67,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param instance
 		 * @param objectDefinition
 		 */
-		override public function execute(instance:*, objectDefinition:IObjectDefinition):void {
+		override public function execute(instance:*, objectDefinition:IObjectDefinition):* {
 			if ((eventNames != null) && (eventNames.length > 0)) {
 				var resolvedTopics:Array;
 				var topic:String;

@@ -95,7 +95,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param instance
 		 * @param objectDefinition
 		 */
-		override public function execute(instance:*, objectDefinition:IObjectDefinition):void {
+		override public function execute(instance:*, objectDefinition:IObjectDefinition):* {
 			var type:Type = Type.forClass(objectDefinition.clazz);
 			var method:Method = type.getMethod(_eventHandlerMethodName);
 			var proxy:EventHandlerProxy = new EventHandlerProxy(instance, method, _properties);

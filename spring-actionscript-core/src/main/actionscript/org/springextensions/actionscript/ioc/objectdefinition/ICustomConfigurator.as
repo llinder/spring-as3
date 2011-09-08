@@ -20,6 +20,6 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	 * @author Roland Zwaga
 	 */
 	public interface ICustomConfigurator {
-		function execute(instance:*, objectDefinition:IObjectDefinition):void;
+		function execute(instance:*, objectDefinition:IObjectDefinition):*;
 	}
 }

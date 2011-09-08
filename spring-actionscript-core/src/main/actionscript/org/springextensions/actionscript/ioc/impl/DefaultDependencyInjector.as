@@ -354,7 +354,7 @@ package org.springextensions.actionscript.ioc.impl {
 				instance = postProcessingAfterInitialization(instance, objectName, objectFactory.objectPostProcessors);
 			}
 
-			executeCustomConfiguration(instance, objectDefinition);
+			instance = executeCustomConfiguration(instance, objectDefinition);
 
 			cacheSingleton(objectDefinition, objectFactory.cache, objectName, instance);
 
@@ -366,15 +366,23 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param instance
 		 * @param objectDefinition
 		 */
-		protected function executeCustomConfiguration(instance:*, objectDefinition:IObjectDefinition):void {
+		protected function executeCustomConfiguration(instance:*, objectDefinition:IObjectDefinition):* {
+			var result:*;
 			if (objectDefinition.customConfiguration is ICustomConfigurator) {
-				ICustomConfigurator(objectDefinition.customConfiguration).execute(instance, objectDefinition);
+				result = ICustomConfigurator(objectDefinition.customConfiguration).execute(instance, objectDefinition);
+				if (result != null) {
+					instance = result;
+				}
 			} else if (objectDefinition.customConfiguration is Vector.<ICustomConfigurator>) {
 				var configurators:Vector.<ICustomConfigurator> = objectDefinition.customConfiguration as Vector.<ICustomConfigurator>;
 				for each (var configurator:ICustomConfigurator in configurators) {
-					configurator.execute(instance, objectDefinition);
+					result = configurator.execute(instance, objectDefinition);
+					if (result != null) {
+						instance = result;
+					}
 				}
 			}
+			return instance;
 		}
 
 		/**

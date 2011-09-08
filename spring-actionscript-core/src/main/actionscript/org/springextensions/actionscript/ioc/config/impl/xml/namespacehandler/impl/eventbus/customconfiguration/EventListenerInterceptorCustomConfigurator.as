@@ -42,7 +42,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param instance
 		 * @param objectDefinition
 		 */
-		override public function execute(instance:*, objectDefinition:IObjectDefinition):void {
+		override public function execute(instance:*, objectDefinition:IObjectDefinition):* {
 			if ((eventName == null) && (eventClass == null)) {
 				addListenerInterceptors(instance);
 			} else {

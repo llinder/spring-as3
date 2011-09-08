@@ -7,7 +7,7 @@
 
 	<xsd:annotation>
 		<xsd:documentation><![CDATA[
-			Spring ActionScript Framework 1.0 Util Schema
+			Spring ActionScript Framework 2.0 Util Schema
 			Schema Authors: Christophe Herreman, Roland Zwaga
 			]]>
 		</xsd:documentation>
@@ -42,5 +42,13 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+
+	<xsd:element name="factory" type="factoryType">
+
+	<xsd:xsd:complexType name="factoryType">
+		<xsd:complexContent>
+	      <xsd:extension base="objects:objectType"/>
+	   	</xsd:complexContent>
+	</xsd:xsd:complexType>
 
 </xsd:schema>

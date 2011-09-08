@@ -35,6 +35,8 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectFactoryPostProcessorsFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.RegisterObjectPostProcessorsFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.object.ApplicationContextAwareObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.process.impl.object.ApplicationDomainAwarePostProcessor;
+	import org.springextensions.actionscript.ioc.factory.process.impl.object.ObjectDefinitionRegistryAwareObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.object.ObjectFactoryAwarePostProcessor;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjector;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistry;
@@ -76,8 +78,10 @@ package org.springextensions.actionscript.context.impl {
 			addObjectFactoryPostProcessor(new FactoryObjectFactoryPostProcessor());
 
 			objectFactory.addObjectPostProcessor(new ApplicationContextAwareObjectPostProcessor(this));
+			objectFactory.addObjectPostProcessor(new ApplicationDomainAwarePostProcessor(this));
 			objectFactory.addObjectPostProcessor(new ObjectFactoryAwarePostProcessor(this));
 			objectFactory.addObjectPostProcessor(new EventBusAwareObjectPostProcessor(this));
+			objectFactory.addObjectPostProcessor(new ObjectDefinitionRegistryAwareObjectPostProcessor(this.objectDefinitionRegistry));
 
 			objectFactory.addReferenceResolver(new ThisReferenceResolver(this));
 			objectFactory.addReferenceResolver(new ObjectReferenceResolver(this));

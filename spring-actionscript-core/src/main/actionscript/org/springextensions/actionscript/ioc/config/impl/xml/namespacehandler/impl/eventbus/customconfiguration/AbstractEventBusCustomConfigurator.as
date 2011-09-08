@@ -31,7 +31,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			_eventBusUserRegistry = eventBusUserRegistry;
 		}
 
-		public function execute(instance:*, objectDefinition:IObjectDefinition):void {
+		public function execute(instance:*, objectDefinition:IObjectDefinition):* {
 			throw new IllegalOperationError("Not implemented in abstract base class");
 		}
 
