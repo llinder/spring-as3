@@ -34,6 +34,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			_factoryMethod = factoryMethodName;
 		}
 
+		/**
+		 *
+		 * @param instance
+		 * @param objectDefinition
+		 * @return
+		 */
 		public function execute(instance:*, objectDefinition:IObjectDefinition):* {
 			return new GenericFactoryObject(instance, _factoryMethod, objectDefinition.isSingleton);
 		}

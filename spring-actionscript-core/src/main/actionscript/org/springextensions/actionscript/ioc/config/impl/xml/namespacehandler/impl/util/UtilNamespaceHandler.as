@@ -52,13 +52,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		}
 
 		public function set applicationDomain(value:ApplicationDomain):void {
-			return _applicationDomain;
+			_applicationDomain = value;
 		}
 
 		public function afterPropertiesSet():void {
 			registerObjectDefinitionParser(CONSTANT, new ConstantNodeParser());
 			registerObjectDefinitionParser(INVOKE, new InvokeNodeParser());
-			registerObjectDefinitionParser(FACTORY, new FactoryNodeParser(_objectDefinitionRegistry));
+			registerObjectDefinitionParser(FACTORY, new FactoryNodeParser(_objectDefinitionRegistry, _applicationDomain));
 		}
 
 		public function get objectDefinitionRegistry():IObjectDefinitionRegistry {

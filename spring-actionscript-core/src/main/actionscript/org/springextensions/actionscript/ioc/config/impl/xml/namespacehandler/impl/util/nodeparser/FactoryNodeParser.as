@@ -14,6 +14,8 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.util.nodeparser {
+	import flash.system.ApplicationDomain;
+
 	import org.as3commons.lang.ClassUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.IObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
@@ -24,25 +26,27 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinitionBuilder;
 
 
-
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
 	public class FactoryNodeParser extends AbstractObjectDefinitionParser {
+		private static const CLASS_ATTR:String = "class";
 
 		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
+		private var _applicationDomain:ApplicationDomain;
 
 		/**
 		 * Creates a new <code>FactoryNodeParser</code> instance.
 		 */
-		public function FactoryNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry) {
+		public function FactoryNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry, appDomain:ApplicationDomain) {
 			super();
 			_objectDefinitionRegistry = objectDefinitionRegistry;
+			_applicationDomain = appDomain;
 		}
 
 		override protected function parseInternal(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
-			var cls:Class = ClassUtils.forName(String(node.attribute("class")[0]));
+			var cls:Class = ClassUtils.forName(String(node.attribute(CLASS_ATTR)[0]), _applicationDomain);
 			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(cls);
 
 			context.parseConstructorArguments(result.objectDefinition, node);
