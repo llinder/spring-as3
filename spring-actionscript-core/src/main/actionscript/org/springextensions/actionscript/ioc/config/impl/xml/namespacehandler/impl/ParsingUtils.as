@@ -26,12 +26,16 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	 */
 	public final class ParsingUtils {
 
+		private static const DASH_CHAR:String = "-";
+		private static const COMMA_CHAR:String = ",";
+
 		/**
 		 * Maps the given attributes of the xml node to properties of the object definition.
 		 */
-		public static function mapProperties(objectDefinition:IObjectDefinition, node:XML, ... attributes):void {
-			mapAttributes(objectDefinition, node, attributes, function(attributeName:String):Object {
-				return node.attribute(attributeName).toString();
+		public static function mapProperties(ns:Namespace, objectDefinition:IObjectDefinition, node:XML, ... attributes):void {
+			mapAttributes(ns, objectDefinition, node, attributes, function(attributeName:String):Object {
+				var qn:QName = new QName(ns, attributeName);
+				return node.attribute(qn).toString();
 			});
 		}
 
@@ -39,9 +43,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * Maps the given attributes of the xml node to an array of properties in the properties of the object
 		 * definition.
 		 */
-		public static function mapPropertiesArrays(objectDefinition:IObjectDefinition, node:XML, ... attributes):void {
-			mapAttributes(objectDefinition, node, attributes, function(attributeName:String):Object {
-				var names:Array = node.attribute(attributeName).toString().split(",");
+		public static function mapPropertiesArrays(ns:Namespace, objectDefinition:IObjectDefinition, node:XML, ... attributes):void {
+			mapAttributes(ns, objectDefinition, node, attributes, function(attributeName:String):Object {
+				var names:Array = node.attribute(attributeName).toString().split(COMMA_CHAR);
 				var result:Array = [];
 
 				for each (var referenceName:String in names) {
@@ -54,8 +58,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		/**
 		 * Maps the given attributes of the xml node to object references in the properties of the object definition.
 		 */
-		public static function mapReferences(objectDefinition:IObjectDefinition, node:XML, ... attributes):void {
-			mapAttributes(objectDefinition, node, attributes, function(attributeName:String):Object {
+		public static function mapReferences(ns:Namespace, objectDefinition:IObjectDefinition, node:XML, ... attributes):void {
+			mapAttributes(ns, objectDefinition, node, attributes, function(attributeName:String):Object {
 				return new RuntimeObjectReference(node.attribute(attributeName).toString());
 			});
 		}
@@ -64,9 +68,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * Maps the given attributes of the xml node to an array of object references in the properties of the object
 		 * definition.
 		 */
-		public static function mapReferenceArrays(objectDefinition:IObjectDefinition, node:XML, ... attributes):void {
-			mapAttributes(objectDefinition, node, attributes, function(attributeName:String):Object {
-				var names:Array = node.attribute(attributeName).toString().split(",");
+		public static function mapReferenceArrays(ns:Namespace, objectDefinition:IObjectDefinition, node:XML, ... attributes):void {
+			mapAttributes(ns, objectDefinition, node, attributes, function(attributeName:String):Object {
+				var names:Array = node.attribute(attributeName).toString().split(COMMA_CHAR);
 				var result:Array = [];
 
 				for each (var referenceName:String in names) {
@@ -83,7 +87,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @see #mapReferences() ParsingUtils.mapReferences()
 		 * @see #mapReferenceArrays() ParsingUtils.mapReferenceArrays()
 		 */
-		private static function mapAttributes(objectDefinition:IObjectDefinition, node:XML, attributes:Array, mapper:Function):void {
+		private static function mapAttributes(ns:Namespace, objectDefinition:IObjectDefinition, node:XML, attributes:Array, mapper:Function):void {
 			for each (var attribute:Object in attributes) {
 				// skip invalid attributes, we need a string or an AttributeToPropertyMapping
 				if (!(attribute is String) && !(attribute is AttributeToPropertyMapping)) {
@@ -91,9 +95,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 				}
 
 				var attributeName:String = (attribute is String) ? String(attribute) : AttributeToPropertyMapping(attribute).attribute;
+				var qn:QName = new QName(ns, attributeName);
 
 				// add the property to the object definition only if it is defined in the xml definition
-				if (node.attribute(attributeName).length() > 0) {
+				if (node.attribute(qn).length() > 0) {
 					var propertyName:String = (attribute is String) ? attributeNameToPropertyName(attributeName) : AttributeToPropertyMapping(attribute).propertyName;
 					var propDef:PropertyDefinition = new PropertyDefinition(propertyName, mapper(attributeName));
 					objectDefinition.addPropertyDefinition(propDef);
@@ -109,7 +114,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @see org.springextensions.actionscript.ioc.factory.xml.parser.support.AttributeToPropertyMapping AttributeToPropertyMapping
 		 */
 		public static function attributeNameToPropertyName(attribute:String):String {
-			var parts:Array = attribute.split("-");
+			var parts:Array = attribute.split(DASH_CHAR);
 			var result:String = parts.shift();
 
 			for each (var part:String in parts) {

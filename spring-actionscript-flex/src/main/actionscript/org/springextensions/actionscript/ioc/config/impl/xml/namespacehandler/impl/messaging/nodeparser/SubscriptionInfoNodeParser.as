@@ -16,9 +16,12 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.messaging.nodeparser {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_messaging;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
+
+	use namespace spring_actionscript_messaging;
 
 	/**
 	 * @docref xml-schema-based-configuration.html#the_messaging_schema
@@ -40,12 +43,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 		override protected function parseInternal(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var result:IObjectDefinition = new ObjectDefinition("");
-			mapProperties(result, node);
+			mapProperties(spring_actionscript_messaging, result, node);
 			return result;
 		}
 
-		protected function mapProperties(objectDefinition:IObjectDefinition, node:XML):void {
-			ParsingUtils.mapProperties(objectDefinition, node, MAX_FREQUENCY_ATTR, SELECTOR_ATTR, SUBTOPIC_ATTR);
+		protected function mapProperties(ns:Namespace, objectDefinition:IObjectDefinition, node:XML):void {
+			ParsingUtils.mapProperties(ns, objectDefinition, node, MAX_FREQUENCY_ATTR, SELECTOR_ATTR, SUBTOPIC_ATTR);
 		}
 
 	}

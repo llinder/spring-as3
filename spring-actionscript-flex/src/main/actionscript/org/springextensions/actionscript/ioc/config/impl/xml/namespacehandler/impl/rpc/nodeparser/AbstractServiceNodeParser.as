@@ -16,9 +16,12 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.rpc.nodeparser {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_messaging;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
+
+	use namespace spring_actionscript_messaging;
 
 	/**
 	 * mx.rpc.AbstractService node parser.
@@ -49,8 +52,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		override protected function parseInternal(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var result:IObjectDefinition = new ObjectDefinition("");
 
-			ParsingUtils.mapProperties(result, node, DESTINATION_ATTR, REQUEST_TIMEOUT_ATTR);
-			ParsingUtils.mapReferences(result, node, CHANNEL_SET_ATTR);
+			ParsingUtils.mapProperties(spring_actionscript_messaging, result, node, DESTINATION_ATTR, REQUEST_TIMEOUT_ATTR);
+			ParsingUtils.mapReferences(spring_actionscript_messaging, result, node, CHANNEL_SET_ATTR);
 
 			return result;
 		}

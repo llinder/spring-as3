@@ -19,8 +19,11 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 	import org.as3commons.lang.ClassUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_messaging;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+
+	use namespace spring_actionscript_messaging;
 
 	/**
 	 * RemoteObject node parser.
@@ -54,7 +57,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			result.className = ClassUtils.getFullyQualifiedName(RemoteObject, true);
 
-			ParsingUtils.mapProperties(result, node, CONCURRENCY_ATTR, ENDPOINT_ATTR, MAKE_OBJECTS_BINDABLE_ATTR, SHOW_BUSY_CURSOR_ATTR, SOURCE_ATTR);
+			ParsingUtils.mapProperties(spring_actionscript_messaging, result, node, CONCURRENCY_ATTR, ENDPOINT_ATTR, MAKE_OBJECTS_BINDABLE_ATTR, SHOW_BUSY_CURSOR_ATTR, SOURCE_ATTR);
 
 			return result;
 		}

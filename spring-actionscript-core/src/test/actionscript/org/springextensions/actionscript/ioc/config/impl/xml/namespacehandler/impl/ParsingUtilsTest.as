@@ -38,7 +38,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var objectDefinition:IObjectDefinition = new ObjectDefinition("");
 			var xml:XML = <node an-attribute="a" another-attribute="b" yet-another-attribute="c"/>;
 
-			ParsingUtils.mapProperties(objectDefinition, xml, "an-attribute", "another-attribute", new AttributeToPropertyMapping("yet-another-attribute", "YETAnotherAttribute"), "no-such-attribute");
+			ParsingUtils.mapProperties(null, objectDefinition, xml, "an-attribute", "another-attribute", new AttributeToPropertyMapping("yet-another-attribute", "YETAnotherAttribute"), "no-such-attribute");
 
 			assertEquals("a", objectDefinition.getPropertyDefinitionByName("anAttribute").value);
 			assertEquals("b", objectDefinition.getPropertyDefinitionByName("anotherAttribute").value);
@@ -54,7 +54,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var objectDefinition:IObjectDefinition = new ObjectDefinition("");
 			var xml:XML = <node an-attribute="a,b,c" another-attribute="b" yet-another-attribute="c,d"/>;
 
-			ParsingUtils.mapPropertiesArrays(objectDefinition, xml, "an-attribute", "another-attribute", new AttributeToPropertyMapping("yet-another-attribute", "YETAnotherAttribute"), "no-such-attribute");
+			ParsingUtils.mapPropertiesArrays(null, objectDefinition, xml, "an-attribute", "another-attribute", new AttributeToPropertyMapping("yet-another-attribute", "YETAnotherAttribute"), "no-such-attribute");
 
 			assertPropertiesArray(objectDefinition, "anAttribute", ["a", "b", "c"]);
 			assertPropertiesArray(objectDefinition, "anotherAttribute", ["b"]);
@@ -70,7 +70,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var objectDefinition:IObjectDefinition = new ObjectDefinition("");
 			var xml:XML = <node an-attribute="a" another-attribute="b" yet-another-attribute="c"/>;
 
-			ParsingUtils.mapReferences(objectDefinition, xml, "an-attribute", "another-attribute", new AttributeToPropertyMapping("yet-another-attribute", "YETAnotherAttribute"), "no-such-attribute");
+			ParsingUtils.mapReferences(null, objectDefinition, xml, "an-attribute", "another-attribute", new AttributeToPropertyMapping("yet-another-attribute", "YETAnotherAttribute"), "no-such-attribute");
 
 			assertTrue(objectDefinition.getPropertyDefinitionByName("anAttribute").value is RuntimeObjectReference);
 			assertTrue(objectDefinition.getPropertyDefinitionByName("anotherAttribute").value is RuntimeObjectReference);
@@ -90,7 +90,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var objectDefinition:IObjectDefinition = new ObjectDefinition("");
 			var xml:XML = <node an-attribute="a,b,c" another-attribute="b" yet-another-attribute="c,d"/>;
 
-			ParsingUtils.mapReferenceArrays(objectDefinition, xml, "an-attribute", "another-attribute", new AttributeToPropertyMapping("yet-another-attribute", "YETAnotherAttribute"), "no-such-attribute");
+			ParsingUtils.mapReferenceArrays(null, objectDefinition, xml, "an-attribute", "another-attribute", new AttributeToPropertyMapping("yet-another-attribute", "YETAnotherAttribute"), "no-such-attribute");
 
 			assertReferenceArray(objectDefinition, "anAttribute", ["a", "b", "c"]);
 			assertReferenceArray(objectDefinition, "anotherAttribute", ["b"]);

@@ -19,8 +19,11 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 	import org.as3commons.lang.ClassUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_messaging;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+
+	use namespace spring_actionscript_messaging;
 
 	/**
 	 * @docref xml-schema-based-configuration.html#the_messaging_schema
@@ -41,14 +44,14 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			var result:IObjectDefinition = IObjectDefinition(super.parseInternal(node, context));
 
 			result.className = ClassUtils.getFullyQualifiedName(Producer, true);
-			mapProperties(result, node);
+			mapProperties(spring_actionscript_messaging, result, node);
 
 			return result;
 		}
 
-		override protected function mapProperties(objectDefinition:IObjectDefinition, node:XML):void {
-			super.mapProperties(objectDefinition, node);
-			ParsingUtils.mapProperties(objectDefinition, node, SUBTOPIC_ATTR);
+		override protected function mapProperties(ns:Namespace, objectDefinition:IObjectDefinition, node:XML):void {
+			super.mapProperties(ns, objectDefinition, node);
+			ParsingUtils.mapProperties(ns, objectDefinition, node, SUBTOPIC_ATTR);
 		}
 
 	}

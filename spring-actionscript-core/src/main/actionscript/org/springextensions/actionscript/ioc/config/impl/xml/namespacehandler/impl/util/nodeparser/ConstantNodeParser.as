@@ -18,10 +18,13 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.as3commons.lang.ClassUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_util;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.factory.impl.FieldRetrievingFactoryObject;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
+
+	use namespace spring_actionscript_util;
 
 	/**
 	 *
@@ -48,10 +51,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		override protected function parseInternal(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var result:IObjectDefinition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(FieldRetrievingFactoryObject, true));
 
-			ParsingUtils.mapProperties(result, node, STATIC_FIELD);
-			ParsingUtils.mapProperties(result, node, TARGET_CLASS);
-			ParsingUtils.mapProperties(result, node, TARGET_OBJECT);
-			ParsingUtils.mapProperties(result, node, TARGET_FIELD);
+			ParsingUtils.mapProperties(spring_actionscript_util, result, node, STATIC_FIELD);
+			ParsingUtils.mapProperties(spring_actionscript_util, result, node, TARGET_CLASS);
+			ParsingUtils.mapProperties(spring_actionscript_util, result, node, TARGET_OBJECT);
+			ParsingUtils.mapProperties(spring_actionscript_util, result, node, TARGET_FIELD);
 
 			return result;
 		}

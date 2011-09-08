@@ -54,8 +54,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		override protected function parseInternal(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(GenericStageProcessor);
 
-			ParsingUtils.mapProperties(result.objectDefinition, node, TARGET_PROPERTY_ATTR, TARGET_METHOD_ATTR);
-			ParsingUtils.mapReferences(result.objectDefinition, node, TARGET_OBJECT_ATTR);
+			ParsingUtils.mapProperties(spring_actionscript_stageprocessing, result.objectDefinition, node, TARGET_PROPERTY_ATTR, TARGET_METHOD_ATTR);
+			ParsingUtils.mapReferences(spring_actionscript_stageprocessing, result.objectDefinition, node, TARGET_OBJECT_ATTR);
 
 			if (node.attribute(OBJECT_SELECTOR_ATTR).length() > 0) {
 				var objectSelectorName:String = String(node.attribute(OBJECT_SELECTOR_ATTR)[0]);

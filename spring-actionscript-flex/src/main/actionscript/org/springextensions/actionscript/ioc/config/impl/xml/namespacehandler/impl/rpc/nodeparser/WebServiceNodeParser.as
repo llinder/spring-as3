@@ -20,8 +20,11 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.as3commons.lang.ClassUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AttributeToPropertyMapping;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_messaging;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+
+	use namespace spring_actionscript_messaging;
 
 	/**
 	 * WebService node parser.
@@ -69,7 +72,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			result.className = ClassUtils.getFullyQualifiedName(WebService, true);
 
-			ParsingUtils.mapProperties(result, node, DESCRIPTION_ATTR, ENDPOINT_URI_MAPPING, MAKE_OBJECTS_BINDABLE_ATTR, PORT_ATTR, ROOT_URL_MAPPING, SERVICE_ATTR, USE_PROXY_ATTR, WSDL_ATTR);
+			ParsingUtils.mapProperties(spring_actionscript_messaging, result, node, DESCRIPTION_ATTR, ENDPOINT_URI_MAPPING, MAKE_OBJECTS_BINDABLE_ATTR, PORT_ATTR, ROOT_URL_MAPPING, SERVICE_ATTR, USE_PROXY_ATTR, WSDL_ATTR);
 
 			return result;
 		}

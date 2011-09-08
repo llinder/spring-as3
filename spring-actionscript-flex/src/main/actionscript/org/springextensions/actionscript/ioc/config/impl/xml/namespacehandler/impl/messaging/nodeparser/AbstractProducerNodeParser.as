@@ -15,8 +15,11 @@
  */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.messaging.nodeparser {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_messaging;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+
+	use namespace spring_actionscript_messaging;
 
 	/**
 	 * @docref xml-schema-based-configuration.html#the_messaging_schema
@@ -46,15 +49,15 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		override protected function parseInternal(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var result:IObjectDefinition = IObjectDefinition(super.parseInternal(node, context));
 
-			mapProperties(result, node);
+			mapProperties(spring_actionscript_messaging, result, node);
 
 			return result;
 		}
 
-		override protected function mapProperties(objectDefinition:IObjectDefinition, node:XML):void {
-			super.mapProperties(objectDefinition, node);
-			ParsingUtils.mapProperties(objectDefinition, node, AUTO_CONNECT_ATTR, PRIORITY_ATTR, RECONNECT_ATTEMPTS_ATTR, RECONNECT_INTERVAL_ATTR);
-			ParsingUtils.mapReferences(objectDefinition, node, DEFAULT_HEADERS_ATTR);
+		override protected function mapProperties(ns:Namespace, objectDefinition:IObjectDefinition, node:XML):void {
+			super.mapProperties(ns, objectDefinition, node);
+			ParsingUtils.mapProperties(ns, objectDefinition, node, AUTO_CONNECT_ATTR, PRIORITY_ATTR, RECONNECT_ATTEMPTS_ATTR, RECONNECT_INTERVAL_ATTR);
+			ParsingUtils.mapReferences(ns, objectDefinition, node, DEFAULT_HEADERS_ATTR);
 		}
 
 	}

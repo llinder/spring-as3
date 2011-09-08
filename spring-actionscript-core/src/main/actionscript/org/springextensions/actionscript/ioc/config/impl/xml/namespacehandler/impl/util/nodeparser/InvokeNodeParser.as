@@ -16,10 +16,13 @@
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.util.nodeparser {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_util;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.factory.impl.MethodInvokingFactoryObject;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinitionBuilder;
+
+	use namespace spring_actionscript_util;
 
 	/**
 	 *
@@ -44,9 +47,9 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 
 			setNamespace(node, node.namespace());
 
-			ParsingUtils.mapProperties(builder.objectDefinition, node, TARGET_CLASS);
-			ParsingUtils.mapProperties(builder.objectDefinition, node, TARGET_OBJECT);
-			ParsingUtils.mapProperties(builder.objectDefinition, node, TARGET_METHOD);
+			ParsingUtils.mapProperties(spring_actionscript_util, builder.objectDefinition, node, TARGET_CLASS);
+			ParsingUtils.mapProperties(spring_actionscript_util, builder.objectDefinition, node, TARGET_OBJECT);
+			ParsingUtils.mapProperties(spring_actionscript_util, builder.objectDefinition, node, TARGET_METHOD);
 
 			var args:Array = [];
 

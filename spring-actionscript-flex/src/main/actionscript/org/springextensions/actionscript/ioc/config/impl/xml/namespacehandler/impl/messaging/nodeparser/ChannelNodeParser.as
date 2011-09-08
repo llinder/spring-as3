@@ -17,9 +17,12 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AttributeToPropertyMapping;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
+	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_messaging;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
+
+	use namespace spring_actionscript_messaging;
 
 	/**
 	 * @docref xml-schema-based-configuration.html#the_messaging_schema
@@ -56,8 +59,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		}
 
 		protected function mapProperties(objectDefinition:IObjectDefinition, node:XML):void {
-			ParsingUtils.mapProperties(objectDefinition, node, CONNECT_TIMEOUT_ATTR, ID_ATTR, REQUEST_TIMEOUT_ATTR, URI_ATTR);
-			ParsingUtils.mapPropertiesArrays(objectDefinition, node, FAILOVER_URIS_ATTR);
+			ParsingUtils.mapProperties(spring_actionscript_messaging, objectDefinition, node, CONNECT_TIMEOUT_ATTR, ID_ATTR, REQUEST_TIMEOUT_ATTR, URI_ATTR);
+			ParsingUtils.mapPropertiesArrays(spring_actionscript_messaging, objectDefinition, node, FAILOVER_URIS_ATTR);
 		}
 	}
 }
