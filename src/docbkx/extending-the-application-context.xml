@@ -5,6 +5,10 @@
 	xmlns:ns3="http://www.w3.org/2000/svg" xmlns:ns="http://docbook.org/ns/docbook">
 	<title>Extending the application context</title>
 
+	<sect1 xml:id="factory-objects">
+		<title>Factory objects</title>
+		<para>...</para>
+	</sect1>
 	<sect1 xml:id="object-post-processors">
 		<title>Object post-processors</title>
 		<para>...</para>
@@ -21,5 +25,5 @@
 		<title>Class scanners</title>
 		<para>...</para>
 	</sect1>
-	
+
 </chapter>

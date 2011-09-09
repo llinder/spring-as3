@@ -28,6 +28,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
 
 	/**
 	 * @author Christophe Herreman
@@ -142,30 +143,22 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			//logger.debug("Resolving property placeholders in object definition '{0}'", objectDefinition.className);
 			var objectDefinition:IObjectDefinition = _objectFactory.getObjectDefinition(objectName);
 
-			// resolve constructor arguments
-
-			var numConstructorArgs:uint = objectDefinition.constructorArguments.length;
-
-			for (var i:uint = 0; i < numConstructorArgs; i++) {
-				var constructorArg:* = objectDefinition.constructorArguments[i];
+			var i:int = 0;
+			for each (var constructorArg:* in objectDefinition.constructorArguments) {
 				if (constructorArg is String) {
 					//logger.debug("Resolving property placeholders in constructor arg '{0}'", constructorArg);
 					objectDefinition.constructorArguments[i] = resolver.resolvePropertyPlaceholders(constructorArg, PROPERTY_REGEXP);
 					objectDefinition.constructorArguments[i] = resolver.resolvePropertyPlaceholders(objectDefinition.constructorArguments[i], PROPERTY_REGEXP2);
 				}
+				i++;
 			}
 
-			// resolve properties
-
-			var properties:Object = objectDefinition.properties;
-			var propertyNames:Array = ObjectUtils.getKeys(properties);
-
-			for each (var propertyName:String in propertyNames) {
+			for each (var propDef:PropertyDefinition in objectDefinition.properties) {
 				//logger.debug("Resolving property placeholders in property '{0}'", propertyName);
-				if (properties[propertyName] is String) {
+				if (propDef.value is String) {
 					//logger.debug("Resolving property placeholders in property '{0}' with value '{1}'", propertyName, properties[propertyName]);
-					properties[propertyName] = resolver.resolvePropertyPlaceholders(properties[propertyName], PROPERTY_REGEXP);
-					properties[propertyName] = resolver.resolvePropertyPlaceholders(properties[propertyName], PROPERTY_REGEXP2);
+					propDef.value = resolver.resolvePropertyPlaceholders(propDef.value, PROPERTY_REGEXP);
+					propDef.value = resolver.resolvePropertyPlaceholders(propDef.value, PROPERTY_REGEXP2);
 				}
 			}
 
@@ -182,7 +175,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			}
 
 			// resolve result of factory method
-			if (objectDefinition.factoryObjectName && objectDefinition.factoryMethod) {
+			if (objectDefinition.factoryObjectName && objectDefinition.factoryMethod && objectDefinition.isSingleton) {
 				resolvePropertyPlaceholdersForInstance(resolver, _objectFactory.getObject(objectName));
 			}
 		}

@@ -20,6 +20,7 @@ package org.springextensions.actionscript.context.impl {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
+
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.IOperationQueue;
 	import org.as3commons.async.operation.event.OperationEvent;
@@ -714,11 +715,14 @@ package org.springextensions.actionscript.context.impl {
 		 *
 		 * @param propertySources
 		 */
-		protected function propertyTextFilesLoadComplete(propertySources:Vector.<String>):void {
-			var source:String = propertySources.join(NEWLINE_CHAR);
-			propertiesParser ||= new KeyValuePropertiesParser();
-			propertiesProvider ||= new Properties();
-			propertiesParser.parseProperties(source, propertiesProvider);
+		protected function propertyTextFilesLoadComplete(operationEvent:OperationEvent):void {
+			var propertySources:Vector.<String> = operationEvent.result as Vector.<String>;
+			if (propertySources != null) {
+				var source:String = propertySources.join(NEWLINE_CHAR);
+				propertiesParser ||= new KeyValuePropertiesParser();
+				propertiesProvider ||= new Properties();
+				propertiesParser.parseProperties(source, propertiesProvider);
+			}
 		}
 
 		/**
