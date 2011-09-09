@@ -1,33 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter version="5.0" xml:id="getting-started"
-    xmlns="http://docbook.org/ns/docbook"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-    xmlns:ns5="http://www.w3.org/1999/xhtml"
-    xmlns:ns4="http://www.w3.org/1998/Math/MathML"
-    xmlns:ns3="http://www.w3.org/2000/svg"
-    xmlns:ns="http://docbook.org/ns/docbook">
-    <title>Getting started</title>
-    
-    <sect1 xml:id="installing-spring-actionscript">
-        <title>Installing Spring Actionscript</title>
-        <para>To start using Spring Actionscript in your project you will need to download either the all-in-one swc or the archive with all of the separate extensions:</para>
-        <para><literal xlink:href="spring-actionscript-core-full.swc">All-in-one</literal></para>
-        <para><literal xlink:href="spring-actionscript.zip">Zip with dependencies</literal></para>
-        <para>wtf...</para>
-    </sect1>
+<chapter version="5.0" xml:id="getting-started" xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns5="http://www.w3.org/1999/xhtml"
+	xmlns:ns4="http://www.w3.org/1998/Math/MathML" xmlns:ns3="http://www.w3.org/2000/svg">
+	<title>Getting started</title>
 
-    <sect1 xml:id="creating-an-application-context">
-        <title>Creating an Application Context</title>
-        <para>...</para>
-    </sect1>
-    
-    <sect1 xml:id="creating-a-configuration">
-        <title>Creating a configuration for the Application Context</title>
-        <para>...</para>
-        <sect2 xml:id="using-property-files">
-            <title>Using property files</title>
-            <para>...</para>
-        </sect2>
-    </sect1>
+	<sect1 xml:id="installing-spring-actionscript">
+		<title>Installing Spring Actionscript</title>
+		<para>To start using Spring Actionscript in your project you will need to download either the
+		all-in-one swc or the archive with all of the separate extensions:</para>
+		<para>
+			spring-actionscript-core-full.swc
+		</para>
+		<para>
+			Zip with dependencies
+		</para>
+		<para>If you want to use the Flex specific functionality you will need to additionally download this .swc as well:</para>
+		<para>spring-actionscript-swc</para>
+		<para>One you've downloaded them place them in your project's library path. In a Flashbuilder
+			project, for instance, this simply means you need to copy them into your 'libs'
+			folder.</para>
+		
+	</sect1>
+
+	<sect1 xml:id="creating-an-application-context">
+		<title>Creating an Application Context</title>
+		<para>The main entry point for the Spring Actionscript library is the application context. There
+			are a number of different context flavours, but for now we'll use the <literal
+				xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal>
+			as this is probably the most commonly used one.</para>
+		<para>To create an instance of the <literal
+			xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal> simply add it as an <abbrev>MXML</abbrev> component to your application.</para>
+		<programlisting>&lt;fx:Declarations&gt;
+  &lt;sas:MXMLApplicationContext id="MXMLContext"/&gt;
+&lt;/fx:Declarations&gt;</programlisting>
+		<para>Now, this in itself won't do much of course. We need to tell the application context where to find it's configuration and make sure we know when it has finished
+		loading them.</para>
+		<para>Let's add a few properties to the context declaration:</para>
+		<programlisting>&lt;fx:Declarations&gt;
+  &lt;sas:MXMLApplicationContext id="MXMLContext"
+		configurations="{[ObjectConfiguration]}"
+		complete="{onComplete(event)}"/&gt;
+&lt;/fx:Declarations&gt;</programlisting>
+		<para>In the section we take a look at how we create a configuration file for our <literal
+			xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal>.</para>
+	</sect1>
+
+	<sect1 xml:id="creating-a-configuration">
+		<title>Creating a configuration for the <literal
+			xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal></title>
+		<para>A configuration file for an <literal
+			xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal> is just a regular MXML component which
+			can be created using the <emphasis>File-&gt;New-&gt;MXML Component</emphasis> menu.</para>
+		<para>Choose <emphasis>SASObjects</emphasis> for the <abbrev>MXML</abbrev> component type and you will get an empty component like this:</para>
+		<programlisting>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+&lt;/sas:SASObjects&gt;</programlisting>
+		<sect2 xml:id="using-property-files">
+			<title>Using property files</title>
+			<para>...</para>
+		</sect2>
+	</sect1>
 
 </chapter>
