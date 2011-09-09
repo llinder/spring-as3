@@ -229,6 +229,12 @@
 				</executions>
 				<dependencies>
 					<dependency>
+						<groupId>net.sf.xslthl</groupId>
+						<artifactId>xslthl</artifactId>
+						<version>2.0.1</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
 						<groupId>org.docbook</groupId>
 						<artifactId>docbook-xml</artifactId>
 						<version>${docbook-xml.version}</version>
@@ -248,6 +254,7 @@
 					</dependency>
 				</dependencies>
 				<configuration>
+					<highlightSource>1</highlightSource>
 					<includes>springactionscript.xml</includes>
 					<chunkedOutput>true</chunkedOutput>
 					<htmlStylesheet>css/html.css</htmlStylesheet>

@@ -49,14 +49,17 @@
 			<para>In the section sections we give a walkthrough of all the functionality offered by Spring
 				Actionscript, in convenient bite-sized chunks. Starting off with an introduction to what
 				Spring Actionscript is, where it came from and what it can mean for you.</para>
-			<para>After that an installation guide, a quick-start guide and after that step by step the different API's and extension point will be introduced to you.</para>
+			<para>After that an installation guide, a quick-start guide and after that step by step the
+				different API's and extension point will be introduced to you.</para>
 		</partintro>
 
 		<xi:include href="introduction.xml"/>
 
 		<xi:include href="getting-started.xml"/>
-		
+
 		<xi:include href="configuration-types.xml"/>
+		
+		<xi:include href="object-definitions.xml"/>
 
 		<xi:include href="extending-the-application-context.xml"/>
 

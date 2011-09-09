@@ -7,6 +7,7 @@
                 version="1.0" exclude-result-prefixes="xsl fo">
 
     <xsl:import href="urn:docbkx:stylesheet"/>
+    <xsl:import href="urn:docbkx:stylesheet/highlight.xsl"/>
     <xsl:import href="html-asdoclinkresolver.xsl"/>
     <!--###################################################
                      HTML Settings
