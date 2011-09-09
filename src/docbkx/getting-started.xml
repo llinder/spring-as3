@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter version="5.0" xml:id="introduction"
+<chapter version="5.0" xml:id="getting-started"
     xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:ns5="http://www.w3.org/1999/xhtml"
@@ -10,17 +10,20 @@
     
     <sect1 xml:id="installing-spring-actionscript">
         <title>Installing Spring Actionscript</title>
-        <para>....</para>
+        <para>To start using Spring Actionscript in your project you will need to download either the all-in-one swc or the archive with all of the separate extensions:</para>
+        <para><literal xlink:href="spring-actionscript-core-full.swc">All-in-one</literal></para>
+        <para><literal xlink:href="spring-actionscript.zip">Zip with dependencies</literal></para>
+        <para>wtf...</para>
     </sect1>
 
     <sect1 xml:id="creating-an-application-context">
         <title>Creating an Application Context</title>
-        <para>....</para>
+        <para>...</para>
     </sect1>
     
     <sect1 xml:id="creating-a-configuration">
         <title>Creating a configuration for the Application Context</title>
-        <para>....</para>
+        <para>...</para>
         <sect2 xml:id="using-property-files">
             <title>Using property files</title>
             <para>...</para>

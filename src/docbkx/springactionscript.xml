@@ -37,6 +37,9 @@
     <para>Spring Actionscript aims to be non-obtrusive and not to impose any
     kind of unnecessary structure to your application while still promoting
     best practices in software development.</para>
+    
+    <para>A lot the API's used by Spring Actionscript are available separately
+    as autonomous libraries that are part of the AS3Commons Project.</para>
 
     <para>This document provides a reference guide to Spring Actionscript's
     features. Since this document is still to be considered very much
@@ -52,9 +55,9 @@
       <para>A walkthrough of all the functionality offered by Spring Actionscript, in convenient bite-sized chunks :)</para>
     </partintro>
 
-    <xi:include href="introduction.xml" />
-
     <xi:include href="getting-started.xml" />
+
+    <xi:include href="introduction.xml" />
     
     <xi:include href="extending-the-application-context.xml" />
     
