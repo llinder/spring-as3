@@ -25,10 +25,10 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<xsd-files-path>${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/config/impl/xml/xsd</xsd-files-path>
+		<xsd-files-path>${basedir}/src/docbkx/resources/xsd</xsd-files-path>
 		<maven-site-plugin-version>3.0-beta-3</maven-site-plugin-version>
-		<docbkx-maven-plugin.version>2.0.13</docbkx-maven-plugin.version>
-		<docbook-xml.version>4.5</docbook-xml.version>
+		<docbkx-maven-plugin.version>2.0.10</docbkx-maven-plugin.version>
+		<docbook-xml.version>4.4</docbook-xml.version>
 		<jai_core.version>1.1.3</jai_core.version>
 		<ant-optional.version>1.5.2</ant-optional.version>
 		<flex-mojos.version>4.0-RC1</flex-mojos.version>
@@ -230,7 +230,7 @@
 				</executions>
 				<dependencies>
 					<dependency>
-						<groupId>docbook</groupId>
+						<groupId>org.docbook</groupId>
 						<artifactId>docbook-xml</artifactId>
 						<version>${docbook-xml.version}</version>
 						<scope>runtime</scope>
@@ -262,7 +262,7 @@
 							<value>${project.version}</value>
 						</entity>
 					</entities>
-					<preProcess>
+					<!--preProcess>
 						<xslt in="${basedir}/toplevel_files.xml"
 							  out="${basedir}/target/site/asdoc/toplevel.xml"
 							  style="${basedir}/src/docbkx/resources/xsl/combine_toplevels.xslt"
@@ -404,7 +404,7 @@
 						<delete file="${basedir}/target/site/asdoc/delete-me3.html"/>
 						<delete file="${basedir}/target/site/asdoc/delete-me4.html"/>
 
-					</preProcess>
+					</preProcess-->
 					<postProcess>
 						<copy todir="target/site/docs/reference">
 							<fileset dir="target/docbkx">
@@ -433,7 +433,7 @@
 							</fileset>
 						</copy>
 
-						<copy todir="target/site/schema/messaging"
+            <copy todir="target/site/schema/messaging"
 							  file="${xsd-files-path}/spring-actionscript-messaging-1.0.xsd"/>
 						<copy todir="target/site/schema/objects"
 							  file="${xsd-files-path}/spring-actionscript-objects-1.0.xsd"/>
@@ -447,11 +447,11 @@
 							  file="${xsd-files-path}/spring-actionscript-task-1.0.xsd"/>
 						<copy todir="target/site/schema/task"
 							  file="${xsd-files-path}/spring-actionscript-task-1.1.xsd"/>
-						<copy todir="target/site/schema/messaging"
+            <copy todir="target/site/schema/messaging"
 							  file="${xsd-files-path}/spring-actionscript-messaging-2.0.xsd"/>
 						<copy todir="target/site/schema/objects"
 							  file="${xsd-files-path}/spring-actionscript-objects-2.0.xsd"/>
-						<copy todir="target/site/schema/rpc"
+            <copy todir="target/site/schema/rpc"
 							  file="${xsd-files-path}/spring-actionscript-rpc-2.0.xsd"/>
 						<copy todir="target/site/schema/util"
 							  file="${xsd-files-path}/spring-actionscript-util-2.0.xsd"/>
@@ -765,7 +765,14 @@
 	</distributionManagement>
 
 	<repositories>
-		<repository>
+    <repository>
+      <id>maven2-repository</id>
+      <url>http://repo1.maven.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
 			<id>flex-mojos-repository</id>
 			<url>http://repository.sonatype.org/content/groups/public</url>
 			<releases>
@@ -774,14 +781,6 @@
 			<snapshots>
 			<enabled>true</enabled>
 			</snapshots>
-		</repository>
-
-		<repository>
-			<id>jarvana-repository</id>
-			<url>http://www.jarvana.com/jarvana</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
 		</repository>
 		<repository>
 			<id>cairngorm3-repository</id>
@@ -817,10 +816,10 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-	</repositories>
+  </repositories>
 
 	<pluginRepositories>
-		<pluginRepository>
+    <pluginRepository>
 			<id>flexmojos-plugin</id>
 			<url>http://repository.sonatype.org/content/groups/flexgroup</url>
 			<releases>
@@ -830,6 +829,6 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</pluginRepository>
-	</pluginRepositories>
+  </pluginRepositories>
 
 </project>
