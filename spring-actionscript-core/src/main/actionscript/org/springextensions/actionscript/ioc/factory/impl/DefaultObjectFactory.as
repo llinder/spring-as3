@@ -17,7 +17,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import flash.errors.IllegalOperationError;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
-
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.eventbus.IEventBusListener;
@@ -291,6 +290,13 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		public function addReferenceResolver(referenceResolver:IReferenceResolver):void {
 			referenceResolvers[referenceResolvers.length] = referenceResolver;
 			_referenceResolvers.sort(OrderedUtils.orderedCompareFunction);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function canCreate(objectName:String):Boolean {
+			return ((_objectDefinitionRegistry.containsObjectDefinition(objectName)) || (cache.hasInstance(objectName)));
 		}
 
 		/**

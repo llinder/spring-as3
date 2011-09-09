@@ -20,7 +20,6 @@ package org.springextensions.actionscript.context.impl {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
-
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.IOperationQueue;
 	import org.as3commons.async.operation.event.OperationEvent;
@@ -402,6 +401,10 @@ package org.springextensions.actionscript.context.impl {
 		 */
 		public function addReferenceResolver(referenceResolver:IReferenceResolver):void {
 			objectFactory.addReferenceResolver(referenceResolver);
+		}
+
+		public function canCreate(objectName:String):Boolean {
+			return objectFactory.canCreate(objectName);
 		}
 
 		/**

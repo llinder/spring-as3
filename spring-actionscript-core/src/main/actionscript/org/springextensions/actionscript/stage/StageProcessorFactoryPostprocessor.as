@@ -26,6 +26,7 @@ package org.springextensions.actionscript.stage {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser.StageProcessorNodeParser;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.util.ContextUtils;
 
 
@@ -97,18 +98,25 @@ package org.springextensions.actionscript.stage {
 
 			if (stageProcessorRegistry) {
 				for each (var name:String in stageProcessorNames) {
-					var objectSelector:IObjectSelector;
-					var selectorName:String = objectFactory.getObjectDefinition(name).customConfiguration as String;
-					if ((selectorName != null) && (objectFactory.objectDefinitionRegistry.containsObjectDefinition(selectorName))) {
-						objectSelector = objectFactory.getObject(selectorName);
-					} else {
-						objectSelector = getDefaultObjectSelector();
-					}
+					var objectSelector:IObjectSelector = resolveObjectSelector(objectFactory, name);
 					registerProcessor(stageProcessorRegistry, IStageObjectProcessor(objectFactory.getObject(name)), rootView, objectSelector);
 				}
 				stageProcessorRegistry.initialize();
 			}
 			return null;
+		}
+
+		protected function resolveObjectSelector(objectFactory:IObjectFactory, processorName:String):IObjectSelector {
+			var selector:* = objectFactory.getObjectDefinition(processorName).customConfiguration;
+			if (selector is String) {
+				var selectorName:String = String(selector);
+				if (objectFactory.canCreate(selectorName)) {
+					return objectFactory.getObject(selectorName);
+				}
+			} else if (selector is IObjectSelector) {
+				return IObjectSelector(selector)
+			}
+			return getDefaultObjectSelector();
 		}
 
 		protected function getDefaultObjectSelector():IObjectSelector {

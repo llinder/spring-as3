@@ -6,20 +6,47 @@
 	</namespaces>
 	<categories>
 		<category id="sas-config"
-				  label="Spring Actionscript COnfiguration"/>
+				  label="Spring Actionscript Configuration"/>
+		<category id="sas-stage"
+				  label="Spring Actionscript Stage Processing Configuration"/>
 	</categories>
 	<components>
-		<component name="MXMLApplicationContext" namespace="sas" category="sas-config"/>
-		<component name="Objects" namespace="sas" category="sas-config"/>
-		<component name="Object" namespace="sas" category="sas-config"/>
-		<component name="Property" namespace="sas" category="sas-config"/>
-		<component name="PropertyPlaceholder" namespace="sas" category="sas-config"/>
-		<component name="ConstructorArg" namespace="sas" category="sas-config"/>
-		<component name="Arg" namespace="sas" category="sas-config"/>
-		<component name="Param" namespace="sas" category="sas-config"/>
-		<component name="Template" namespace="sas" category="sas-config"/>
-		<component name="MethodInvocation" namespace="sas" category="sas-config"/>
-		<component name="Interface" namespace="sas" category="sas-config"/>
+		<component name="MXMLApplicationContext"
+				   namespace="sas"
+				   category="sas-config"/>
+		<component name="Objects"
+				   namespace="sas"
+				   category="sas-config"/>
+		<component name="Object"
+				   namespace="sas"
+				   category="sas-config"/>
+		<component name="Property"
+				   namespace="sas"
+				   category="sas-config"/>
+		<component name="PropertyPlaceholder"
+				   namespace="sas"
+				   category="sas-config"/>
+		<component name="ConstructorArg"
+				   namespace="sas"
+				   category="sas-config"/>
+		<component name="Arg"
+				   namespace="sas"
+				   category="sas-config"/>
+		<component name="Param"
+				   namespace="sas"
+				   category="sas-config"/>
+		<component name="Template"
+				   namespace="sas"
+				   category="sas-config"/>
+		<component name="MethodInvocation"
+				   namespace="sas"
+				   category="sas-config"/>
+		<component name="Interface"
+				   namespace="sas"
+				   category="sas-config"/>
+		<component name="StageAutowireProcessor"
+				   namespace="sas"
+				   category="sas-stage"/>
 	</components>
 
 </design>

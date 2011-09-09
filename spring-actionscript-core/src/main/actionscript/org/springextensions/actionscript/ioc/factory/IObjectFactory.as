@@ -177,5 +177,7 @@ package org.springextensions.actionscript.ioc.factory {
 		 * @return
 		 */
 		function resolveReferences(references:Array):Array;
+
+		function canCreate(objectName:String):Boolean;
 	}
 }

@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springextensions.actionscript</groupId>
 	<artifactId>springactionscript-superpom</artifactId>
@@ -8,11 +8,10 @@
 	<version>2.0-SNAPSHOT</version>
 	<name>Spring Actionscript</name>
 	<url>http://www.springactionscript.org</url>
-	<description>
-		Spring ActionScript is an offshoot of the Java-based Spring Framework written in ActionScript 3.
-		It is targeted for the Flash, Flex and AIR platforms. The framework contains a versatile Inversion of Control
-		Container, a micro MVC library and extensions for the Cairngorm and PureMVC frameworks.
-	</description>
+	<description> Spring ActionScript is an offshoot of the Java-based Spring Framework written in
+		ActionScript 3. It is targeted for the Flash, Flex and AIR platforms. The framework contains a
+		versatile Inversion of Control Container, a micro MVC library and extensions for the Cairngorm
+		and PureMVC frameworks. </description>
 	<inceptionYear>2007</inceptionYear>
 
 	<modules>
@@ -432,33 +431,38 @@
 								<include name="**/*.jpg"/>
 							</fileset>
 						</copy>
-
-            <copy todir="target/site/schema/messaging"
-							  file="${xsd-files-path}/spring-actionscript-messaging-1.0.xsd"/>
+						<copy todir="target/site/docs/reference/html">
+							<fileset dir="src/docbkx/resources/html">
+								<include name="**/*.html"/>
+							</fileset>
+						</copy>
+						
+						<copy todir="target/site/schema/messaging"
+							file="${xsd-files-path}/spring-actionscript-messaging-1.0.xsd"/>
 						<copy todir="target/site/schema/objects"
-							  file="${xsd-files-path}/spring-actionscript-objects-1.0.xsd"/>
+							file="${xsd-files-path}/spring-actionscript-objects-1.0.xsd"/>
 						<copy todir="target/site/schema/rpc"
-							  file="${xsd-files-path}/spring-actionscript-rpc-1.0.xsd"/>
+							file="${xsd-files-path}/spring-actionscript-rpc-1.0.xsd"/>
 						<copy todir="target/site/schema/util"
-							  file="${xsd-files-path}/spring-actionscript-util-1.0.xsd"/>
+							file="${xsd-files-path}/spring-actionscript-util-1.0.xsd"/>
 						<copy todir="target/site/schema/stageprocessing"
-							  file="${xsd-files-path}/spring-actionscript-stageprocessing-1.0.xsd"/>
+							file="${xsd-files-path}/spring-actionscript-stageprocessing-1.0.xsd"/>
 						<copy todir="target/site/schema/task"
-							  file="${xsd-files-path}/spring-actionscript-task-1.0.xsd"/>
+							file="${xsd-files-path}/spring-actionscript-task-1.0.xsd"/>
 						<copy todir="target/site/schema/task"
-							  file="${xsd-files-path}/spring-actionscript-task-1.1.xsd"/>
-            <copy todir="target/site/schema/messaging"
-							  file="${xsd-files-path}/spring-actionscript-messaging-2.0.xsd"/>
+							file="${xsd-files-path}/spring-actionscript-task-1.1.xsd"/>
+						<copy todir="target/site/schema/messaging"
+							file="${xsd-files-path}/spring-actionscript-messaging-2.0.xsd"/>
 						<copy todir="target/site/schema/objects"
-							  file="${xsd-files-path}/spring-actionscript-objects-2.0.xsd"/>
-            <copy todir="target/site/schema/rpc"
-							  file="${xsd-files-path}/spring-actionscript-rpc-2.0.xsd"/>
+							file="${xsd-files-path}/spring-actionscript-objects-2.0.xsd"/>
+						<copy todir="target/site/schema/rpc"
+							file="${xsd-files-path}/spring-actionscript-rpc-2.0.xsd"/>
 						<copy todir="target/site/schema/util"
-							  file="${xsd-files-path}/spring-actionscript-util-2.0.xsd"/>
+							file="${xsd-files-path}/spring-actionscript-util-2.0.xsd"/>
 						<copy todir="target/site/schema/stageprocessing"
-							  file="${xsd-files-path}/spring-actionscript-stageprocessing-2.0.xsd"/>
+							file="${xsd-files-path}/spring-actionscript-stageprocessing-2.0.xsd"/>
 						<copy todir="target/site/schema/task"
-							  file="${xsd-files-path}/spring-actionscript-task-2.0.xsd"/>
+							file="${xsd-files-path}/spring-actionscript-task-2.0.xsd"/>
 					</postProcess>
 				</configuration>
 			</plugin>
@@ -489,9 +493,7 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<descriptor>
-						src/main/assembly/sources.xml
-					</descriptor>
+					<descriptor> src/main/assembly/sources.xml </descriptor>
 					<finalName>${assembly.file.name}</finalName>
 					<outputDirectory>target/site/downloads</outputDirectory>
 					<workDirectory>target/assembly/work</workDirectory>
@@ -765,21 +767,21 @@
 	</distributionManagement>
 
 	<repositories>
-    <repository>
-      <id>maven2-repository</id>
-      <url>http://repo1.maven.org/maven2</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-    <repository>
+		<repository>
+			<id>maven2-repository</id>
+			<url>http://repo1.maven.org/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
 			<id>flex-mojos-repository</id>
 			<url>http://repository.sonatype.org/content/groups/public</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
 			<snapshots>
-			<enabled>true</enabled>
+				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 		<repository>
@@ -816,10 +818,10 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-  </repositories>
+	</repositories>
 
 	<pluginRepositories>
-    <pluginRepository>
+		<pluginRepository>
 			<id>flexmojos-plugin</id>
 			<url>http://repository.sonatype.org/content/groups/flexgroup</url>
 			<releases>
@@ -829,6 +831,6 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</pluginRepository>
-  </pluginRepositories>
+	</pluginRepositories>
 
 </project>

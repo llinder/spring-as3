@@ -38,7 +38,7 @@
 		<para>Let's add a few properties to the context declaration:</para>
 		<programlisting>&lt;fx:Declarations&gt;
   &lt;sas:MXMLApplicationContext id="MXMLContext"
-		configurations="{[ObjectConfiguration]}"
+		configurations="{[<emphasis role="bold">ObjectsConfiguration</emphasis>]}"
 		complete="{onComplete(event)}"/&gt;
 &lt;/fx:Declarations&gt;</programlisting>
 		<para>In the section we take a look at how we create a configuration file for our <literal
@@ -51,13 +51,34 @@
 		<para>A configuration file for an <literal
 			xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal> is just a regular MXML component which
 			can be created using the <emphasis>File-&gt;New-&gt;MXML Component</emphasis> menu.</para>
-		<para>Choose <emphasis>SASObjects</emphasis> for the <abbrev>MXML</abbrev> component type and you will get an empty component like this:</para>
+		<para>Choose <emphasis>SASObjects</emphasis> for the <abbrev>MXML</abbrev> component type, call it
+				<emphasis>ObjectsConfiguration</emphasis> and you will get an empty component like
+			this:</para>
 		<programlisting>&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
 		xmlns:s="library://ns.adobe.com/flex/spark"
 		xmlns:mx="library://ns.adobe.com/flex/mx"
 		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
 &lt;/sas:SASObjects&gt;</programlisting>
+		<para>The SASObjects component can contain children of type Object which are components that
+			represent so called <emphasis>Object Definitions</emphasis>. These definitions act as a sort
+			of recipe for an object's instantiation and configuration. Let's say we want a presentation
+			model to be managed by the application context. We add a definition for it like
+			this:<programlisting>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import my.classes.presentationmodels.MainPresentationModel;
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;sas:Object class="{MainPresentationModel}"/>
+
+&lt;/sas:SASObjects&gt;</programlisting></para>
+		
 		<sect2 xml:id="using-property-files">
 			<title>Using property files</title>
 			<para>...</para>
