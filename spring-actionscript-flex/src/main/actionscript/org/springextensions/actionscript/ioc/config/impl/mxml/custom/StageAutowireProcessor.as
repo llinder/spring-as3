@@ -55,9 +55,6 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom {
 		override public function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void {
 			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(DefaultAutowiringStageProcessor);
 			result.objectDefinition.customConfiguration = resolveObjectSelectorName();
-			if (!StringUtils.hasText(this.id)) {
-				this.id = UIDUtil.createUID();
-			}
 			objectDefinitions[this.id] = result.objectDefinition;
 		}
 

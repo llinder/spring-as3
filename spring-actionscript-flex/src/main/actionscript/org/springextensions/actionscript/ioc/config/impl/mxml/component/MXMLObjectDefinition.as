@@ -24,6 +24,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
+	import org.as3commons.lang.StringUtils;
 	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
@@ -599,7 +600,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		public function initialized(document:Object, id:String):void {
 			_document = document;
 			_applicationDomain ||= ApplicationDomain.currentDomain;
-			_id = (id != null) ? id : UIDUtil.createUID();
+			_id = (StringUtils.hasText(id)) ? id : UIDUtil.createUID();
 		}
 
 		/**

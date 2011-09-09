@@ -19,7 +19,9 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom {
 	import flash.events.EventDispatcher;
 
 	import mx.core.IMXMLObject;
+	import mx.utils.UIDUtil;
 
+	import org.as3commons.lang.StringUtils;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.ICustomObjectDefinitionComponent;
 
@@ -59,6 +61,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom {
 		public function initialized(document:Object, id:String):void {
 			_id = id;
 			_document = document;
+			_id = (StringUtils.hasText(id)) ? id : UIDUtil.createUID();
 		}
 
 		public function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void {

@@ -38,8 +38,7 @@
 		<para>Let's add a few properties to the context declaration:</para>
 		<programlisting>&lt;fx:Declarations&gt;
   &lt;sas:MXMLApplicationContext id="MXMLContext"
-		configurations="{[<emphasis role="bold">ObjectsConfiguration</emphasis>]}"
-		complete="{onComplete(event)}"/&gt;
+		configurations="{[<emphasis role="bold">ObjectsConfiguration</emphasis>]}"/&gt;
 &lt;/fx:Declarations&gt;</programlisting>
 		<para>In the section we take a look at how we create a configuration file for our <literal
 			xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal>.</para>
