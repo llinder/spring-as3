@@ -64,6 +64,8 @@
 		<xi:include href="extending-the-application-context.xml"/>
 
 		<xi:include href="advanced-context-features.xml"/>
+		
+		<xi:include href="integrations.xml"/>
 
 	</part>
 

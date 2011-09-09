@@ -8,6 +8,37 @@
 	<sect1 xml:id="configuration-type-list">
 		<title>A list of the different kinds of configuration</title>
 
-		<para></para>
+		<para>
+			<orderedlist>
+				<listitem>
+					<para linkend="mxml-configuration">MXML based configuration</para>
+				</listitem>
+				<listitem>
+					<para linkend="xml-configuration">XML based configuration</para>
+				</listitem>
+				<listitem>
+					<para linkend="metadata-configuration">Metadata based configuration</para>
+				</listitem>
+				<listitem>
+					<para linkend="actionscript-configuration">Actionscript based configuration</para>
+				</listitem>
+			</orderedlist>
+		</para>
+		<sect2 xml:id="mxml-configuration">
+			<title>MXML Configuration</title>
+			<para>...</para>
+		</sect2>
+		<sect2 xml:id="xml-configuration">
+			<title>XML Configuration</title>
+			<para>....</para>
+		</sect2>
+		<sect2 xml:id="metadata-configuration">
+			<title>Metadata Configuration</title>
+			<para>....</para>
+		</sect2>
+		<sect2 xml:id="actionscript-configuration">
+			<title>Actionscript Configuration</title>
+			<para>...</para>
+		</sect2>
 	</sect1>
 </chapter>
