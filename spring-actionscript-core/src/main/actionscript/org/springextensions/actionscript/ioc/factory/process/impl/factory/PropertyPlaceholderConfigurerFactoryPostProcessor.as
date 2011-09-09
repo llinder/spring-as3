@@ -21,6 +21,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.as3commons.reflect.Accessor;
 	import org.as3commons.reflect.Type;
 	import org.as3commons.reflect.Variable;
+	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.IPropertyPlaceholderResolver;
 	import org.springextensions.actionscript.ioc.config.property.impl.PropertyPlaceholderResolver;
@@ -100,7 +101,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 * An exception will be thrown if a placeholder cannot be resolved.
 		 */
 		public function set ignoreUnresolvablePlaceholders(value:Boolean):void {
-			if (value !== _ignoreUnresolvablePlaceholders) {
+			if (value != _ignoreUnresolvablePlaceholders) {
 				_ignoreUnresolvablePlaceholders = value;
 			}
 		}
@@ -159,6 +160,10 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 					//logger.debug("Resolving property placeholders in property '{0}' with value '{1}'", propertyName, properties[propertyName]);
 					propDef.value = resolver.resolvePropertyPlaceholders(propDef.value, PROPERTY_REGEXP);
 					propDef.value = resolver.resolvePropertyPlaceholders(propDef.value, PROPERTY_REGEXP2);
+				} else if (propDef.value is RuntimeObjectReference) {
+					var ref:RuntimeObjectReference = RuntimeObjectReference(propDef.value);
+					ref.objectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP);
+					ref.objectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP2);
 				}
 			}
 
@@ -169,6 +174,10 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 					if (arg is String) {
 						mi.arguments[i] = resolver.resolvePropertyPlaceholders(String(arg), PROPERTY_REGEXP);
 						mi.arguments[i] = resolver.resolvePropertyPlaceholders(String(arg), PROPERTY_REGEXP2);
+					} else if (arg is RuntimeObjectReference) {
+						var ref:RuntimeObjectReference = RuntimeObjectReference(arg);
+						ref.objectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP);
+						ref.objectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP2);
 					}
 					i++;
 				}
