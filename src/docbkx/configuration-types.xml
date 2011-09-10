@@ -246,7 +246,7 @@ applicationContext.load();</programlisting>
 					elements is used to define a so-called inner object. An inner object definition does not
 					need to have any id defined, and it is best not to even specify any id value because the
 					id value simply will be ignored by the container.</para>
-				<programlisting>&lt;object id="outer" class="...">
+				<programlisting language="xml">&lt;object id="outer" class="...">
   <lineannotation>&lt;!-- instead of using a reference to a target object, simply define the target object inline --></lineannotation>
   &lt;property name="target">
     &lt;object class="com.example.Person"> <lineannotation>&lt;!-- this is the inner object --></lineannotation>
@@ -269,7 +269,7 @@ applicationContext.load();</programlisting>
 					and <emphasis role="italic">Vector</emphasis>, respectively, to be defined and set. Be
 					aware that the <emphasis role="bold">array-collection</emphasis> type can only be used in
 					a Flex based application object since it is part of the framework.</para>
-				<programlisting>&lt;object id="moreComplexObject" class="example.ComplexObject">
+				<programlisting language="xml">&lt;object id="moreComplexObject" class="example.ComplexObject">
   &lt;property name="adminEmails">
     &lt;dictionary>
         &lt;entry key="administrator" value="administrator@example.org"/>
@@ -306,7 +306,30 @@ applicationContext.load();</programlisting>
     &lt;/vector>
   &lt;/property>
 
-&lt;/object></programlisting>
+&lt;/object></programlisting></sect3>
+			<sect3><title>Adding the XML configuration to an application context</title>
+				<para>Now to add the configuration to an application context instance, either create the
+						<abbrev>XML</abbrev> specific <literal>XMLApplicationContext</literal>:</para>
+				<programlisting language="xml">var applicationContext:XMLApplicationContext = new XMLApplicationContext('application-context.xml');
+applicationContext.addEventListener(Event.COMPLETE, onComplete);
+applicationContext.load();</programlisting>
+				<para>Or create a <literal>DefaultApplicationContext</literal>, add the appropriate
+						<literal>IObjectDefinitionsProvider</literal> and configure it like this:</para>
+				<programlisting language="actionscript">var applicationContext:IApplicationContext = new DefaultApplicationContext();
+var provider:XMLObjectDefinitionsProvider = new XMLObjectDefinitionsProvider();
+provider.addLocation(<emphasis role="bold">'application-context.xml'</emphasis>);
+applicationContext.addDefinitionProvider(provider);
+applicationContext.addEventListener(Event.COMPLETE, onComplete);
+applicationContext.load();</programlisting>
+				<note><para>The <emphasis role="italic">addLocation()</emphasis> method can receive an instance either of
+						type <emphasis role="italic">String</emphasis>, <emphasis role="italic">Class</emphasis>
+						or <emphasis role="italic"><abbrev>XML</abbrev></emphasis>. In case of a <emphasis
+							role="italic">String</emphasis> it is assumed to it is a <abbrev>URL</abbrev> to an
+							<abbrev>XML</abbrev> file, in case of a <emphasis role="italic">Class</emphasis> it is
+						assumed that its an embedded <abbrev>XML</abbrev> file and in case of <emphasis
+							role="italic"><abbrev>XML</abbrev></emphasis>, the <emphasis role="italic"
+								><abbrev>XML</abbrev></emphasis> instance is literally added to the <emphasis
+							role="italic">XMLObjectDefinitionsProvider</emphasis>.</para></note></sect3>
 		</sect2>
 		<sect2 xml:id="metadata-configuration">
 			<title>Metadata Configuration</title>
