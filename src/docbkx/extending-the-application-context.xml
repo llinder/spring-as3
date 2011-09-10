@@ -21,6 +21,10 @@
 		<title>Objectfactory post-processors</title>
 		<para>...</para>
 	</sect1>
+	<sect1 xml:id="stage-processors">
+		<title>Stage object processors</title>
+		<para>...</para>
+	</sect1>
 	<sect1 xml:id="class-scanners">
 		<title>Class scanners</title>
 		<para>...</para>

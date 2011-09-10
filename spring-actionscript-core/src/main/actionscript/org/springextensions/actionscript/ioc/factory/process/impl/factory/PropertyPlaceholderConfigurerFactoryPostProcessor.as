@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.factory.process.impl.factory {
-
 	import org.as3commons.async.operation.IOperation;
-	import org.as3commons.lang.IOrdered;
-	import org.as3commons.lang.ObjectUtils;
 	import org.as3commons.reflect.Accessor;
 	import org.as3commons.reflect.Type;
 	import org.as3commons.reflect.Variable;
@@ -26,15 +23,21 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.springextensions.actionscript.ioc.config.property.IPropertyPlaceholderResolver;
 	import org.springextensions.actionscript.ioc.config.property.impl.PropertyPlaceholderResolver;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
-	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
 
 	/**
 	 * @author Christophe Herreman
+	 * @author Roland Zwaga
 	 */
 	public class PropertyPlaceholderConfigurerFactoryPostProcessor extends AbstractOrderedFactoryPostProcessor {
+
+		public static const DESTROY_METHOD_FIELD_NAME:String = 'destroyMethod';
+		public static const FACTORY_METHOD_FIELD_NAME:String = 'factoryMethod';
+		public static const FACTORY_OBJECT_NAME_FIELD_NAME:String = 'factoryObjectName';
+		public static const INIT_METHOD_FIELD_NAME:String = 'initMethod';
+		public static const PARENT_NAME_FIELD_NAME:String = 'parentName';
 
 		// --------------------------------------------------------------------
 		//
@@ -50,15 +53,6 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 
 		// --------------------------------------------------------------------
 		//
-		// Private Variables
-		//
-		// --------------------------------------------------------------------
-
-		/** The object factory that this post processor operates on. */
-		private var _objectFactory:IObjectFactory;
-
-		// --------------------------------------------------------------------
-		//
 		// Constructor
 		//
 		// --------------------------------------------------------------------
@@ -70,31 +64,24 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			super(orderPosition);
 		}
 
+		private var _ignoreUnresolvablePlaceholders:Boolean = false;
+
+		// --------------------------------------------------------------------
+		//
+		// Private Variables
+		//
+		// --------------------------------------------------------------------
+
+		/** The object factory that this post processor operates on. */
+		private var _objectFactory:IObjectFactory;
+
 		// --------------------------------------------------------------------
 		//
 		// Public Properties
 		//
 		// --------------------------------------------------------------------
 
-		// ----------------------------
-		// properties
-		// ----------------------------
-
 		private var _properties:IPropertiesProvider;
-
-		public function get properties():IPropertiesProvider {
-			return _properties;
-		}
-
-		public function set properties(value:IPropertiesProvider):void {
-			_properties = value;
-		}
-
-		// ----------------------------
-		// ignoreUnresolvablePlaceholders
-		// ----------------------------
-
-		private var _ignoreUnresolvablePlaceholders:Boolean = false;
 
 		/**
 		 * Sets whether to ignore unresolvable placeholders. Default is "false":
@@ -104,6 +91,14 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			if (value != _ignoreUnresolvablePlaceholders) {
 				_ignoreUnresolvablePlaceholders = value;
 			}
+		}
+
+		public function get properties():IPropertiesProvider {
+			return _properties;
+		}
+
+		public function set properties(value:IPropertiesProvider):void {
+			_properties = value;
 		}
 
 		// --------------------------------------------------------------------
@@ -121,72 +116,16 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 				resolvePropertyPlaceholdersForObjectName(resolver, objectName);
 			}
 
+			for each (objectName in objectFactory.cache.getCachedNames()) {
+				resolvePropertyPlaceholdersForInstance(resolver, objectFactory.cache.getInstance(objectName));
+			}
+
 			return null;
 		}
 
-		// --------------------------------------------------------------------
-		//
-		// Private Methods
-		//
-		// --------------------------------------------------------------------
-
-		/**
-		 * Resolves all property placeholders for the constructor arguments and the properties of
-		 * the specified object definition.
-		 *
-		 * Note that we use 2 regular expressions (${...} and $(...)) to handle both XML and MXML property
-		 * placeholders.
-		 *
-		 * @param resolver the property placeholder resolver used
-		 * @param objectName the name of the definition for which to resolve it property placeholders
-		 */
-		protected function resolvePropertyPlaceholdersForObjectName(resolver:IPropertyPlaceholderResolver, objectName:String):void {
-			//logger.debug("Resolving property placeholders in object definition '{0}'", objectDefinition.className);
-			var objectDefinition:IObjectDefinition = _objectFactory.getObjectDefinition(objectName);
-
-			var i:int = 0;
-			for each (var constructorArg:* in objectDefinition.constructorArguments) {
-				if (constructorArg is String) {
-					//logger.debug("Resolving property placeholders in constructor arg '{0}'", constructorArg);
-					objectDefinition.constructorArguments[i] = resolver.resolvePropertyPlaceholders(constructorArg, PROPERTY_REGEXP);
-					objectDefinition.constructorArguments[i] = resolver.resolvePropertyPlaceholders(objectDefinition.constructorArguments[i], PROPERTY_REGEXP2);
-				}
-				i++;
-			}
-
-			for each (var propDef:PropertyDefinition in objectDefinition.properties) {
-				//logger.debug("Resolving property placeholders in property '{0}'", propertyName);
-				if (propDef.value is String) {
-					//logger.debug("Resolving property placeholders in property '{0}' with value '{1}'", propertyName, properties[propertyName]);
-					propDef.value = resolver.resolvePropertyPlaceholders(propDef.value, PROPERTY_REGEXP);
-					propDef.value = resolver.resolvePropertyPlaceholders(propDef.value, PROPERTY_REGEXP2);
-				} else if (propDef.value is RuntimeObjectReference) {
-					var ref:RuntimeObjectReference = RuntimeObjectReference(propDef.value);
-					ref.objectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP);
-					ref.objectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP2);
-				}
-			}
-
-			// resolve method invocations
-			for each (var mi:MethodInvocation in objectDefinition.methodInvocations) {
-				i = 0;
-				for each (var arg:Object in mi.arguments) {
-					if (arg is String) {
-						mi.arguments[i] = resolver.resolvePropertyPlaceholders(String(arg), PROPERTY_REGEXP);
-						mi.arguments[i] = resolver.resolvePropertyPlaceholders(String(arg), PROPERTY_REGEXP2);
-					} else if (arg is RuntimeObjectReference) {
-						var ref:RuntimeObjectReference = RuntimeObjectReference(arg);
-						ref.objectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP);
-						ref.objectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP2);
-					}
-					i++;
-				}
-			}
-
-			// resolve result of factory method
-			if (objectDefinition.factoryObjectName && objectDefinition.factoryMethod && objectDefinition.isSingleton) {
-				resolvePropertyPlaceholdersForInstance(resolver, _objectFactory.getObject(objectName));
-			}
+		public function resolveObjectDefinitionProperty(resolver:IPropertyPlaceholderResolver, objectDefinition:IObjectDefinition, propertyName:String):void {
+			objectDefinition[propertyName] = resolver.resolvePropertyPlaceholders(objectDefinition[propertyName], PROPERTY_REGEXP);
+			objectDefinition[propertyName] = resolver.resolvePropertyPlaceholders(objectDefinition[propertyName], PROPERTY_REGEXP2);
 		}
 
 		/**
@@ -200,39 +139,136 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 				return;
 			}
 
-			switch (true) {
-				case (instance is Array):
-					var array:Array = instance as Array;
-					var numItems:uint = array.length;
-					for (var i:int = 0; i < numItems; i++) {
-						if (array[i] is String) {
-							array[i] = resolver.resolvePropertyPlaceholders(array[i], PROPERTY_REGEXP);
-							array[i] = resolver.resolvePropertyPlaceholders(array[i], PROPERTY_REGEXP2);
-						}
+			if (instance is Array) {
+				var array:Array = instance as Array;
+				var numItems:uint = array.length;
+				for (var i:int = 0; i < numItems; i++) {
+					if (array[i] is String) {
+						array[i] = resolver.resolvePropertyPlaceholders(array[i], PROPERTY_REGEXP);
+						array[i] = resolver.resolvePropertyPlaceholders(array[i], PROPERTY_REGEXP2);
 					}
-					break;
-
-				default:
-					var type:Type = Type.forInstance(instance, _objectFactory.applicationDomain);
-					for each (var property:Accessor in type.accessors) {
-						if ((property) && (property.type)) {
-							if ((property.type.clazz == String) && property.writeable && property.readable) {
-								instance[property.name] = resolver.resolvePropertyPlaceholders(instance[property.name], PROPERTY_REGEXP);
-								instance[property.name] = resolver.resolvePropertyPlaceholders(instance[property.name], PROPERTY_REGEXP2);
-							}
-						}
+				}
+			} else {
+				var type:Type = Type.forInstance(instance, _objectFactory.applicationDomain);
+				for each (var property:Accessor in type.accessors) {
+					if ((property) && (property.type) && (property.type.clazz == String) && (property.writeable && property.readable)) {
+						instance[property.name] = resolver.resolvePropertyPlaceholders(instance[property.name], PROPERTY_REGEXP);
+						instance[property.name] = resolver.resolvePropertyPlaceholders(instance[property.name], PROPERTY_REGEXP2);
 					}
-					for each (var variable:Variable in type.variables) {
-						if ((variable) && (variable.type)) {
-							if (variable.type.clazz == String) {
-								instance[variable.name] = resolver.resolvePropertyPlaceholders(instance[variable.name], PROPERTY_REGEXP);
-								instance[variable.name] = resolver.resolvePropertyPlaceholders(instance[variable.name], PROPERTY_REGEXP2);
-							}
-						}
+				}
+				for each (var variable:Variable in type.variables) {
+					if ((variable) && (variable.type) && (variable.type.clazz == String)) {
+						instance[variable.name] = resolver.resolvePropertyPlaceholders(instance[variable.name], PROPERTY_REGEXP);
+						instance[variable.name] = resolver.resolvePropertyPlaceholders(instance[variable.name], PROPERTY_REGEXP2);
 					}
+				}
 			}
-
 		}
 
+
+		// --------------------------------------------------------------------
+		//
+		// Private Methods
+		//
+		// --------------------------------------------------------------------
+
+		/**
+		 * Resolves all property placeholders for the constructor arguments, properties of
+		 * the specified object definition and all of the string based properties on the object definition itself.
+		 *
+		 * Note that we use 2 regular expressions (${...} and $(...)) to handle both XML and MXML property
+		 * placeholders.
+		 *
+		 * @param resolver the property placeholder resolver used
+		 * @param objectName the name of the definition for which to resolve it property placeholders
+		 */
+		protected function resolvePropertyPlaceholdersForObjectName(resolver:IPropertyPlaceholderResolver, objectName:String):void {
+			//logger.debug("Resolving property placeholders in object definition '{0}'", objectDefinition.className);
+			var objectDefinition:IObjectDefinition = _objectFactory.getObjectDefinition(objectName);
+			var ref:RuntimeObjectReference;
+			var resolvedObjectName:String;
+
+			var i:int = 0;
+			for each (var constructorArg:* in objectDefinition.constructorArguments) {
+				if (constructorArg is String) {
+					//logger.debug("Resolving property placeholders in constructor arg '{0}'", constructorArg);
+					objectDefinition.constructorArguments[i] = resolver.resolvePropertyPlaceholders(constructorArg, PROPERTY_REGEXP);
+					objectDefinition.constructorArguments[i] = resolver.resolvePropertyPlaceholders(objectDefinition.constructorArguments[i], PROPERTY_REGEXP2);
+				} else if (arg is RuntimeObjectReference) {
+					ref = RuntimeObjectReference(propDef.value);
+					resolvedObjectName = null;
+					if (ref.objectName.match(PROPERTY_REGEXP).length > 0) {
+						resolvedObjectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP);
+					} else if (ref.objectName.match(PROPERTY_REGEXP2).length > 0) {
+						resolvedObjectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP2);
+					}
+					if (resolvedObjectName != null) {
+						objectDefinition.constructorArguments.arguments[i] = new RuntimeObjectReference(resolvedObjectName);
+					}
+				}
+				i++;
+			}
+
+			for each (var propDef:PropertyDefinition in objectDefinition.properties) {
+				//logger.debug("Resolving property placeholders in property '{0}'", propertyName);
+				if (propDef.value is String) {
+					//logger.debug("Resolving property placeholders in property '{0}' with value '{1}'", propertyName, properties[propertyName]);
+					propDef.value = resolver.resolvePropertyPlaceholders(propDef.value, PROPERTY_REGEXP);
+					propDef.value = resolver.resolvePropertyPlaceholders(propDef.value, PROPERTY_REGEXP2);
+				} else if (propDef.value is RuntimeObjectReference) {
+					ref = RuntimeObjectReference(propDef.value);
+					resolvedObjectName = null;
+					if (ref.objectName.match(PROPERTY_REGEXP).length > 0) {
+						resolvedObjectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP);
+					} else if (ref.objectName.match(PROPERTY_REGEXP2).length > 0) {
+						resolvedObjectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP2);
+					}
+					if (resolvedObjectName != null) {
+						propDef.value = new RuntimeObjectReference(resolvedObjectName);
+					}
+				}
+			}
+
+			// resolve method invocations
+			for each (var mi:MethodInvocation in objectDefinition.methodInvocations) {
+				i = 0;
+				for each (var arg:Object in mi.arguments) {
+					if (arg is String) {
+						mi.arguments[i] = resolver.resolvePropertyPlaceholders(String(arg), PROPERTY_REGEXP);
+						mi.arguments[i] = resolver.resolvePropertyPlaceholders(String(arg), PROPERTY_REGEXP2);
+					} else if (arg is RuntimeObjectReference) {
+						ref = RuntimeObjectReference(propDef.value);
+						resolvedObjectName = null;
+						if (ref.objectName.match(PROPERTY_REGEXP).length > 0) {
+							resolvedObjectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP);
+						} else if (ref.objectName.match(PROPERTY_REGEXP2).length > 0) {
+							resolvedObjectName = resolver.resolvePropertyPlaceholders(ref.objectName, PROPERTY_REGEXP2);
+						}
+						if (resolvedObjectName != null) {
+							mi.arguments[i] = new RuntimeObjectReference(resolvedObjectName);
+						}
+					}
+					i++;
+				}
+			}
+
+			i = 0;
+			for each (var dep:String in objectDefinition.dependsOn) {
+				objectDefinition.dependsOn[i] = resolver.resolvePropertyPlaceholders(objectDefinition.dependsOn[i], PROPERTY_REGEXP);
+				objectDefinition.dependsOn[i] = resolver.resolvePropertyPlaceholders(objectDefinition.dependsOn[i], PROPERTY_REGEXP2);
+				i++;
+			}
+
+			resolveObjectDefinitionProperty(resolver, objectDefinition, DESTROY_METHOD_FIELD_NAME);
+			resolveObjectDefinitionProperty(resolver, objectDefinition, FACTORY_METHOD_FIELD_NAME);
+			resolveObjectDefinitionProperty(resolver, objectDefinition, FACTORY_OBJECT_NAME_FIELD_NAME);
+			resolveObjectDefinitionProperty(resolver, objectDefinition, INIT_METHOD_FIELD_NAME);
+			resolveObjectDefinitionProperty(resolver, objectDefinition, PARENT_NAME_FIELD_NAME);
+
+			// resolve result of factory method
+			if (objectDefinition.factoryObjectName && objectDefinition.factoryMethod && objectDefinition.isSingleton) {
+				resolvePropertyPlaceholdersForInstance(resolver, _objectFactory.getObject(objectName));
+			}
+		}
 	}
 }

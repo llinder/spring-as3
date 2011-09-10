@@ -25,8 +25,8 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.component.MXMLObjectDefinition;
-	import org.springextensions.actionscript.ioc.config.impl.mxml.component.SASObjects;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.component.PropertyPlaceholder;
+	import org.springextensions.actionscript.ioc.config.impl.mxml.component.SASObjects;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
@@ -144,12 +144,6 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 		protected function extractObjectDefinitionsFromConfigInstance(config:SASObjects):void {
 			var type:Type = Type.forInstance(config, _applicationContext.applicationDomain);
 
-			// read top-level attributes
-			var mxmlObjects:SASObjects = SASObjects(config);
-			/*result.defaultInitMethod = mxmlObjects.defaultInitMethod;
-			result.defaultLazyInit = mxmlObjects.defaultLazyInit;
-			result.defaultAutowire = AutowireMode.fromName(mxmlObjects.defaultAutowire);*/
-
 			// parse accessors = definitions that have an id
 			for each (var accessor:Accessor in type.accessors) {
 				// an accessor is only valid if:
@@ -193,6 +187,8 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 				_propertyURIs[_propertyURIs.length] = PropertyPlaceholder(instance).toTextFileURI();
 			} else if (instance is ICustomObjectDefinitionComponent) {
 				ICustomObjectDefinitionComponent(instance).execute(applicationContext, _objectDefinitions);
+			} else if (instance is SASObjects) {
+				extractObjectDefinitionsFromConfigInstance(SASObjects(instance));
 			} else {
 				// register a singleton for an explicit config object defined in mxml
 				// for instance: <mx:RemoteObject/>,

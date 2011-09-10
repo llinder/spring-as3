@@ -7,50 +7,55 @@
 	<sect1 xml:id="installing-spring-actionscript">
 		<title>Installing Spring Actionscript</title>
 		<para>To start using Spring Actionscript in your project you will need to download either the
-		all-in-one swc or the archive with all of the separate extensions:</para>
-		<para>
-			spring-actionscript-core-full.swc
-		</para>
-		<para>
-			Zip with dependencies
-		</para>
-		<para>If you want to use the Flex specific functionality you will need to additionally download this .swc as well:</para>
+			all-in-one swc or the archive with all of the separate extensions:</para>
+		<para> spring-actionscript-core-full.swc </para>
+		<para> Zip with dependencies </para>
+		<para>If you want to use the Flex specific functionality you will need to additionally download
+			this .swc as well:</para>
 		<para>spring-actionscript-swc</para>
 		<para>One you've downloaded them place them in your project's library path. In a Flashbuilder
-			project, for instance, this simply means you need to copy them into your 'libs'
-			folder.</para>
-		
+			project, for instance, this simply means you need to copy them into your 'libs' folder.</para>
+
 	</sect1>
 
 	<sect1 xml:id="creating-an-application-context">
 		<title>Creating an Application Context</title>
 		<para>The main entry point for the Spring Actionscript library is the application context. There
 			are a number of different context flavours, but for now we'll use the <literal
-				xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal>
-			as this is probably the most commonly used one.</para>
+				xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext"
+				>MXMLApplicationContext</literal> as this is probably the most commonly used one.</para>
+		<para>Obviously the <literal
+				linkend="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext"
+				>MXLApplicationContext</literal> can only be used in a Flex based application, in a pure
+			actionscript environment you can choose any of the other availabe '<literal
+				linkend="configuration-types">Configuration types</literal>'.</para>
 		<para>To create an instance of the <literal
-			xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal> simply add it as an <abbrev>MXML</abbrev> component to your application.</para>
+				xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext"
+				>MXMLApplicationContext</literal> simply add it as an <abbrev>MXML</abbrev> component to
+			your application.</para>
 		<programlisting language="xml">&lt;fx:Declarations&gt;
   &lt;sas:MXMLApplicationContext id="MXMLContext"/&gt;
 &lt;/fx:Declarations&gt;</programlisting>
-		<para>Now, this in itself won't do much of course. We need to tell the application context where to find it's configuration and make sure we know when it has finished
-		loading them.</para>
+		<para>Now, this in itself won't do much of course. We need to tell the application context where
+			to find it's configuration and make sure we know when it has finished loading them.</para>
 		<para>Let's add a few properties to the context declaration:</para>
 		<programlisting language="xml">&lt;fx:Declarations&gt;
   &lt;sas:MXMLApplicationContext id="MXMLContext"
 		configurations="{[<emphasis role="bold">ObjectsConfiguration</emphasis>]}"/&gt;
 &lt;/fx:Declarations&gt;</programlisting>
 		<para>In the section we take a look at how we create a configuration file for our <literal
-			xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal>.</para>
+				xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext"
+				>MXMLApplicationContext</literal>.</para>
 	</sect1>
 
 	<sect1 xml:id="creating-a-configuration">
 		<title>Creating a configuration for the MXMLApplicationContext</title>
 		<para>A configuration file for an <literal
-			xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal> is just a regular MXML component which
-			can be created using the <emphasis>File-&gt;New-&gt;MXML Component</emphasis> menu.</para>
-		<para>Choose <emphasis>SASObjects</emphasis> for the <abbrev>MXML</abbrev> component type, call it
-				<emphasis>ObjectsConfiguration</emphasis> and you will get an empty component like
+				xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext"
+				>MXMLApplicationContext</literal> is just a regular MXML component which can be created
+			using the <emphasis>File-&gt;New-&gt;MXML Component</emphasis> menu.</para>
+		<para>Choose <emphasis>SASObjects</emphasis> for the <abbrev>MXML</abbrev> component type, call
+			it <emphasis>ObjectsConfiguration</emphasis> and you will get an empty component like
 			this:</para>
 		<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
@@ -108,9 +113,9 @@
 		]]&gt;
 	&lt;/fx:Script>
 &lt;/s:VGroup></programlisting></para>
-		<para>Spring Actionscript just needs an extra bit of configuration to make sure that MXML (and any
-			other stage) components will be injected, by default this functionality is turned off, but its
-			easy to turn on. You need to add one custom object definition to the
+		<para>Spring Actionscript just needs an extra bit of configuration to make sure that MXML (and
+			any other stage) components will be injected, by default this functionality is turned off, but
+			its easy to turn on. You need to add one custom object definition to the
 			configuration:<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
 		xmlns:s="library://ns.adobe.com/flex/spark"
@@ -198,32 +203,36 @@
 &lt;/sas:SASObjects&gt;</programlisting></para>
 		<para>These are the basic pieces of functionality of the object configuration in Spring
 			Actionscript.</para>
-		<note><para>To find out more about object definitions, check out the section '<literal
+		<note>
+			<para>To find out more about object definitions, check out the section '<literal
 					linkend="object-definitions">Object Definitions</literal>'</para>
 			<para>To find out more about the different kinds of configuration type, check out the section
-					'<literal linkend="configuration-types">Configuration types</literal>'</para></note>
+					'<literal linkend="configuration-types">Configuration types</literal>'</para>
+		</note>
 		<sect2 xml:id="using-property-files">
 			<title>Using property files</title>
-			<para>To share string values that need to be injected in obejct instances, think of URL's, path
-				names, translations, etc, you can define an external properties file in your object
-				configuration. The declaration works like
-				this:</para>
+			<para>To share string values that need to be injected in obejct instances, think of URL's,
+				path names, translations, etc, you can define an external properties file in your object
+				configuration. The declaration works like this:</para>
 			<programlisting language="xml">&lt;sas:PropertyPlaceholder URI="<emphasis role="bold">myproperties.txt</emphasis>"/></programlisting>
-			<para>The
-					contents of the myproperties.txt file are very simple, they consist of name/value pairs
-					delimited by an equals ('<emphasis role="bold">=</emphasis>')
-						character.</para><programlisting>property1=myvalue1
-property2=myvalue2</programlisting><para>The
-					content itself will be resolved as well, so its possible to make composite properties like
-					this.</para><programlisting>property1=myvalue1
+			<para>The contents of the myproperties.txt file are very simple, they consist of name/value
+				pairs delimited by an equals ('<emphasis role="bold">=</emphasis>') character.</para>
+			<programlisting>property1=myvalue1
+property2=myvalue2</programlisting>
+			<para>The content itself will be resolved as well, so its possible to make composite
+				properties like this.</para>
+			<programlisting>property1=myvalue1
 property2=myvalue2
-property3=<emphasis role="bold">${property1}</emphasis>_<emphasis role="bold">${property2}</emphasis></programlisting><para>To
-					inject an external property value into, say, a object definition property, this syntax is
-					used:</para><programlisting language="xml">&lt;sas:Property name="service" ref="<emphasis role="bold">$(property3)</emphasis>"/></programlisting>
-			<note><para>Notice that in the <abbrev>MXML</abbrev> the property placeholder is defined like this
+property3=<emphasis role="bold">${property1}</emphasis>_<emphasis role="bold">${property2}</emphasis></programlisting>
+			<para>To inject an external property value into, say, a object definition property, this
+				syntax is used:</para>
+			<programlisting language="xml">&lt;sas:Property name="service" ref="<emphasis role="bold">$(property3)</emphasis>"/></programlisting>
+			<note>
+				<para>Notice that in the <abbrev>MXML</abbrev> the property placeholder is defined like this
 						<emphasis role="bold">$(property3)</emphasis> and inside the properties file like this
 						<emphasis role="bold">${property3}</emphasis>. This is because in <abbrev>MXML</abbrev>
-					the curly braces will be interpreted as bindings.</para></note>
+					the curly braces will be interpreted as bindings.</para>
+			</note>
 		</sect2>
 	</sect1>
 
