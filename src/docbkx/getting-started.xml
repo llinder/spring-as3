@@ -177,9 +177,9 @@
 			this is not desired the <emphasis role="italic">scope</emphasis> of the object definition
 			might be set to <emphasis role="bold">prototype</emphasis>.</para>
 		<programlisting language="xml">&lt;sas:Object class="{MainPresentationModel}" id="mainModel" scope="<emphasis role="bold">prototype</emphasis>"/></programlisting>
-		<para>When an object doesn't need any particular configuration, but just needs to be accesible
-			as a singleton to the application context it may be directly declared in the MXML
-			configuration. For instance, a remote object might be declared like
+		<para>When an object doesn't need any particular configuration, but just needs to be accesible as
+			a singleton to the application context it may be directly declared in the MXML configuration.
+			For instance, a remote object might be declared like
 			this:<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
 		xmlns:s="library://ns.adobe.com/flex/spark"
@@ -192,17 +192,55 @@
 		]]&gt;
 	&lt;/fx:Script>
 
-	<emphasis role="bold">&lt;sas:StageAutowireProcessor/></emphasis>
+	&lt;mx:RemoteObject id="<emphasis role="bold">remoteObject</emphasis>"/>
 
-	&lt;sas:Object class="{MainService}" id="mainService"/>
+	&lt;sas:StageAutowireProcessor/>
 
-	&lt;sas:Object class="{MainPresentationModel}" id="<emphasis role="bold">mainModel</emphasis>">
+	&lt;sas:Object class="{MainService}" id="mainService">
+		&lt;sas:Property name="remoteObject" ref="<emphasis role="bold">remoteObject</emphasis>"/>
+	&lt;/sas:Object>
+
+	&lt;sas:Object class="{MainPresentationModel}" id="mainModel">
 		&lt;sas:Property name="service" ref="{mainService}"/>
+	&lt;/sas:Object>
+
+&lt;/sas:SASObjects&gt;</programlisting>The
+			RemoteObject instance will be added to the application context cache as well, so it may be
+			retrieved from the context by
+			name:<programlisting language="java">var ro:RemoteObject = MXMLContext.getObject('remoteObject');</programlisting>In
+			the same way actionscript properties may be added to the <abbrev>MXML</abbrev> configuration
+			as well, they work in the same way as their <abbrev>MXML</abbrev>
+			versions.<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import my.classes.presentationmodels.MainPresentationModel;
+			import my.classes.services.MainService;
+
+			public var <emphasis role="bold">collection</emphasis>:ArrayCollection = new ArrayCollection(["myValue1","myValue2","myValue3"]);
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;mx:RemoteObject id="remoteObject"/>
+
+	&lt;sas:StageAutowireProcessor/>
+
+	&lt;sas:Object class="{MainService}" id="mainService">
+		&lt;sas:Property name="remoteObject" ref="remoteObject"/>
+	&lt;/sas:Object>
+
+	&lt;sas:Object class="{MainPresentationModel}" id="mainModel">
+		&lt;sas:Property name="service" ref="{mainService}"/>
+		&lt;sas:Property name="list" ref="<emphasis role="bold">collection</emphasis>"/>
 	&lt;/sas:Object>
 
 &lt;/sas:SASObjects&gt;</programlisting></para>
 		<para>These are the basic pieces of functionality of the object configuration in Spring
-			Actionscript.</para>
+			Actionscript. A more in-depth look at all of the MXML configuration possibilities is available
+			in the '<literal linkend="mxml-configuration">MXML Configuration</literal>' section.</para>
 		<note>
 			<para>To find out more about object definitions, check out the section '<literal
 					linkend="object-definitions">Object Definitions</literal>'</para>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter version="5.0" xml:id="configuration-types" xmlns="http://docbook.org/ns/docbook"
 	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns5="http://www.w3.org/1999/xhtml"
-	xmlns:ns4="http://www.w3.org/1998/Math/MathML" xmlns:ns3="http://www.w3.org/2000/svg"
-	xmlns:ns="http://docbook.org/ns/docbook">
+	xmlns:ns4="http://www.w3.org/1998/Math/MathML" xmlns:ns3="http://www.w3.org/2000/svg">
 	<title>Configuration types</title>
 
 	<sect1 xml:id="configuration-type-list">
@@ -26,7 +25,29 @@
 		</para>
 		<sect2 xml:id="mxml-configuration">
 			<title>MXML Configuration</title>
-			<para>...</para>
+			<para>For Flex based applications the <abbrev>MXML</abbrev> configuration offers a familiar
+				environment for populating the application context with object definitions.</para>
+			<para>To start an <abbrev>MXML</abbrev> configuration file create an <abbrev>MXML</abbrev>
+				component that extends SASObjects and you can add components to it of type
+				Object.<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import com.classes.MyClass;
+			import com.classes.MyOtherClass;
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;sas:Object class="{MyClass}"/>
+
+	&lt;sas:Object class="{MyOtherClass}"/>
+
+&lt;/sas:SASObjects&gt;</programlisting></para>
+			<para>You can also </para>
+			
 		</sect2>
 		<sect2 xml:id="xml-configuration">
 			<title>XML Configuration</title>
