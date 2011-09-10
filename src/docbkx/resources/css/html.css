@@ -4,6 +4,10 @@ body {
    margin-left: 2em;
 }
 
+b.hl-keyword {
+	color: #0033ff;
+}
+
 a,
 a[accesskey^="h"],
 a[accesskey^="n"],
