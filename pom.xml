@@ -230,7 +230,7 @@
 					<dependency>
 						<groupId>net.sf.xslthl</groupId>
 						<artifactId>xslthl</artifactId>
-						<version>2.0.1</version>
+						<version>2.0.2</version>
 						<scope>runtime</scope>
 					</dependency>
 					<dependency>
@@ -253,6 +253,7 @@
 					</dependency>
 				</dependencies>
 				<configuration>
+					<highlightXslthlConfig>src/docbkx/resources/xslthl/xslthl-config.xml</highlightXslthlConfig>
 					<highlightSource>1</highlightSource>
 					<includes>springactionscript.xml</includes>
 					<chunkedOutput>true</chunkedOutput>
@@ -267,7 +268,7 @@
 							<value>${project.version}</value>
 						</entity>
 					</entities>
-					<preProcess>
+					<!--preProcess>
 						<xslt in="${basedir}/toplevel_files.xml" out="${basedir}/target/site/asdoc/toplevel.xml"
 							style="${basedir}/src/docbkx/resources/xsl/combine_toplevels.xslt"
 							reloadstylesheet="false" processor="trax">
@@ -386,7 +387,7 @@
 						<delete file="${basedir}/target/site/asdoc/delete-me3.html"/>
 						<delete file="${basedir}/target/site/asdoc/delete-me4.html"/>
 
-					</preProcess>
+					</preProcess-->
 					<postProcess>
 						<copy todir="target/site/docs/reference">
 							<fileset dir="target/docbkx">
