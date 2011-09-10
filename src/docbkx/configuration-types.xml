@@ -188,24 +188,125 @@ applicationContext.load();</programlisting>
 		 http://www.springactionscript.org/schema/objects/spring-actionscript-objects-2.0.xsd">
 
 	&lt;object class="com.classes.MyClass" id="myClass">
-		&lt;property name="myOtherClassInstance" ref="<emphasis role="bold">myOtherClass</emphasis>"/>
+		&lt;property name="myOtherClassInstance">
+			&lt;ref><emphasis role="bold">myOtherClass</emphasis>&lt;/ref>
+		&lt;/property>
 	&lt;/object>
 
 	&lt;object class="com.classes.myOtherClass" id="<emphasis role="bold">myOtherClass</emphasis>"/>
 
 &lt;/objects></programlisting></para>
+			<para>Constructor arguments are added in this way:</para>
+			<programlisting language="xml">&lt;object class="com.classes.MyClass" id="myClass">
+<emphasis role="bold">	&lt;constructor-arg>
+		&lt;value>someString&lt;/value>
+	&lt;/constructor-arg>   
+</emphasis>	&lt;property name="myOtherClassInstance">
+		&lt;ref>myOtherClass&lt;/ref>
+	&lt;/property>
+&lt;/object></programlisting>
 			<para>Method invocations are added like this:</para>
-			<programlisting>&lt;object class="com.classes.MyClass" id="myClass">
-	&lt;property name="myOtherClassInstance" ref="<emphasis role="bold">myOtherClass</emphasis>"/>
+			<programlisting language="xml">&lt;object class="com.classes.MyClass" id="myClass">
+	&lt;constructor-arg>
+		&lt;value>someString&lt;/value>
+	&lt;/constructor-arg>   
+	&lt;property name="myOtherClassInstance">
+		&lt;ref>myOtherClass&lt;/ref>
+	&lt;/property>
 	<emphasis role="bold">&lt;method-invocation name="myMethod">
-		&lt;arg ref="someOtherObject"/>
-		&lt;arg value="${externalPropertyValue}"/>
+		&lt;arg>
+			&lt;ref>someOtherObject&lt;/ref>
+		&lt;/arg>
+		&lt;arg>
+			&lt;value>${externalPropertyValue}&lt;/value>
+		&lt;/arg>
 	&lt;/method-invocation></emphasis>
+&lt;/object></programlisting>
+			<para> The <emphasis role="bold">&lt;property/></emphasis>, <emphasis role="bold"
+					>&lt;arg/></emphasis> and <emphasis role="bold"
+				>&lt;constructor-arg/&gt;</emphasis> elements also support the use of the '<emphasis
+					role="bold">value</emphasis>' and '<emphasis role="bold">ref</emphasis>' attributes, which
+				can lead to much more succinct configuration. When using the '<emphasis role="bold"
+					>value</emphasis>' and '<emphasis role="bold">ref</emphasis>'attributes, the above object
+				definition reads like so: </para>
+			<programlisting language="xml">&lt;object class="com.classes.MyClass" id="myClass">
+	&lt;constructor-arg <emphasis role="bold">value="someString"</emphasis>/>
+	&lt;property name="myOtherClassInstance" <emphasis role="bold">ref="myOtherClass"</emphasis>/>
+	&lt;method-invocation name="myMethod">
+		&lt;arg <emphasis role="bold">ref="someOtherObject"</emphasis>/>
+		&lt;arg <emphasis role="bold">value="${externalPropertyValue}"</emphasis>/>
+	&lt;/method-invocation>
 &lt;/object></programlisting>
 			<para>Notice the <emphasis role="bold">${externalPropertyValue}</emphasis> placeholder, this
 				indicates that the value of this argument will be replaced by an external property value.
 				Check out the section '<literal linkend="using-property-files">Using property
 					files</literal>' for more information on this.</para>
+			<sect3><title>Inner objects</title><para>An <emphasis role="bold">&lt;object/></emphasis> element inside the <emphasis role="bold"
+						>&lt;property/></emphasis> or <emphasis role="bold">&lt;constructor-arg/></emphasis>
+					elements is used to define a so-called inner object. An inner object definition does not
+					need to have any id defined, and it is best not to even specify any id value because the
+					id value simply will be ignored by the container.</para>
+				<programlisting>&lt;object id="outer" class="...">
+  <lineannotation>&lt;!-- instead of using a reference to a target object, simply define the target object inline --></lineannotation>
+  &lt;property name="target">
+    &lt;object class="com.example.Person"> <lineannotation>&lt;!-- this is the inner object --></lineannotation>
+      &lt;property name="name" value="Fiona Apple"/>
+      &lt;property name="age" value="25"/>
+    &lt;/object>
+  &lt;/property>
+&lt;/object></programlisting>
+				<para> Note that in the specific case of inner objects, the '<emphasis role="bold"
+						>scope</emphasis>' flag and any '<emphasis role="bold">id</emphasis>' attribute are
+					effectively ignored. Inner objects are always anonymous and they are always scoped as
+						prototypes. <emphasis role="italic">Please also note that it is not possible to inject
+						inner objects into collaborating objects other than the enclosing object.</emphasis>
+				</para></sect3>
+			<sect3><title>Collections</title><para>The <emphasis role="bold">&lt;array/></emphasis>, <emphasis role="bold"
+						>&lt;array-collection/></emphasis> ,<emphasis role="bold">&lt;dictionary/></emphasis>
+					and <emphasis role="bold">&lt;vector/></emphasis> elements allow properties and arguments
+					of the Actionscript collection type <emphasis role="italic">Array</emphasis>, <emphasis
+						role="italic">ArrayCollection</emphasis>, <emphasis role="italic">Dictionary</emphasis>
+					and <emphasis role="italic">Vector</emphasis>, respectively, to be defined and set. Be
+					aware that the <emphasis role="bold">array-collection</emphasis> type can only be used in
+					a Flex based application object since it is part of the framework.</para>
+				<programlisting>&lt;object id="moreComplexObject" class="example.ComplexObject">
+  &lt;property name="adminEmails">
+    &lt;dictionary>
+        &lt;entry key="administrator" value="administrator@example.org"/>
+        &lt;entry key="support" value="support@example.org"/>
+        <lineannotation>&lt;!-- or a more verbose way of defining an entry --></lineannotation>
+        &lt;entry>
+          &lt;key>development&lt;/key>
+          &lt;value>development@example.org&lt;/value>
+        &lt;/entry>
+    &lt;/dictionary>
+  &lt;/property>
+
+  &lt;property name="someList">
+    &lt;array>
+        &lt;value>a list element followed by a reference&lt;/value>
+        &lt;value>&lt;ref object="myOtherObject" />&lt;/value>
+    &lt;/array>
+  &lt;/property>
+
+  <lineannotation>&lt;!-- Only use this in a Flex based application --></lineannotation>
+  &lt;property name="someOtherList">
+    &lt;array-collection>
+        &lt;value>a list element followed by a reference&lt;/value>
+        &lt;value>&lt;ref object="myOtherObject" />&lt;/value>
+    &lt;/array-collection>
+  &lt;/property>
+
+  &lt;property name="vectorProperty">
+    &lt;vector type="String">
+      &lt;value>string1&lt;/value>
+      &lt;value>string2&lt;/value>
+      &lt;value>string3&lt;/value>
+      &lt;value>string4&lt;/value>
+    &lt;/vector>
+  &lt;/property>
+
+&lt;/object></programlisting>
 		</sect2>
 		<sect2 xml:id="metadata-configuration">
 			<title>Metadata Configuration</title>

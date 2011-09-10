@@ -60,6 +60,8 @@
 		<xi:include href="configuration-types.xml"/>
 
 		<xi:include href="object-definitions.xml"/>
+		
+		<xi:include href="autowiring.xml"/>
 
 		<xi:include href="extending-the-application-context.xml"/>
 
