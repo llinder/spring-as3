@@ -41,17 +41,171 @@
 		]]&gt;
 	&lt;/fx:Script>
 
-	&lt;sas:Object class="{MyClass}"/>
+	&lt;sas:Object class="{MyClass}" id="myClass"/>
 
-	&lt;sas:Object class="{MyOtherClass}"/>
+	&lt;sas:Object class="{MyOtherClass}" id="myOtherClass"/>
 
 &lt;/sas:SASObjects&gt;</programlisting></para>
-			<para>You can also </para>
-			
+			<para>You can also add instances of objects explicitly to the configurations, these will be
+				treated as singletons by application context.</para>
+			<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import com.classes.MyClass;
+			import com.classes.MyOtherClass;
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;mx:RemoteObject id="myRemoteObject"/>
+
+	&lt;sas:Object class="{MyClass}" id="myClass"/>
+
+	&lt;sas:Object class="{MyOtherClass}" id="myOtherClass"/>
+
+&lt;/sas:SASObjects&gt;</programlisting>
+			<para>To inject an instance into the property of another instance, add a property definition like
+				this.</para>
+			<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import com.classes.MyClass;
+			import com.classes.MyOtherClass;
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;mx:RemoteObject id="<emphasis role="bold">myRemoteObject</emphasis>"/>
+
+	&lt;sas:Object class="{MyClass}" id="myClass">
+		&lt;sas:Property name="remoteObject" ref="<emphasis role="bold">myRemoteObject</emphasis>"/>
+		&lt;sas:Property name="myOtherClassInstance" ref="{<emphasis role="bold">myOtherClass</emphasis>}"/>
+	&lt;/sas:Object>
+
+	&lt;sas:Object class="{MyOtherClass}" id="<emphasis role="bold">myOtherClass</emphasis>"/>
+
+&lt;/sas:SASObjects&gt;</programlisting>
+			<para>Method invocations are added like
+				this:</para><programlisting language="xml">&lt;sas:Object class="{MyClass}" id="myClass">
+	&lt;sas:Property name="remoteObject" ref="<emphasis role="bold">myRemoteObject</emphasis>"/>
+	&lt;sas:Property name="myOtherClassInstance" ref="{<emphasis role="bold">myOtherClass</emphasis>}"/>
+	<emphasis role="bold">&lt;sas:MethodInvocation name="myMethod">
+		&lt;sas:Arg ref="{someOtherObject}"/>
+		&lt;sas:Arg value="$(externalPropertyValue)"/>
+	&lt;/sas:MethodInvocation></emphasis>
+&lt;/sas:Object></programlisting>
+			<para>Notice the <emphasis role="bold">$(externalPropertyValue)</emphasis> placeholder, this
+				indicates that the value of this argument will be replaced by an external property value.
+				Check out the section '<literal linkend="using-property-files">Using property
+					files</literal>' for more information on this.</para>
+			<para>MXML configurations can easily be nested as well. So if a particular configuration
+				becomes too big and its hard to get an overview, breaking it up in smaller configurations
+				might prove helpful. In the example below it is assumed that both <abbrev>MXML</abbrev>
+				components are in separate files:</para>
+			<programlisting>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+
+		&lt;mx:RemoteObject id="<emphasis role="bold">myRemoteObject</emphasis>"/>
+
+&lt;/sas:SASObjects&gt;
+
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"
+		xmlns:local="*"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import com.classes.MyClass;
+			import com.classes.MyOtherClass;
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;local:InnerConfig id="<emphasis role="bold">innerConfig</emphasis>"/>
+
+	&lt;sas:Object class="{MyClass}" id="myClass">
+		&lt;sas:Property name="remoteObject" ref="<emphasis role="bold">innerConfig.myRemoteObject</emphasis>"/>
+		&lt;sas:Property name="myOtherClassInstance" ref="{<emphasis role="bold">myOtherClass</emphasis>}"/>
+	&lt;/sas:Object>
+
+	&lt;sas:Object class="{MyOtherClass}" id="<emphasis role="bold">myOtherClass</emphasis>"/>
+
+&lt;/sas:SASObjects&gt;</programlisting>
+			<para>Now to add the configuration to an application context instance, either create the
+					<abbrev>MXML</abbrev> specific
+				<literal>MXMLApplicationContext</literal>:</para><programlisting language="xml">&lt;fx:Declarations&gt;
+  &lt;sas:MXMLApplicationContext id="MXMLContext"
+		configurations="{[<emphasis role="bold">ObjectsConfiguration</emphasis>]}"
+		autoLoad="true"
+		complete="{onComplete(event)}"/&gt;
+&lt;/fx:Declarations&gt;</programlisting><para>Or create a <literal>DefaultApplicationContext</literal>, add the appropriate
+					<literal>IObjectDefinitionsProvider</literal> and configure it like this:</para>
+			<programlisting language="actionscript">var applicationContext:IApplicationContext = new DefaultApplicationContext();
+var provider:MXMLObjectDefinitionsProvider = new MXMLObjectDefinitionsProvider();
+provider.addConfiguration(<emphasis role="bold">ObjectsConfiguration</emphasis>);
+applicationContext.addDefinitionProvider(provider);
+applicationContext.addEventListener(Event.COMPLETE, onComplete);
+applicationContext.load();</programlisting>
 		</sect2>
 		<sect2 xml:id="xml-configuration">
 			<title>XML Configuration</title>
-			<para>....</para>
+			<para><abbrev>XML</abbrev> configuration gives a more flexible way of populating an application
+				context since the <abbrev>XML</abbrev> file(s) will be loaded at runtime. Which means that
+				without re-compiling the application it is possible to change the configuration. It also
+				comes with a number of downsides, most important of which is the necessity to explicitly
+				declare the classes that are defined in the <abbrev>XML</abbrev>, otherwise these classes
+				will not get compiled into the <abbrev>SWF</abbrev> file.</para>
+			<para>Various ways of ensuring this process are described in the section '<literal
+					linkend="class-inclusion">Forcing actionscript class inclusion</literal>'.</para>
+			<para>Start with creating an <abbrev>XML</abbrev> file that contains the following namespace
+				declaration and add <emphasis role="bold">&lt;object/></emphasis> elements to describe the
+				various object definitions:</para><programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;objects xmlns="http://www.springactionscript.org/schema/objects"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+		 http://www.springactionscript.org/schema/objects/spring-actionscript-objects-2.0.xsd">
+
+	&lt;object class="com.classes.MyClass" id="myClass"/>
+
+	&lt;object class="com.classes.myOtherClass" id="myOtherClass"/>
+
+&lt;/objects></programlisting>
+			<para>To inject an instance into the property of another instance, add a property definition like
+				this.<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;objects xmlns="http://www.springactionscript.org/schema/objects"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+		 http://www.springactionscript.org/schema/objects/spring-actionscript-objects-2.0.xsd">
+
+	&lt;object class="com.classes.MyClass" id="myClass">
+		&lt;property name="myOtherClassInstance" ref="<emphasis role="bold">myOtherClass</emphasis>"/>
+	&lt;/object>
+
+	&lt;object class="com.classes.myOtherClass" id="<emphasis role="bold">myOtherClass</emphasis>"/>
+
+&lt;/objects></programlisting></para>
+			<para>Method invocations are added like this:</para>
+			<programlisting>&lt;object class="com.classes.MyClass" id="myClass">
+	&lt;property name="myOtherClassInstance" ref="<emphasis role="bold">myOtherClass</emphasis>"/>
+	<emphasis role="bold">&lt;method-invocation name="myMethod">
+		&lt;arg ref="someOtherObject"/>
+		&lt;arg value="${externalPropertyValue}"/>
+	&lt;/method-invocation></emphasis>
+&lt;/object></programlisting>
+			<para>Notice the <emphasis role="bold">${externalPropertyValue}</emphasis> placeholder, this
+				indicates that the value of this argument will be replaced by an external property value.
+				Check out the section '<literal linkend="using-property-files">Using property
+					files</literal>' for more information on this.</para>
 		</sect2>
 		<sect2 xml:id="metadata-configuration">
 			<title>Metadata Configuration</title>

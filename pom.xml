@@ -25,7 +25,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<xsd-files-path>${basedir}/src/docbkx/resources/xsd</xsd-files-path>
-		<maven-site-plugin-version>3.0-beta-3</maven-site-plugin-version>
+		<maven-site-plugin-version>3.0</maven-site-plugin-version>
 		<docbkx-maven-plugin.version>2.0.10</docbkx-maven-plugin.version>
 		<docbook-xml.version>4.4</docbook-xml.version>
 		<jai_core.version>1.1.3</jai_core.version>
@@ -39,7 +39,6 @@
 		<playerglobal.version>${flashplayer.version.major}.${flashplayer.version.minor}</playerglobal.version>
 		<mockolate.version>0.12.-beta</mockolate.version>
 		<flexunit.version>4.1-RC2</flexunit.version>
-		<as3commons-collections.version>1.3.1</as3commons-collections.version>
 		<as3commons-bytecode.version>1.0-RC5</as3commons-bytecode.version>
 		<as3commons-stageprocessing.version>1.1-SNAPSHOT</as3commons-stageprocessing.version>
 		<as3commons-async.version>1.0-RC2-SNAPSHOT</as3commons-async.version>
@@ -268,123 +267,100 @@
 							<value>${project.version}</value>
 						</entity>
 					</entities>
-					<!--preProcess>
-						<xslt in="${basedir}/toplevel_files.xml"
-							  out="${basedir}/target/site/asdoc/toplevel.xml"
-							  style="${basedir}/src/docbkx/resources/xsl/combine_toplevels.xslt"
-							  reloadstylesheet="false"
-							  processor="trax">
-							<param name="baseDir"
-								   expression="${basedir}"/>
+					<preProcess>
+						<xslt in="${basedir}/toplevel_files.xml" out="${basedir}/target/site/asdoc/toplevel.xml"
+							style="${basedir}/src/docbkx/resources/xsl/combine_toplevels.xslt"
+							reloadstylesheet="false" processor="trax">
+							<param name="baseDir" expression="${basedir}"/>
 						</xslt>
 						<xslt in="${basedir}/toplevel_files.xml"
-							  out="${basedir}/target/site/asdoc/toplevel_classes.xml"
-							  style="${basedir}/src/docbkx/resources/xsl/combine_toplevel_classes.xslt"
-							  reloadstylesheet="false"
-							  processor="trax">
-							<param name="baseDir"
-								   expression="${basedir}"/>
+							out="${basedir}/target/site/asdoc/toplevel_classes.xml"
+							style="${basedir}/src/docbkx/resources/xsl/combine_toplevel_classes.xslt"
+							reloadstylesheet="false" processor="trax">
+							<param name="baseDir" expression="${basedir}"/>
 						</xslt>
 
-						<xslt in="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-objects-1.0.xsd"
-							  out="${basedir}/src/docbkx/configuration-reference.xml"
-							  style="${basedir}/src/docbkx/resources/xsl/configuration-reference.xsl"
-							  reloadstylesheet="false"
-							  processor="trax"/>
+						<xslt
+							in="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-objects-1.0.xsd"
+							out="${basedir}/src/docbkx/configuration-reference.xml"
+							style="${basedir}/src/docbkx/resources/xsl/configuration-reference.xsl"
+							reloadstylesheet="false" processor="trax"/>
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
-							  out="${basedir}/target/site/asdoc/all-classes.html"
-							  style="${basedir}/src/docbkx/resources/asdoctemplate/all-classes.xsl"
-							  reloadstylesheet="false"
-							  processor="trax"/>
+							out="${basedir}/target/site/asdoc/all-classes.html"
+							style="${basedir}/src/docbkx/resources/asdoctemplate/all-classes.xsl"
+							reloadstylesheet="false" processor="trax"/>
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
-							  out="${basedir}/target/site/asdoc/delete-me.html"
-							  style="${basedir}/src/docbkx/resources/asdoctemplate/all-index.xsl"
-							  reloadstylesheet="false"
-							  processor="trax">
+							out="${basedir}/target/site/asdoc/delete-me.html"
+							style="${basedir}/src/docbkx/resources/asdoctemplate/all-index.xsl"
+							reloadstylesheet="false" processor="trax">
 							<param name="overviewsFile"
-								   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
-							<param name="basedir"
-								   expression="${basedir}/src/docbkx/resources/asdoctemplate/"/>
-							<param name="outputPath"
-								   expression="${basedir}/target/site/asdoc/"/>
+								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+							<param name="basedir" expression="${basedir}/src/docbkx/resources/asdoctemplate/"/>
+							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
 						</xslt>
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
-							  out="${basedir}/target/site/asdoc/appendixes.html"
-							  style="${basedir}/src/docbkx/resources/asdoctemplate/appendixes.xsl"
-							  reloadstylesheet="false"
-							  processor="trax">
+							out="${basedir}/target/site/asdoc/appendixes.html"
+							style="${basedir}/src/docbkx/resources/asdoctemplate/appendixes.xsl"
+							reloadstylesheet="false" processor="trax">
 							<param name="overviewsFile"
-								   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
 						</xslt>
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
-							  out="${basedir}/target/site/asdoc/class-summary.html"
-							  style="${basedir}/src/docbkx/resources/asdoctemplate/class-summary.xsl"
-							  reloadstylesheet="false"
-							  processor="trax">
+							out="${basedir}/target/site/asdoc/class-summary.html"
+							style="${basedir}/src/docbkx/resources/asdoctemplate/class-summary.xsl"
+							reloadstylesheet="false" processor="trax">
 							<param name="overviewsFile"
-								   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
 						</xslt>
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
-							  out="${basedir}/target/site/asdoc/delete-me2.html"
-							  style="${basedir}/src/docbkx/resources/asdoctemplate/class-files.xsl"
-							  reloadstylesheet="false"
-							  processor="trax">
-							<param name="outputPath"
-								   expression="${basedir}/target/site/asdoc/"/>
+							out="${basedir}/target/site/asdoc/delete-me2.html"
+							style="${basedir}/src/docbkx/resources/asdoctemplate/class-files.xsl"
+							reloadstylesheet="false" processor="trax">
+							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
 						</xslt>
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
-							  out="${basedir}/target/site/asdoc/class-list.html"
-							  style="${basedir}/src/docbkx/resources/asdoctemplate/class-list.xsl"
-							  reloadstylesheet="false"
-							  processor="trax">
-							<param name="outputPath"
-								   expression="${basedir}/target/site/asdoc/"/>
+							out="${basedir}/target/site/asdoc/class-list.html"
+							style="${basedir}/src/docbkx/resources/asdoctemplate/class-list.xsl"
+							reloadstylesheet="false" processor="trax">
+							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
 						</xslt>
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
-							  out="${basedir}/target/site/asdoc/delete-me3.html"
-							  style="${basedir}/src/docbkx/resources/asdoctemplate/package.xsl"
-							  reloadstylesheet="false"
-							  processor="trax">
+							out="${basedir}/target/site/asdoc/delete-me3.html"
+							style="${basedir}/src/docbkx/resources/asdoctemplate/package.xsl"
+							reloadstylesheet="false" processor="trax">
 							<param name="overviewsFile"
-								   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
-							<param name="outputPath"
-								   expression="${basedir}/target/site/asdoc/"/>
+								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
 						</xslt>
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
-							  out="${basedir}/target/site/asdoc/delete-me4.html"
-							  style="${basedir}/src/docbkx/resources/asdoctemplate/package-detail.xsl"
-							  reloadstylesheet="false"
-							  processor="trax">
+							out="${basedir}/target/site/asdoc/delete-me4.html"
+							style="${basedir}/src/docbkx/resources/asdoctemplate/package-detail.xsl"
+							reloadstylesheet="false" processor="trax">
 							<param name="overviewsFile"
-								   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
-							<param name="outputPath"
-								   expression="${basedir}/target/site/asdoc/"/>
+								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
 						</xslt>
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
-							  out="${basedir}/target/site/asdoc/package-list.html"
-							  style="${basedir}/src/docbkx/resources/asdoctemplate/package-list.xsl"
-							  reloadstylesheet="false"
-							  processor="trax">
-						</xslt>
+							out="${basedir}/target/site/asdoc/package-list.html"
+							style="${basedir}/src/docbkx/resources/asdoctemplate/package-list.xsl"
+							reloadstylesheet="false" processor="trax"> </xslt>
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
-							  out="${basedir}/target/site/asdoc/package-summary.html"
-							  style="${basedir}/src/docbkx/resources/asdoctemplate/package-summary.xsl"
-							  reloadstylesheet="false"
-							  processor="trax">
+							out="${basedir}/target/site/asdoc/package-summary.html"
+							style="${basedir}/src/docbkx/resources/asdoctemplate/package-summary.xsl"
+							reloadstylesheet="false" processor="trax">
 							<param name="overviewsFile"
-								   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
-							<param name="outputPath"
-								   expression="${basedir}/target/site/asdoc/"/>
+								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
 						</xslt>
 
 						<delete file="${basedir}/target/site/asdoc/index.html"/>
@@ -410,7 +386,7 @@
 						<delete file="${basedir}/target/site/asdoc/delete-me3.html"/>
 						<delete file="${basedir}/target/site/asdoc/delete-me4.html"/>
 
-					</preProcess-->
+					</preProcess>
 					<postProcess>
 						<copy todir="target/site/docs/reference">
 							<fileset dir="target/docbkx">
@@ -443,7 +419,7 @@
 								<include name="**/*.html"/>
 							</fileset>
 						</copy>
-						
+
 						<copy todir="target/site/schema/messaging"
 							file="${xsd-files-path}/spring-actionscript-messaging-1.0.xsd"/>
 						<copy todir="target/site/schema/objects"
@@ -530,23 +506,6 @@
 			<version>${mockolate.version}</version>
 			<type>swc</type>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.adobe.flex.framework</groupId>
-					<artifactId>playerglobal</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.adobe.flex.framework</groupId>
-					<artifactId>common-framework</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.as3commons</groupId>
-			<artifactId>as3commons-collections</artifactId>
-			<version>${as3commons-collections.version}</version>
-			<type>swc</type>
-			<scope>external</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>com.adobe.flex.framework</groupId>
@@ -775,11 +734,14 @@
 
 	<repositories>
 		<repository>
-			<id>maven2-repository</id>
-			<url>http://repo1.maven.org/maven2</url>
+			<id>cairngorm3-repository</id>
+			<url>http://opensource.adobe.com/svn/opensource/cairngorm3/maven-repository</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
 		<repository>
 			<id>flex-mojos-repository</id>
@@ -789,16 +751,6 @@
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>cairngorm3-repository</id>
-			<url>http://opensource.adobe.com/svn/opensource/cairngorm3/maven-repository</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 		<repository>

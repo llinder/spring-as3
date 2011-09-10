@@ -52,6 +52,9 @@
 					<li>as3commons-lang</li>
 					<li>as3commons-logging</li>
 					<li>as3commons-bytecode</li>
+					<li>as3commons-stageprocessing</li>
+					<li>as3commons-eventbus</li>
+					<li>as3commons-async</li>
 				</ul>
 				<p> The .swc files for these libraries can be downloaded from the <a
 						href="http://www.as3commons.org" target="_blank">AS3Commons website</a>
