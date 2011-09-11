@@ -267,12 +267,12 @@ property3=<emphasis role="bold">${property1}</emphasis>_<emphasis role="bold">${
 			<programlisting language="xml">&lt;sas:Property name="service" ref="<emphasis role="bold">$(property3)</emphasis>"/></programlisting>
 			<sect3>
 				<title>How to declare property files in the other types of configuration</title>
-			<para>In an <abbrev>XML</abbrev> configuration you would add a reference to the property file
-				by adding this element:</para>
-			<programlisting language="xml">&lt;property location="<emphasis role="bold">myproperties.txt</emphasis>"/></programlisting>
-			<para>In a metadata configuration you would add this annotation to any class in your
-				project:</para>
-			<programlisting language="actionscript">[ExternalProperties(location="<emphasis role="bold">myproperties.txt</emphasis>")]</programlisting>
+				<para>In an <abbrev>XML</abbrev> configuration you would add a reference to the property
+					file by adding this element:</para>
+				<programlisting language="xml">&lt;property location="<emphasis role="bold">myproperties.txt</emphasis>"/></programlisting>
+				<para>In a metadata configuration you would add this annotation to any class in your
+					project:</para>
+				<programlisting language="actionscript">[ExternalProperties(location="<emphasis role="bold">myproperties.txt</emphasis>")]</programlisting>
 			</sect3>
 			<note>
 				<para>Notice that in the <abbrev>MXML</abbrev> the property placeholder is defined like this

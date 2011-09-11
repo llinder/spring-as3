@@ -83,10 +83,15 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 */
 		public function mergeParentDefinition(registry:IObjectDefinitionRegistry, objectDefinition:IObjectDefinition):void {
 			copyConstructorArguments(objectDefinition.parent, objectDefinition);
-			copyDefinitionProperty(objectDefinition.parent, objectDefinition, DESTROY_METHOD_FIELD_NAME)
-			copyDefinitionProperty(objectDefinition.parent, objectDefinition, FACTORY_METHOD_FIELD_NAME)
-			copyDefinitionProperty(objectDefinition.parent, objectDefinition, FACTORY_OBJECT_NAME_FIELD_NAME)
-			copyDefinitionProperty(objectDefinition.parent, objectDefinition, INIT_METHOD_FIELD_NAME)
+			copyDefinitionProperty(objectDefinition.parent, objectDefinition, DESTROY_METHOD_FIELD_NAME);
+			copyDefinitionProperty(objectDefinition.parent, objectDefinition, FACTORY_METHOD_FIELD_NAME);
+			copyDefinitionProperty(objectDefinition.parent, objectDefinition, FACTORY_OBJECT_NAME_FIELD_NAME);
+			copyDefinitionProperty(objectDefinition.parent, objectDefinition, INIT_METHOD_FIELD_NAME);
+			objectDefinition.autoWireMode = objectDefinition.parent.autoWireMode;
+			objectDefinition.dependencyCheck = objectDefinition.parent.dependencyCheck;
+			objectDefinition.scope = objectDefinition.parent.scope;
+			objectDefinition.isLazyInit = objectDefinition.parent.isLazyInit;
+			objectDefinition.dependsOn = objectDefinition.parent.dependsOn;
 		}
 
 		/**

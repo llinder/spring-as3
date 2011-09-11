@@ -253,6 +253,7 @@
 					</dependency>
 				</dependencies>
 				<configuration>
+					<tocSectionDepth>2</tocSectionDepth>
 					<highlightXslthlConfig>src/docbkx/resources/xslthl/xslthl-config.xml</highlightXslthlConfig>
 					<highlightSource>1</highlightSource>
 					<includes>springactionscript.xml</includes>
