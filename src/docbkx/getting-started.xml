@@ -177,9 +177,9 @@
 			this is not desired the <emphasis role="italic">scope</emphasis> of the object definition
 			might be set to <emphasis role="bold">prototype</emphasis>.</para>
 		<programlisting language="xml">&lt;sas:Object class="{MainPresentationModel}" id="mainModel" scope="<emphasis role="bold">prototype</emphasis>"/></programlisting>
-		<para>When an object doesn't need any particular configuration, but just needs to be accesible as
-			a singleton to the application context it may be directly declared in the MXML configuration.
-			For instance, a remote object might be declared like
+		<para>When an object doesn't need any particular configuration, but just needs to be accesible
+			as a singleton to the application context it may be directly declared in the MXML
+			configuration. For instance, a remote object might be declared like
 			this:<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
 		xmlns:s="library://ns.adobe.com/flex/spark"
@@ -255,11 +255,11 @@
 			<programlisting language="xml">&lt;sas:PropertyPlaceholder URI="<emphasis role="bold">myproperties.txt</emphasis>"/></programlisting>
 			<para>The contents of the myproperties.txt file are very simple, they consist of name/value
 				pairs delimited by an equals ('<emphasis role="bold">=</emphasis>') character.</para>
-			<programlisting>property1=myvalue1
+			<programlisting language="ini">property1=myvalue1
 property2=myvalue2</programlisting>
 			<para>The content itself will be resolved as well, so its possible to make composite
 				properties like this.</para>
-			<programlisting>property1=myvalue1
+			<programlisting language="ini">property1=myvalue1
 property2=myvalue2
 property3=<emphasis role="bold">${property1}</emphasis>_<emphasis role="bold">${property2}</emphasis></programlisting>
 			<para>To inject an external property value into, say, a object definition property, this
@@ -267,10 +267,10 @@ property3=<emphasis role="bold">${property1}</emphasis>_<emphasis role="bold">${
 			<programlisting language="xml">&lt;sas:Property name="service" ref="<emphasis role="bold">$(property3)</emphasis>"/></programlisting>
 			<para>In an <abbrev>XML</abbrev> configuration you would add a reference to the property file
 				by adding this element:</para>
-			<programlisting>&lt;property location="<emphasis role="bold">myproperties.txt</emphasis>"/></programlisting>
+			<programlisting language="xml">&lt;property location="<emphasis role="bold">myproperties.txt</emphasis>"/></programlisting>
 			<para>In a metadata configuration you would add this annotation to any class in your
 				project:</para>
-			<programlisting>[ExternalProperties(location="<emphasis role="bold">myproperties.txt</emphasis>")]</programlisting>
+			<programlisting language="actionscript">[ExternalProperties(location="<emphasis role="bold">myproperties.txt</emphasis>")]</programlisting>
 			<note>
 				<para>Notice that in the <abbrev>MXML</abbrev> the property placeholder is defined like this
 						<emphasis role="bold">$(property3)</emphasis> and inside the properties file like this

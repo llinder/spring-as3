@@ -33,12 +33,9 @@ package org.springextensions.actionscript.context.impl.metadata {
 		 */
 		public function MetadataApplicationContext(rootView:DisplayObject, parent:IApplicationContext=null, objFactory:IObjectFactory=null) {
 			super(parent, rootView, objFactory);
-			initMetadataApplicationContext();
-		}
-
-		protected function initMetadataApplicationContext():void {
 			var provider:MetadataObjectDefinitionsProvider = new MetadataObjectDefinitionsProvider();
 			addDefinitionProvider(provider);
 		}
+
 	}
 }

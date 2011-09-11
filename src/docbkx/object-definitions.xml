@@ -1,12 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter version="5.0" xml:id="object-definitions" xmlns="http://docbook.org/ns/docbook"
-	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns5="http://www.w3.org/1999/xhtml"
-	xmlns:ns4="http://www.w3.org/1998/Math/MathML" xmlns:ns3="http://www.w3.org/2000/svg"
-	xmlns:ns="http://docbook.org/ns/docbook">
+<chapter version="5.0" xml:id="object-definitions"
+	xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:ns5="http://www.w3.org/1999/xhtml"
+	xmlns:ns4="http://www.w3.org/1998/Math/MathML"
+	xmlns:ns3="http://www.w3.org/2000/svg">
 	<title>Object definitions</title>
 
 	<sect1 xml:id="object-definitions-in-depth">
 		<title>An in-depth look at object definitions</title>
-		<para></para>
+		<para>
+			<itemizedlist>
+				<listitem><para><literal linkend="autowiremode">autoWireMode</literal></para></listitem>
+				<listitem><para><literal linkend="childcontextaccess">childContextAccess</literal></para></listitem>
+				<listitem><para><literal linkend="classname">className</literal></para></listitem>
+				<listitem><para><literal linkend="clazz">clazz</literal></para></listitem>
+				<listitem><para><literal linkend="constructorarguments">constructorArguments</literal></para></listitem>
+				<listitem><para><literal linkend="customconfiguration">customConfiguration</literal></para></listitem>
+				<listitem><para><literal linkend="dependencycheck">dependencyCheck</literal></para></listitem>
+				<listitem><para><literal linkend="dependson">dependsOn</literal></para></listitem>
+				<listitem><para><literal linkend="destroymethod">destroyMethod</literal></para></listitem>
+				<listitem><para><literal linkend="factorymethod">factoryMethod</literal></para></listitem>
+				<listitem><para><literal linkend="factoryobjectname">factoryObjectName</literal></para></listitem>
+				<listitem><para><literal linkend="initmethod">initMethod</literal></para></listitem>
+				<listitem><para><literal linkend="isabstract">isAbstract</literal></para></listitem>
+				<listitem><para><literal linkend="isautowirecandidate">isAutoWireCandidate</literal></para></listitem>
+				<listitem><para><literal linkend="isinterface">isInterface</literal></para></listitem>
+				<listitem><para><literal linkend="islazyinit">isLazyInit</literal></para></listitem>
+				<listitem><para><literal linkend="issingleton">isSingleton</literal></para></listitem>
+				<listitem><para><literal linkend="methodinvocations">methodInvocations</literal></para></listitem>
+				<listitem><para><literal linkend="parent">parent</literal></para></listitem>
+				<listitem><para><literal linkend="parentname">parentName</literal></para></listitem>
+				<listitem><para><literal linkend="primary">primary</literal></para></listitem>
+				<listitem><para><literal linkend="properties">properties</literal></para></listitem>
+				<listitem><para><literal linkend="registryid">registryId</literal></para></listitem>
+				<listitem><para><literal linkend="scope">scope</literal></para></listitem>
+				<listitem><para><literal linkend="skipmetadata">skipMetadata</literal></para></listitem>
+				<listitem><para><literal linkend="skippostprocessors">skipPostProcessors</literal></para></listitem>
+			</itemizedlist>
+		</para><sect2 xml:id="autowiremode"><title>autoWireMode</title><para/></sect2>
+		<sect2 xml:id="childcontextaccess"><title>childContextAccess</title><para/></sect2>
+		<sect2 xml:id="classname"><title>className</title><para/></sect2>
+		<sect2 xml:id="clazz"><title>clazz</title><para/></sect2>
+		<sect2 xml:id="constructorarguments"><title>constructorArguments</title><para/></sect2>
+		<sect2 xml:id="customconfiguration"><title>customConfiguration</title><para/></sect2>
+		<sect2 xml:id="dependencycheck"><title>dependencyCheck</title><para/></sect2>
+		<sect2 xml:id="dependson"><title>dependsOn</title><para/></sect2>
+		<sect2 xml:id="destroymethod"><title>destroyMethod</title><para/></sect2>
+		<sect2 xml:id="factorymethod"><title>factoryMethod</title><para/></sect2>
+		<sect2 xml:id="factoryobjectname"><title>factoryObjectName</title><para/></sect2>
+		<sect2 xml:id="initmethod"><title>initMethod</title><para/></sect2>
+		<sect2 xml:id="isabstract"><title>isAbstract</title><para/></sect2>
+		<sect2 xml:id="isautowirecandidate"><title>isAutoWireCandidate</title><para/></sect2>
+		<sect2 xml:id="isinterface"><title>isInterface</title><para/></sect2>
+		<sect2 xml:id="islazyinit"><title>isLazyInit</title><para/></sect2>
+		<sect2 xml:id="issingleton"><title>isSingleton</title><para/></sect2>
+		<sect2 xml:id="methodinvocations"><title>methodInvocations</title><para/></sect2>
+		<sect2 xml:id="parent"><title>parent</title><para/></sect2>
+		<sect2 xml:id="parentname"><title>parentName</title><para/></sect2>
+		<sect2 xml:id="primary"><title>primary</title><para/></sect2>
+		<sect2 xml:id="properties"><title>properties</title><para/></sect2>
+		<sect2 xml:id="registryid"><title>registryId</title><para/></sect2>
+		<sect2 xml:id="scope"><title>scope</title><para/></sect2>
+		<sect2 xml:id="skipmetadata"><title>skipMetadata</title><para/></sect2>
+		<sect2 xml:id="skippostprocessors"><title>skipPostProcessors</title><para/></sect2>
 	</sect1>
 </chapter>

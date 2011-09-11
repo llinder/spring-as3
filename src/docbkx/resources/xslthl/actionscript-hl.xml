@@ -49,8 +49,8 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
 	</highlighter>
 	<highlighter type="annotation">
 		<start>[</start>
-		<valueStart></valueStart>
-		<valueEnd></valueEnd>
+		<valueStart>(</valueStart>
+		<valueEnd>)</valueEnd>
 		<end>]</end>
 	</highlighter>
 	<highlighter type="hexnumber">
@@ -69,7 +69,6 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
 		<keyword>break</keyword>
 		<keyword>case</keyword>
 		<keyword>catch</keyword>
-		<keyword>class</keyword>
 		<keyword>const</keyword>
 		<keyword>continue</keyword>
 		<keyword>else</keyword>
@@ -82,10 +81,9 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
 		<keyword>import</keyword>
 		<keyword>int</keyword>
 		<keyword>uint</keyword>
-		<keyword>interface</keyword>
 		<keyword>native</keyword>
 		<keyword>new</keyword>
-		<keyword>package</keyword>
+		<keyword>internal</keyword>
 		<keyword>private</keyword>
 		<keyword>protected</keyword>
 		<keyword>public</keyword>
@@ -102,6 +100,19 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
 		<keyword>dynamic</keyword>
 		<keyword>null</keyword>
 		<keyword>undefined</keyword>
-		<keyword>function</keyword>
+	</highlighter>
+	<highlighter type="word">
+	    <word>class</word>
+	    <word>interface</word>
+	    <word>package</word>
+	    <word>function</word>
+	    <word>function get</word>
+	    <word>function set</word>
+	    <style>directive</style>
+	</highlighter>
+	<highlighter type="regex">
+	    <pattern>^(.+)(?==)</pattern>
+	    <flags>g,s</flags>
+	    <style>attribute</style>
 	</highlighter>
 </highlighters>
