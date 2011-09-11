@@ -28,7 +28,7 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 	public interface IObjectDefinition {
 
 		/**
-		 * Defines the way an object will be autowired (configured).
+		 * Determines the way an object will be autowired (configured).
 		 */
 		function get autoWireMode():AutowireMode;
 		/**
@@ -47,7 +47,7 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		function set childContextAccess(value:ChildContextObjectDefinitionAccess):void;
 
 		/**
-		 * The classname of the object that the current <code>IObjectDefinition</code> describes.
+		 * The fully qualified classname of the object that the current <code>IObjectDefinition</code> describes.
 		 */
 		function get className():String;
 		/**
@@ -74,7 +74,7 @@ package org.springextensions.actionscript.ioc.objectdefinition {
 		function set constructorArguments(value:Array):void;
 
 		/**
-		 * Optional extra data that can be used by other processing logic.
+		 * Optional extra data that can be used by other processing logic. May also be an instance of <code>ICustomConfigurator</code> or an instance of <code>Vector.&lt;ICustomConfigurator&gt;</code>
 		 */
 		function get customConfiguration():*;
 		/**

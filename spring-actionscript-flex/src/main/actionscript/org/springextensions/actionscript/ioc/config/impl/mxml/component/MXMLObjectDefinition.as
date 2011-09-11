@@ -92,7 +92,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		private var _childContent:Array;
 		private var _defaultedProperties:Dictionary;
 		private var _definition:IObjectDefinition;
-		private var _dependsOn:Vector.<MXMLObjectDefinition> = new Vector.<MXMLObjectDefinition>();
+		private var _dependsOn:Array = [];
 		private var _document:Object;
 		private var _explicitProperties:Dictionary;
 		private var _factoryObject:MXMLObjectDefinition;
@@ -269,14 +269,14 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 			_explicitProperties[DEPENDENCY_CHECK_FIELD_NAME] = true;
 		}
 
-		public function get dependsOn():Vector.<MXMLObjectDefinition> {
+		public function get dependsOn():Array {
 			return _dependsOn;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set dependsOn(value:Vector.<MXMLObjectDefinition>):void {
+		public function set dependsOn(value:Array):void {
 			_definition.dependsOn = (value && value.length > 0) ? new Vector.<String>() : null;
 			_dependsOn = value;
 

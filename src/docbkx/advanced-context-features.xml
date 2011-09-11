@@ -8,6 +8,8 @@
 	<sect1 xml:id="knowing-your-parent-and-your-children">
 		<title>Knowing your parent and/or your children</title>
 		<para>...</para>
+		<sect2 xml:id="context-parents"><title>Context parents</title><para></para></sect2>
+		<sect2 xml:id="context-children"><title>Context children</title><para></para></sect2>
 	</sect1>
 
 	<sect1 xml:id="contexts-and-modules">
