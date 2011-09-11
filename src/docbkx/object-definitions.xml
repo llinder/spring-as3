@@ -395,9 +395,17 @@ public interface ISimpleInitializingInterface {
 				every subsequent call to the <emphasis role="italic">getObject()</emphasis> method will
 				return the same instance. See the section '<literal linkend="scope">scope</literal>' for
 				more information.</para></sect2>
-		<sect2 xml:id="parent"><title>parent</title><para/></sect2>
-		<sect2 xml:id="parentname"><title>parentName</title><para/></sect2>
-		<sect2 xml:id="primary"><title>primary</title><para/></sect2>
+		<sect2 xml:id="parent"><title>parent</title><para>An object definition whose properties and method invocations will be inherited by the current
+				definition. Check out the '<literal linkend="isabstract">isAbstract</literal>' section for
+				more information.</para></sect2>
+		<sect2 xml:id="parentname"><title>parentName</title><para>The name of an object Definition whose properties and method invocations will be inherited by
+				the current definition. Check out the '<literal linkend="isabstract">isAbstract</literal>'
+				section for more information.</para></sect2>
+		<sect2 xml:id="primary"><title>primary</title><para>True if this object needs to be used as the primary autowire candidate when the container is
+				autowiring by type. This means that if multiple objects are found of the same type, the
+				object marked as '<emphasis role="bold">primary</emphasis>' will become the autowire
+				candidate. To learn more about autowiring, check out the '<literal linkend="autowiring"
+					>Autowiring</literal>' section.</para></sect2>
 		<sect2 xml:id="scope"><title>scope</title><para>When you create an object definition what you are actually creating is a recipe for creating
 				actual instances of the class defined by that object definition. The idea that an object
 				definition is a recipe is important, because it means that, just like a class, you can
