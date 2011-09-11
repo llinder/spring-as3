@@ -19,6 +19,7 @@ package org.springextensions.actionscript.context.impl.mxml {
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 
+	import mx.binding.utils.BindingUtils;
 	import mx.core.IMXMLObject;
 	import mx.events.FlexEvent;
 
@@ -35,6 +36,11 @@ package org.springextensions.actionscript.context.impl.mxml {
 	 * @author Roland Zwaga
 	 */
 	public class MXMLApplicationContext extends EventDispatcher implements IMXMLObject, IApplicationContextAware {
+
+		{
+			BindingUtils;
+		}
+
 		public static const AUTOLOAD_CHANGED_EVENT:String = "autoLoadChanged";
 		public static const CONFIGURATIONPACKAGE_CHANGED_EVENT:String = "configurationPackageChanged";
 		public static const CONFIGURATIONS_CHANGED_EVENT:String = "configurationsChanged";

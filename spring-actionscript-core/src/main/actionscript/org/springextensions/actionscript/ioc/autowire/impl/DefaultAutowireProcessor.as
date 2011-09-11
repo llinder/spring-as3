@@ -22,6 +22,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
+	import org.as3commons.lang.ObjectUtils;
 	import org.as3commons.lang.StringUtils;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getLogger;
@@ -44,6 +45,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 	import org.springextensions.actionscript.ioc.factory.impl.DefaultObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.util.Environment;
 	import org.springextensions.actionscript.util.TypeUtils;
 
 	/**
@@ -62,6 +64,10 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		// Public Constants
 		//
 		// --------------------------------------------------------------------
+		/**
+		 * Metadata argument key used for bindings, the value of this key determines the host object's property chain.
+		 */
+		public static const AUTOWIRED_PROPERTY_NAME:String = "property";
 		/**
 		 * The name of the metadata that determines whether a field needs to be autowired
 		 */
@@ -110,6 +116,9 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		// --------------------------------------------------------------------
 
 		private static const logger:ILogger = getLogger(DefaultAutowireProcessor);
+		private static const POINT_CHAR:String = '.';
+		private static const BINDING_UTILS_CLASS_NAME:String = "mx.binding.utils.BindingUtils";
+		private static const BIND_PROPERTY_METHOD_NAME:String = "bindProperty";
 
 		// --------------------------------------------------------------------
 		//
@@ -140,6 +149,7 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 		private var _objectFactory:IObjectFactory;
 		private var _processDefinitions:Dictionary;
 		private var _isDisposed:Boolean;
+		private var _bindingFunction:Function;
 
 		public function set applicationDomain(value:ApplicationDomain):void {
 			_applicationDomain = value;
@@ -361,10 +371,58 @@ package org.springextensions.actionscript.ioc.autowire.impl {
 					autoWireFieldByName(object, field, metadata, objectName);
 				} else if (metadata.hasArgumentWithKey(AUTOWIRED_ARGUMENT_EXTERNALPROPERTY)) {
 					autoWireFieldByPropertyName(object, field, metadata, objectName);
+				} else if (metadata.hasArgumentWithKey(AUTOWIRED_PROPERTY_NAME)) {
+					handlePropertyName(object, field, metadata, objectName);
 				} else {
 					autoWireFieldByType(object, field, metadata, objectName);
 				}
 			}
+		}
+
+		protected function assignField(object:Object, field:Field, metadata:Metadata, objectName:String):void {
+			var host:String = (metadata.hasArgumentWithKey(AUTOWIRED_ARGUMENT_NAME)) ? metadata.getArgument(AUTOWIRED_ARGUMENT_NAME).value : field.name;
+			var hostInstance:Object = objectFactory.getObject(host);
+			var value:* = ObjectUtils.resolvePropertyChain(metadata.getArgument(AUTOWIRED_PROPERTY_NAME).value, hostInstance);
+			if (field.namespaceURI == null) {
+				object[field.name] = value;
+			} else {
+				object[field.qName] = value;
+			}
+		}
+
+		protected function handlePropertyName(object:Object, field:Field, metadata:Metadata, objectName:String):void {
+			if (Environment.isFlash) {
+				assignField(object, field, metadata, objectName);
+			} else {
+				bindField(object, field, metadata, objectName);
+			}
+		}
+
+		protected function bindField(object:Object, field:Field, metadata:Metadata, objectName:String):void {
+			var host:String = (metadata.hasArgumentWithKey(AUTOWIRED_ARGUMENT_NAME)) ? metadata.getArgument(AUTOWIRED_ARGUMENT_NAME).value : field.name;
+			var chain:Array = metadata.getArgument(AUTOWIRED_PROPERTY_NAME).value.split(POINT_CHAR);
+			var bindPropertyFunction:Function = getBindingUtilsBindPropertyFunction();
+			if (bindPropertyFunction != null) {
+				try {
+					bindPropertyFunction(object, field.name, objectFactory.getObject(host), chain, false, true);
+				} catch (e:Error) {
+					throw new Error(StringUtils.substitute("Autowiring tried to bind field '{0}.{1}' with '{2}.{3}', but failed. Original exception was: {4}", objectName, field.name, host, chain.join(POINT_CHAR), e.message));
+				}
+			} else {
+				assignField(object, field, metadata, objectName);
+			}
+			logger.debug("Binding field '{0}.{1}' with '{2}.{3}'", [objectName, field.name, host, chain.join(POINT_CHAR)]);
+		}
+
+		protected function getBindingUtilsBindPropertyFunction():Function {
+			if (_bindingFunction == null) {
+				try {
+					var cls:Class = ClassUtils.forName(BINDING_UTILS_CLASS_NAME, _applicationDomain);
+					_bindingFunction = cls[BIND_PROPERTY_METHOD_NAME];
+				} catch (e:Error) {
+				}
+			}
+			return _bindingFunction;
 		}
 
 		/**

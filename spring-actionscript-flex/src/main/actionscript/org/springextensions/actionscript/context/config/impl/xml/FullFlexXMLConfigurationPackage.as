@@ -15,6 +15,8 @@
 */
 package org.springextensions.actionscript.context.config.impl.xml {
 
+	import mx.binding.utils.BindingUtils;
+
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.EventBusNamespacehandler;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.messaging.MessagingNamespaceHandler;
@@ -30,6 +32,10 @@ package org.springextensions.actionscript.context.config.impl.xml {
 	 * @author Roland Zwaga
 	 */
 	public class FullFlexXMLConfigurationPackage extends FullXMLConfigurationPackage {
+
+		{
+			BindingUtils;
+		}
 
 		/**
 		 * Adds the <code>StageProcessingNamespaceHandler</code>, <code>EventBusNamespacehandler</code>, <code>FlexTaskNamespaceHandler</code>,
