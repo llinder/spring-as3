@@ -30,10 +30,6 @@ package org.springextensions.actionscript.context.impl.xml {
 
 		public function XMLApplicationContext(configLocation:*=null, parent:IApplicationContext=null, rootView:DisplayObject=null, objFactory:IObjectFactory=null) {
 			super(parent, rootView, objFactory);
-			initXMLApplicationContext(configLocation);
-		}
-
-		protected function initXMLApplicationContext(configLocation:*):void {
 			var provider:XMLObjectDefinitionsProvider = new XMLObjectDefinitionsProvider((configLocation != null) ? [configLocation] : null);
 			addDefinitionProvider(provider);
 		}

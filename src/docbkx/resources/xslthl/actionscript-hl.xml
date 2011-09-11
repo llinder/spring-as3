@@ -66,7 +66,6 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
 		<ignoreCase />
 	</highlighter>
 	<highlighter type="keywords">
-		<keyword>Boolean</keyword>
 		<keyword>break</keyword>
 		<keyword>case</keyword>
 		<keyword>catch</keyword>
@@ -101,10 +100,8 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
 		<keyword>var</keyword>
 		<keyword>while</keyword>
 		<keyword>dynamic</keyword>
-		<keyword>Number</keyword>
-		<keyword>String</keyword>
-		<keyword>Class</keyword>
 		<keyword>null</keyword>
 		<keyword>undefined</keyword>
+		<keyword>function</keyword>
 	</highlighter>
 </highlighters>

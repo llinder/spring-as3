@@ -10,20 +10,31 @@
 		<para>
 			<orderedlist>
 				<listitem>
-					<para><literal linkend="mxml-configuration">MXML based configuration</literal></para>
+					<para>
+						<literal linkend="mxml-configuration">MXML based configuration</literal>
+					</para>
 				</listitem>
 				<listitem>
-					<para><literal linkend="xml-configuration">XML based configuration</literal></para>
+					<para>
+						<literal linkend="xml-configuration">XML based configuration</literal>
+					</para>
 				</listitem>
 				<listitem>
-					<para><literal linkend="metadata-configuration">Metadata based configuration</literal></para>
+					<para>
+						<literal linkend="metadata-configuration">Metadata based configuration</literal>
+					</para>
 				</listitem>
 				<listitem>
-					<para><literal linkend="actionscript-configuration">Actionscript based
-						configuration</literal></para>
+					<para>
+						<literal linkend="actionscript-configuration">Actionscript based configuration</literal>
+					</para>
 				</listitem>
 			</orderedlist>
 		</para>
+		<para>These sections show the various ways of populating an application context with object
+			definitions. It is not an exhaustive guide to all the possibilities that an object definition
+			offers. Please refer to the section '<literal linkend="object-definitions">Object
+				Definitions</literal>' for a complete overview of this.</para>
 		<sect2 xml:id="mxml-configuration">
 			<title>MXML Configuration</title>
 			<para>For Flex based applications the <abbrev>MXML</abbrev> configuration offers a familiar
@@ -348,7 +359,79 @@ applicationContext.load();</programlisting>
 		</sect2>
 		<sect2 xml:id="metadata-configuration">
 			<title>Metadata Configuration</title>
-			<para>....</para>
+			<para>In the case of a metadata based configuration there is no need for a separate config file.
+				The source code itself will act as the configuration.</para>
+			<para>For a class to be added as a definition to the application context all you need to do is
+				annotate it with the <emphasis role="bold">[Component]</emphasis> metadata.</para>
+			<programlisting language="actionscript">[Component(id="myClass")]
+public class MyClass {
+
+ public function MyClass() {
+    super();
+ }
+}</programlisting>
+			<para>Properties may be annotated with the <emphasis role="bold">[Property]</emphasis>
+				metadata to indicate they need to be injected.</para>
+			<programlisting language="actionscript">[Component(id="myClass")]
+public class MyClass {
+
+ public function MyClass() {
+  super();
+ }
+ 
+ [Property(ref="someObjectNameOfMyType")]
+ public var someProperty():MyType;
+
+ [Property(value="${externalPropertyValue}")]
+ public var someOtherProperty():String;
+
+}</programlisting>
+			<para>Notice the <emphasis role="bold">${externalPropertyValue}</emphasis> placeholder, this
+				indicates that the value of this argument will be replaced by an external property value.
+				Check out the section '<literal linkend="using-property-files">Using property
+					files</literal>' for more information on this.</para>
+			<para>A method invocation may be added using the [MethodInvocation] metadata.</para>
+			<programlisting language="actionscript">[Component(id="myClass")]
+public class MyClass {
+
+ public function MyClass() {
+  super();
+ }
+ 
+ [Invoke]
+ public var someFunction():void;
+
+}   </programlisting>
+			<para>If the method needs to receieve any arguments they maybe added as metadata
+				arguments.</para>
+			<programlisting language="actionscript">[Component(id="myComponent",scope="prototype")]
+public class AnnotatedComponent {
+
+ public function AnnotatedComponent() {
+  super();
+ }
+ 
+ [Invoke(args="ref=someObjectNameOfMyType, value=10")]
+ public var someFunction(arg1:SomeType, arg2:uint):void;
+
+}</programlisting>
+			<para>Naturally the arguments needs to be defined in the same order as the method expects
+				them.</para>
+			<para>Now to add the configuration to an application context instance, either create the
+					metadata specific <literal>MetadataApplicationContext</literal>:</para>
+			<programlisting language="xml">var applicationContext:MetadataApplicationContext = new MetadataApplicationContext(FlexGlobals.topLevelApplication as DisplayObject);
+applicationContext.addEventListener(Event.COMPLETE, onComplete);
+applicationContext.load();</programlisting>
+			<para>Notice how the topLevelApplication is passed into the constructor, the
+				MetadataApplicationContext requires a valid DisplayObject that is added to the stage (or a
+				direct reference to the Stage) to function correctly.</para>
+			<para>Or create a <literal>DefaultApplicationContext</literal>, add the appropriate
+					<literal>IObjectDefinitionsProvider</literal> and configure it like this:</para>
+			<programlisting language="actionscript">var applicationContext:IApplicationContext = new DefaultApplicationContext(null, FlexGlobals.topLevelApplication as DisplayObject);
+var provider:MetadataObjectDefinitionsProvider = new MetadataObjectDefinitionsProvider();
+applicationContext.addDefinitionProvider(provider);
+applicationContext.addEventListener(Event.COMPLETE, onComplete);
+applicationContext.load();</programlisting>
 		</sect2>
 		<sect2 xml:id="actionscript-configuration">
 			<title>Actionscript Configuration</title>
