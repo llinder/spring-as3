@@ -10,8 +10,8 @@
 			configured. These are, naturally, a very important aspect of the entire Spring Actionscript
 			library. In these sections every property of the object definition is explained along with
 			examples of how to populate them using the various types of configuration. To learn more about
-			these, check the section '<literal linkend="configuration-types">Configuration
-			types</literal>'.</para>
+			configurations, check the section '<literal linkend="configuration-types">Configuration
+				types</literal>'.</para>
 		<para>
 			<itemizedlist>
 				<listitem>

@@ -156,6 +156,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			if (_locations.indexOf(location) < 0) {
 				_locations[_locations.length] = location;
 			}
+			return this;
 		}
 
 		/**
@@ -164,6 +165,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 */
 		public function addLocations(locations:Array):XMLObjectDefinitionsProvider {
 			_locations = (_locations == null) ? locations : _locations.concat(locations);
+			return this;
 		}
 
 		/**
@@ -182,6 +184,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			if (namespaceHandler is IXMLObjectDefinitionsPreprocessor) {
 				addPreprocessor(IXMLObjectDefinitionsPreprocessor(namespaceHandler));
 			}
+			return this;
 		}
 
 		/**
@@ -193,6 +196,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			for each (var handler:INamespaceHandler in namespaceHandlers) {
 				addNamespaceHandler(handler);
 			}
+			return this;
 		}
 
 		/**
@@ -205,6 +209,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 			if (_preprocessors.indexOf(preprocessor) < 0) {
 				_preprocessors[_preprocessors.length] = preprocessor;
 			}
+			return this;
 		}
 
 		/**

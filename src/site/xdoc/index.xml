@@ -46,18 +46,18 @@
 							};
 							//]]>
 						</script>
-						<a id="springas_nodep" href="downloads/spring-actionscript-1.1-distribution.zip"
-							onclick="javascript: pageTracker._trackPageview('/downloads/spring-actionscript-2.0-distribution'); "
-							>Spring Actionscript 2.0-BETA</a>
+						<a id="springas_nodep" href="downloads/spring-actionscript-2.0-distribution.zip"
+							onclick="javascript: pageTracker._trackPageview('/downloads/spring-actionscript-2.0-distribution');"
+							>Spring Actionscript 2.0 BETA</a>
 					</li>
 					<li>
 						<a id="springas_flex"
 							href="downloads/spring-actionscript-flex-2.0.zip">Spring
-							Actionscript Flex 2.0</a></li>
+							Actionscript Flex 2.0 BETA</a></li>
 					<li>
 						<a id="springas_dep"
 							href="downloads/spring-actionscript-2.0-distribution-with-dependencies.zip">Spring
-							Actionscript 2.0</a> (with dependencies) </li>
+							Actionscript 2.0</a> (with dependencies) BETA</li>
 				</ul>
 				<p> It is recommended that you download the archive 'with dependencies'.<br/> If you do not,
 					you will have to provide the following libraries: </p>

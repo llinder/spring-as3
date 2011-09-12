@@ -8,11 +8,20 @@
 		<title>Installing Spring Actionscript</title>
 		<para>To start using Spring Actionscript in your project you will need to download either the
 			all-in-one swc or the archive with all of the separate extensions:</para>
-		<para> spring-actionscript-core-full.swc </para>
-		<para> Zip with dependencies </para>
+		<para><literal
+				xlink:href="http://beta.springactionscript.org/downloads/spring-actionscript-2.0-distribution.zip"
+				xlink:title="Spring Actionscript v2.0 Core Package">Spring Actionscript
+			Core</literal></para>
+		<para><literal
+				xlink:href="http://beta.springactionscript.org/downloads/spring-actionscript-2.0-distribution-with-dependencies.zip"
+				xlink:title="Spring Actionscript v2.0 Core Package including dependencies">Spring
+				Actionscript Core with dependencies</literal></para>
 		<para>If you want to use the Flex specific functionality you will need to additionally download
 			this .swc as well:</para>
-		<para>spring-actionscript-swc</para>
+		<para><literal
+				xlink:href="http://beta.springactionscript.org/downloads/spring-actionscript-flex-2.0.zip"
+				xlink:title="Spring Actionscript 2.0 Flex Extensions">Spring Actionscript Flex
+				Extensions</literal></para>
 		<para>One you've downloaded them place them in your project's library path. In a Flashbuilder
 			project, for instance, this simply means you need to copy them into your 'libs' folder.</para>
 
