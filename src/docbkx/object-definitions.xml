@@ -6,6 +6,12 @@
 
 	<sect1 xml:id="object-definitions-in-depth">
 		<title>An in-depth look at object definitions</title>
+		<para>Object definitions act as the 'recipes' with which object instances are created and
+			configured. These are, naturally, a very important aspect of the entire Spring Actionscript
+			library. In these sections every property of the object definition is explained along with
+			examples of how to populate them using the various types of configuration. To learn more about
+			these, check the section '<literal linkend="configuration-types">Configuration
+			types</literal>'.</para>
 		<para>
 			<itemizedlist>
 				<listitem>
@@ -598,14 +604,19 @@ public interface ISimpleInitializingInterface {
 				class level. Objects can be defined to be deployed in one of a number of scopes: out of the
 				box, Spring Actionscript supports exactly two scopes.</para>
 			<para>The scopes supported out of the box are listed below:<table border="1">
-					<caption>Object scopes</caption> <tr>
-						<th>Scope</th> <th>Description</th>
-					</tr> <tr>
-						<td>singleton</td> <td>Scopes a single object definition to a single object instance per
-							Spring Actionscript <abbrev>IoC</abbrev> container.</td>
-					</tr> <tr>
-						<td>prototype</td> <td>Scopes a single object definition to any number of object
-							instances.</td>
+					<caption>Object scopes</caption>
+					<tr>
+						<th>Scope</th>
+						<th>Description</th>
+					</tr>
+					<tr>
+						<td>singleton</td>
+						<td>Scopes a single object definition to a single object instance per Spring
+							Actionscript <abbrev>IoC</abbrev> container.</td>
+					</tr>
+					<tr>
+						<td>prototype</td>
+						<td>Scopes a single object definition to any number of object instances.</td>
 					</tr>
 				</table></para>
 			<sect3>
