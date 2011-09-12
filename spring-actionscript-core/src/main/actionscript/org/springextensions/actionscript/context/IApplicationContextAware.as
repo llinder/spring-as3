@@ -19,8 +19,7 @@ package org.springextensions.actionscript.context {
 	 * Interface to be implemented by any object that wishes to be notified
 	 * of the IApplicationContext that it runs in.
 	 *
-	 * @author: Christophe Herreman
-	 * @see org.springextensions.actionscript.context.support.ApplicationContextAwareProcessor ApplicationContextAwareProcessor
+	 * @author Christophe Herreman
 	 */
 	public interface IApplicationContextAware {
 
