@@ -30,8 +30,7 @@ package org.springextensions.actionscript.context {
 	 */
 	public interface IApplicationContext extends IObjectFactory, IStageObjectProcessorRegistryAware {
 		/**
-		 *
-		 * @return
+		 * Returns a <code>Vector</code> of <code>IApplicationContexts</code> that have been registered as a child of the current <code>IApplicationContext</code>.
 		 */
 		function get childContexts():Vector.<IApplicationContext>;
 		/**
