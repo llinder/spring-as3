@@ -163,9 +163,9 @@
 &lt;/fx:Declarations&gt;</programlisting>
 			<para>Or create a <literal>DefaultApplicationContext</literal>, add the appropriate
 					<literal>IObjectDefinitionsProvider</literal> and configure it like this:</para>
-			<programlisting language="actionscript">var applicationContext:IApplicationContext = new DefaultApplicationContext();
-var provider:MXMLObjectDefinitionsProvider = new MXMLObjectDefinitionsProvider();
+			<programlisting language="actionscript">var provider:MXMLObjectDefinitionsProvider = new MXMLObjectDefinitionsProvider();
 provider.addConfiguration(<emphasis role="bold">ObjectsConfiguration</emphasis>);
+var applicationContext:IApplicationContext = new DefaultApplicationContext();
 applicationContext.addDefinitionProvider(provider);
 applicationContext.addEventListener(Event.COMPLETE, onComplete);
 applicationContext.load();</programlisting>
@@ -338,9 +338,9 @@ applicationContext.addEventListener(Event.COMPLETE, onComplete);
 applicationContext.load();</programlisting>
 				<para>Or create a <literal>DefaultApplicationContext</literal>, add the appropriate
 						<literal>IObjectDefinitionsProvider</literal> and configure it like this:</para>
-				<programlisting language="actionscript">var applicationContext:IApplicationContext = new DefaultApplicationContext();
-var provider:XMLObjectDefinitionsProvider = new XMLObjectDefinitionsProvider();
+				<programlisting language="actionscript">var provider:XMLObjectDefinitionsProvider = new XMLObjectDefinitionsProvider();
 provider.addLocation('application-context.xml');
+var applicationContext:IApplicationContext = new DefaultApplicationContext();
 applicationContext.addDefinitionProvider(provider);
 applicationContext.addEventListener(Event.COMPLETE, onComplete);
 applicationContext.load();</programlisting>
@@ -359,8 +359,8 @@ applicationContext.load();</programlisting>
 		</sect2>
 		<sect2 xml:id="metadata-configuration">
 			<title>Metadata Configuration</title>
-			<para>In the case of a metadata based configuration there is no need for a separate config file.
-				The source code itself will act as the configuration.</para>
+			<para>In the case of a metadata based configuration there is no need for a separate config
+				file. The source code itself will act as the configuration.</para>
 			<para>For a class to be added as a definition to the application context all you need to do is
 				annotate it with the <emphasis role="bold">[Component]</emphasis> metadata.</para>
 			<programlisting language="actionscript">[Component(id="myClass")]
@@ -418,7 +418,7 @@ public class AnnotatedComponent {
 			<para>Naturally the arguments needs to be defined in the same order as the method expects
 				them.</para>
 			<para>Now to add the configuration to an application context instance, either create the
-					metadata specific <literal>MetadataApplicationContext</literal>:</para>
+				metadata specific <literal>MetadataApplicationContext</literal>:</para>
 			<programlisting language="xml">var applicationContext:MetadataApplicationContext = new MetadataApplicationContext(FlexGlobals.topLevelApplication as DisplayObject);
 applicationContext.addEventListener(Event.COMPLETE, onComplete);
 applicationContext.load();</programlisting>
@@ -427,9 +427,9 @@ applicationContext.load();</programlisting>
 				direct reference to the Stage) to function correctly.</para>
 			<para>Or create a <literal>DefaultApplicationContext</literal>, add the appropriate
 					<literal>IObjectDefinitionsProvider</literal> and configure it like this:</para>
-			<programlisting language="actionscript">var applicationContext:IApplicationContext = new DefaultApplicationContext(null, FlexGlobals.topLevelApplication as DisplayObject);
-var provider:MetadataObjectDefinitionsProvider = new MetadataObjectDefinitionsProvider();
+			<programlisting language="actionscript">var provider:MetadataObjectDefinitionsProvider = new MetadataObjectDefinitionsProvider();
 applicationContext.addDefinitionProvider(provider);
+var applicationContext:IApplicationContext = new DefaultApplicationContext(null, FlexGlobals.topLevelApplication as DisplayObject);
 applicationContext.addEventListener(Event.COMPLETE, onComplete);
 applicationContext.load();</programlisting>
 		</sect2>

@@ -34,20 +34,20 @@ package org.springextensions.actionscript.context.impl.xml {
 			addDefinitionProvider(provider);
 		}
 
-		public function addLocation(location:*):void {
-			XMLObjectDefinitionsProvider(definitionProviders[0]).addLocation(location);
+		public function addLocation(location:*):XMLObjectDefinitionsProvider {
+			return XMLObjectDefinitionsProvider(definitionProviders[0]).addLocation(location);
 		}
 
-		public function addLocations(locations:Array):void {
-			XMLObjectDefinitionsProvider(definitionProviders[0]).addLocations(locations);
+		public function addLocations(locations:Array):XMLObjectDefinitionsProvider {
+			return XMLObjectDefinitionsProvider(definitionProviders[0]).addLocations(locations);
 		}
 
-		public function addNamespaceHandler(namespaceHandler:INamespaceHandler):void {
-			XMLObjectDefinitionsProvider(definitionProviders[0]).addNamespaceHandler(namespaceHandler);
+		public function addNamespaceHandler(namespaceHandler:INamespaceHandler):XMLObjectDefinitionsProvider {
+			return XMLObjectDefinitionsProvider(definitionProviders[0]).addNamespaceHandler(namespaceHandler);
 		}
 
-		public function addNamespaceHandlers(namespaceHandlers:Vector.<INamespaceHandler>):void {
-			XMLObjectDefinitionsProvider(definitionProviders[0]).addNamespaceHandlers(namespaceHandlers);
+		public function addNamespaceHandlers(namespaceHandlers:Vector.<INamespaceHandler>):XMLObjectDefinitionsProvider {
+			return XMLObjectDefinitionsProvider(definitionProviders[0]).addNamespaceHandlers(namespaceHandlers);
 		}
 	}
 }

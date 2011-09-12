@@ -10,6 +10,12 @@
 
 	<body>
 
+		<section name="THIS IS A BETA SITE CONTAINING BETA SOFTWARE">
+			<p>Anything you read and download here might be unstable and is subject to change. However, feel free to play around and test the new possibilities
+				of Spring Actionscript v2.0. <a href="http://forum.springsource.org/forumdisplay.php?60-Spring-Actionscript" target="_blank">Please refer to our forums</a> if you have any questions, criticism or suggestions.</p>
+			<hr/>
+		</section>
+
 		<section name="Spring Actionscript">
 			<p> Spring ActionScript is an offshoot of the Java-based Spring Framework written in
 				ActionScript 3. It is targeted for the Flash, Flex and AIR platforms. The framework contains
@@ -33,6 +39,10 @@
 								sasDep.onclick = function () {
 									pageTracker._trackPageview('/downloads/spring-actionscript-2.0-distribution-with-dependencies.zip');
 								};
+								var sasFlex = document.getElementById('springas_flex');
+								sasFlex.onclick = function () {
+									pageTracker._trackPageview('/downloads/spring-actionscript-flex-2.0.zip');
+								};
 							};
 							//]]>
 						</script>
@@ -41,9 +51,13 @@
 							>Spring Actionscript 2.0-BETA</a>
 					</li>
 					<li>
+						<a id="springas_flex"
+							href="downloads/spring-actionscript-flex-2.0.zip">Spring
+							Actionscript Flex 2.0</a></li>
+					<li>
 						<a id="springas_dep"
 							href="downloads/spring-actionscript-2.0-distribution-with-dependencies.zip">Spring
-							Actionscript 1.1</a> (with dependencies) </li>
+							Actionscript 2.0</a> (with dependencies) </li>
 				</ul>
 				<p> It is recommended that you download the archive 'with dependencies'.<br/> If you do not,
 					you will have to provide the following libraries: </p>
@@ -103,8 +117,9 @@
 					completion for metadata. You can download a configuration file for SourceMate containing
 					the Spring Actionscript specific metadata <a href="sourcemate/spring-as-metadata.xml"
 						>here</a>. </p>
-				<p>If you are using Flashbuilder 4.5+ you won't need this anymore since this version of the IDE offers native
-					metadata completion. The downloadable swc's have been embedded with the appropriate meadata.xml files.</p>
+				<p>If you are using Flashbuilder 4.5+ you won't need this anymore since this version of the
+					IDE offers native metadata completion. The downloadable swc's have been embedded with the
+					appropriate meadata.xml files.</p>
 			</subsection>
 		</section>
 	</body>

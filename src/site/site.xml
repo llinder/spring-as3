@@ -41,7 +41,7 @@
 
 		<menu name="Documentation">
 			<item name="HTML" href="docs/reference/html/index.html" />
-			<!--item name="Samples" href="samples.html" /-->
+			<item name="Samples" href="samples.html" />
 			<item name="PDF" href="docs/reference/pdf/springactionscript.pdf" />
 			<item name="XML Schemas" href="http://www.springactionscript.org/schema" />
 			<item name="APIs" href="asdoc/index.html" />

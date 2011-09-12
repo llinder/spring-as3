@@ -151,7 +151,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 *
 		 * @param location
 		 */
-		public function addLocation(location:*):void {
+		public function addLocation(location:*):XMLObjectDefinitionsProvider {
 			_locations ||= [];
 			if (_locations.indexOf(location) < 0) {
 				_locations[_locations.length] = location;
@@ -162,7 +162,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 *
 		 * @param locations
 		 */
-		public function addLocations(locations:Array):void {
+		public function addLocations(locations:Array):XMLObjectDefinitionsProvider {
 			_locations = (_locations == null) ? locations : _locations.concat(locations);
 		}
 
@@ -170,7 +170,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 * Adds a <code>INamespaceHandler</code> to the current <code>XMLObjectDefinitionsProvider</code>.
 		 * @param namespaceHandler
 		 */
-		public function addNamespaceHandler(namespaceHandler:INamespaceHandler):void {
+		public function addNamespaceHandler(namespaceHandler:INamespaceHandler):XMLObjectDefinitionsProvider {
 			Assert.notNull(namespaceHandler, "The namespaceHandler argument must not be null");
 			if (_applicationContext.dependencyInjector != null) {
 				_applicationContext.dependencyInjector.wire(namespaceHandler, _applicationContext);
@@ -188,7 +188,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 * Adds a list <code>INamespaceHandlers</code> to the current <code>XMLObjectDefinitionsProvider</code>.
 		 * @param namespaceHandler
 		 */
-		public function addNamespaceHandlers(namespaceHandlers:Vector.<INamespaceHandler>):void {
+		public function addNamespaceHandlers(namespaceHandlers:Vector.<INamespaceHandler>):XMLObjectDefinitionsProvider {
 			Assert.notNull(namespaceHandlers, "The namespaceHandlers argument must not be null");
 			for each (var handler:INamespaceHandler in namespaceHandlers) {
 				addNamespaceHandler(handler);
@@ -199,7 +199,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml {
 		 * Adds a <code>IXMLObjectDefinitionsPreprocessor</code> to the current <code>XMLObjectDefinitionsProvider</code>.
 		 * @param preprocessor    The implementation of IXMLObjectDefinitionsPreprocessor that will be added
 		 */
-		public function addPreprocessor(preprocessor:IXMLObjectDefinitionsPreprocessor):void {
+		public function addPreprocessor(preprocessor:IXMLObjectDefinitionsPreprocessor):XMLObjectDefinitionsProvider {
 			Assert.notNull(preprocessor, "The preprocessor argument must not be null");
 			_preprocessors ||= new Vector.<IXMLObjectDefinitionsPreprocessor>();
 			if (_preprocessors.indexOf(preprocessor) < 0) {
