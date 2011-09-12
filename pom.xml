@@ -282,11 +282,11 @@
 							<param name="baseDir" expression="${basedir}"/>
 						</xslt>
 
-						<xslt
+						<!--xslt
 							in="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-objects-1.0.xsd"
 							out="${basedir}/src/docbkx/configuration-reference.xml"
 							style="${basedir}/src/docbkx/resources/xsl/configuration-reference.xsl"
-							reloadstylesheet="false" processor="trax"/>
+							reloadstylesheet="false" processor="trax"/-->
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
 							out="${basedir}/target/site/asdoc/all-classes.html"
