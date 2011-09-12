@@ -275,21 +275,23 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void {
+		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):IObjectFactory {
 			if (objectPostProcessor != null) {
 				objectPostProcessors[objectPostProcessors.length] = objectPostProcessor;
 				_objectPostProcessors.sort(OrderedUtils.orderedCompareFunction);
 			} else {
 				//TODO: log error
 			}
+			return this;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public function addReferenceResolver(referenceResolver:IReferenceResolver):void {
+		public function addReferenceResolver(referenceResolver:IReferenceResolver):IObjectFactory {
 			referenceResolvers[referenceResolvers.length] = referenceResolver;
 			_referenceResolvers.sort(OrderedUtils.orderedCompareFunction);
+			return this;
 		}
 
 		/**

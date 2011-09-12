@@ -71,24 +71,24 @@ package org.springextensions.actionscript.context {
 		 *
 		 * @param objectFactory
 		 */
-		function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:Boolean=true):void;
+		function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:Boolean=true):IApplicationContext;
 
 		/**
 		 *
 		 * @param provider
 		 */
-		function addDefinitionProvider(provider:IObjectDefinitionsProvider):void;
+		function addDefinitionProvider(provider:IObjectDefinitionsProvider):IApplicationContext;
 		/**
 		 *
 		 * @param objectFactoryPostProcessor
 		 */
-		function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void;
+		function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):IApplicationContext;
 
 		/**
 		 *
 		 * @param configurationPackage
 		 */
-		function configure(configurationPackage:IConfigurationPackage):void;
+		function configure(configurationPackage:IConfigurationPackage):IApplicationContext;
 
 		/**
 		 *

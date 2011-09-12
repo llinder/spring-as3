@@ -353,7 +353,7 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:Boolean=true):void {
+		public function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:Boolean=true):IApplicationContext {
 			_childContexts ||= new Vector.<IApplicationContext>();
 			if (_childContexts.indexOf(childContext) < 0) {
 				childContexts[childContexts.length] = childContext;
@@ -367,12 +367,13 @@ package org.springextensions.actionscript.context.impl {
 					addSingletonsToChildContext(childContext, cache, objectDefinitionRegistry);
 				}
 			}
+			return this;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public function addDefinitionProvider(provider:IObjectDefinitionsProvider):void {
+		public function addDefinitionProvider(provider:IObjectDefinitionsProvider):IApplicationContext {
 			if (provider is IApplicationDomainAware) {
 				IApplicationDomainAware(provider).applicationDomain = applicationDomain;
 			}
@@ -380,28 +381,30 @@ package org.springextensions.actionscript.context.impl {
 				IApplicationContextAware(provider).applicationContext = this;
 			}
 			definitionProviders[definitionProviders.length] = provider;
+			return this;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):void {
+		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):IApplicationContext {
 			objectFactoryPostProcessors[objectFactoryPostProcessors.length] = objectFactoryPostProcessor;
 			_objectFactoryPostProcessors.sort(OrderedUtils.orderedCompareFunction);
+			return this;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void {
-			objectFactory.addObjectPostProcessor(objectPostProcessor);
+		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):IObjectFactory {
+			return objectFactory.addObjectPostProcessor(objectPostProcessor);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public function addReferenceResolver(referenceResolver:IReferenceResolver):void {
-			objectFactory.addReferenceResolver(referenceResolver);
+		public function addReferenceResolver(referenceResolver:IReferenceResolver):IObjectFactory {
+			return objectFactory.addReferenceResolver(referenceResolver);
 		}
 
 		public function canCreate(objectName:String):Boolean {
@@ -411,8 +414,9 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function configure(configurationPackage:IConfigurationPackage):void {
+		public function configure(configurationPackage:IConfigurationPackage):IApplicationContext {
 			configurationPackage.execute(this);
+			return this;
 		}
 
 		/**

@@ -220,7 +220,7 @@
 					<execution>
 						<goals>
 							<goal>generate-html</goal>
-							<goal>generate-eclipse</goal>
+							<!--goal>generate-eclipse</goal-->
 							<goal>generate-pdf</goal>
 						</goals>
 						<phase>post-site</phase>

@@ -96,13 +96,13 @@ package org.springextensions.actionscript.ioc.factory {
 		 *
 		 * @param objectPostProcessor
 		 */
-		function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):void;
+		function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):IObjectFactory;
 
 		/**
 		 *
 		 * @param referenceResolver
 		 */
-		function addReferenceResolver(referenceResolver:IReferenceResolver):void;
+		function addReferenceResolver(referenceResolver:IReferenceResolver):IObjectFactory;
 
 		/**
 		 * Creates an instance of the specified <code>Class</code>, wires the instance and returns it.
