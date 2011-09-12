@@ -269,7 +269,7 @@
 							<value>${project.version}</value>
 						</entity>
 					</entities>
-					<!--preProcess>
+					<preProcess>
 						<xslt in="${basedir}/toplevel_files.xml" out="${basedir}/target/site/asdoc/toplevel.xml"
 							style="${basedir}/src/docbkx/resources/xsl/combine_toplevels.xslt"
 							reloadstylesheet="false" processor="trax">
@@ -388,7 +388,7 @@
 						<delete file="${basedir}/target/site/asdoc/delete-me3.html"/>
 						<delete file="${basedir}/target/site/asdoc/delete-me4.html"/>
 
-					</preProcess-->
+					</preProcess>
 					<postProcess>
 						<copy todir="target/site/docs/reference">
 							<fileset dir="target/docbkx">
