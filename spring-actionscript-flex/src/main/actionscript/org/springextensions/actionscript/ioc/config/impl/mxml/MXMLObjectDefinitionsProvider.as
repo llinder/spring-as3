@@ -175,7 +175,9 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 			var result:IObjectDefinition;
 			var instance:Object = config[field.name];
 
-			if (instance is MXMLObjectDefinition) {
+			if (instance is ICustomObjectDefinitionComponent) {
+				ICustomObjectDefinitionComponent(instance).execute(applicationContext, _objectDefinitions);
+			} else if (instance is MXMLObjectDefinition) {
 				var mxmlDefinition:MXMLObjectDefinition = MXMLObjectDefinition(instance);
 				mxmlDefinition.initializeComponent();
 				_objectDefinitions[field.name] = mxmlDefinition.definition;
@@ -185,8 +187,6 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 			} else if (instance is PropertyPlaceholder) {
 				_propertyURIs ||= new Vector.<TextFileURI>();
 				_propertyURIs[_propertyURIs.length] = PropertyPlaceholder(instance).toTextFileURI();
-			} else if (instance is ICustomObjectDefinitionComponent) {
-				ICustomObjectDefinitionComponent(instance).execute(applicationContext, _objectDefinitions);
 			} else if (instance is SASObjects) {
 				extractObjectDefinitionsFromConfigInstance(SASObjects(instance));
 			} else {

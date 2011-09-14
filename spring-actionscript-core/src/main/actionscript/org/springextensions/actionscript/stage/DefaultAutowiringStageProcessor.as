@@ -25,6 +25,7 @@ package org.springextensions.actionscript.stage {
 	import org.as3commons.stageprocessing.IStageObjectProcessor;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
+	import org.springextensions.actionscript.ioc.factory.IInitializingObject;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 
 	/**
@@ -35,7 +36,7 @@ package org.springextensions.actionscript.stage {
 	 * @docref container-documentation.html#autowiring_stage_components
 	 * @sampleref stagewiring
 	 */
-	public class DefaultAutowiringStageProcessor implements IApplicationContextAware, IStageObjectProcessor, IStageObjectDestroyer, IDisposable {
+	public class DefaultAutowiringStageProcessor implements IApplicationContextAware, IStageObjectProcessor, IStageObjectDestroyer, IDisposable, IInitializingObject {
 		{
 			DefaultObjectDefinitionResolver;
 		}
@@ -178,6 +179,15 @@ package org.springextensions.actionscript.stage {
 
 		public function get isDisposed():Boolean {
 			return _isDisposed;
+		}
+
+		public function afterPropertiesSet():void {
+			if (_objectDefinitionResolver == null) {
+				var names:Vector.<String> = _applicationContext.objectDefinitionRegistry.getObjectNamesForType(IObjectDefinitionResolver);
+				if (names != null) {
+					_objectDefinitionResolver = _applicationContext.getObject(names[0]);
+				}
+			}
 		}
 	}
 }

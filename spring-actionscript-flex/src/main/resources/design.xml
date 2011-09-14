@@ -47,6 +47,9 @@
 		<component name="StageAutowireProcessor"
 				   namespace="sas"
 				   category="sas-stage"/>
+		<component name="StageObjectProcessor"
+				   namespace="sas"
+				   category="sas-stage"/>
 	</components>
 
 </design>

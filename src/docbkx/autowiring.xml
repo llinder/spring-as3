@@ -197,7 +197,8 @@
 			<note>
 				<para> When using the <emphasis role="bold">[Inject]</emphasis> or <emphasis role="bold"
 						>[Autowired]</emphasis> metadata do not forget to add these compiler settings to your
-					Flex project: <emphasis role="bold">-keep-as3-metadata += Inject,Autowired</emphasis>. </para>
+					Flex project: <emphasis role="bold">-keep-as3-metadata += Inject,Autowired</emphasis>.
+				</para>
 			</note>
 		</sect2>
 		<sect2>
@@ -257,12 +258,13 @@
 			<para> Where the value of the <emphasis role="bold">externalProperty</emphasis> metadata
 				argument key matches the key in one of the loaded property files. </para>
 		</sect2>
-		<sect2><title>Autowiring stage components</title>
+		<sect2 xml:id="autowiring-stage-components">
+			<title>Autowiring stage components</title>
 			<para>Spring Actionscript knows one situation when used in conjunction with the Flash which
 				differs from other Spring implementations. This is when visual components (often declared
-				as <literal>MXML</literal> components) need to be autowired. In this case the container
-				can't be responsible for the actual creation of the components, so it is deferred back to the
-				Flex/Flash application.</para>
+					as <literal>MXML</literal> components) need to be autowired. In this case the container
+				can't be responsible for the actual creation of the components, so it is deferred back to
+				the Flex/Flash application.</para>
 			<para> Concretely, we want to retain the expressiveness of <literal>MXML</literal> declaration
 				and combine it with the <abbrev>IoC</abbrev> capabilities of Spring Actionscript. </para>
 			<para> For example, given this (very simple) piece of <abbrev>MXML</abbrev> markup: </para>
@@ -275,18 +277,18 @@
 	&lt;custom:OrderView myDependency="{this.applicationModel}" id="exampleComponent"/>
 
 &lt;/s:Application></programlisting>
-			<para>In this case the application model instance is directly injected through concrete markup.
-				In a lot of cases this is perfectly acceptable, but Spring Actionscript offers a little extra
-				flexibility by being able to inject the model instance at runtime.</para>
+			<para>In this case the application model instance is directly injected through concrete
+				markup. In a lot of cases this is perfectly acceptable, but Spring Actionscript offers a
+				little extra flexibility by being able to inject the model instance at runtime.</para>
 			<para>Just like a regular object, the OrderView component may be annotated with <emphasis
 					role="bold">[Inject]</emphasis> or <emphasis role="bold">[Autowired]</emphasis>
 				metadata.</para>
 			<para>Spring Actionscript is able to perform these dependency injections by hooking an event
-				listener into the <emphasis role="bold">Event.ADDED_TO_STAGE</emphasis> event and process the
-				components right after they have been added to the stage.</para>
+				listener into the <emphasis role="bold">Event.ADDED_TO_STAGE</emphasis> event and process
+				the components right after they have been added to the stage.</para>
 			<note>
 				<para>The engine that is responsible for managing the stage processing in the
-					<literal>FlashStageObjectProcessorRegistry</literal> that is offered by the <literal
+						<literal>FlashStageObjectProcessorRegistry</literal> that is offered by the <literal
 						xlink:href="http://www.as3commons.org/as3-commons-stageprocessing/index.html"
 						>AS3Commons-stageprocessing library</literal>.</para>
 			</note>
@@ -295,18 +297,36 @@
 			<programlisting language="xml">&lt;object id="autowiringStageProcessor" class="org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor"/></programlisting>
 			<para><literal>MXML</literal> configuration:</para>
 			<programlisting language="xml">&lt;sas:Object id="autowiringStageProcessor" clazz="{DefaultAutowiringStageProcessor}"/></programlisting>
-			<para> There are several ways of configuration for this stituation, in the following sections we
-				will look at them one by one. </para>
+			<para> There are several ways of configuration for this stituation, in the following sections
+				we will look at them one by one. </para>
 			<note>
 				<para>There are several shortcuts to add these processors to your configuration. How this
 					works and how to build your own extensions is covered in the section '<literal
 						linkend="extending-configuration-types">Extending configurations</literal>'.</para>
 			</note>
-			<sect3>
-					<title>Autowiring stage components using Object Definitions</title>
-				<para>Stage components can be configured using metadata that describes the desired injections,
-					but this can also be entirely expressed a regular object definitions. Here is how to
-					configure the <literal>ExampleComponent</literal> to be autowired by type: </para>
+			<note>
+				<para>The autowiring of stage components is part of the Stage extension point. To read more
+					about this and learn how to create your own processors, check out the section '<literal
+						linkend="stage-processors">Stage object processors</literal>'.</para>
+			</note>
+			<sect3><title>Determining which stage objects will be autowired</title><para>By default the <literal>DefaultSpringObjectSelector</literal> is used to filter out which
+					stage components will be autowired. It is adviced though to create your own
+						<literal>IObjectSelector</literal> implementation to streamline the selection process.
+					(A LOT of components get added and removed from the stage.)</para>
+				<para>Now, imagine a situation where you know beforehand that only components that implement
+					a specific marker interface need to be autowired. In that case you can implement a much
+					simpler selection process. Let's say the marker interface is called
+						<literal>IAutowiredComponent</literal>, then the implementation of the <emphasis
+						role="italic">IObjectSelector.approve()</emphasis> method needs to be simply
+					this:<programlisting>public function approve(object:Object):Boolean {
+	return (object is IAutowiredComponent);
+}</programlisting></para>
+				<para>This will certainly boost the efficiency of the selection process!</para></sect3>
+			<sect3 xml:id="autowiring-stage-components-using-object-definitions">
+				<title>Autowiring stage components using Object Definitions</title>
+				<para>Stage components can be configured using metadata that describes the desired
+					injections, but this can also be entirely expressed a regular object definitions. Here is
+					how to configure the <literal>ExampleComponent</literal> to be autowired by type: </para>
 				<programlisting language="xml">&lt;object id="exampleComponent" class="classes.components.ExampleComponent" autowire="byType" singleton="false"/></programlisting>
 				<para>In this example we assume that the ExampleComponent instance on the stage has an
 						<emphasis role="bold">id</emphasis> with the value <emphasis role="italic"
@@ -317,7 +337,7 @@
 						<literal>ExampleComponent</literal> instance and try to find a matching wiring candidate
 					in the container. This will very quickly become very slow, so please regard this example
 					as a proof of concept but don't use it in any actual production code.</para>
-				<para>Autowiring by name is almost the same and the same warning as the wiring by type is
+				<para>Autowiring by name is almost the same and the same warning as for wiring by type is
 						applicable: <emphasis role="italic">don't do it.</emphasis>
 				</para>
 				<para>The most obvious way of configuring the <literal>ExampleComponent</literal> is by
@@ -335,7 +355,7 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx">
 	&lt;fx:Metadata>
-		[Component]
+		[Component(id="exampleComponent")]
 	&lt;/fx:Metadata>
 	&lt;fx:Script>
 		&lt;![CDATA[
@@ -344,15 +364,55 @@
 		]]&gt;
 	&lt;/fx:Script>
 &lt;/s:VGroup></programlisting>
-				<note><para>Do take notice of the <emphasis role="bold">scope="proptotype"</emphasis> attribute on each of
-						these configuration examples. Don't forget to add this value to each and every stage
-						component definition entry. Spring Actionscript defaults an object definition to a
-						singleton scope and instantiates every singleton in the configuration at startup.
-						Failing to add the <emphasis role="bold">scope="proptotype"</emphasis> attribute will
-						result in Spring Actionscript creating a whole bunch of stage component instances
-						unnecessarily. </para></note>
+				<note>
+					<para>Do take notice of the <emphasis role="bold">scope="proptotype"</emphasis> attribute
+						on each of these configuration examples. Don't forget to add this value to each and
+						every stage component definition entry. Spring Actionscript defaults an object
+						definition to a singleton scope and instantiates every singleton in the configuration at
+						startup. Failing to add the <emphasis role="bold">scope="proptotype"</emphasis>
+						attribute will result in Spring Actionscript creating a whole bunch of stage component
+						instances unnecessarily. </para>
+				</note>
 			</sect3>
-			<sect3><title></title><para></para></sect3>
+			<sect3>
+				<title>How to determine which object definition to use for which stage component</title>
+				<para>Once a component has been added to the stage and is being processed by the autowiring
+					processor it will need a mechanism that supplies an object definition for the component in
+					question. This particular task is bestowed upon the
+						<literal>IObjectDefinitionResolver</literal> interface. This interface is a small
+					one:<programlisting language="actionscript">public interface IObjectDefinitionResolver {
+	function resolveObjectDefinition(object:*):IObjectDefinition;
+}</programlisting></para>
+				<para>An object that implements this interface is responsible for retrieving, or creating,
+					an object definition for a given object instance. Spring Actionscript by default offers
+					the <literal>DefaultObjectDefinitionResolver</literal> class. This implementation uses
+					different strategies to retrieve the appropriate <literal>IObjectDefinition</literal> for
+					an object. First of all it uses the value of its <emphasis role="bold"
+						>objectIdProperty</emphasis> property to find the object definition by name. By default
+					the value of this property is '<emphasis role="bold">name</emphasis>. This means that if a
+					stage component is being examined whose name property has a value of '<emphasis
+						role="bold">myStageComponent</emphasis>', the
+						<literal>DefaultObjectDefinitionResolver</literal> will look for an object definition
+					with an id of '<emphasis role="bold">myStageComponent</emphasis>'. If the object
+					definition can't be found it will fall back on trying to find an object definition by
+					type, but only if the <emphasis role="bold">lookupByType</emphasis> property on the
+						<literal>DefaultObjectDefinitionResolver</literal> is set to <emphasis role="bold"
+						>true</emphasis>.</para>
+				<para>If both of these options fail the <literal>DefaultObjectDefinitionResolver</literal>
+					will return <emphasis role="italic">null</emphasis>. This will happen in the case that a
+					stage component has been decorated with autowiring metadata and has no further use for an
+					object definition. Of course, the both can be combined as well, but its open to discussion
+					whether this is advisable. To use the <literal>DefaultObjectDefinitionResolver</literal>
+					add this to your <abbrev>XML</abbrev> configuration:</para>
+				<programlisting language="xml">&lt;object id="defaultObjectDefinitionResolver"
+	class="org.springextensions.actionscript.stage.DefaultObjectDefinitionResolver"/></programlisting>
+				<para><abbrev>MXML</abbrev> configuration:</para>
+				<programlisting>&lt;sas:Object id="defaultObjectDefinitionResolver"
+	clazz="{DefaultObjectDefinitionResolver}"/></programlisting>
+				<para>Naturally, its also possible to create your own custom implementation of the
+					IObjectDefinitionResolver and use your own logic to look up or create a definition for a
+					stage component.</para>
+			</sect3>
 		</sect2>
 	</sect1>
 </chapter>

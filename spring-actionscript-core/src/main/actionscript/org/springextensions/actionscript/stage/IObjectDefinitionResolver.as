@@ -22,16 +22,7 @@ package org.springextensions.actionscript.stage {
 	 * for already existing objects to be wired. Useful for <code>IDependencyInjector</code> that
 	 * have to deal with already existing objects and can't use factory methods.
 	 *
-	 * <p>
-	 * <b>Author:</b> Martino Piccinato<br/>
-	 * <b>Version:</b> $Revision:$, $Date:$, $Author:$<br/>
-	 * <b>Since:</b> 0.8
-	 * </p>
-	 *
-	 * @see org.springextensions.actionscript.ioc.IDependencyInjector
-	 * @see org.springextensions.actionscript.context.support.FlexXMLApplicationContext
-	 * @docref container-documentation.html#how_to_determine_which_objectdefinition_to_use_for_which_stage_component
-	 * @sampleref stagewiring
+	 * @author Martino Piccinato
 	 */
 	public interface IObjectDefinitionResolver {
 
@@ -43,7 +34,7 @@ package org.springextensions.actionscript.stage {
 		 *
 		 * @return the <code>IObjectDefinition</code> to be used to wire the passed object.
 		 */
-		function resolveObjectDefinition(object:*):org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+		function resolveObjectDefinition(object:*):IObjectDefinition;
 
 	}
 }

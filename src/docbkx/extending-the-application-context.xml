@@ -305,9 +305,24 @@ public class PropertyBindingPostProcessor implements IObjectPostProcessor {
 					xlink:href="http://download.oracle.com/javase/1.5.0/docs/guide/apt/mirror/com/sun/mirror/apt/AnnotationProcessor.html"
 					>Java annotation processor</literal>.</para>
 		</note>
-		<sect2 xml:id="controlling-the-order-of-imetadataprocessors"><title>Controlling the order of IMetadataProcessors</title><para>The order in which <literal>IMetadataProcessors</literal> are executed is controlled by the
-					<literal>IOrdered</literal> interface. See the '<literal>Controlling collection
-					order</literal>' section for more information on this interface.</para></sect2>
+		<sect2 xml:id="controlling-the-order-of-imetadataprocessors">
+			<title>Controlling the order of IMetadataProcessors</title>
+			<para>The order in which <literal>IMetadataProcessors</literal> are executed is controlled by
+				the <literal>IOrdered</literal> interface. See the '<literal>Controlling collection
+					order</literal>' section for more information on this interface.</para>
+		</sect2>
+		<sect2 xml:id="the-imetadatadestroyer-interface"><title>The IMetadataDestroyer interface</title><para>The counter-part to the <literal>IMetadataProcessor</literal> is the
+					<literal>IMetadataDestroyer</literal> interface. It is meant to undo that which the
+					<literal>IMetadatProcessor</literal> has done. So, if a processor has added some event
+				listeners, a destroyer may remove them. The interface is fairly similar to the
+					<literal>IMetadataProcessor</literal>:</para>
+			<programlisting language="actionscript">public interface IMetadataDestroyer {
+	function get metadataNames():Vector.&lt;String>;
+	function destroy(instance:Object, container:IMetadataContainer, metadataName:String, objectName:String):void;
+}</programlisting>
+			<para>To enable a destroyer, simply add an object definition for it to your configuration and
+				you're ready. By default the destroyers will be invoked for components that have been
+				removed from the stage.</para></sect2>
 	</sect1>
 	<sect1 xml:id="objectfactory-post-processors">
 		<title>Objectfactory post-processors</title>
@@ -344,7 +359,29 @@ public class MyObjectFactoryPostProcessor implements IObjectFactoryPostProcessor
 	</sect1>
 	<sect1 xml:id="stage-processors">
 		<title>Stage object processors</title>
-		<para/>
+		<para>As you can read in the '<literal linkend="autowiring-stage-components">Autowiring stage
+				components</literal>' section it is possible to intercept components after they have been
+			added to the stage and perform abritrary processing on them.</para>
+		<para>The logic behind this sued to be an inernal part of Spring Actionscript but since version
+			2.0 it has been split off and released as an autonomous API in the <literal
+				xlink:href="http://www.as3commons.org/as3-commons-stageprocessing"
+				>as3commons-stageprocessing</literal> project. Please refer to the <literal
+				xlink:href="http://www.as3commons.org/as3-commons-stageprocessing/introduction.html"
+				>documentation section on the as3commons.org</literal> site for specific info on the
+			internals.</para>
+		<para>To register your own <literal>IStageObjectProcessor</literal> and/or
+				<literal>IStageObjectDestroyer</literal> implementations you can add them using the
+			following <abbrev>XML</abbrev> and <abbrev>MXML</abbrev> extensions.</para>
+		<para><abbrev>XML</abbrev>
+			configuration:<programlisting>&lt;stage:stageprocessor
+	class='org.springextensions.actionscript.test.testtypes.stage.TestStageProcessor'
+	object-selector='selector'/></programlisting></para>
+		<para><abbrev>MXML</abbrev>
+			configuration:<programlisting>&lt;sas:StageObjectProcessor
+	clazz="{TestStageProcessor}"
+	objectSelector="selector"/></programlisting></para>
+		<para>To learn more about configuration extensions, check out the section '<literal
+				linkend="extending-configuration-types">Extending configurations</literal>'.</para>
 	</sect1>
 	<sect1 xml:id="class-scanners">
 		<title>Class scanners</title>

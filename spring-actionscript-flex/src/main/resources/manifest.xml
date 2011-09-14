@@ -21,4 +21,6 @@
 	<!-- Custom definitions -->
 	<component id="StageAutowireProcessor"
 			   class="org.springextensions.actionscript.ioc.config.impl.mxml.custom.StageAutowireProcessor"/>
+	<component id="StageObjectProcessor"
+			   class="org.springextensions.actionscript.ioc.config.impl.mxml.custom.StageObjectProcessor"/>
 </componentPackage>

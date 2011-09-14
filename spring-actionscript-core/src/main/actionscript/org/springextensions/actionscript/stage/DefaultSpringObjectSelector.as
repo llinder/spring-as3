@@ -26,9 +26,6 @@ package org.springextensions.actionscript.stage {
 	 *
 	 * @author Martino Piccinato
 	 * @author Roland Zwaga
-	 * @see org.springextensions.actionscript.context.support.FlexXMLApplicationContext
-	 * @sampleref stagewiring
-	 * @docref container-documentation.html#how_to_determine_which_stage_components_are_eligeble_for_configuration
 	 */
 	public class DefaultSpringObjectSelector implements IObjectSelector {
 		private static const SPARK_PREFIX:String = "spark.";
@@ -50,9 +47,9 @@ package org.springextensions.actionscript.stage {
 			} catch (e:*) {
 				return false;
 			}
-			
-			var prefix:String = className.substring(0,6);
-			if ((prefix == SPARK_PREFIX) || (prefix == FLASH_PREFIX) || (prefix.substring(0,3) == MX_PREFIX)) {
+
+			var prefix:String = className.substring(0, 6);
+			if ((prefix == SPARK_PREFIX) || (prefix == FLASH_PREFIX) || (prefix.substring(0, 3) == MX_PREFIX)) {
 				return false;
 			} else if (className.indexOf(UNDERSCORE) > -1) {
 				return false;
