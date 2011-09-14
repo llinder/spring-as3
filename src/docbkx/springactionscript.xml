@@ -58,6 +58,8 @@
 		<xi:include href="getting-started.xml"/>
 
 		<xi:include href="configuration-types.xml"/>
+		
+		<xi:include href="extending-configuration-types.xml"/>
 
 		<xi:include href="object-definitions.xml"/>
 

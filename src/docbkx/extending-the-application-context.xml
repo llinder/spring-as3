@@ -84,10 +84,12 @@ public class IncrediblyComplicatedObjectFactory {
 			return the product of the <literal>IFactoryObject</literal>, but invoking <emphasis
 				role="italic">getObject("<emphasis role="bold">&amp;myObject</emphasis>")</emphasis> will
 			return the <literal>IFactoryObject</literal> instance itself.</para>
-		<sect2><title>A factory object wrapper</title><para>Having to implement the <literal>IFactoryObject</literal>, naturally, adds an unneccessary
-				dependency on the Spring Actionscript framework. It is therefore also possible to mark a
-				factory as such in the <abbrev>XML</abbrev> configuration without it having to implement the
-					<literal>IFactoryObject</literal> interface.</para>
+		<sect2>
+			<title>A factory object wrapper</title>
+			<para>Having to implement the <literal>IFactoryObject</literal>, naturally, adds an
+				unneccessary dependency on the Spring Actionscript framework. It is therefore also possible
+				to mark a factory as such in the <abbrev>XML</abbrev> configuration without it having to
+				implement the <literal>IFactoryObject</literal> interface.</para>
 			<para>Let's first create a factory object that looks like this:</para>
 			<programlisting>public class IncrediblyComplicatedObjectFactoryThatDoesNotImplementIFactoryObject {
 
@@ -118,7 +120,8 @@ public class IncrediblyComplicatedObjectFactoryThatDoesNotImplementIFactoryObjec
 		//creation logic ommitted
 		return instance;
 	}
-}</programlisting></sect2>
+}</programlisting>
+		</sect2>
 	</sect1>
 	<sect1 xml:id="object-post-processors">
 		<title>Object post-processors</title>
@@ -159,7 +162,9 @@ public class IncrediblyComplicatedObjectFactoryThatDoesNotImplementIFactoryObjec
 					'<literal linkend="skippostprocessors">skipPostProcessors</literal>' of the '<literal
 					linkend="object-definitions">Object Definitions</literal>' section.</para>
 		</note>
-		<sect2><title>Creating a postprocessor</title><para> Let's see how we can build our own processor. Suppose we have an
+		<sect2>
+			<title>Creating a postprocessor</title>
+			<para> Let's see how we can build our own processor. Suppose we have an
 					<literal>IProductManager</literal> interface that looks like this:
 				<programlisting language="actionscript">public interface IProductManager {
 
@@ -217,11 +222,92 @@ public class PropertyBindingPostProcessor implements IObjectPostProcessor {
 }</programlisting></para>
 			<para> That's it basically it! Now its certainly possible to come up with a much more generic
 				solution than this, but it does show its fairly easy to create your own post processors for
-				specific tasks. </para></sect2>
+				specific tasks. </para>
+		</sect2>
 	</sect1>
 	<sect1 xml:id="metadata-processors">
 		<title>Metadata processors</title>
-		<para>...</para>
+		<para> Spring Actionscript offers an easy way to process actionscript metadata annotations. The
+			main interface of interest for this task is <literal>IMetadataProcessor</literal>.</para>
+		<para> Here's what it looks like up close: </para>
+		<programlisting language="actionscript">public interface IMetadataProcessor {
+
+	function get metadataNames():Vector.&lt;String>;
+
+	function get processBeforeInitialization():Boolean;
+
+	function process(instance:Object, container:IMetaDataContainer, name:String, objectName:String):void;
+}</programlisting>
+		<para>The basic properties have already been implemented by the AbstractMetadataProcessor base
+			class which can be used for convenience.</para>
+		<para>Let's take a look at the various properties and methods and see what they do and
+			mean.</para>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">metadataNames</emphasis> - This is a
+						<literal>Vector.&lt;String></literal> of metadata names that will trigger the <emphasis
+						role="italic">process()</emphasis> method of the <literal>IMetadataProcessor</literal>
+					implementation.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">processBeforeInitialization</emphasis> - When set to <emphasis
+						role="bold">true</emphasis> the <literal>IMetadataProcessor</literal> instance will be
+					able to process the annotated instance before it has been initialized by the Spring
+					Actionscript container.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">process</emphasis> - This method will contain the processing
+					logic that is associated with the various names specified by the metadataNames
+					property.</para>
+			</listitem>
+		</itemizedlist>
+		<para>The <emphasis role="italic">process()</emphasis> method will naturally be the most
+			important aspect in any implementation of the <literal>IMetadataProcessor</literal> interface.
+			It receives three parameters:<itemizedlist>
+				<listitem>
+					<para><emphasis role="bold">instance</emphasis> - This is the object instance that was
+						encountered with the specified metadata name on its class or its methods or
+						properties.</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">container</emphasis> - The <literal>IMetaDataContainer</literal>
+						that is associated with the instance, this can be any of these subclasses:
+							<literal>Type</literal>, <literal>Method</literal>, <literal>Accessor</literal>,
+							<literal>Constant</literal>, <literal>Variable</literal>.</para>
+				</listitem>
+				<listitem>
+					<para><emphasis role="bold">name</emphasis> - The metadata name that triggered the
+						invocation of the <emphasis role="italic">process()</emphasis> method.</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">objectName</emphasis> - The name of the object definition in the
+						Spring Actionscript container.</para>
+				</listitem>
+			</itemizedlist></para>
+		<para>To use the <literal>IMetadataProcessor</literal> in an application add the implementation
+			as an object definition to the application context configuration like this:</para>
+		<programlisting language="xml">&lt;object id="mvcEventsProcessor" class="org.springextensions.actionscript.core.mvc.MVCRouteEventsMetaDataProcessor"/></programlisting>
+		<para>After that the processor is ready to go, when used in combination with the autowiring
+			stage processor (as described in the '<literal linkend="autowiring">Autowiring</literal>') it
+			will process both objects created by the container and components that were added to the
+			stage.</para>
+		<note>
+			<para>Credit where credit is due: This type of metadata handling is similar to the <literal
+					xlink:href="http://www.spicefactory.org/parsley/docs/2.3/api/parsley-flex/org/spicefactory/parsley/config/ObjectDefinitionDecorator.html"
+					>ObjectDefinitionDecorator</literal> in the <literal
+					xlink:href="http://www.spicefactory.org/parsley/">Parsley Framework</literal> and the
+				IMetadataProcessor in the <literal xlink:href="http://www.swizframework.org">Swiz
+					Framework</literal>, the Spring Actionscript team both acknowledges and appreciates this
+				work.</para>
+			<para>Java programmers will see obvious similarities to the <literal
+					xlink:href="http://download.oracle.com/javase/1.5.0/docs/guide/apt/mirror/com/sun/mirror/apt/AnnotationProcessor.html"
+					>Java annotation processor</literal>.</para>
+		</note>
+		<sect2 xml:id="controlling-the-order-of-imetadataprocessors"><title>Controlling the order of IMetadataProcessors</title><para>The order in which <literal>IMetadataProcessors</literal> are executed is controlled by the
+					<literal>IOrdered</literal> interface. See the '<literal>Controlling collection
+					order</literal>' section for more information on this interface.</para></sect2>
 	</sect1>
 	<sect1 xml:id="objectfactory-post-processors">
 		<title>Objectfactory post-processors</title>
@@ -258,7 +344,7 @@ public class MyObjectFactoryPostProcessor implements IObjectFactoryPostProcessor
 	</sect1>
 	<sect1 xml:id="stage-processors">
 		<title>Stage object processors</title>
-		<para>...</para>
+		<para/>
 	</sect1>
 	<sect1 xml:id="class-scanners">
 		<title>Class scanners</title>

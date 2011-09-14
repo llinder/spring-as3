@@ -161,8 +161,8 @@
 		</sect2>
 		<sect2 xml:id="customconfiguration">
 			<title>customConfiguration</title>
-			<para>Optional extra data that can be used by other processing logic. May also be an instance of
-					<literal>ICustomConfigurator</literal> or an instance of
+			<para>Optional extra data that can be used by other processing logic. May also be an instance
+				of <literal>ICustomConfigurator</literal> or an instance of
 					<literal>Vector.&lt;ICustomConfigurator>.</literal> Learn more about this in the section
 					'<literal linkend="custom-object-definition-configurators">Custom object definition
 					configurators</literal>'.</para>
@@ -718,6 +718,9 @@ public interface ISimpleInitializingInterface {
 				of object postprocessors. To learn more about object postprocessors, check out the '<literal
 					linkend="object-post-processors">Object post-processors</literal>' section.</para>
 		</sect2>
-		<sect2 xml:id="custom-object-definition-configurators"><title>Custom object definition configurators</title><para>...</para></sect2>
+		<sect2 xml:id="custom-object-definition-configurators">
+			<title>Custom object definition configurators</title>
+			<para>...</para>
+		</sect2>
 	</sect1>
 </chapter>
