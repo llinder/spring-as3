@@ -407,12 +407,51 @@
 				<programlisting language="xml">&lt;object id="defaultObjectDefinitionResolver"
 	class="org.springextensions.actionscript.stage.DefaultObjectDefinitionResolver"/></programlisting>
 				<para><abbrev>MXML</abbrev> configuration:</para>
-				<programlisting>&lt;sas:Object id="defaultObjectDefinitionResolver"
+				<programlisting language="xml">&lt;sas:Object id="defaultObjectDefinitionResolver"
 	clazz="{DefaultObjectDefinitionResolver}"/></programlisting>
 				<para>Naturally, its also possible to create your own custom implementation of the
 					IObjectDefinitionResolver and use your own logic to look up or create a definition for a
 					stage component.</para>
 			</sect3>
+			<sect3><title>Implementing custom autowiring support using the IAutowireProcessor interface</title><para>Spring Actionscript wouldn't be Spring Actionscript if it didn't allow you to implement your
+					own brand of autowiring. Naturally the Spring Actionscript team is of the opinion that the
+					offered autowiring functionality is about as broad as one can imagine, but should the need
+					arise to step outside the confines of Spring Actionscript autowiring than this entirely
+					possible.</para>
+				<para>In this particular case the <literal>IAutowireProcessor</literal> is your friend. And
+					as you are used to, its not a very complicated one, see for yourself:</para>
+				<programlisting language="actionscript">public interface IAutowireProcessor {
+	function autoWire(object:Object, objectDefinition:IObjectDefinition = null, objectName:String = null):void;
+
+	function preprocessObjectDefinition(objectDefinition:IObjectDefinition):void;
+
+	function findAutowireCandidateName(clazz:Class):String;
+}</programlisting>
+				<para>The first method is the main autoWire() method that is invoked by the object container
+					immediately after creation.</para>
+				<para>The second method is invoked by the container right before an object is actually
+					created, so this would typically be a good moment to change any kind of constructor
+					argument autowiring or perhaps change the autowiring strategy of the current
+						<literal>IObjectDefinition</literal> based on some pre-configured logic.</para>
+				<para>As you can see in the default implementation used by the
+						<literal>DefaultObjectFactory</literal>, (fittingly titled
+						<literal>DefaultAutowireProcessor</literal>),it is also possible for your own
+						<literal>IAutowireProcessor</literal> implementation to include the
+						<literal>IObjectFactoryAware</literal> interface. If your instance implements this
+					particular interface it will automatically be injected by the object factory instance to
+					which the <literal>IAutowireProcessor</literal> is assigned.</para>
+				<para>Now, after you've created your own implementation, its time to hook it up to the
+					object container, typically this would be done something like this:
+					<programlisting language="actionscript">var applicationContext:ApplicationContext = new ApplicationContext();
+applicationContext.autowireProcessor = new MyCustomAutowireProcessor();</programlisting></para>
+				<para>After that your own autowiring logic will be performed on any object created by the
+						<literal>ApplicationContext</literal> instance.</para>
+				<note>
+					<para>Consequently, when you don't need the autowiring functionality at all in your
+						application, it might be an idea to set the <emphasis role="italic"
+							>autowireProcessor</emphasis> property to <emphasis role="bold">null</emphasis> as
+						this will yield a small performance benefit.</para>
+				</note></sect3>
 		</sect2>
 	</sect1>
 </chapter>

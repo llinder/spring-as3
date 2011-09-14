@@ -382,6 +382,9 @@ public class MyObjectFactoryPostProcessor implements IObjectFactoryPostProcessor
 	objectSelector="selector"/></programlisting></para>
 		<para>To learn more about configuration extensions, check out the section '<literal
 				linkend="extending-configuration-types">Extending configurations</literal>'.</para>
+		<sect2 xml:id="spring-stage-extensions"><title>Spring Actionscript Stage Extensions</title><para>Spring Actionscript offers a couple of IStageObjectProcessors out-of-the-box. In this section
+				we take a look at each of them.</para>
+			<para>....</para></sect2>
 	</sect1>
 	<sect1 xml:id="class-scanners">
 		<title>Class scanners</title>
