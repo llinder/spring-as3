@@ -309,8 +309,10 @@
 					about this and learn how to create your own processors, check out the section '<literal
 						linkend="stage-processors">Stage object processors</literal>'.</para>
 			</note>
-			<sect3><title>Determining which stage objects will be autowired</title><para>By default the <literal>DefaultSpringObjectSelector</literal> is used to filter out which
-					stage components will be autowired. It is adviced though to create your own
+			<sect3>
+				<title>Determining which stage objects will be autowired</title>
+				<para>By default the <literal>DefaultSpringObjectSelector</literal> is used to filter out
+					which stage components will be autowired. It is adviced though to create your own
 						<literal>IObjectSelector</literal> implementation to streamline the selection process.
 					(A LOT of components get added and removed from the stage.)</para>
 				<para>Now, imagine a situation where you know beforehand that only components that implement
@@ -321,7 +323,8 @@
 					this:<programlisting>public function approve(object:Object):Boolean {
 	return (object is IAutowiredComponent);
 }</programlisting></para>
-				<para>This will certainly boost the efficiency of the selection process!</para></sect3>
+				<para>This will certainly boost the efficiency of the selection process!</para>
+			</sect3>
 			<sect3 xml:id="autowiring-stage-components-using-object-definitions">
 				<title>Autowiring stage components using Object Definitions</title>
 				<para>Stage components can be configured using metadata that describes the desired
@@ -413,11 +416,13 @@
 					IObjectDefinitionResolver and use your own logic to look up or create a definition for a
 					stage component.</para>
 			</sect3>
-			<sect3><title>Implementing custom autowiring support using the IAutowireProcessor interface</title><para>Spring Actionscript wouldn't be Spring Actionscript if it didn't allow you to implement your
-					own brand of autowiring. Naturally the Spring Actionscript team is of the opinion that the
-					offered autowiring functionality is about as broad as one can imagine, but should the need
-					arise to step outside the confines of Spring Actionscript autowiring than this entirely
-					possible.</para>
+			<sect3>
+				<title>Implementing custom autowiring support using the IAutowireProcessor interface</title>
+				<para>Spring Actionscript wouldn't be Spring Actionscript if it didn't allow you to
+					implement your own brand of autowiring. Naturally the Spring Actionscript team is of the
+					opinion that the offered autowiring functionality is about as broad as one can imagine,
+					but should the need arise to step outside the confines of Spring Actionscript autowiring
+					than this entirely possible.</para>
 				<para>In this particular case the <literal>IAutowireProcessor</literal> is your friend. And
 					as you are used to, its not a very complicated one, see for yourself:</para>
 				<programlisting language="actionscript">public interface IAutowireProcessor {
@@ -451,7 +456,8 @@ applicationContext.autowireProcessor = new MyCustomAutowireProcessor();</program
 						application, it might be an idea to set the <emphasis role="italic"
 							>autowireProcessor</emphasis> property to <emphasis role="bold">null</emphasis> as
 						this will yield a small performance benefit.</para>
-				</note></sect3>
+				</note>
+			</sect3>
 		</sect2>
 	</sect1>
 </chapter>

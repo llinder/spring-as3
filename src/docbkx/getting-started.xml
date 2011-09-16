@@ -8,20 +8,25 @@
 		<title>Installing Spring Actionscript</title>
 		<para>To start using Spring Actionscript in your project you will need to download either the
 			all-in-one swc or the archive with all of the separate extensions:</para>
-		<para><literal
+		<para>
+			<literal
 				xlink:href="http://beta.springactionscript.org/downloads/spring-actionscript-2.0-distribution.zip"
-				xlink:title="Spring Actionscript v2.0 Core Package">Spring Actionscript
-			Core</literal></para>
-		<para><literal
+				xlink:title="Spring Actionscript v2.0 Core Package">Spring Actionscript Core</literal>
+		</para>
+		<para>
+			<literal
 				xlink:href="http://beta.springactionscript.org/downloads/spring-actionscript-2.0-distribution-with-dependencies.zip"
 				xlink:title="Spring Actionscript v2.0 Core Package including dependencies">Spring
-				Actionscript Core with dependencies</literal></para>
+				Actionscript Core with dependencies</literal>
+		</para>
 		<para>If you want to use the Flex specific functionality you will need to additionally download
 			this .swc as well:</para>
-		<para><literal
+		<para>
+			<literal
 				xlink:href="http://beta.springactionscript.org/downloads/spring-actionscript-flex-2.0.zip"
 				xlink:title="Spring Actionscript 2.0 Flex Extensions">Spring Actionscript Flex
-				Extensions</literal></para>
+				Extensions</literal>
+		</para>
 		<para>One you've downloaded them place them in your project's library path. In a Flashbuilder
 			project, for instance, this simply means you need to copy them into your 'libs' folder.</para>
 
@@ -30,17 +35,12 @@
 	<sect1 xml:id="creating-an-application-context">
 		<title>Creating an Application Context</title>
 		<para>The main entry point for the Spring Actionscript library is the application context. There
-			are a number of different context flavours, but for now we'll use the <literal
-				xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext"
-				>MXMLApplicationContext</literal> as this is probably the most commonly used one.</para>
-		<para>Obviously the <literal
-				linkend="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext"
-				>MXLApplicationContext</literal> can only be used in a Flex based application, in a pure
-			actionscript environment you can choose any of the other availabe '<literal
-				linkend="configuration-types">Configuration types</literal>'.</para>
-		<para>To create an instance of the <literal
-				xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext"
-				>MXMLApplicationContext</literal> simply add it as an <abbrev>MXML</abbrev> component to
+			are a number of different context flavours, but for now we'll use the <literal xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal> as this is probably the most commonly used one.</para>
+		<para>Obviously the <literal>MXMLApplicationContext</literal>
+			can only be used in a Flex based application, in a pure actionscript environment you can
+			choose any of the other availabe '<literal linkend="configuration-types">Configuration
+				types</literal>'.</para>
+		<para>To create an instance of the <literal>MXMLApplicationContext</literal> simply add it as an <abbrev>MXML</abbrev> component to
 			your application.</para>
 		<programlisting language="xml">&lt;fx:Declarations&gt;
   &lt;sas:MXMLApplicationContext id="MXMLContext"/&gt;

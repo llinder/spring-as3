@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.impl.mxml.custom {
+package org.springextensions.actionscript.ioc.config.impl.mxml.custom.util {
 
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.ICustomObjectDefinitionComponent;
@@ -47,5 +47,6 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom {
 			definition.factoryObjectName = "";
 			objectDefinitions[this.id] = definition;
 		}
+
 	}
 }

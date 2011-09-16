@@ -20,7 +20,15 @@
 			   class="org.springextensions.actionscript.ioc.config.impl.mxml.component.Interface"/>
 	<!-- Custom definitions -->
 	<component id="StageAutowireProcessor"
-			   class="org.springextensions.actionscript.ioc.config.impl.mxml.custom.StageAutowireProcessor"/>
+			   class="org.springextensions.actionscript.ioc.config.impl.mxml.custom.stage.StageAutowireProcessor"/>
 	<component id="StageObjectProcessor"
-			   class="org.springextensions.actionscript.ioc.config.impl.mxml.custom.StageObjectProcessor"/>
+			   class="org.springextensions.actionscript.ioc.config.impl.mxml.custom.stage.StageObjectProcessor"/>
+	<component id="EventHandler"
+			   class="org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus.EventHandler"/>
+	<component id="EventInterceptor"
+			   class="org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus.EventInterceptor"/>
+	<component id="EventListenerInterceptor"
+			   class="org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus.EventListenerInterceptor"/>
+	<component id="EventRouter"
+			   class="org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus.EventRouter"/>
 </componentPackage>

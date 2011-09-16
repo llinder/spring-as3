@@ -2,12 +2,54 @@
 <!--     Spring Actionscript XSL to create links to asdoc API for html transformation-->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
-                xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" exclude-result-prefixes="xsl fo xlink">
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                xmlns:db="http://docbook.org/ns/docbook"
+                version="1.0"
+                exclude-result-prefixes="xsl fo xlink">
 
-<xsl:variable name="springasdoc" select="document('../../../../target/site/asdoc/toplevel_classes.xml')/asdoc" />
+<xsl:variable name="springasdoc" select="document('../../../../target/site/asdoc/toplevel.xml')/asdoc" />
 
-<xsl:template match="//*[@xlink:href]">
-    <xsl:if test="starts-with(@xlink:href, 'asdoc://')">
+<xsl:template match="//db:literal">
+  <xsl:variable name="class-name" select="."/>
+  <xsl:variable name="nodetest" select="$springasdoc/classRec[@name=$class-name]/@fullname"/>
+  <xsl:choose>
+    <xsl:when test="$nodetest">
+      <xsl:variable name="description" select="$springasdoc/classRec[@name=$class-name]/description"/>
+      <xsl:variable name="replaced">
+        <xsl:call-template name="replace-substring">
+          <xsl:with-param name="value" select="$nodetest"/>
+          <xsl:with-param name="from"><![CDATA[.]]></xsl:with-param>
+          <xsl:with-param name="to"><![CDATA[/]]></xsl:with-param>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:variable name="asdocurlsuffix">
+        <xsl:call-template name="replace-substring">
+          <xsl:with-param name="value" select="$replaced"/>
+          <xsl:with-param name="from"><![CDATA[:]]></xsl:with-param>
+          <xsl:with-param name="to"><![CDATA[/]]></xsl:with-param>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:variable name="asdocurl"  select="concat('../../../asdoc/', $asdocurlsuffix)"/>
+      <a class="asclass" href="{$asdocurl}.html" target="_blank">
+        <xsl:value-of select="$class-name"/>
+        <xsl:if test="$description">
+        <span class="toolTipContent">
+          <xsl:value-of select="$description" disable-output-escaping="yes" />
+        </span>
+        </xsl:if>
+      </a>
+    </xsl:when>
+    <xsl:otherwise>
+      <code class="literal">
+        <xsl:value-of select="$class-name"/>
+      </code>
+    </xsl:otherwise>
+  </xsl:choose>
+
+</xsl:template>
+
+  <!--xsl:template match="//*[@xlink:href]">
+  <xsl:if test="starts-with(@xlink:href, 'asdoc://')">
       <xsl:variable name="classpath" select="@xlink:href"/>
       <xsl:choose>
         <xsl:when test="contains($classpath,'#')">
@@ -63,7 +105,7 @@
         <xsl:apply-templates />
       </a>
     </xsl:if>
-  </xsl:template>
+  </xsl:template-->
 
   <xsl:template name="replace-substring">
     <xsl:param name="value"/>

@@ -13,29 +13,29 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.impl.mxml.custom {
+package org.springextensions.actionscript.ioc.config.impl.mxml.custom.stage {
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
 
+	import mx.utils.UIDUtil;
+
+	import org.as3commons.lang.StringUtils;
 	import org.springextensions.actionscript.context.IApplicationContext;
-	import org.springextensions.actionscript.ioc.config.impl.mxml.ICustomObjectDefinitionComponent;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.component.MXMLObjectDefinition;
+	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.AbstractCustomObjectDefinitionComponent;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinitionBuilder;
+	import org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor;
 
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class StageObjectProcessor extends MXMLObjectDefinition implements ICustomObjectDefinitionComponent, IEventDispatcher {
-
+	public class StageAutowireProcessor extends AbstractCustomObjectDefinitionComponent {
 		public static const OBJECTSELECTOR_CHANGED_EVENT:String = "objectSelectorChanged";
 
-		private var _eventDispatcher:IEventDispatcher = new EventDispatcher();
-
 		/**
-		 * Creates a new <code>StageObjectProcessor</code> instance.
+		 * Creates a new <code>StageAutowireProcessor</code> instance.
 		 */
-		public function StageObjectProcessor() {
+		public function StageAutowireProcessor() {
 			super();
 		}
 
@@ -53,33 +53,14 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom {
 			}
 		}
 
-		public function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void {
-			definition.customConfiguration = resolveObjectSelectorName();
-			objectDefinitions[this.id] = definition;
+		override public function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void {
+			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(DefaultAutowiringStageProcessor);
+			result.objectDefinition.customConfiguration = resolveObjectSelectorName();
+			objectDefinitions[this.id] = result.objectDefinition;
 		}
 
 		protected function resolveObjectSelectorName():* {
 			return (_objectSelector is MXMLObjectDefinition) ? MXMLObjectDefinition(_objectSelector).id : _objectSelector;
-		}
-
-		public function addEventListener(type:String, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void {
-			_eventDispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
-		}
-
-		public function removeEventListener(type:String, listener:Function, useCapture:Boolean=false):void {
-			_eventDispatcher.removeEventListener(type, listener, useCapture);
-		}
-
-		public function dispatchEvent(event:Event):Boolean {
-			return _eventDispatcher.dispatchEvent(event);
-		}
-
-		public function hasEventListener(type:String):Boolean {
-			return _eventDispatcher.hasEventListener(type);
-		}
-
-		public function willTrigger(type:String):Boolean {
-			return _eventDispatcher.willTrigger(type);
 		}
 
 	}

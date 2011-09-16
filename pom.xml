@@ -39,13 +39,13 @@
 		<playerglobal.version>${flashplayer.version.major}.${flashplayer.version.minor}</playerglobal.version>
 		<mockolate.version>0.12.-beta</mockolate.version>
 		<flexunit.version>4.1-RC2</flexunit.version>
-		<as3commons-bytecode.version>1.0-RC5</as3commons-bytecode.version>
+		<as3commons-bytecode.version>1.0</as3commons-bytecode.version>
 		<as3commons-stageprocessing.version>1.1-SNAPSHOT</as3commons-stageprocessing.version>
 		<as3commons-async.version>1.0-RC2-SNAPSHOT</as3commons-async.version>
 		<as3commons-eventbus>1.1.2-SNAPSHOT</as3commons-eventbus>
 		<as3commons-lang.version>0.3.5-SNAPSHOT</as3commons-lang.version>
 		<as3commons-reflect.version>1.4.2</as3commons-reflect.version>
-		<as3commons-logging.version>2.5.2</as3commons-logging.version>
+		<as3commons-logging.version>2.6</as3commons-logging.version>
 		<assembly.file.name>springactionscript-project-latest-snapshot</assembly.file.name>
 	</properties>
 
@@ -153,54 +153,6 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.sonatype.flexmojos</groupId>
-				<artifactId>flexmojos-maven-plugin</artifactId>
-				<version>${flex-mojos.version}</version>
-				<extensions>true</extensions>
-				<dependencies>
-					<dependency>
-						<groupId>com.adobe.flex</groupId>
-						<artifactId>compiler</artifactId>
-						<version>${flex-sdk.version}</version>
-						<type>pom</type>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<id>flex-reports</id>
-						<goals>
-							<goal>asdoc-report</goal>
-						</goals>
-						<phase>site</phase>
-					</execution>
-				</executions>
-				<configuration>
-					<storepass/>
-					<testTimeout>10000</testTimeout>
-					<configurationReport>true</configurationReport>
-					<targetPlayer>${flashplayer.version.major}</targetPlayer>
-					<locales>
-						<param>en_US</param>
-					</locales>
-					<updateSecuritySandbox>true</updateSecuritySandbox>
-					<includeAsClasses>
-						<source>
-							<directory>src/main/actionscript</directory>
-						</source>
-					</includeAsClasses>
-					<reportOutputDirectory>target/site/docs/asdoc</reportOutputDirectory>
-					<description>Spring Actionscript v${project.version} API documentation</description>
-					<mainTitle>Spring Actionscript v${project.version} API documentation</mainTitle>
-					<windowTitle>Spring Actionscript v${project.version} API documentation</windowTitle>
-					<name>SpringActionscriptDocs</name>
-					<keepXml>true</keepXml>
-					<dumpConfigAttach>true</dumpConfigAttach>
-					<showWarnings>true</showWarnings>
-					<lenient>true</lenient>
-				</configuration>
-			</plugin>
-
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 				<inherited>false</inherited>
@@ -270,7 +222,7 @@
 						</entity>
 					</entities>
 					<preProcess>
-						<xslt in="${basedir}/toplevel_files.xml" out="${basedir}/target/site/asdoc/toplevel.xml"
+						<!--xslt in="${basedir}/toplevel_files.xml" out="${basedir}/target/site/asdoc/toplevel.xml"
 							style="${basedir}/src/docbkx/resources/xsl/combine_toplevels.xslt"
 							reloadstylesheet="false" processor="trax">
 							<param name="baseDir" expression="${basedir}"/>
@@ -282,11 +234,11 @@
 							<param name="baseDir" expression="${basedir}"/>
 						</xslt>
 
-						<!--xslt
+						<xslt
 							in="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-objects-1.0.xsd"
 							out="${basedir}/src/docbkx/configuration-reference.xml"
 							style="${basedir}/src/docbkx/resources/xsl/configuration-reference.xsl"
-							reloadstylesheet="false" processor="trax"/-->
+							reloadstylesheet="false" processor="trax"/>
 
 						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
 							out="${basedir}/target/site/asdoc/all-classes.html"
@@ -363,7 +315,7 @@
 							<param name="overviewsFile"
 								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
 							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
-						</xslt>
+						</xslt-->
 
 						<delete file="${basedir}/target/site/asdoc/index.html"/>
 
@@ -476,29 +428,95 @@
 			</plugin>
 
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptor> src/main/assembly/sources.xml </descriptor>
-					<finalName>${assembly.file.name}</finalName>
-					<outputDirectory>target/site/downloads</outputDirectory>
-					<workDirectory>target/assembly/work</workDirectory>
-				</configuration>
+				<!--
+					Must not be 2.2-beta-1 which is distributed with Maven 2.2.0 because of
+					http://jira.codehaus.org/browse/MASSEMBLY-285
+				    -->
+				<version>2.2-beta-4</version>
+				<inherited>false</inherited>
 				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<!-- this is used for inheritance merges -->
-						<phase>site</phase>
-						<!-- append to the packaging phase. -->
-						<goals>
-							<goal>single</goal>
-							<!-- goals == mojos -->
-						</goals>
-					</execution>
+				    <execution>
+					<id>distribution-assembly-execution</id>
+					<phase>post-site</phase>
+					<goals>
+					    <goal>single</goal>
+					</goals>
+					<configuration>
+					    <finalName>spring-actionscript-${project.version}</finalName>
+					    <outputDirectory>${project.reporting.outputDirectory}/downloads</outputDirectory>
+					    <descriptors>
+						<descriptor>src/main/assembly/distribution.xml</descriptor>
+						<descriptor>src/main/assembly/distribution-with-dependencies.xml</descriptor>
+					    </descriptors>
+					</configuration>
+				    </execution>
 				</executions>
 			</plugin>
 
 		</plugins>
 	</build>
+	
+	<reporting>
+
+		<plugins>
+
+		    <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-report-plugin</artifactId>
+		    </plugin>
+
+		    <plugin>
+			<groupId>org.sonatype.flexmojos</groupId>
+			<artifactId>flexmojos-maven-plugin</artifactId>
+			<version>${flexmojos.version}</version>
+			<inherited>true</inherited>
+			<reportSets>
+			    <reportSet>
+				<id>flex-reports</id>
+				<reports>
+				    <report>asdoc-report</report>
+				</reports>
+				<configuration>
+				    <aggregate>true</aggregate>
+				    <keepXml>true</keepXml>
+				    <reportOutputDirectory>target/site/docs/asdoc</reportOutputDirectory>
+				    <configFile>asdoc-config.xml</configFile>
+				    <footer>Copyright 2007-2011 Spring Actionscript.</footer>
+				    <description>API documentation for the Spring Actionscript library</description>
+				    <mainTitle>Spring Actionscript v${project.version} API documentation</mainTitle>
+				    <windowTitle>Spring Actionscript v${project.version} API documentation</windowTitle>
+				    <name>SpringASv${project.version}Docs</name>
+				</configuration>
+			    </reportSet>
+			</reportSets>
+		    </plugin>
+
+		    <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-changes-plugin</artifactId>
+			<configuration>
+			    <onlyCurrentVersion>true</onlyCurrentVersion>
+			    <addActionDate>true</addActionDate>
+			    <issueLinkTemplatePerSystem>
+				<jira>%URL%/SESPRINGACTIONSCRIPTAS-%ISSUE%</jira>
+			    </issueLinkTemplatePerSystem>
+			</configuration>
+			<reportSets>
+			    <reportSet>
+				<reports>
+				    <report>changes-report</report>
+				    <report>jira-report</report>
+				</reports>
+			    </reportSet>
+			</reportSets>
+		    </plugin>
+
+		</plugins>
+
+	</reporting>
+
 
 	<dependencies>
 
