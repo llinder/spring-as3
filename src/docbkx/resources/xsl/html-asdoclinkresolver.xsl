@@ -7,85 +7,34 @@
                 version="1.0"
                 exclude-result-prefixes="xsl fo xlink">
 
-<xsl:variable name="springasdoc" select="document('../../../../target/site/asdoc/toplevel.xml')/asdoc" />
+  <xsl:variable name="springasdoc" select="document('../../../../target/site/asdoc/toplevel.xml')/asdoc" />
 
-<xsl:template match="//db:literal">
-  <xsl:variable name="class-name" select="."/>
-  <xsl:variable name="nodetest" select="$springasdoc/classRec[@name=$class-name]/@fullname"/>
-  <xsl:choose>
-    <xsl:when test="$nodetest">
-      <xsl:variable name="description" select="$springasdoc/classRec[@name=$class-name]/description"/>
-      <xsl:variable name="replaced">
-        <xsl:call-template name="replace-substring">
-          <xsl:with-param name="value" select="$nodetest"/>
-          <xsl:with-param name="from"><![CDATA[.]]></xsl:with-param>
-          <xsl:with-param name="to"><![CDATA[/]]></xsl:with-param>
+  <xsl:template match="//db:literal[count(@linkend)=0]">
+    <xsl:variable name="class-name" select="."/>
+    <xsl:variable name="classtest" select="$springasdoc/classRec[@name=$class-name]/@fullname"/>
+    <xsl:variable name="intftest" select="$springasdoc/interfaceRec[@name=$class-name]/@fullname"/>
+    <xsl:choose>
+      <xsl:when test="$classtest">
+        <xsl:call-template name="getAsdocURL">
+          <xsl:with-param name="class-path" select="$classtest"/>
+          <xsl:with-param name="class-name" select="$class-name"/>
+          <xsl:with-param name="description" select="$springasdoc/classRec[@name=$class-name]/description"/>
         </xsl:call-template>
-      </xsl:variable>
-      <xsl:variable name="asdocurlsuffix">
-        <xsl:call-template name="replace-substring">
-          <xsl:with-param name="value" select="$replaced"/>
-          <xsl:with-param name="from"><![CDATA[:]]></xsl:with-param>
-          <xsl:with-param name="to"><![CDATA[/]]></xsl:with-param>
+      </xsl:when>
+      <xsl:when test="$intftest">
+        <xsl:call-template name="getAsdocURL">
+          <xsl:with-param name="class-path" select="$intftest"/>
+          <xsl:with-param name="class-name" select="$class-name"/>
+          <xsl:with-param name="description" select="$springasdoc/interfaceRec[@name=$class-name]/description"/>
         </xsl:call-template>
-      </xsl:variable>
-      <xsl:variable name="asdocurl"  select="concat('../../../asdoc/', $asdocurlsuffix)"/>
-      <a class="asclass" href="{$asdocurl}.html" target="_blank">
-        <xsl:value-of select="$class-name"/>
-        <xsl:if test="$description">
-        <span class="toolTipContent">
-          <xsl:value-of select="$description" disable-output-escaping="yes" />
-        </span>
-        </xsl:if>
-      </a>
-    </xsl:when>
-    <xsl:otherwise>
-      <code class="literal">
-        <xsl:value-of select="$class-name"/>
-      </code>
-    </xsl:otherwise>
-  </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
 
-</xsl:template>
-
-  <!--xsl:template match="//*[@xlink:href]">
-  <xsl:if test="starts-with(@xlink:href, 'asdoc://')">
-      <xsl:variable name="classpath" select="@xlink:href"/>
-      <xsl:choose>
-        <xsl:when test="contains($classpath,'#')">
-          <xsl:variable name="asdocurl"  select="concat('../../../asdoc/', translate(substring-after($classpath,'asdoc://'), '.', '/'))"/>
-          <xsl:variable name="asdocurl2">
-            <xsl:call-template name="replace-substring">
-              <xsl:with-param name="value" select="$asdocurl"/>
-              <xsl:with-param name="from"><![CDATA[#]]></xsl:with-param>
-              <xsl:with-param name="to"><![CDATA[.html#]]></xsl:with-param>
-            </xsl:call-template>
-          </xsl:variable>
-          <a class="asclassdetail" href="{$asdocurl2}" target="_blank">
-            <xsl:apply-templates />
-            <xsl:call-template name="getClassDetailDescription">
-              <xsl:with-param name="classpath" select="substring-after($classpath,'asdoc://')"/>
-            </xsl:call-template>
-          </a>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:variable name="asdocurl"  select="concat('../../../asdoc/', translate(substring-after($classpath,'asdoc://'), '.', '/'), '.html')"/>
-          <a class="asclass" href="{$asdocurl}" target="_blank">
-            <xsl:apply-templates />
-            <xsl:call-template name="getClassDescription">
-              <xsl:with-param name="classpath" select="substring-after($classpath,'asdoc://')"/>
-            </xsl:call-template>
-          </a>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:if>
-    <xsl:if test="starts-with(@xlink:href, 'asdocpackage://')">
-      <xsl:variable name="classpath" select="@xlink:href"/>
-	    <xsl:variable name="asdocurl"  select="concat('../../../asdoc/', translate(substring-after($classpath,'asdocpackage://'), '.', '/'), '/package-detail.html')"/>
-	    <a class="asclass" href="{$asdocurl}" target="_blank">
-	      <xsl:apply-templates />
-	    </a>
-    </xsl:if>
+  <xsl:template match="//*[@xlink:href!='']">
     <xsl:if test="starts-with(@xlink:href, 'dtd://')">
       <xsl:variable name="dtdpath" select="@xlink:href"/>
       <xsl:variable name="dtdurl"  select="concat('configuration-reference.html#', translate(substring-after($dtdpath,'dtd://'), '.', '/'))"/>
@@ -105,7 +54,7 @@
         <xsl:apply-templates />
       </a>
     </xsl:if>
-  </xsl:template-->
+  </xsl:template>
 
   <xsl:template name="replace-substring">
     <xsl:param name="value"/>
@@ -125,6 +74,35 @@
         <xsl:value-of select="$value"/>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="getAsdocURL">
+    <xsl:param name="class-path"/>
+    <xsl:param name="class-name"/>
+    <xsl:param name="description"/>
+    <xsl:variable name="replaced">
+      <xsl:call-template name="replace-substring">
+        <xsl:with-param name="value" select="$class-path"/>
+        <xsl:with-param name="from"><![CDATA[.]]></xsl:with-param>
+        <xsl:with-param name="to"><![CDATA[/]]></xsl:with-param>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:variable name="asdocurlsuffix">
+      <xsl:call-template name="replace-substring">
+        <xsl:with-param name="value" select="$replaced"/>
+        <xsl:with-param name="from"><![CDATA[:]]></xsl:with-param>
+        <xsl:with-param name="to"><![CDATA[/]]></xsl:with-param>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:variable name="asdocurl"  select="concat('../../../asdoc/', $asdocurlsuffix)"/>
+    <a class="asclass" href="{$asdocurl}.html" target="_blank">
+      <xsl:value-of select="$class-name"/>
+      <xsl:if test="$description">
+        <span class="toolTipContent">
+          <xsl:value-of select="$description" disable-output-escaping="yes" />
+        </span>
+      </xsl:if>
+    </a>
   </xsl:template>
 
   <xsl:template name="getClassDetailDescription">

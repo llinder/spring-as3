@@ -35,13 +35,12 @@
 	<sect1 xml:id="creating-an-application-context">
 		<title>Creating an Application Context</title>
 		<para>The main entry point for the Spring Actionscript library is the application context. There
-			are a number of different context flavours, but for now we'll use the <literal xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext">MXMLApplicationContext</literal> as this is probably the most commonly used one.</para>
-		<para>Obviously the <literal>MXMLApplicationContext</literal>
-			can only be used in a Flex based application, in a pure actionscript environment you can
-			choose any of the other availabe '<literal linkend="configuration-types">Configuration
-				types</literal>'.</para>
-		<para>To create an instance of the <literal>MXMLApplicationContext</literal> simply add it as an <abbrev>MXML</abbrev> component to
-			your application.</para>
+			are a number of different context flavours, but for now we'll use the <literal>MXMLApplicationContext</literal> as this is probably the most commonly used one.</para>
+		<para>Obviously the <literal>MXMLApplicationContext</literal> can only be used in a Flex based
+			application, in a pure actionscript environment you can choose any of the other availabe
+				'<literal linkend="configuration-types">Configuration types</literal>'.</para>
+		<para>To create an instance of the <literal>MXMLApplicationContext</literal> simply add it as an
+				<abbrev>MXML</abbrev> component to your application.</para>
 		<programlisting language="xml">&lt;fx:Declarations&gt;
   &lt;sas:MXMLApplicationContext id="MXMLContext"/&gt;
 &lt;/fx:Declarations&gt;</programlisting>
