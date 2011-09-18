@@ -176,7 +176,8 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 			var instance:Object = config[field.name];
 
 			if (instance is ICustomObjectDefinitionComponent) {
-				ICustomObjectDefinitionComponent(instance).execute(applicationContext, _objectDefinitions);
+				var custom:ICustomObjectDefinitionComponent = instance as ICustomObjectDefinitionComponent;
+				custom.execute(applicationContext, _objectDefinitions);
 			} else if (instance is MXMLObjectDefinition) {
 				var mxmlDefinition:MXMLObjectDefinition = MXMLObjectDefinition(instance);
 				mxmlDefinition.initializeComponent();

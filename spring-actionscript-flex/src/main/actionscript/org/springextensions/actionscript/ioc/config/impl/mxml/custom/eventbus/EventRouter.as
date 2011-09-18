@@ -16,13 +16,16 @@
 package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 
 	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.AbstractCustomObjectDefinitionComponent;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.RouteEventsCustomConfigurator;
+	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class EventRouter extends AbstractCustomObjectDefinitionComponent {
+	public class EventRouter extends AbstractEventBusComponent {
 
 		/**
 		 * Creates a new <code>EventRouter</code> instance.
@@ -32,7 +35,21 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 		}
 
 		override public function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void {
-			;
+			if (applicationContext is IEventBusUserRegistryAware) {
+				eventBusUserRegistry = (applicationContext as IEventBusUserRegistryAware).eventBusUserRegistry;
+			}
+			var customConfiguration:Vector.<ICustomConfigurator> = applicationContext.objectDefinitionRegistry.getCustomConfiguration(instance);
+			customConfiguration ||= new Vector.<ICustomConfigurator>();
+			for each (var field:Object in childContent) {
+				if (field is EventRouterConfiguration) {
+					var er:EventRouterConfiguration = field as EventRouterConfiguration;
+					var eventNames:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(er.eventNames);
+					var topics:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(er.topics);
+					var topicProperties:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(er.topicProperties);
+					var configurator:RouteEventsCustomConfigurator = new RouteEventsCustomConfigurator(eventBusUserRegistry, eventNames, topics, topicProperties);
+					customConfiguration[customConfiguration.length] = configurator;
+				}
+			}
 		}
 
 	}

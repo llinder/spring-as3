@@ -9,6 +9,10 @@
 				  label="Spring Actionscript Configuration"/>
 		<category id="sas-stage"
 				  label="Spring Actionscript Stage Processing Configuration"/>
+		<category id="sas-eventbus"
+				  label="Spring Actionscript Eventbus Configuration"/>
+		<category id="sas-util"
+				  label="Spring Actionscript Util Configuration"/>
 	</categories>
 	<components>
 		<component name="MXMLApplicationContext"
@@ -44,12 +48,39 @@
 		<component name="Interface"
 				   namespace="sas"
 				   category="sas-config"/>
+
 		<component name="StageAutowireProcessor"
 				   namespace="sas"
 				   category="sas-stage"/>
 		<component name="StageObjectProcessor"
 				   namespace="sas"
 				   category="sas-stage"/>
+
+		<component name="EventHandler"
+				   namespace="sas"
+				   category="sas-eventbus"/>
+		<component name="EventHandlerMethod"
+				   namespace="sas"
+				   category="sas-eventbus"/>
+		<component name="EventInterceptor"
+				   namespace="sas"
+				   category="sas-eventbus"/>
+		<component name="EventListenerInterceptor"
+				   namespace="sas"
+				   category="sas-eventbus"/>
+		<component name="InterceptionConfiguration"
+				   namespace="sas"
+				   category="sas-eventbus"/>
+		<component name="EventRouter"
+				   namespace="sas"
+				   category="sas-eventbus"/>
+		<component name="EventRouterConfiguration"
+				   namespace="sas"
+				   category="sas-eventbus"/>
+
+		<component name="FactorObjectDefinition"
+				   namespace="sas"
+				   category="sas-util"/>
 	</components>
 
 </design>

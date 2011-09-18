@@ -30,7 +30,11 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class AbstractCustomObjectDefinitionComponent extends EventDispatcher implements ICustomObjectDefinitionComponent {
+	public class AbstractCustomObjectDefinitionComponent extends EventDispatcher implements ICustomObjectDefinitionComponent, IMXMLObject {
+
+		public static const COMMA:String = ',';
+		public static const SPACE:String = ' ';
+		public static const EMPTY:String = '';
 
 		private var _id:String;
 		private var _document:Object;
@@ -67,5 +71,18 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom {
 		public function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void {
 			throw new IllegalOperationError("execute() not implemented in abstract base class");
 		}
+
+		public static function commaSeparatedPropertyValueToStringVector(propertyValue:String):Vector.<String> {
+			if (StringUtils.hasText(propertyValue)) {
+				var parts:Array = propertyValue.split(SPACE).join(EMPTY).split(COMMA);
+				var result:Vector.<String> = new Vector.<String>();
+				for each (var name:String in parts) {
+					result[result.length] = name;
+				}
+				return result;
+			}
+			return null;
+		}
+
 	}
 }

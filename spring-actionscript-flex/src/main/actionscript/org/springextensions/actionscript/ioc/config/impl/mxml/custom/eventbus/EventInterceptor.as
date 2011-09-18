@@ -15,13 +15,20 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.AbstractCustomObjectDefinitionComponent;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfigurator;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventInterceptorCustomConfigurator;
+	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class EventInterceptor extends AbstractCustomObjectDefinitionComponent {
+	public class EventInterceptor extends AbstractEventBusComponent {
+		private var _eventBusUserRegistry:IEventBusUserRegistry;
+
 
 		/**
 		 * Creates a new <code>EventInterceptor</code> instance.
@@ -31,7 +38,20 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 		}
 
 		override public function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void {
-			;
+			if (applicationContext is IEventBusUserRegistryAware) {
+				eventBusUserRegistry = (applicationContext as IEventBusUserRegistryAware).eventBusUserRegistry;
+			}
+			var customConfiguration:Vector.<ICustomConfigurator> = applicationContext.objectDefinitionRegistry.getCustomConfiguration(instance);
+			customConfiguration ||= new Vector.<ICustomConfigurator>();
+			for each (var field:Object in childContent) {
+				if (field is InterceptionConfiguration) {
+					var ic:InterceptionConfiguration = field as InterceptionConfiguration;
+					var topics:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(ic.topics);
+					var topicProperties:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(ic.topicProperties);
+					var configurator:EventInterceptorCustomConfigurator = new EventInterceptorCustomConfigurator(_eventBusUserRegistry, ic.eventName, ic.eventClass, topics, topicProperties);
+					customConfiguration[customConfiguration.length] = configurator;
+				}
+			}
 		}
 
 	}

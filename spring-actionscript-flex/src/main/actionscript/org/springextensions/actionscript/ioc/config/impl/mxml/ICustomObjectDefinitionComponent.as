@@ -23,7 +23,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public interface ICustomObjectDefinitionComponent extends IMXMLObject {
+	public interface ICustomObjectDefinitionComponent {
 		function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void;
 	}
 }

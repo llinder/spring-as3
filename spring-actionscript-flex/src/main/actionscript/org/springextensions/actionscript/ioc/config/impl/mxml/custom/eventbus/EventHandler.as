@@ -15,15 +15,25 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 
+	import flash.events.Event;
+
+	import mx.core.UIComponent;
+
+	import org.as3commons.reflect.Field;
+	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
+	import org.springextensions.actionscript.ioc.config.impl.mxml.ICustomObjectDefinitionComponent;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.AbstractCustomObjectDefinitionComponent;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfigurator;
+	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class EventHandler extends AbstractCustomObjectDefinitionComponent {
-
+	public class EventHandler extends AbstractEventBusComponent {
 		/**
 		 * Creates a new <code>EventHandler</code> instance.
 		 */
@@ -32,7 +42,21 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 		}
 
 		override public function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void {
-			;
+			if (applicationContext is IEventBusUserRegistryAware) {
+				eventBusUserRegistry = (applicationContext as IEventBusUserRegistryAware).eventBusUserRegistry;
+			}
+			var customConfiguration:Vector.<ICustomConfigurator> = applicationContext.objectDefinitionRegistry.getCustomConfiguration(instance);
+			customConfiguration ||= new Vector.<ICustomConfigurator>();
+			for each (var field:Object in childContent) {
+				if (field is EventHandlerMethod) {
+					var hm:EventHandlerMethod = field as EventHandlerMethod;
+					var topics:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(hm.topics);
+					var topicProperties:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(hm.topicProperties);
+					var properties:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(hm.properties);
+					var configurator:EventHandlerCustomConfigurator = new EventHandlerCustomConfigurator(eventBusUserRegistry, hm.name, hm.eventName, hm.eventClass, properties, topics, topicProperties);
+					customConfiguration[customConfiguration.length] = configurator;
+				}
+			}
 		}
 
 	}
