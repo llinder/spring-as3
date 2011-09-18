@@ -57,15 +57,6 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 */
 		public function AbstractEventBusNodeParser(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry, applicationDomain:ApplicationDomain) {
 			super();
-			init(objectDefinitionRegistry, eventBusUserRegistry, applicationDomain);
-		}
-
-		/**
-		 * Initializes the current <code>AbstractEventBusNodeParser</code>.
-		 * @param objectDefinitionRegistry
-		 * @param eventBusUserRegistry
-		 */
-		protected function init(objectDefinitionRegistry:IObjectDefinitionRegistry, eventBusUserRegistry:IEventBusUserRegistry, applicationDomain:ApplicationDomain):void {
 			_objectDefinitionRegistry = objectDefinitionRegistry;
 			_eventBusUserRegistry = eventBusUserRegistry;
 			_applicationDomain = applicationDomain;
@@ -119,7 +110,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 * @param attributeName
 		 * @return
 		 */
-		protected function commaSeparatedAttributeNameToStringVector(node:XML, attributeName:String):Vector.<String> {
+		public function commaSeparatedAttributeNameToStringVector(node:XML, attributeName:String):Vector.<String> {
 			if (node.attribute(attributeName).length() > 0) {
 				var parts:Array = String(node.attribute(attributeName)[0]).split(SPACE).join(EMPTY).split(COMMA);
 				var result:Vector.<String> = new Vector.<String>();
