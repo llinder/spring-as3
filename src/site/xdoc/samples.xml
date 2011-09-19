@@ -13,7 +13,9 @@
 
   <body>
     <section name="Sample applications">
-    	<p>Coming soon...</p>
+    	<ul>
+    		<li><a href="/samples/cafe-townsend/Main.html" target="_blank">Cafe Townsend - XML Configuration</a></li>
+    	<ul>
     </section>
   </body>
 </document>
