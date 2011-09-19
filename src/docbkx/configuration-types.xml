@@ -417,14 +417,84 @@ public class AnnotatedComponent {
 }</programlisting>
 			<para>Naturally the arguments needs to be defined in the same order as the method expects
 				them.</para>
-			<para>Now to add the configuration to an application context instance, either create the
-				metadata specific <literal>MetadataApplicationContext</literal>:</para>
+			<para>Now the aforementioned annotations work really well when you have access to the source
+				code of the objects that you need to configure. But not if you want to add objects from a
+				third party library. Or maybe you don't want to clutter your sources with framework specific
+				metadata.</para>
+			<para>For this situation Spring Actionscript offers the ability to add all of this specific
+				metadata to a single configuration class. What you do is create a regular class and annotate
+				it with the [Configuration]
+				metadata:<programlisting language="actionscript">[Configuration]
+public class MyConfiguration {
+}</programlisting></para>
+			<para>Now, this class will actually never be instantiated, it merely functions as a <emphasis
+					role="italic">placeholder</emphasis> for object definition specific metadata. For
+				instance, to add an object definition for the
+					<literal>DefaultAutowiringStageProcessor</literal>, add a property to the configuration
+				class:<programlisting language="actionscript">[Configuration]
+public class MyConfiguration {
+	public var defaultAutowiringStageProcessor:DefaultAutowiringStageProcessor;
+}</programlisting></para>
+			<para>And that's it, when the configuration has been parsed, an object definition with id
+					'<emphasis role="bold">defaultAutowiringStageProcessor</emphasis>' will have been added
+				with a class definition of 'DefaultAutowiringStageProcessor'.</para>
+			<para>To add the component specific properties as described above you need to add the
+				[Component] metadata to the
+				property.<programlisting language="actionscript">[Configuration]
+public class MyConfiguration {
+
+	[Component(id="processor",isLazyInit="true")]
+	public var defaultAutowiringStageProcessor:DefaultAutowiringStageProcessor;
+}</programlisting></para>
+			<para>This will set the resulting definition's lazyInit property to true and will register the
+				definition with id '<emphasis role="bold">processor</emphasis>' instead of '<emphasis
+					role="bold">defaultAutowiringStageProcessor</emphasis>'.</para>
+			<para>To define a property on the defintion, add the [Property]
+				metadata:<programlisting>[Configuration]
+public class MyConfiguration {
+
+	[Property(name="wireOnlyOnce",value="true")]
+	[Component(id="processor",isLazyInit="true")]
+	public var defaultAutowiringStageProcessor:DefaultAutowiringStageProcessor;
+}</programlisting></para>
+			<para>The difference with annotaing a property on a [Component] class is that you need to
+				specify the property's name, whereas in the case of a [Component] class this is already
+				implied by the property itself that has been annotated.</para>
+			<para>Same thing applies for method
+				invocations:<programlisting>[Configuration]
+public class MyConfiguration {
+
+	[Invoke(name="someMethodName",args="ref=objectName1, value=10")]
+	[Property(name="wireOnlyOnce",value="true")]
+	[Component(id="processor",isLazyInit="true")]
+	public var defaultAutowiringStageProcessor:DefaultAutowiringStageProcessor;
+}</programlisting></para>
+			<para>Or in the case of constructor
+				arguments:<programlisting>[Configuration]
+public class MyConfiguration {
+
+	[Constructor(args="ref=objectName2")]
+	[Invoke(name="someMethodName",args="ref=objectName1, value=10")]
+	[Property(name="wireOnlyOnce",value="true")]
+	[Component(id="processor",isLazyInit="true")]
+	public var defaultAutowiringStageProcessor:DefaultAutowiringStageProcessor;
+}</programlisting></para>
+			<para>And that's, simple add properties for each object you need to be defined, and you're
+				good to go. Just make sure that the configuration class gets compiled into your application
+				by declaring it somewhere. You have to make sure of this since the class never gets instantiated.<note>
+					<para>You can add multiple classes that are annotated with the [Configuration] metadata,
+						the object definitions will be aggregated.</para>
+				</note></para>
+			<para>Now to start using the metadata based configuration, either create the metadata specific
+					<literal>MetadataApplicationContext</literal>:</para>
 			<programlisting language="xml">var applicationContext:MetadataApplicationContext = new MetadataApplicationContext(FlexGlobals.topLevelApplication as DisplayObject);
 applicationContext.addEventListener(Event.COMPLETE, onComplete);
 applicationContext.load();</programlisting>
 			<para>Notice how the topLevelApplication is passed into the constructor, the
 				MetadataApplicationContext requires a valid DisplayObject that is added to the stage (or a
-				direct reference to the Stage) to function correctly.</para>
+				direct reference to the Stage) to function correctly. It uses its loaderInfo property to
+				reach the loaderInfo.bytes so it can scan the SWF for [Component] and [Configuration]
+				annotated classes.</para>
 			<para>Or create a <literal>DefaultApplicationContext</literal>, add the appropriate
 					<literal>IObjectDefinitionsProvider</literal> and configure it like this:</para>
 			<programlisting language="actionscript">var provider:MetadataObjectDefinitionsProvider = new MetadataObjectDefinitionsProvider();
