@@ -9,6 +9,11 @@
 				   required="true"/>
 	</metadata>
 
+	<metadata name="Configuration"
+			  description="Describes an object that functions as a placeholder for metadata based object definitions">
+		<context name="class"/>
+	</metadata>
+
 	<metadata name="ExternalProperties"
 			  description="Describes a location (URI) of an external properties file">
 		<context name="class"/>

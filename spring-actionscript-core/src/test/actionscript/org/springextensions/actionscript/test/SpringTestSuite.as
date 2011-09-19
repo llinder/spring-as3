@@ -21,6 +21,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.eventbus.impl.DefaultEventBusUserRegistryTest;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessorTest;
 	import org.springextensions.actionscript.ioc.config.impl.TextFilesLoaderTest;
+	import org.springextensions.actionscript.ioc.config.impl.metadata.ConfigurationClassScannerTest;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.MetadataObjectDefinitionsProviderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProviderTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtilsTest;
@@ -191,6 +192,7 @@ package org.springextensions.actionscript.test {
 		public var t82:FactoryNodeParserTest;
 		public var t83:ConstantNodeParserTest;
 		public var t84:InvokeNodeParserTest;
+		public var t85:ConfigurationClassScannerTest;
 		//Integrations:
 		public var i1:ObjectFactoryIntegrationTest;
 		public var i2:EventBusUserRegistryIntegrationTest;

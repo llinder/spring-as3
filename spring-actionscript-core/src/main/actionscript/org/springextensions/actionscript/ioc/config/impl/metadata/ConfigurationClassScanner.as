@@ -69,7 +69,9 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			var type:Type = Type.forName(className, _applicationDomain);
 			var properties:Array = type.properties;
 			for each (var property:Field in properties) {
-				scanProperty(property, objectDefinitionRegistry);
+				if (property.declaringType === type) {
+					scanProperty(property, objectDefinitionRegistry);
+				}
 			}
 		}
 
