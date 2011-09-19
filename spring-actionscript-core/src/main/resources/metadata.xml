@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<annotations version="1.1">
+<annotations version="1.0">
 
 	<metadata name="Factory"
 			  description="Describes an object that can function as an object factory">
@@ -25,9 +25,35 @@
 				   defaultValue="true"/>
 	</metadata>
 
+	<metadata name="Property"
+			  description="Describes the configuration of a single property/accessor">
+		<context name="variable"/>
+		<context name="getter"/>
+		<context name="setter"/>
+		<attribute name="name"
+				   type="String"
+				   required="false"/>
+		<attribute name="value"
+				   type="String"
+				   required="false"/>
+		<attribute name="ref"
+				   type="String"
+				   required="false"/>
+		<attribute name="namespace"
+				   type="String"
+				   required="false"/>
+		<attribute name="isStatic"
+				   type="Boolean"
+				   required="false"
+				   defaultValue="false"/>
+	</metadata>
+
 	<metadata name="Component"
 			  description="Used to define object definitions on a class which will be used by the class scanning system in Spring Actionscript">
 		<context name="class"/>
+		<context name="variable"/>
+		<context name="getter"/>
+		<context name="setter"/>
 		<attribute name="id"
 				   type="String"
 				   required="false"
@@ -107,6 +133,9 @@
 	<metadata name="Constructor"
 			  description="Used to define constructor arguments that need to be injected by Spring Actionscript">
 		<context name="class"/>
+		<context name="variable"/>
+		<context name="getter"/>
+		<context name="setter"/>
 		<attribute name="args"
 				   type="String"
 				   required="false"
@@ -130,12 +159,17 @@
 
 	<metadata name="Invoke"
 			  description="Used to define argument values or references that need to be injected by Spring Actionscript">
-		<context name="method">
-			<attribute name="args"
-					   type="String"
-					   required="false"
-					   defaultValue=""/>
-		</context>
+		<context name="method"/>
+		<attribute name="args"
+				   type="String"
+				   required="false"
+				   defaultValue=""/>
+		<attribute name="name"
+				   type="String"
+				   required="false"/>
+		<attribute name="namespace"
+				   type="String"
+				   required="false"/>
 	</metadata>
 
 	<metadata name="EventHandler"

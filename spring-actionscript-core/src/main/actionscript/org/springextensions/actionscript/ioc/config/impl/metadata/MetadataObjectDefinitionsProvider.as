@@ -39,6 +39,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
+	import org.springextensions.actionscript.ioc.config.impl.metadata.util.MetadataConfigUtils;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 	import org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError;
@@ -57,105 +58,14 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 	 * @author Roland Zwaga
 	 */
 	public class MetadataObjectDefinitionsProvider implements IObjectDefinitionsProvider, IDisposable, IApplicationContextAware, ILoaderInfoAware {
-		/** The "args" attribute. */
-		public static const ARGS_ATTR:String = "args";
 
-		/** The "autowire" attribute. */
-		public static const AUTOWIRE_ATTR:String = "autowire";
-
-		/** The "autowireCandidate" attribute. */
-		public static const AUTOWIRE_CANDIDATE_ATTR:String = "autowireCandidate";
-
-		/** The "childContextAccess" attribute. */
-		public static const CHILD_CONTEXT_ACCESS_ATTR:String = "childContextAccess";
-
-		/** The Component metadata. */
-		public static const COMPONENT_METADATA:String = "Component";
-
-		/** The Constructor metadata. */
-		public static const CONSTRUCTOR_METADATA:String = "Constructor";
-
-		/** The "dependencyCheck" attribute. */
-		public static const DEPENDENCY_CHECK_ATTR:String = "dependencyCheck";
-
-		/** The "dependsOn" attribute. */
-		public static const DEPENDS_ON_ATTR:String = "dependsOn";
-
-		/** The "destroyMethod" attribute. */
-		public static const DESTROY_METHOD_ATTR:String = "destroyMethod";
-
-		/** The Configuration metadata. */
-		public static const EXTERNAL_PROPERTIES_METADATA:String = "ExternalProperties";
-
-		/** The "factoryMethod" attribute. */
-		public static const FACTORY_METHOD_ATTR:String = "factoryMethod";
-
-		/** The "factoryObject" attribute. */
-		public static const FACTORY_OBJECT_NAME_ATTR:String = "factoryObjectName";
-
-		/** The "id" attribute. */
-		public static const ID_ATTR:String = "id";
-
-		/** The "initMethod" attribute. */
-		public static const INIT_METHOD_ATTR:String = "initMethod";
-
-		/** The Invoke metadata. */
-		public static const INVOKE_METADATA:String = "Invoke";
-
-		/** The "isAbstract" attribute. */
-		public static const IS_ABSTRACT_ATTR:String = "isAbstract";
-
-		/** The "lazyInit" attribute. */
-		public static const LAZY_INIT_ATTR:String = "lazyInit";
-
-		/** The "location" attribute. */
-		public static const LOCATION_ATTR:String = "location";
-
-		/** The "parentName" attribute. */
-		public static const PARENT_NAME_ATTR:String = "parentName";
-
-		/** The "preventCache" attribute. */
-		public static const PREVENTCACHE_ATTR:String = "preventCache";
-
-		/** The "primary" attribute. */
-		public static const PRIMARY_ATTR:String = "primary";
-
-		/** The SetProperty metadata. */
-		public static const PROPERTY_METADATA:String = "Property";
-
-		/** The "ref" attribute. */
-		public static const REF_ATTR:String = "ref";
-
-		/** The "required" attribute. */
-		public static const REQUIRED_ATTR:String = "required";
-
-		/** The prefix used when generating object definition names. */
-		public static const SCANNED_COMPONENT_NAME_PREFIX:String = "scannedComponent#";
-
-		/** The "scope" attribute. */
-		public static const SCOPE_ATTR:String = "scope";
-
-		/** The "skipMetaData" attribute. */
-		public static const SKIP_METADATA_ATTR:String = "skipMetaData";
-
-		/** The "skipPostProcessors" attribute. */
-		public static const SKIP_POSTPROCESSORS_ATTR:String = "skipPostProcessors";
-
-		/** The "value" attribute. */
-		public static const VALUE_ATTR:String = "value";
-		private static const COMMA:String = ',';
 		private static const CREATING_OBJECT_DEFINITION:String = "Creating object definition for class '{0}'.";
-		private static const EMPTY:String = '';
-		private static const EQUALS:String = '=';
-		private static const LOGGER:ILogger = getLogger(MetadataObjectDefinitionsProvider);
 		private static const MULTIPLE_COMPONENT_METADATA_ERROR:String = "Only one Component metadata annotation can be used";
 		private static const OBJECT_DEFINITION_ALREADY_EXISTS:String = "Object definition for class '{0}' already exists.";
 		private static const PROPERTY_REGEXP:RegExp = /\$\{[^}]+\}/g;
 		private static const PROPERTY_REGEXP2:RegExp = /\$\([^)]+\)/g;
 		private static const SCANNING_CLASS:String = "Scanning class '{0}' for Component metadata.";
-		private static const SPACE:String = ' ';
-		private static const TRUE_VALUE:String = "true";
-		private static const UNKNOWN_METADATA_ARGUMENT_ERROR:String = "Unknown metadata argument '{0}' encountered on class {1}.";
+		private static const LOGGER:ILogger = getLogger(MetadataObjectDefinitionsProvider);
 		private static var _numScannedComponents:uint = 0;
 
 		/**
@@ -173,6 +83,8 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		private var _objectDefinitions:Object;
 		private var _propertiesProvider:IPropertiesProvider;
 		private var _propertyURIs:Vector.<TextFileURI>;
+		private var _configurationScanner:ConfigurationClassScanner;
+		private var _metadataConfigUtils:MetadataConfigUtils;
 
 		/**
 		 * @inheritDoc
@@ -256,7 +168,12 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 * @return
 		 */
 		public function createObjectDefinitions(cache:ByteCodeTypeCache):Object {
-			var classNames:Array = cache.getClassesWithMetadata(COMPONENT_METADATA);
+			_metadataConfigUtils = new MetadataConfigUtils();
+			_configurationScanner = new ConfigurationClassScanner(_metadataConfigUtils);
+			_configurationScanner.applicationDomain = _applicationContext.applicationDomain;
+			var classNames:Array = cache.getClassesWithMetadata(MetadataConfigUtils.COMPONENT_METADATA);
+			scanClassNames(classNames);
+			classNames = cache.getClassesWithMetadata(MetadataConfigUtils.CONFIGURATION_METADATA);
 			scanClassNames(classNames);
 			return createResult();
 		}
@@ -277,7 +194,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 * @param cache
 		 */
 		public function createPropertyObjects(cache:ByteCodeTypeCache):void {
-			var classNames:Array = cache.getClassesWithMetadata(EXTERNAL_PROPERTIES_METADATA);
+			var classNames:Array = cache.getClassesWithMetadata(MetadataConfigUtils.EXTERNAL_PROPERTIES_METADATA);
 			for each (var name:String in classNames) {
 				extractExternalPropertyMetadata(name);
 			}
@@ -298,7 +215,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 */
 		public function extractExternalPropertyMetadata(className:String):void {
 			var type:Type = Type.forName(className, applicationContext.applicationDomain);
-			var metadatas:Array = type.getMetadata(EXTERNAL_PROPERTIES_METADATA);
+			var metadatas:Array = type.getMetadata(MetadataConfigUtils.EXTERNAL_PROPERTIES_METADATA);
 			for each (var metadata:Metadata in metadatas) {
 				createPropertyURI(metadata);
 			}
@@ -315,8 +232,8 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 			LOGGER.debug(SCANNING_CLASS, [className]);
 
-			if (type.hasMetadata(COMPONENT_METADATA)) {
-				var metadata:Array = type.getMetadata(COMPONENT_METADATA);
+			if (type.hasMetadata(MetadataConfigUtils.COMPONENT_METADATA)) {
+				var metadata:Array = type.getMetadata(MetadataConfigUtils.COMPONENT_METADATA);
 
 				if (metadata.length > 1) {
 					throw new Error(MULTIPLE_COMPONENT_METADATA_ERROR);
@@ -338,10 +255,10 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 					var definition:ObjectDefinition = new ObjectDefinition(className);
 					definition.isInterface = ClassUtils.isInterface(clazz);
 					definition.isSingleton = !ClassUtils.isSubclassOf(clazz, DisplayObject, applicationContext.applicationDomain);
-					resolveDefinitionProperties(componentMetaData, definition, className);
+					_metadataConfigUtils.resolveDefinitionProperties(componentMetaData, definition, className);
 
 					if (componentId == null) {
-						componentId = SCANNED_COMPONENT_NAME_PREFIX + ++_numScannedComponents;
+						componentId = MetadataConfigUtils.SCANNED_COMPONENT_NAME_PREFIX + ++_numScannedComponents;
 					}
 					_internalRegistry.registerObjectDefinition(componentId, definition);
 
@@ -358,8 +275,8 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 * @param definition
 		 */
 		protected function addMethod(method:Method, definition:IObjectDefinition):void {
-			var metadata:Metadata = method.getMetadata(INVOKE_METADATA)[0];
-			var arguments:Array = resolveArguments(metadata);
+			var metadata:Metadata = method.getMetadata(MetadataConfigUtils.INVOKE_METADATA)[0];
+			var arguments:Array = _metadataConfigUtils.resolveArguments(metadata);
 			var mv:MethodInvocation = new MethodInvocation(method.name, arguments, method.namespaceURI);
 			definition.addMethodInvocation(mv);
 		}
@@ -370,12 +287,12 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 * @param definition
 		 */
 		protected function addProperty(field:Field, definition:IObjectDefinition):void {
-			var metadata:Metadata = field.getMetadata(PROPERTY_METADATA)[0];
+			var metadata:Metadata = field.getMetadata(MetadataConfigUtils.PROPERTY_METADATA)[0];
 			var propertyValue:*;
-			if (metadata.hasArgumentWithKey(REF_ATTR)) {
-				propertyValue = new RuntimeObjectReference(metadata.getArgument(REF_ATTR).value);
-			} else if (metadata.hasArgumentWithKey(VALUE_ATTR)) {
-				propertyValue = metadata.getArgument(VALUE_ATTR).value;
+			if (metadata.hasArgumentWithKey(MetadataConfigUtils.REF_ATTR)) {
+				propertyValue = new RuntimeObjectReference(metadata.getArgument(MetadataConfigUtils.REF_ATTR).value);
+			} else if (metadata.hasArgumentWithKey(MetadataConfigUtils.VALUE_ATTR)) {
+				propertyValue = metadata.getArgument(MetadataConfigUtils.VALUE_ATTR).value;
 			}
 			var propertyDef:PropertyDefinition = new PropertyDefinition(field.name, propertyValue, field.namespaceURI, field.isStatic);
 			definition.addPropertyDefinition(propertyDef);
@@ -389,18 +306,18 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			var URI:String;
 			var isRequired:Boolean = true;
 			var preventCache:Boolean = true;
-			if (metadata.hasArgumentWithKey(LOCATION_ATTR)) {
-				URI = metadata.getArgument(LOCATION_ATTR).value;
-			} else if (metadata.hasArgumentWithKey(EMPTY)) {
-				URI = metadata.getArgument(EMPTY).value;
+			if (metadata.hasArgumentWithKey(MetadataConfigUtils.LOCATION_ATTR)) {
+				URI = metadata.getArgument(MetadataConfigUtils.LOCATION_ATTR).value;
+			} else if (metadata.hasArgumentWithKey(MetadataConfigUtils.EMPTY)) {
+				URI = metadata.getArgument(MetadataConfigUtils.EMPTY).value;
 			} else {
 				throw new IllegalOperationError("ExternalProperty metadata does not have a valid 'location' argument defined");
 			}
-			if (metadata.hasArgumentWithKey(REQUIRED_ATTR)) {
-				isRequired = (metadata.getArgument(REQUIRED_ATTR).value.toLowerCase() == TRUE_VALUE);
+			if (metadata.hasArgumentWithKey(MetadataConfigUtils.REQUIRED_ATTR)) {
+				isRequired = (metadata.getArgument(MetadataConfigUtils.REQUIRED_ATTR).value.toLowerCase() == MetadataConfigUtils.TRUE_VALUE);
 			}
-			if (metadata.hasArgumentWithKey(PREVENTCACHE_ATTR)) {
-				preventCache = (metadata.getArgument(PREVENTCACHE_ATTR).value.toLowerCase() == TRUE_VALUE);
+			if (metadata.hasArgumentWithKey(MetadataConfigUtils.PREVENTCACHE_ATTR)) {
+				preventCache = (metadata.getArgument(MetadataConfigUtils.PREVENTCACHE_ATTR).value.toLowerCase() == MetadataConfigUtils.TRUE_VALUE);
 			}
 			var propertyURI:TextFileURI = new TextFileURI(URI, isRequired, preventCache);
 			_propertyURIs ||= new Vector.<TextFileURI>();
@@ -452,10 +369,10 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		protected function getComponentIdFromMetaData(metadata:Metadata):String {
 			var result:String;
 
-			if (metadata.hasArgumentWithKey(ID_ATTR)) {
-				result = metadata.getArgument(ID_ATTR).value;
-			} else if (metadata.hasArgumentWithKey(EMPTY)) {
-				result = metadata.getArgument(EMPTY).value;
+			if (metadata.hasArgumentWithKey(MetadataConfigUtils.ID_ATTR)) {
+				result = metadata.getArgument(MetadataConfigUtils.ID_ATTR).value;
+			} else if (metadata.hasArgumentWithKey(MetadataConfigUtils.EMPTY)) {
+				result = metadata.getArgument(MetadataConfigUtils.EMPTY).value;
 			}
 
 			return result;
@@ -515,42 +432,14 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		/**
 		 *
-		 * @param metadata
-		 * @return
-		 */
-		protected function resolveArguments(metadata:Metadata):Array {
-			var result:Array = [];
-
-			if (metadata.hasArgumentWithKey(ARGS_ATTR)) {
-				var arg:String = metadata.getArgument(ARGS_ATTR).value;
-				if (arg.length > 0) {
-					var args:Array = arg.split(COMMA);
-					var keyvalue:Array;
-					for each (var val:String in args) {
-						val = StringUtils.trim(val);
-						keyvalue = val.split(EQUALS);
-						if (StringUtils.trim(keyvalue[0]) == REF_ATTR) {
-							result[result.length] = new RuntimeObjectReference(StringUtils.trim(keyvalue[1]));
-						} else if (StringUtils.trim(keyvalue[0]) == VALUE_ATTR) {
-							result[result.length] = StringUtils.trim(keyvalue[1]);
-						}
-					}
-				}
-			}
-
-			return (result.length > 0) ? result : null;
-		}
-
-		/**
-		 *
 		 * @param type
 		 * @param definition
 		 * @param objectDefinitionId
 		 *
 		 */
 		protected function resolveConstructorArgs(type:Type, definition:IObjectDefinition, objectDefinitionId:String):void {
-			if (type.hasMetadata(CONSTRUCTOR_METADATA)) {
-				var constructorArguments:Array = resolveArguments(type.getMetadata(CONSTRUCTOR_METADATA)[0]);
+			if (type.hasMetadata(MetadataConfigUtils.CONSTRUCTOR_METADATA)) {
+				var constructorArguments:Array = _metadataConfigUtils.resolveArguments(type.getMetadata(MetadataConfigUtils.CONSTRUCTOR_METADATA)[0]);
 				if (constructorArguments) {
 					definition.constructorArguments = constructorArguments;
 				}
@@ -590,78 +479,11 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		/**
 		 *
-		 * @param componentMetaData
-		 * @param definition
-		 * @param className
-		 */
-		protected function resolveDefinitionProperties(componentMetaData:Metadata, definition:ObjectDefinition, className:String):void {
-			for each (var arg:MetadataArgument in componentMetaData.arguments) {
-
-				switch (arg.key) {
-					case SCOPE_ATTR:
-						definition.scope = ObjectDefinitionScope.fromName(arg.value);
-						break;
-					case LAZY_INIT_ATTR:
-						definition.isLazyInit = (arg.value == TRUE_VALUE);
-						break;
-					case PRIMARY_ATTR:
-						definition.primary = (arg.value == TRUE_VALUE);
-						break;
-					case AUTOWIRE_CANDIDATE_ATTR:
-						definition.isAutoWireCandidate = (arg.value == TRUE_VALUE);
-						break;
-					case SKIP_METADATA_ATTR:
-						definition.skipMetadata = (arg.value == TRUE_VALUE);
-						break;
-					case SKIP_POSTPROCESSORS_ATTR:
-						definition.skipPostProcessors = (arg.value == TRUE_VALUE);
-						break;
-					case FACTORY_METHOD_ATTR:
-						definition.factoryMethod = arg.value;
-						break;
-					case FACTORY_OBJECT_NAME_ATTR:
-						definition.factoryObjectName = arg.value;
-						break;
-					case INIT_METHOD_ATTR:
-						definition.initMethod = arg.value;
-						break;
-					case DESTROY_METHOD_ATTR:
-						definition.destroyMethod = arg.value;
-					case AUTOWIRE_ATTR:
-						definition.autoWireMode = AutowireMode.fromName(arg.value);
-						break;
-					case DEPENDENCY_CHECK_ATTR:
-						definition.dependencyCheck = DependencyCheckMode.fromName(arg.value);
-					case DEPENDS_ON_ATTR:
-						var depends:Array = arg.value.split(SPACE).join(EMPTY).split(COMMA);
-						definition.dependsOn = new Vector.<String>();
-						for each (var name:String in depends) {
-							definition.dependsOn[definition.dependsOn.length] = name;
-						}
-						break;
-					case CHILD_CONTEXT_ACCESS_ATTR:
-						definition.childContextAccess = ChildContextObjectDefinitionAccess.fromValue(arg.key.toLowerCase());
-						break;
-					case PARENT_NAME_ATTR:
-						definition.parentName = arg.value;
-						break;
-					case IS_ABSTRACT_ATTR:
-						definition.isAbstract = (arg.value == TRUE_VALUE);
-					case ID_ATTR:
-						break;
-					default:
-						LOGGER.debug(UNKNOWN_METADATA_ARGUMENT_ERROR, [arg.key, className]);
-				}
-			}
-		}
-
-		/**
-		 *
 		 * @param type
 		 * @param definition
 		 */
 		protected function resolveMethods(type:Type, definition:IObjectDefinition):void {
-			var containers:Array = type.getMetadataContainers(INVOKE_METADATA);
+			var containers:Array = type.getMetadataContainers(MetadataConfigUtils.INVOKE_METADATA);
 			for each (var container:IMetadataContainer in containers) {
 				if (container is Method) {
 					addMethod(Method(container), definition);
@@ -685,7 +507,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 * @param definition
 		 */
 		protected function resolvePropertiesFromMetadata(type:Type, definition:IObjectDefinition):void {
-			var containers:Array = type.getMetadataContainers(PROPERTY_METADATA);
+			var containers:Array = type.getMetadataContainers(MetadataConfigUtils.PROPERTY_METADATA);
 			for each (var container:IMetadataContainer in containers) {
 				if (container is Field) {
 					addProperty(Field(container), definition);

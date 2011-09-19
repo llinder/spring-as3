@@ -34,6 +34,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.MetadataObjectDefinitionsProvider;
+	import org.springextensions.actionscript.ioc.config.impl.metadata.util.MetadataConfigUtils;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
 	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
@@ -108,7 +109,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponent");
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
-			assertTrue(StringUtils.startsWith(String(names[0]), MetadataObjectDefinitionsProvider.SCANNED_COMPONENT_NAME_PREFIX));
+			assertTrue(StringUtils.startsWith(String(names[0]), MetadataConfigUtils.SCANNED_COMPONENT_NAME_PREFIX));
 		}
 
 		[Test]
