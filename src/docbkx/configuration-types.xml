@@ -390,7 +390,7 @@ public class MyClass {
 				indicates that the value of this argument will be replaced by an external property value.
 				Check out the section '<literal linkend="using-property-files">Using property
 					files</literal>' for more information on this.</para>
-			<para>A method invocation may be added using the [MethodInvocation] metadata.</para>
+			<para>A method invocation may be added using the [Invoke] metadata.</para>
 			<programlisting language="actionscript">[Component(id="myClass")]
 public class MyClass {
 
@@ -450,7 +450,7 @@ public class MyConfiguration {
 				definition with id '<emphasis role="bold">processor</emphasis>' instead of '<emphasis
 					role="bold">defaultAutowiringStageProcessor</emphasis>'.</para>
 			<para>To define a property on the defintion, add the [Property]
-				metadata:<programlisting>[Configuration]
+				metadata:<programlisting language="actionscript">[Configuration]
 public class MyConfiguration {
 
 	[Property(name="wireOnlyOnce",value="true")]
@@ -461,7 +461,7 @@ public class MyConfiguration {
 				specify the property's name, whereas in the case of a [Component] class this is already
 				implied by the property itself that has been annotated.</para>
 			<para>Same thing applies for method
-				invocations:<programlisting>[Configuration]
+				invocations:<programlisting language="actionscript">[Configuration]
 public class MyConfiguration {
 
 	[Invoke(name="someMethodName",args="ref=objectName1, value=10")]
@@ -470,7 +470,7 @@ public class MyConfiguration {
 	public var defaultAutowiringStageProcessor:DefaultAutowiringStageProcessor;
 }</programlisting></para>
 			<para>Or in the case of constructor
-				arguments:<programlisting>[Configuration]
+				arguments:<programlisting language="actionscript">[Configuration]
 public class MyConfiguration {
 
 	[Constructor(args="ref=objectName2")]
@@ -487,7 +487,7 @@ public class MyConfiguration {
 				</note></para>
 			<para>Now to start using the metadata based configuration, either create the metadata specific
 					<literal>MetadataApplicationContext</literal>:</para>
-			<programlisting language="xml">var applicationContext:MetadataApplicationContext = new MetadataApplicationContext(FlexGlobals.topLevelApplication as DisplayObject);
+			<programlisting language="actionscript">var applicationContext:MetadataApplicationContext = new MetadataApplicationContext(FlexGlobals.topLevelApplication as DisplayObject);
 applicationContext.addEventListener(Event.COMPLETE, onComplete);
 applicationContext.load();</programlisting>
 			<para>Notice how the topLevelApplication is passed into the constructor, the

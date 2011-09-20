@@ -26,7 +26,7 @@ package org.springextensions.actionscript.test.testtypes.metadatascan {
 		 * Creates a new <code>TestConfigurationClass</code> instance.
 		 */
 		public function TestConfigurationClass() {
-			super()
+			super();
 		}
 
 		[Property(name="someProperty", ref="objectName1")]

@@ -39,12 +39,12 @@
 		<playerglobal.version>${flashplayer.version.major}.${flashplayer.version.minor}</playerglobal.version>
 		<mockolate.version>0.12.-beta</mockolate.version>
 		<flexunit.version>4.1-RC2</flexunit.version>
-		<as3commons-bytecode.version>1.0</as3commons-bytecode.version>
+		<as3commons-bytecode.version>1.1-SNAPSHOT</as3commons-bytecode.version>
 		<as3commons-stageprocessing.version>1.1-SNAPSHOT</as3commons-stageprocessing.version>
 		<as3commons-async.version>1.0-RC2-SNAPSHOT</as3commons-async.version>
 		<as3commons-eventbus>1.1.2-SNAPSHOT</as3commons-eventbus>
 		<as3commons-lang.version>0.3.5-SNAPSHOT</as3commons-lang.version>
-		<as3commons-reflect.version>1.4.2</as3commons-reflect.version>
+		<as3commons-reflect.version>1.5-SNAPSHOT</as3commons-reflect.version>
 		<as3commons-logging.version>2.6</as3commons-logging.version>
 		<assembly.file.name>springactionscript-project-latest-snapshot</assembly.file.name>
 	</properties>

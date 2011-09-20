@@ -9,7 +9,7 @@
 
   <xsl:variable name="springasdoc" select="document('../../../../target/site/asdoc/toplevel.xml')/asdoc" />
 
-  <xsl:template match="//db:literal[count(@linkend)=0]">
+  <xsl:template match="//db:literal[count(@linkend)=0 and count(@xlink:href)=0]">
     <xsl:variable name="class-name" select="."/>
     <xsl:variable name="classtest" select="$springasdoc/classRec[@name=$class-name]/@fullname"/>
     <xsl:variable name="intftest" select="$springasdoc/interfaceRec[@name=$class-name]/@fullname"/>

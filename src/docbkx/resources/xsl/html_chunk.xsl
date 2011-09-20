@@ -83,15 +83,20 @@
   </xsl:template>
 
   <xsl:template name="user.header.navigation">
-        <div style="background-color:white;border:none;height:73px;border:1px solid black;">
-            <a style="border:none;" href="http://forum.springframework.org/forumdisplay.php?f=60"
-               title="The Spring Framework - Spring Actionscript">
-                <img style="border:none;" src="images/xdev-spring_logo.jpg"/>
-            </a>
-            <a style="border:none;" href="http://www.springsource.com/" title="SpringSource">
-                <img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/s2-banner-rhs.png"/>
-            </a>
-        </div>
+    <xsl:param name="prev" select="/foo"/>
+    <xsl:param name="next" select="/foo"/>
+    <xsl:param name="nav.context"/>
+    <xsl:if test="count($prev)>0">
+      <div style="background-color:white;border:none;height:73px;border:1px solid black;">
+        <a style="border:none;" href="http://forum.springframework.org/forumdisplay.php?f=60"
+           title="The Spring Framework - Spring Actionscript">
+          <img style="border:none;" src="images/xdev-spring_logo.jpg"/>
+        </a>
+        <a style="border:none;" href="http://www.springsource.com/" title="SpringSource">
+          <img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/s2-banner-rhs.png"/>
+        </a>
+      </div>
+    </xsl:if>
   </xsl:template>
   <!-- no other header navigation (prev, next, etc.) -->
     
