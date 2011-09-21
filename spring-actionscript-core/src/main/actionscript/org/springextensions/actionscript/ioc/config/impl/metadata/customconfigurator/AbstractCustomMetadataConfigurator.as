@@ -18,7 +18,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigu
 	import flash.errors.IllegalOperationError;
 
 	import org.springextensions.actionscript.context.IApplicationContext;
-	import org.springextensions.actionscript.ioc.config.impl.metadata.ICustomMetadataConfigurator;
+	import org.springextensions.actionscript.ioc.config.impl.metadata.ICustomConfigurationClassScanner;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
@@ -26,7 +26,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigu
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class AbstractCustomMetadataConfigurator implements ICustomMetadataConfigurator {
+	public class AbstractCustomMetadataConfigurator implements ICustomConfigurationClassScanner {
 		private var _metadataNames:Vector.<String>;
 
 		/**

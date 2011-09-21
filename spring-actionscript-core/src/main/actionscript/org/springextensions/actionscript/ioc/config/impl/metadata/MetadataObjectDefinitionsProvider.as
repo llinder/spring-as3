@@ -276,9 +276,9 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		}
 
 
-		public function registerCustomMetadataConfigurator(configurator:ICustomMetadataConfigurator):void {
+		public function registerCustomMetadataConfigurator(configurator:ICustomConfigurationClassScanner):void {
 			for each (var metadataName:String in configurator.metadataNames) {
-				var configurators:Vector.<ICustomMetadataConfigurator> = _customConfigurators[metadataName] ||= new Vector.<ICustomConfigurator>();
+				var configurators:Vector.<ICustomConfigurationClassScanner> = _customConfigurators[metadataName] ||= new Vector.<ICustomConfigurator>();
 				configurators[configurators.length] = configurator;
 			}
 		}

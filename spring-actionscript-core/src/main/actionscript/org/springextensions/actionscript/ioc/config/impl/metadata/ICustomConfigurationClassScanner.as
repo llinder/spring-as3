@@ -22,7 +22,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public interface ICustomMetadataConfigurator {
+	public interface ICustomConfigurationClassScanner {
 
 		function get metadataNames():Vector.<String>;
 

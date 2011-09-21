@@ -14,6 +14,9 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigurator {
+	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
 	/**
 	 *
@@ -25,6 +28,12 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigu
 		 */
 		public function EventHandlerMetadataCustomConfigurator() {
 			super();
+			metadataNames[metadataNames.length] = "EventHandler";
 		}
+
+		override public function execute(objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
+			;
+		}
+
 	}
 }
