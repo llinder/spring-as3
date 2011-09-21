@@ -31,7 +31,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigu
 			metadataNames[metadataNames.length] = "EventHandler";
 		}
 
-		override public function execute(objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
+		override public function execute(metadataName:String, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
 			;
 		}
 

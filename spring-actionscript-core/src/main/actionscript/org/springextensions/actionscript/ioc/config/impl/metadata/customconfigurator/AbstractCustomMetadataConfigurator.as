@@ -41,7 +41,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigu
 			return _metadataNames;
 		}
 
-		public function execute(objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
+		public function execute(metadataName:String, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
 			throw new IllegalOperationError("Not implemented in abstract base class");
 		}
 	}

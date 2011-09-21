@@ -26,6 +26,6 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		function get metadataNames():Vector.<String>;
 
-		function execute(objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void;
+		function execute(metadataName:String, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void;
 	}
 }
