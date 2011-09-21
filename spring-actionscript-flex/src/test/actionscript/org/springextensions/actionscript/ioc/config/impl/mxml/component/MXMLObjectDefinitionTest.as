@@ -75,7 +75,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		public function testDependsOn():void {
 			var mod:MXMLObjectDefinition = new MXMLObjectDefinition();
 			mod.id = "test";
-			var vec:Vector.<MXMLObjectDefinition> = new Vector.<MXMLObjectDefinition>();
+			var vec:Array = [];
 			vec[vec.length] = mod;
 			_definition.dependsOn = vec;
 			assertNotNull(_definition.definition.dependsOn);

@@ -15,6 +15,8 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigurator.eventbus {
 	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.customconfigurator.AbstractCustomConfigurationClassScanner;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -33,7 +35,22 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigu
 		}
 
 		override public function execute(metadataName:String, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
-			;
+			var eventBusUserRegistry:IEventBusUserRegistry;
+			if (applicationContext is IEventBusUserRegistryAware) {
+				eventBusUserRegistry = (applicationContext as IEventBusUserRegistryAware).eventBusUserRegistry;
+			}
+		/*var customConfiguration:Vector.<ICustomConfigurator> = applicationContext.objectDefinitionRegistry.getCustomConfiguration(objectName);
+		customConfiguration ||= new Vector.<ICustomConfigurator>();
+		for each (var field:Object in childContent) {
+			if (field is EventHandlerMethod) {
+				var hm:EventHandlerMethod = field as EventHandlerMethod;
+				var topics:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(hm.topics);
+				var topicProperties:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(hm.topicProperties);
+				var properties:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(hm.properties);
+				var configurator:EventHandlerCustomConfigurator = new EventHandlerCustomConfigurator(eventBusUserRegistry, hm.name, hm.eventName, hm.eventClass, properties, topics, topicProperties);
+				customConfiguration[customConfiguration.length] = configurator;
+			}
+		}*/
 		}
 
 	}
