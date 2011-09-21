@@ -13,8 +13,11 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigurator {
+package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigurator.util {
+
 	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.ioc.config.impl.metadata.customconfigurator.AbstractCustomConfigurationClassScanner;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.util.customconfiguration.FactoryObjectCustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
@@ -22,18 +25,20 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigu
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class EventHandlerMetadataCustomConfigurator extends AbstractCustomMetadataConfigurator {
+	public class FactoryObjectCustomConfigurationClassScanner extends AbstractCustomConfigurationClassScanner {
+
 		/**
-		 * Creates a new <code>EventHandlerMetadataCustomConfigurator</code> instance.
+		 * Creates a new <code>FactoryObjectCustomConfigurationClassScanner</code> instance.
 		 */
-		public function EventHandlerMetadataCustomConfigurator() {
+		public function FactoryObjectCustomConfigurationClassScanner() {
 			super();
-			metadataNames[metadataNames.length] = "EventHandler";
+			metadataNames[metadataNames.length] = "FactoryObject";
 		}
 
 		override public function execute(metadataName:String, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
-			;
+			objectDefinition.customConfiguration = new FactoryObjectCustomConfigurator(objectDefinition.factoryMethod);
+			objectDefinition.factoryMethod = "";
+			objectDefinition.factoryObjectName = "";
 		}
-
 	}
 }

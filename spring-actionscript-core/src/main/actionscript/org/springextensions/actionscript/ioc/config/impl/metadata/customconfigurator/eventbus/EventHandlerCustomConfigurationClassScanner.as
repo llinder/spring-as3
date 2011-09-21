@@ -13,12 +13,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigurator {
-
-	import flash.errors.IllegalOperationError;
-
+package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigurator.eventbus {
 	import org.springextensions.actionscript.context.IApplicationContext;
-	import org.springextensions.actionscript.ioc.config.impl.metadata.ICustomConfigurationClassScanner;
+	import org.springextensions.actionscript.ioc.config.impl.metadata.customconfigurator.AbstractCustomConfigurationClassScanner;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
@@ -26,23 +23,18 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigu
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class AbstractCustomMetadataConfigurator implements ICustomConfigurationClassScanner {
-		private var _metadataNames:Vector.<String>;
-
+	public class EventHandlerCustomConfigurationClassScanner extends AbstractCustomConfigurationClassScanner {
 		/**
-		 * Creates a new <code>AbstractCustomMetadataConfigurator</code> instance.
+		 * Creates a new <code>EventHandlerMetadataCustomConfigurator</code> instance.
 		 */
-		public function AbstractCustomMetadataConfigurator() {
+		public function EventHandlerCustomConfigurationClassScanner() {
 			super();
-			_metadataNames = new Vector.<String>();
+			metadataNames[metadataNames.length] = "EventHandler";
 		}
 
-		public function get metadataNames():Vector.<String> {
-			return _metadataNames;
+		override public function execute(metadataName:String, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
+			;
 		}
 
-		public function execute(metadataName:String, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
-			throw new IllegalOperationError("Not implemented in abstract base class");
-		}
 	}
 }
