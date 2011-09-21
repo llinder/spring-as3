@@ -23,6 +23,14 @@
 				Cairngorm and PureMVC frameworks. </p>
 			<hr/>
 		</section>
+		
+		<section name="Sources">
+			<p>Since the v2.0 beta is in continueing development it might be a good idea to create your own build directly from the SVN sources.</p>
+			<p>In order to do this check out this branche: <a href="https://src.springframework.org/svn/se-springactionscript-as/branches/2.0" target="_blank">https://src.springframework.org/svn/se-springactionscript-as/branches/2.0</a></p>
+			<p>You either create an IDE project for the various projects in the branche, or use the provided Maven pom.</p>
+			<p>Running the <strong>mvn clean compile</strong> command will build all the libraries, <strong>mvn clean test</strong> will run the tests. <strong>mvn clean site post-site</strong> will generate the site and reference documentation.</p>
+			<blockquote><strong>NB:</strong> Generating the documentation locally will require you to install the javax.media.jai_core library v1.1.3 manually in your local maven repository.</blockquote>
+		</section>
 
 		<section name="Downloads">
 			<subsection name="Latest">

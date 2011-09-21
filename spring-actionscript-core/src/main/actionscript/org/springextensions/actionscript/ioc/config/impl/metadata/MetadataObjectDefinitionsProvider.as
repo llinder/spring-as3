@@ -24,19 +24,16 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 	import org.as3commons.bytecode.reflect.ByteCodeTypeCache;
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IDisposable;
-	import org.as3commons.lang.StringUtils;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getLogger;
 	import org.as3commons.reflect.Field;
 	import org.as3commons.reflect.IMetadataContainer;
 	import org.as3commons.reflect.Metadata;
-	import org.as3commons.reflect.MetadataArgument;
 	import org.as3commons.reflect.Method;
 	import org.as3commons.reflect.Parameter;
 	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
-	import org.springextensions.actionscript.ioc.autowire.AutowireMode;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.util.MetadataConfigUtils;
@@ -44,11 +41,9 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 	import org.springextensions.actionscript.ioc.config.property.TextFileURI;
 	import org.springextensions.actionscript.ioc.error.UnsatisfiedDependencyError;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
-	import org.springextensions.actionscript.ioc.objectdefinition.ChildContextObjectDefinitionAccess;
-	import org.springextensions.actionscript.ioc.objectdefinition.DependencyCheckMode;
+	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
-	import org.springextensions.actionscript.ioc.objectdefinition.ObjectDefinitionScope;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.PropertyDefinition;
@@ -85,6 +80,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		private var _propertyURIs:Vector.<TextFileURI>;
 		private var _configurationScanner:ConfigurationClassScanner;
 		private var _metadataConfigUtils:MetadataConfigUtils;
+		private var _customConfigurators:Object;
 
 		/**
 		 * @inheritDoc
@@ -168,14 +164,23 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 * @return
 		 */
 		public function createObjectDefinitions(cache:ByteCodeTypeCache):Object {
-			_metadataConfigUtils = new MetadataConfigUtils();
-			_configurationScanner = new ConfigurationClassScanner(_metadataConfigUtils);
-			_configurationScanner.applicationDomain = _applicationContext.applicationDomain;
+			initialize(cache);
 			var classNames:Array = cache.getClassesWithMetadata(MetadataConfigUtils.COMPONENT_METADATA);
 			scanClassNames(classNames);
 			classNames = cache.getClassesWithMetadata(MetadataConfigUtils.CONFIGURATION_METADATA);
-			scanClassNames(classNames);
+			_configurationScanner.scanClassNames(classNames, _internalRegistry, _customConfigurators);
 			return createResult();
+		}
+
+		protected function initialize(cache:ByteCodeTypeCache):void {
+			_metadataConfigUtils = new MetadataConfigUtils();
+			_configurationScanner = new ConfigurationClassScanner(_metadataConfigUtils, applicationContext);
+			_configurationScanner.applicationDomain = _applicationContext.applicationDomain;
+			var classNames:Array = cache.interfaceLookup["org.springextensions.actionscript.ioc.config.impl.metadata.ICustomMetadataConfigurator"];
+			for each (var className:String in classNames) {
+				var cls:Class = ClassUtils.forName(className, _applicationContext.applicationDomain);
+				registerCustomMetadataConfigurator(new cls());
+			}
 		}
 
 		/**
@@ -266,6 +271,15 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 					resolveMethods(type, definition);
 					resolveProperties(type, definition, componentId);
 				}
+			}
+
+		}
+
+
+		public function registerCustomMetadataConfigurator(configurator:ICustomMetadataConfigurator):void {
+			for each (var metadataName:String in configurator.metadataNames) {
+				var configurators:Vector.<ICustomMetadataConfigurator> = _customConfigurators[metadataName] ||= new Vector.<ICustomConfigurator>();
+				configurators[configurators.length] = configurator;
 			}
 		}
 

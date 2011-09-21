@@ -27,9 +27,11 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 	import org.as3commons.reflect.Field;
 	import org.as3commons.reflect.Metadata;
 	import org.as3commons.reflect.Type;
+	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.util.MetadataConfigUtils;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
+	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
@@ -49,33 +51,35 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		private var _applicationDomain:ApplicationDomain;
 		private static const LOGGER:ILogger = getLogger(ConfigurationClassScanner);
 		private static const IS_STATIC_ATTR:String = "isStatic";
+		private var _applicationContext:IApplicationContext;
 
 		/**
 		 * Creates a new <code>ConfgurationClassScanner</code> instance.
 		 */
-		public function ConfigurationClassScanner(utils:MetadataConfigUtils) {
+		public function ConfigurationClassScanner(utils:MetadataConfigUtils, applicationContext:IApplicationContext) {
 			super();
 			_metadataConfigUtils = utils;
+			_applicationContext = applicationContext;
 		}
 
-		public function scanClasses(classNames:Array, objectDefinitionRegistry:IObjectDefinitionRegistry):void {
+		public function scanClassNames(classNames:Array, objectDefinitionRegistry:IObjectDefinitionRegistry, customConfigurators:Object):void {
 			for each (var className:String in classNames) {
-				scan(className, objectDefinitionRegistry);
+				scan(className, objectDefinitionRegistry, customConfigurators);
 			}
 		}
 
-		public function scan(className:String, objectDefinitionRegistry:IObjectDefinitionRegistry):void {
+		public function scan(className:String, objectDefinitionRegistry:IObjectDefinitionRegistry, customConfigurators:Object):void {
 			LOGGER.debug(SCANNING_CONFIG_CLASS, [className]);
 			var type:Type = Type.forName(className, _applicationDomain);
 			var properties:Array = type.properties;
 			for each (var property:Field in properties) {
 				if (property.declaringType === type) {
-					scanProperty(property, objectDefinitionRegistry);
+					scanProperty(property, objectDefinitionRegistry, customConfigurators);
 				}
 			}
 		}
 
-		public function scanProperty(property:Field, objectDefinitionRegistry:IObjectDefinitionRegistry):void {
+		public function scanProperty(property:Field, objectDefinitionRegistry:IObjectDefinitionRegistry, customConfigurators:Object):void {
 			var definitionName:String = getDefinitionName(property);
 			var className:String = getQualifiedClassName(property.type.clazz);
 			var definition:IObjectDefinition = new ObjectDefinition(className);
@@ -88,6 +92,14 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			resolveConstructorArgs(property, definition, definitionName);
 			resolveMethods(property, definition);
 			resolveProperties(property, definition, definitionName);
+			for (var name:String in customConfigurators) {
+				if (property.hasMetadata(name)) {
+					var configurators:Vector.<ICustomMetadataConfigurator> = customConfigurators[name] as Vector.<ICustomMetadataConfigurator>;
+					for each (var configurator:ICustomMetadataConfigurator in configurators) {
+						configurator.execute(definitionName, definition, objectDefinitionRegistry, _applicationContext);
+					}
+				}
+			}
 		}
 
 		public function resolveProperties(property:Field, definition:IObjectDefinition, definitionName:String):void {

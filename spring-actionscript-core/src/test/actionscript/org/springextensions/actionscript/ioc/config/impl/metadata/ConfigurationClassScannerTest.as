@@ -16,12 +16,14 @@
 package org.springextensions.actionscript.ioc.config.impl.metadata {
 	import avmplus.getQualifiedClassName;
 
+	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
 
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.flexunit.asserts.assertTrue;
+	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.RuntimeObjectReference;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.util.MetadataConfigUtils;
 	import org.springextensions.actionscript.ioc.impl.MethodInvocation;
@@ -41,6 +43,12 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 	 */
 	public class ConfigurationClassScannerTest {
 
+		[Rule]
+		public var mockolateRule:MockolateRule = new MockolateRule();
+
+		[Mock]
+		public var applicationContext:IApplicationContext;
+
 		public var _objectDefinitionRegistry:IObjectDefinitionRegistry;
 
 		private var _configurationClassScanner:ConfigurationClassScanner;
@@ -54,13 +62,14 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Before]
 		public function setUp():void {
-			_configurationClassScanner = new ConfigurationClassScanner(new MetadataConfigUtils());
+			applicationContext = nice(IApplicationContext);
+			_configurationClassScanner = new ConfigurationClassScanner(new MetadataConfigUtils(), applicationContext);
 			_objectDefinitionRegistry = new DefaultObjectDefinitionRegistry();
 		}
 
 		[Test]
 		public function testScan():void {
-			_configurationClassScanner.scan(getQualifiedClassName(TestConfigurationClass), _objectDefinitionRegistry);
+			_configurationClassScanner.scan(getQualifiedClassName(TestConfigurationClass), _objectDefinitionRegistry, {});
 
 			assertEquals(4, _objectDefinitionRegistry.objectDefinitionNames.length);
 			assertTrue(_objectDefinitionRegistry.containsObjectDefinition("component1"));
