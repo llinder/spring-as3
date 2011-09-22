@@ -46,6 +46,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 			if (applicationContext is IEventBusUserRegistryAware) {
 				eventBusUserRegistry = (applicationContext as IEventBusUserRegistryAware).eventBusUserRegistry;
 			}
+
 			var customConfiguration:Vector.<ICustomConfigurator> = ContextUtils.getCustomConfigurationForObjectName(instance, applicationContext.objectDefinitionRegistry);
 			for each (var field:Object in childContent) {
 				if (field is EventHandlerMethod) {
