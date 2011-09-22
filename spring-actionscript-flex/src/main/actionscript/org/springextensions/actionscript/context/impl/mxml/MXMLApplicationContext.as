@@ -19,12 +19,13 @@ package org.springextensions.actionscript.context.impl.mxml {
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import flash.system.ApplicationDomain;
+
 	import mx.binding.utils.BindingUtils;
 	import mx.core.IMXMLObject;
 	import mx.events.FlexEvent;
+
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistry;
 	import org.springextensions.actionscript.context.IApplicationContext;
-	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.context.config.IConfigurationPackage;
 	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
@@ -69,7 +70,11 @@ package org.springextensions.actionscript.context.impl.mxml {
 		private var _configurations:Array;
 		private var _document:Object;
 		private var _id:String;
-		private var _initialized:Boolean;
+		private var _contextInitialized:Boolean;
+
+		public function get contextInitialized():Boolean {
+			return _contextInitialized;
+		}
 
 		/**
 		 * @inheritDoc
@@ -319,15 +324,17 @@ package org.springextensions.actionscript.context.impl.mxml {
 		 *
 		 */
 		public function initializeContext():void {
-			if (!_initialized) {
-				_applicationContext = new DefaultApplicationContext(null, (_document as DisplayObject));
+			if (!_contextInitialized) {
+				if (_applicationContext == null) {
+					_applicationContext = new DefaultApplicationContext(null, (_document as DisplayObject));
+				}
 				_applicationContext.addDefinitionProvider(new MXMLObjectDefinitionsProvider());
 				if (_configurationPackage != null) {
 					_applicationContext.configure(_configurationPackage);
 				}
 				ContextUtils.disposeInstance(_configurationPackage);
 				_configurationPackage = null;
-				_initialized = true;
+				_contextInitialized = true;
 				if (autoLoad) {
 					doLoad();
 				}
@@ -351,7 +358,7 @@ package org.springextensions.actionscript.context.impl.mxml {
 		 *
 		 */
 		public function load():void {
-			if (_initialized == false) {
+			if (_contextInitialized == false) {
 				initializeContext();
 			}
 			doLoad();
@@ -370,7 +377,7 @@ package org.springextensions.actionscript.context.impl.mxml {
 		 */
 		protected function doLoad():void {
 			for each (var cls:Class in _configurations) {
-				MXMLObjectDefinitionsProvider(_applicationContext.definitionProviders[0]).addConfiguration(cls);
+				(_applicationContext.definitionProviders[0] as MXMLObjectDefinitionsProvider).addConfiguration(cls);
 			}
 			_applicationContext.addEventListener(Event.COMPLETE, handleApplicationContextComplete);
 			_applicationContext.load();

@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ns:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009" 
-			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:ns="http://www.springactionscript.org/mxml/config">
+<sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:sas="http://www.springactionscript.org/mxml/config">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			public var collection:ArrayCollection = new ArrayCollection();
+		]]>
+	</fx:Script>
+
 	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:RemoteObject id="remoteObj"/>
+
+		<sas:Object id="myObject"
+					clazz="{Event}"/>
 	</fx:Declarations>
-</ns:SASObjects>
+</sas:SASObjects>

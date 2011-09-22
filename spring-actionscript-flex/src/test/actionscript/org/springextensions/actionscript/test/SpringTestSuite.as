@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.test {
+	import org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContextTest;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.MXMLObjectDefinitionsProviderTest;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.component.InterfaceTest;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.component.MXMLObjectDefinitionTest;
@@ -31,5 +32,6 @@ package org.springextensions.actionscript.test {
 		public var t4:MethodInvocationTest;
 		public var t5:PropertyTest;
 		public var t6:AbstractEventBusComponentTest;
+		public var t7:MXMLApplicationContextTest;
 	}
 }
