@@ -28,7 +28,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfiguratorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventInterceptorCustomConfiguratorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventListenerInterceptorCustomConfiguratorTest;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.RouteEventsCustomConfigurator;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.RouteEventsCustomConfiguratorTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventHandlerNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventInterceptorNodeParserTest;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.nodeparser.EventListenerInterceptorNodeParserTest;
@@ -82,7 +82,6 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ObjectReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.ThisReferenceResolverTest;
 	import org.springextensions.actionscript.ioc.factory.impl.referenceresolver.VectorReferenceResolverTest;
-	import org.springextensions.actionscript.ioc.factory.process.impl.factory.ClassScannerObjectFactoryPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.ClassScannerObjectFactoryPostProcessorTest;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.FactoryObjectFactoryPostProcessorTest;
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.ObjectDefinitonFactoryPostProcessorTest;
@@ -163,7 +162,7 @@ package org.springextensions.actionscript.test {
 		public var t53:EventHandlerCustomConfiguratorTest;
 		public var t54:EventInterceptorCustomConfiguratorTest;
 		public var t55:EventListenerInterceptorCustomConfiguratorTest;
-		public var t56:RouteEventsCustomConfigurator;
+		public var t56:RouteEventsCustomConfiguratorTest;
 		public var t57:AutowiringStageProcessorNodeParserTest;
 		public var t58:GenericStageProcessorNodeParserTest;
 		public var t59:StageProcessorNodeParserTest;

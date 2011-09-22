@@ -20,6 +20,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.AbstractCustomObjectDefinitionComponent;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventListenerInterceptorCustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
+	import org.springextensions.actionscript.util.ContextUtils;
 
 	/**
 	 *
@@ -37,7 +38,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 			if (applicationContext is IEventBusUserRegistryAware) {
 				eventBusUserRegistry = (applicationContext as IEventBusUserRegistryAware).eventBusUserRegistry;
 			}
-			var customConfiguration:Vector.<ICustomConfigurator> = getCustomConfigurationForObjectName(instance, applicationContext.objectDefinitionRegistry);
+			var customConfiguration:Vector.<ICustomConfigurator> = ContextUtils.getCustomConfigurationForObjectName(instance, applicationContext.objectDefinitionRegistry);
 			for each (var field:Object in childContent) {
 				if (field is InterceptionConfiguration) {
 					var ic:InterceptionConfiguration = field as InterceptionConfiguration;

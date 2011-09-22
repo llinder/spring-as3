@@ -20,7 +20,11 @@ package org.springextensions.actionscript.util {
 	import mockolate.verify;
 
 	import org.as3commons.lang.IDisposable;
-	import org.flexunit.asserts.assertTrue;
+	import org.flexunit.asserts.assertEquals;
+	import org.flexunit.asserts.assertNotNull;
+	import org.flexunit.asserts.assertStrictlyEquals;
+	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
 
 	public class ContextUtilsTest {
@@ -32,6 +36,11 @@ package org.springextensions.actionscript.util {
 		public var disposable:IDisposable;
 		[Mock]
 		public var object:Object;
+		[Mock]
+		public var objectDefinitionRegistry:IObjectDefinitionRegistry;
+		[Mock]
+		public var configurator:ICustomConfigurator;
+
 
 		public function ContextUtilsTest() {
 			super();
@@ -52,5 +61,37 @@ package org.springextensions.actionscript.util {
 			ContextUtils.disposeInstance(disposable);
 			verify(disposable);
 		}
+
+		[Test]
+		public function testgetCustomConfigurationForObjectNameWithNullReturning():void {
+			objectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			mock(objectDefinitionRegistry).method("getCustomConfiguration").args("test").returns(null).once();
+			var vec:Vector.<ICustomConfigurator> = ContextUtils.getCustomConfigurationForObjectName("test", objectDefinitionRegistry);
+			assertNotNull(vec);
+			assertEquals(0, vec.length);
+		}
+
+		[Test]
+		public function testgetCustomConfigurationForObjectNameWithIConfiguratorReturning():void {
+			objectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			mock(objectDefinitionRegistry).method("getCustomConfiguration").args("test").returns(configurator).once();
+			var vec:Vector.<ICustomConfigurator> = ContextUtils.getCustomConfigurationForObjectName("test", objectDefinitionRegistry);
+			assertNotNull(vec);
+			assertEquals(1, vec.length);
+			assertStrictlyEquals(configurator, vec[0]);
+		}
+
+		[Test]
+		public function testgetCustomConfigurationForObjectNameWithVectorReturning():void {
+			objectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			configurator = nice(ICustomConfigurator);
+			var vec1:Vector.<ICustomConfigurator> = new Vector.<ICustomConfigurator>();
+			mock(objectDefinitionRegistry).method("getCustomConfiguration").args("test").returns(vec1).once();
+			var vec2:Vector.<ICustomConfigurator> = ContextUtils.getCustomConfigurationForObjectName("test", objectDefinitionRegistry);
+			assertNotNull(vec2);
+			assertEquals(0, vec2.length);
+			assertStrictlyEquals(vec1, vec2);
+		}
+
 	}
 }

@@ -75,14 +75,5 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 			}
 		}
 
-		public function getCustomConfigurationForObjectName(instance:String, objectDefinitionRegistry:IObjectDefinitionRegistry):Vector.<ICustomConfigurator> {
-			var config:* = objectDefinitionRegistry.getCustomConfiguration(instance);
-			var customConfiguration:Vector.<ICustomConfigurator> = (config is Vector.<ICustomConfigurator>) ? (config as Vector.<ICustomConfigurator>) : new Vector.<ICustomConfigurator>();
-			if ((config != null) && !(config is Vector.<ICustomConfigurator>)) {
-				customConfiguration[customConfiguration.length] = config;
-			}
-			return customConfiguration;
-		}
-
 	}
 }

@@ -15,6 +15,8 @@
 */
 package org.springextensions.actionscript.util {
 	import org.as3commons.lang.IDisposable;
+	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
 	public final class ContextUtils {
 
@@ -22,6 +24,15 @@ package org.springextensions.actionscript.util {
 			if (instance is IDisposable) {
 				IDisposable(instance).dispose();
 			}
+		}
+
+		public static function getCustomConfigurationForObjectName(instance:String, objectDefinitionRegistry:IObjectDefinitionRegistry):Vector.<ICustomConfigurator> {
+			var config:* = objectDefinitionRegistry.getCustomConfiguration(instance);
+			var customConfiguration:Vector.<ICustomConfigurator> = (config is Vector.<ICustomConfigurator>) ? (config as Vector.<ICustomConfigurator>) : new Vector.<ICustomConfigurator>();
+			if ((config != null) && !(config is Vector.<ICustomConfigurator>)) {
+				customConfiguration[customConfiguration.length] = config;
+			}
+			return customConfiguration;
 		}
 
 	}

@@ -26,6 +26,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
+	import org.springextensions.actionscript.util.ContextUtils;
 
 	use namespace spring_actionscript_eventbus;
 
@@ -50,8 +51,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 		 */
 		override public function parse(node:XML, context:IXMLObjectDefinitionsParser):IObjectDefinition {
 			var ref:String = String(node.attribute(INSTANCE_ATTRIBUTE_NAME)[0]);
-			var customConfiguration:Vector.<ICustomConfigurator> = objectDefinitionRegistry.getCustomConfiguration(ref);
-			customConfiguration ||= new Vector.<ICustomConfigurator>();
+			var customConfiguration:Vector.<ICustomConfigurator> = ContextUtils.getCustomConfigurationForObjectName(ref, objectDefinitionRegistry);
 			createConfigurations(customConfiguration, node);
 			objectDefinitionRegistry.registerCustomConfiguration(ref, customConfiguration);
 			return null;
