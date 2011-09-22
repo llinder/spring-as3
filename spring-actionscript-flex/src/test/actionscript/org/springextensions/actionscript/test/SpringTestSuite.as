@@ -24,6 +24,7 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus.EventInterceptorTest;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus.EventListenerInterceptorTest;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus.EventRouterTest;
+	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.stage.StageAutowireProcessorTest;
 
 	[Suite]
 	[RunWith("org.flexunit.runners.Suite")]
@@ -39,5 +40,6 @@ package org.springextensions.actionscript.test {
 		public var t8:EventInterceptorTest;
 		public var t9:EventListenerInterceptorTest;
 		public var t10:EventRouterTest;
+		public var t11:StageAutowireProcessorTest;
 	}
 }
