@@ -420,12 +420,15 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		protected function attemptToInstantiate(objectDefinition:IObjectDefinition, constructorArguments:Array, name:String, objectName:String):* {
 			var result:* = null;
 			try {
-				result = instantiateClass(objectDefinition, constructorArguments);
+				result = instantiateClass(objectDefinition, (!constructorArguments) ? objectDefinition.constructorArguments : constructorArguments);
 				var evt1:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_CREATED, result, name, constructorArguments);
 				dispatchEvent(evt1);
 				dispatchEventThroughEventBus(evt1);
 				if (dependencyInjector != null) {
-					result = dependencyInjector.wire(result, this, objectDefinition, objectName);
+					var wiredResult:* = dependencyInjector.wire(result, this, objectDefinition, objectName);
+					if (wiredResult != null) {
+						result = wiredResult;
+					}
 					var evt2:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_WIRED, result, name, constructorArguments);
 					dispatchEvent(evt2);
 					dispatchEventThroughEventBus(evt2);
@@ -599,10 +602,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 */
 		protected function instantiateClass(objectDefinition:IObjectDefinition, constructorArguments:Array):* {
 			var clazz:Class = ClassUtils.forName(objectDefinition.className, _applicationDomain);
-
-			if (constructorArguments) {
-				objectDefinition.constructorArguments = constructorArguments;
-			}
 
 			if (_autowireProcessor) {
 				_autowireProcessor.preprocessObjectDefinition(objectDefinition);

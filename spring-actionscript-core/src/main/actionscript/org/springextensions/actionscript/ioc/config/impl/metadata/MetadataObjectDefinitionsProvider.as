@@ -69,6 +69,8 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		public function MetadataObjectDefinitionsProvider() {
 			super();
 			_internalRegistry = new DefaultObjectDefinitionRegistry();
+			_metadataConfigUtils = new MetadataConfigUtils();
+			_configurationScanner = new ConfigurationClassScanner(_metadataConfigUtils, applicationContext);
 		}
 
 		private var _applicationContext:IApplicationContext;
@@ -94,6 +96,9 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 */
 		public function set applicationContext(value:IApplicationContext):void {
 			_applicationContext = value;
+			if (_applicationContext != null) {
+				_configurationScanner.applicationDomain = _applicationContext.applicationDomain;
+			}
 		}
 
 
@@ -173,9 +178,6 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		}
 
 		protected function initialize(cache:ByteCodeTypeCache):void {
-			_metadataConfigUtils = new MetadataConfigUtils();
-			_configurationScanner = new ConfigurationClassScanner(_metadataConfigUtils, applicationContext);
-			_configurationScanner.applicationDomain = _applicationContext.applicationDomain;
 			var classNames:Array = cache.interfaceLookup["org.springextensions.actionscript.ioc.config.impl.metadata.ICustomMetadataConfigurator"];
 			for each (var className:String in classNames) {
 				var cls:Class = ClassUtils.forName(className, _applicationContext.applicationDomain);
