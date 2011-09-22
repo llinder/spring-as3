@@ -21,6 +21,9 @@ package org.springextensions.actionscript.test {
 	import org.springextensions.actionscript.ioc.config.impl.mxml.component.MethodInvocationTest;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.component.PropertyTest;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus.EventHandlerTest;
+	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus.EventInterceptorTest;
+	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus.EventListenerInterceptorTest;
+	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus.EventRouterTest;
 
 	[Suite]
 	[RunWith("org.flexunit.runners.Suite")]
@@ -33,5 +36,8 @@ package org.springextensions.actionscript.test {
 		public var t5:PropertyTest;
 		public var t6:MXMLApplicationContextTest;
 		public var t7:EventHandlerTest;
+		public var t8:EventInterceptorTest;
+		public var t9:EventListenerInterceptorTest;
+		public var t10:EventRouterTest;
 	}
 }
