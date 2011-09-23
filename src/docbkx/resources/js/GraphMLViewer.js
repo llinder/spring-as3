@@ -93,7 +93,7 @@ function RunPlayer() {
 
   initMouseWheel();
 
-  var url = "GraphMLViewer.swf";
+  var url = "GraphMLViewer/GraphMLViewer.swf";
   if (location.href.substr(0, 5) != "file:") {
     url = "http://www.yworks.com/products/graphmlviewer/1.1/GraphMLViewer.swf";
   }

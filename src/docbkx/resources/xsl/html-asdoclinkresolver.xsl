@@ -5,9 +5,40 @@
                 xmlns:xlink="http://www.w3.org/1999/xlink"
                 xmlns:db="http://docbook.org/ns/docbook"
                 version="1.0"
-                exclude-result-prefixes="xsl fo xlink">
+                exclude-result-prefixes="xsl fo xlink db">
 
   <xsl:variable name="springasdoc" select="document('../../../../target/site/asdoc/toplevel.xml')/asdoc" />
+
+	<xsl:template match="//db:filename">
+		<xsl:variable name="file-name" select="."/>
+		<script language="javascript" type="text/javascript"><![CDATA[
+<!--
+
+// start the Viewer
+if (!RunPlayer(
+    "width", "100%",
+    "height", "1200",]]>
+    "graphUrl", "graphs/<xsl:value-of select="$file-name"/>",<![CDATA[
+    "overview", "true",
+    "toolbar", "true",
+    "tooltips", "true",
+    "movable", "true",
+    "links", "true",
+    "linksInNewWindow", "true",
+    "viewport", "full"
+    )) {
+  // if RunPlayer() returns false: Flash Player is either too old or not installed
+  // in this case: try to install a current flash player
+  if (!InstallFlashUpdate("width", "100%", "height", "100%")) {
+    // Flash Player is too old for the auto-update or not installed at all
+    // Place alternative content here
+    document.write('This content requires the Adobe Flash Player 9.0.38 or higher. '
+        + '<a href=http://www.adobe.com/go/getflash/>Get Flash</a>');
+  }
+}
+-->]]>
+</script>
+	</xsl:template>
 
   <xsl:template match="//db:literal[count(@linkend)=0 and count(@xlink:href)=0]">
     <xsl:variable name="class-name" select="."/>

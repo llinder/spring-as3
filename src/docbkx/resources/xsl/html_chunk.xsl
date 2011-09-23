@@ -79,6 +79,7 @@
     <script src="js/jquery.js"></script>
     <script src="js/wtooltip-min.js"></script>
     <script src="js/springas.js"></script>
+  	<script src="js/GraphMLViewer.js"></script>
     <base target="{$target.window}"/>
   </xsl:template>
 
