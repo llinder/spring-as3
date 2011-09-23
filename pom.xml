@@ -44,7 +44,7 @@
 		<as3commons-async.version>1.0-RC2-SNAPSHOT</as3commons-async.version>
 		<as3commons-eventbus>1.1.2-SNAPSHOT</as3commons-eventbus>
 		<as3commons-lang.version>0.3.5-SNAPSHOT</as3commons-lang.version>
-		<as3commons-reflect.version>1.5-SNAPSHOT</as3commons-reflect.version>
+		<as3commons-reflect.version>1.5</as3commons-reflect.version>
 		<as3commons-logging.version>2.6</as3commons-logging.version>
 		<assembly.file.name>springactionscript-project-latest-snapshot</assembly.file.name>
 	</properties>
