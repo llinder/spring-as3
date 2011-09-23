@@ -356,6 +356,8 @@
 								<include name="**/*.png"/>
 								<include name="**/*.gif"/>
 								<include name="**/*.jpg"/>
+								<include name="**/*.swf"/>
+								<include name="**/*.graphml"/>
 							</fileset>
 						</copy>
 						<copy todir="target/docbkx/html">
@@ -366,6 +368,8 @@
 								<include name="**/*.png"/>
 								<include name="**/*.gif"/>
 								<include name="**/*.jpg"/>
+								<include name="**/*.swf"/>
+								<include name="**/*.graphml"/>
 							</fileset>
 						</copy>
 						<copy todir="target/site/docs/reference/html">
