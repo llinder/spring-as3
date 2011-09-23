@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.metadata {
+	import org.as3commons.reflect.Metadata;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -26,6 +27,6 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		function get metadataNames():Vector.<String>;
 
-		function execute(metadataName:String, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void;
+		function execute(metadata:Metadata, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void;
 	}
 }

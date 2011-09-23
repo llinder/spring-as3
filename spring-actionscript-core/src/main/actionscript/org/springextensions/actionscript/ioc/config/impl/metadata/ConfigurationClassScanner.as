@@ -94,9 +94,12 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			resolveProperties(property, definition, definitionName);
 			for (var name:String in customConfigurators) {
 				if (property.hasMetadata(name)) {
+					var metadatas:Array = property.getMetadata(name);
 					var configurators:Vector.<ICustomConfigurationClassScanner> = customConfigurators[name] as Vector.<ICustomConfigurationClassScanner>;
 					for each (var configurator:ICustomConfigurationClassScanner in configurators) {
-						configurator.execute(name, definitionName, definition, objectDefinitionRegistry, _applicationContext);
+						for each (var metadata:Metadata in metadatas) {
+							configurator.execute(metadata, definitionName, definition, objectDefinitionRegistry, _applicationContext);
+						}
 					}
 				}
 			}

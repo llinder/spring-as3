@@ -17,6 +17,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigu
 
 	import flash.errors.IllegalOperationError;
 
+	import org.as3commons.reflect.Metadata;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.ICustomConfigurationClassScanner;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
@@ -41,7 +42,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigu
 			return _metadataNames;
 		}
 
-		public function execute(metadataName:String, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
+		public function execute(metadata:Metadata, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
 			throw new IllegalOperationError("Not implemented in abstract base class");
 		}
 	}

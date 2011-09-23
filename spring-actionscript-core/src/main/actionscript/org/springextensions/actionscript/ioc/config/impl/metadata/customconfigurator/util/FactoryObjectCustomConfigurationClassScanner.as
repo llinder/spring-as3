@@ -15,6 +15,7 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigurator.util {
 
+	import org.as3commons.reflect.Metadata;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.customconfigurator.AbstractCustomConfigurationClassScanner;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.util.customconfiguration.FactoryObjectCustomConfigurator;
@@ -35,7 +36,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customconfigu
 			metadataNames[metadataNames.length] = "FactoryObject";
 		}
 
-		override public function execute(metadataName:String, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
+		override public function execute(metadata:Metadata, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
 			objectDefinition.customConfiguration = new FactoryObjectCustomConfigurator(objectDefinition.factoryMethod);
 			objectDefinition.factoryMethod = "";
 			objectDefinition.factoryObjectName = "";
