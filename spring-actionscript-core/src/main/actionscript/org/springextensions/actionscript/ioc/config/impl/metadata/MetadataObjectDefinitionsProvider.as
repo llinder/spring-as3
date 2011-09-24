@@ -376,11 +376,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 */
 		protected function getClassesFromClassNames(classNames:Array):Vector.<Class> {
 			var result:Vector.<Class> = new Vector.<Class>();
-			var appDomain:ApplicationDomain;
-
-			if (applicationContext) {
-				appDomain = applicationContext.applicationDomain;
-			}
+			var appDomain:ApplicationDomain = (applicationContext != null) ? applicationContext.applicationDomain : null;
 
 			for each (var className:String in classNames) {
 				result[result.length] = ClassUtils.forName(className, appDomain);

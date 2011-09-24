@@ -222,7 +222,7 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.component {
 		 * An array of arguments that will be passed to the constructor of the object.
 		 */
 		public function get constructorArguments():Array {
-			return _definition.constructorArguments;
+			return _definition.constructorArguments ||= [];
 		}
 
 		/**
