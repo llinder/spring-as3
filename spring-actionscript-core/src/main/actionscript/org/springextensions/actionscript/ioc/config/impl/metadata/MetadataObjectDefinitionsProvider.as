@@ -74,7 +74,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		}
 
 		private var _applicationContext:IApplicationContext;
-		private var _classBeingScanned:Vector.<Class>;
+		private var _classesBeingScanned:Vector.<Class>;
 		private var _internalRegistry:IObjectDefinitionRegistry;
 		private var _isDisposed:Boolean;
 		private var _objectDefinitions:Object;
@@ -194,7 +194,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 * @param classNames
 		 */
 		public function scanClassNames(classNames:Array):void {
-			_classBeingScanned = getClassesFromClassNames(classNames);
+			_classesBeingScanned = getClassesFromClassNames(classNames);
 			for each (var className:String in classNames) {
 				scan(className);
 			}
@@ -417,7 +417,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 			for each (var clazz:Class in classes) {
 				result ||= new Vector.<Class>();
-				if (ClassUtils.isAssignableFrom(interfaze, clazz)) {
+				if (ClassUtils.isImplementationOf(clazz, interfaze)) {
 					result[result.length] = clazz;
 				}
 			}
@@ -439,7 +439,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			if (result == null) {
 				// if this clazz is an interface, look up an implementation in the classes that are currently being scanned
 				if (ClassUtils.isInterface(clazz)) {
-					var implementationClasses:Vector.<Class> = getInterfaceImplementations(clazz, _classBeingScanned);
+					var implementationClasses:Vector.<Class> = getInterfaceImplementations(clazz, _classesBeingScanned);
 
 					if (implementationClasses == null) {
 						throw new UnsatisfiedDependencyError(objectDefinitionId, propertyName, "No implementation of interface '" + clazz + "' found.");
