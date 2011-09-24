@@ -170,10 +170,10 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 */
 		public function createObjectDefinitions(cache:ByteCodeTypeCache):Object {
 			initialize(cache);
-			var classNames:Array = cache.getClassesWithMetadata(MetadataConfigUtils.COMPONENT_METADATA);
-			scanClassNames(classNames);
-			classNames = cache.getClassesWithMetadata(MetadataConfigUtils.CONFIGURATION_METADATA);
+			var classNames:Array = cache.getClassesWithMetadata(MetadataConfigUtils.CONFIGURATION_METADATA);
 			_configurationScanner.scanClassNames(classNames, _internalRegistry, _customConfigurators);
+			classNames = cache.getClassesWithMetadata(MetadataConfigUtils.COMPONENT_METADATA);
+			scanClassNames(classNames);
 			return createResult();
 		}
 
@@ -351,7 +351,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		protected function createResult():Object {
 			var result:Object;
 			var names:Vector.<String> = _internalRegistry.objectDefinitionNames;
-			for each (var name:String in _internalRegistry) {
+			for each (var name:String in names) {
 				result ||= {};
 				var definition:IObjectDefinition = _internalRegistry.removeObjectDefinition(name);
 				definition.registryId = "";

@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.context.impl.metadata {
 
 	import flash.display.DisplayObject;
+	import flash.utils.setTimeout;
 
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
@@ -27,6 +28,7 @@ package org.springextensions.actionscript.context.impl.metadata {
 	 * @author Roland Zwaga
 	 */
 	public class MetadataApplicationContext extends DefaultApplicationContext {
+		private var _token:uint;
 
 		/**
 		 * Creates a new <code>MetadataApplicationContext</code> instance.
@@ -35,6 +37,25 @@ package org.springextensions.actionscript.context.impl.metadata {
 			super(parent, rootView, objFactory);
 			var provider:MetadataObjectDefinitionsProvider = new MetadataObjectDefinitionsProvider();
 			addDefinitionProvider(provider);
+		}
+
+		override public function load():void {
+			if (loaderInfo != null) {
+				super.load();
+			} else {
+				waitForLoader();
+			}
+		}
+
+		protected function waitForLoader():void {
+			var superLoad:Function = super.load;
+			_token = setTimeout(function():void {
+				if (loaderInfo != null) {
+					superLoad();
+				} else {
+					waitForLoader();
+				}
+			}, 250);
 		}
 
 	}

@@ -20,6 +20,8 @@ package org.springextensions.actionscript.context.impl {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
+	import flash.utils.clearTimeout;
+	import flash.utils.setTimeout;
 
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.async.operation.IOperationQueue;
@@ -98,6 +100,7 @@ package org.springextensions.actionscript.context.impl {
 		private var _rootView:DisplayObject;
 		private var _stageProcessorRegistry:IStageObjectProcessorRegistry;
 		private var _textFilesLoader:ITextFilesLoader;
+		private var _token:uint;
 
 		/**
 		 * @inheritDoc
@@ -783,15 +786,28 @@ package org.springextensions.actionscript.context.impl {
 
 		//TODO: check is rootView is a module, or part of a module and resolve its loaderInfo from that.
 		protected function resolveRootViewLoaderInfo(view:DisplayObject):LoaderInfo {
+			var loaderInfo:LoaderInfo;
 			if (view == null) {
 				var stage:Stage = Environment.getCurrentStage();
 				if (stage != null) {
-					return stage.loaderInfo;
+					loaderInfo = stage.loaderInfo;
 				}
 			} else {
-				return view.loaderInfo;
+				loaderInfo = view.loaderInfo;
 			}
-			return null;
+			if (loaderInfo == null) {
+				waitForLoaderInfo();
+			}
+			return loaderInfo;
+		}
+
+		protected function waitForLoaderInfo():void {
+			_token = setTimeout(function():void {
+				if (_loaderInfo == null) {
+					clearTimeout(_token);
+					_loaderInfo = resolveRootViewLoaderInfo(_rootView);
+				}
+			}, 500);
 		}
 	}
 }
