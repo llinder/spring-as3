@@ -24,10 +24,12 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.bytecode.reflect.ByteCodeType;
 	import org.as3commons.bytecode.reflect.ByteCodeTypeCache;
+	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.IOrdered;
 	import org.as3commons.lang.util.OrderedUtils;
+	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.ILoaderInfoAware;
@@ -192,6 +194,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			if (loaderInfo != null) {
 				ByteCodeType.metaDataLookupFromLoader(loaderInfo);
 				var typeCache:ByteCodeTypeCache = (ByteCodeType.getTypeProvider().getTypeCache() as ByteCodeTypeCache);
+				registerClassScannersFromInterfaceLookup(typeCache, _objectFactory);
 				doScans(typeCache);
 				if (_waitingOperation != null) {
 					_waitingOperation.dispatchCompleteEvent();
@@ -201,6 +204,18 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 				return waitForStage();
 			} else {
 				throw new IllegalOperationError("loaderInfo instance must not be null");
+			}
+		}
+
+		public function registerClassScannersFromInterfaceLookup(cache:ByteCodeTypeCache, objectFactory:IObjectFactory):void {
+			var interfaceName:String = ClassUtils.getFullyQualifiedName(IClassScanner, true);
+			var classNames:Array = cache.interfaceLookup[interfaceName];
+			for each (var className:String in classNames) {
+				var type:Type = Type.forName(className, objectFactory.applicationDomain);
+				if (type.constructor.parameters.length == 0) {
+					var scanner:IClassScanner = objectFactory.createInstance(type.clazz);
+					addScanner(scanner);
+				}
 			}
 		}
 

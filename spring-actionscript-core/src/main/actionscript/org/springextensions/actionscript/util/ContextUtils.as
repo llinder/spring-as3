@@ -15,10 +15,14 @@
 */
 package org.springextensions.actionscript.util {
 	import org.as3commons.lang.IDisposable;
+	import org.as3commons.lang.StringUtils;
+	import org.as3commons.reflect.Metadata;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
 
 	public final class ContextUtils {
+
+		public static const COMMA:String = ',';
 
 		public static function disposeInstance(instance:Object):void {
 			if (instance is IDisposable) {
@@ -33,6 +37,32 @@ package org.springextensions.actionscript.util {
 				customConfiguration[customConfiguration.length] = config;
 			}
 			return customConfiguration;
+		}
+
+		public static function commaSeparatedPropertyValueToStringVector(propertyValue:String):Vector.<String> {
+			if (StringUtils.hasText(propertyValue)) {
+				var parts:Array = propertyValue.split(COMMA);
+				var result:Vector.<String> = new Vector.<String>();
+				for each (var name:String in parts) {
+					result[result.length] = StringUtils.trim(name);
+				}
+				return result;
+			}
+			return null;
+		}
+
+		public static function getMetadataArgument(metadata:Metadata, key:String):String {
+			if (metadata.hasArgumentWithKey(key)) {
+				return metadata.getArgument(key).value;
+			}
+			return null;
+		}
+
+		public static function getCommaSeparatedArgument(metadata:Metadata, key:String):Vector.<String> {
+			if (metadata.hasArgumentWithKey(key)) {
+				commaSeparatedPropertyValueToStringVector(metadata.getArgument(key).value);
+			}
+			return null;
 		}
 
 	}

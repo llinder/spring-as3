@@ -17,7 +17,6 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
-	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.AbstractCustomObjectDefinitionComponent;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.RouteEventsCustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.util.ContextUtils;
@@ -43,9 +42,9 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 			for each (var field:Object in childContent) {
 				if (field is EventRouterConfiguration) {
 					var er:EventRouterConfiguration = field as EventRouterConfiguration;
-					var eventNames:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(er.eventNames);
-					var topics:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(er.topics);
-					var topicProperties:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(er.topicProperties);
+					var eventNames:Vector.<String> = ContextUtils.commaSeparatedPropertyValueToStringVector(er.eventNames);
+					var topics:Vector.<String> = ContextUtils.commaSeparatedPropertyValueToStringVector(er.topics);
+					var topicProperties:Vector.<String> = ContextUtils.commaSeparatedPropertyValueToStringVector(er.topicProperties);
 					var configurator:RouteEventsCustomConfigurator = new RouteEventsCustomConfigurator(eventBusUserRegistry, eventNames, topics, topicProperties);
 					customConfiguration[customConfiguration.length] = configurator;
 				}

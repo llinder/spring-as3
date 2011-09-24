@@ -14,14 +14,14 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.metadata.customscanner.eventbus {
+
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.reflect.Metadata;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.customscanner.AbstractCustomConfigurationClassScanner;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfigurator;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventInterceptorCustomConfigurator;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventListenerInterceptorCustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -31,22 +31,21 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customscanner
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class EventHandlerCustomConfigurationClassScanner extends AbstractCustomConfigurationClassScanner {
+	public class EventListenerInterceptorCustomConfigurationClassScanner extends AbstractCustomConfigurationClassScanner {
 
-		public static const EVENT_HANDLER_NAME:String = "EventHandler";
 		private static const TOPICS_ARG:String = "topics";
 		private static const TOPIC_PROPERTIES_ARG:String = "topicProperties";
-		private static const PROPERTIES_ARG:String = "properties";
 		private static const EVENT_CLASS_ARG:String = "eventClass";
 		private static const NAME_ARG:String = "name";
 		private static const EVENT_NAME_ARG:String = "eventName";
+		private static const EVENT_LISTENER_INTERCEPTOR_NAME:String = "EventListenerInterceptor";
 
 		/**
-		 * Creates a new <code>EventHandlerMetadataCustomConfigurator</code> instance.
+		 * Creates a new <code>EventListenerInterceptorCustomConfigurationClassScanner</code> instance.
 		 */
-		public function EventHandlerCustomConfigurationClassScanner() {
+		public function EventListenerInterceptorCustomConfigurationClassScanner() {
 			super();
-			metadataNames[metadataNames.length] = EVENT_HANDLER_NAME;
+			metadataNames[metadataNames.length] = EVENT_LISTENER_INTERCEPTOR_NAME;
 		}
 
 		override public function execute(metadata:Metadata, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
@@ -57,9 +56,8 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customscanner
 			var customConfiguration:Vector.<ICustomConfigurator> = ContextUtils.getCustomConfigurationForObjectName(objectName, applicationContext.objectDefinitionRegistry);
 			var topics:Vector.<String> = ContextUtils.getCommaSeparatedArgument(metadata, TOPICS_ARG);
 			var topicProperties:Vector.<String> = ContextUtils.getCommaSeparatedArgument(metadata, TOPIC_PROPERTIES_ARG);
-			var properties:Vector.<String> = ContextUtils.getCommaSeparatedArgument(metadata, PROPERTIES_ARG);
 			var eventClass:Class = ClassUtils.forName(ContextUtils.getMetadataArgument(metadata, EVENT_CLASS_ARG), applicationContext.applicationDomain);
-			var configurator:EventHandlerCustomConfigurator = new EventHandlerCustomConfigurator(eventBusUserRegistry, ContextUtils.getMetadataArgument(metadata, NAME_ARG), ContextUtils.getMetadataArgument(metadata, EVENT_NAME_ARG), eventClass, properties, topics, topicProperties);
+			var configurator:EventListenerInterceptorCustomConfigurator = new EventListenerInterceptorCustomConfigurator(eventBusUserRegistry, ContextUtils.getMetadataArgument(metadata, EVENT_NAME_ARG), eventClass, topics, topicProperties);
 			customConfiguration[customConfiguration.length] = configurator;
 			applicationContext.objectDefinitionRegistry.registerCustomConfiguration(objectName, customConfiguration);
 		}

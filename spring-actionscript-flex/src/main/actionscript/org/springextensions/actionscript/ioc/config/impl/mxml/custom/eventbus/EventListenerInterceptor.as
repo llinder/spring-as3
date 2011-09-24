@@ -17,7 +17,6 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
-	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.AbstractCustomObjectDefinitionComponent;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventListenerInterceptorCustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.util.ContextUtils;
@@ -42,8 +41,8 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 			for each (var field:Object in childContent) {
 				if (field is InterceptionConfiguration) {
 					var ic:InterceptionConfiguration = field as InterceptionConfiguration;
-					var topics:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(ic.topics);
-					var topicProperties:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(ic.topicProperties);
+					var topics:Vector.<String> = ContextUtils.commaSeparatedPropertyValueToStringVector(ic.topics);
+					var topicProperties:Vector.<String> = ContextUtils.commaSeparatedPropertyValueToStringVector(ic.topicProperties);
 					var configurator:EventListenerInterceptorCustomConfigurator = new EventListenerInterceptorCustomConfigurator(eventBusUserRegistry, ic.eventName, ic.eventClass, topics, topicProperties);
 					customConfiguration[customConfiguration.length] = configurator;
 				}

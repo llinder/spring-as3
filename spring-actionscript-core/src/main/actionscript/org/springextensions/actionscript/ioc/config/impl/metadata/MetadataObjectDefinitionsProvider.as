@@ -178,10 +178,14 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		}
 
 		protected function initialize(cache:ByteCodeTypeCache):void {
-			var classNames:Array = cache.interfaceLookup["org.springextensions.actionscript.ioc.config.impl.metadata.ICustomMetadataConfigurator"];
+			var interfaceName:String = ClassUtils.getFullyQualifiedName(ICustomConfigurationClassScanner, true);
+			var classNames:Array = cache.interfaceLookup[interfaceName];
 			for each (var className:String in classNames) {
-				var cls:Class = ClassUtils.forName(className, _applicationContext.applicationDomain);
-				registerCustomMetadataConfigurator(new cls());
+				var type:Type = Type.forName(className, _applicationContext.applicationDomain);
+				if (type.constructor.parameters.length == 0) {
+					var scanner:ICustomConfigurationClassScanner = _applicationContext.createInstance(type.clazz);
+					registerCustomConfigurationClassScanner(scanner);
+				}
 			}
 		}
 
@@ -278,7 +282,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		}
 
 
-		public function registerCustomMetadataConfigurator(configurator:ICustomConfigurationClassScanner):void {
+		public function registerCustomConfigurationClassScanner(configurator:ICustomConfigurationClassScanner):void {
 			for each (var metadataName:String in configurator.metadataNames) {
 				var configurators:Vector.<ICustomConfigurationClassScanner> = _customConfigurators[metadataName] ||= new Vector.<ICustomConfigurator>();
 				configurators[configurators.length] = configurator;

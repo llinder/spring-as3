@@ -15,17 +15,8 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 
-	import flash.events.Event;
-
-	import mx.core.UIComponent;
-
-	import org.as3commons.reflect.Field;
-	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.context.IApplicationContext;
-	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
-	import org.springextensions.actionscript.ioc.config.impl.mxml.ICustomObjectDefinitionComponent;
-	import org.springextensions.actionscript.ioc.config.impl.mxml.custom.AbstractCustomObjectDefinitionComponent;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.util.ContextUtils;
@@ -51,9 +42,9 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.eventbus {
 			for each (var field:Object in childContent) {
 				if (field is EventHandlerMethod) {
 					var hm:EventHandlerMethod = field as EventHandlerMethod;
-					var topics:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(hm.topics);
-					var topicProperties:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(hm.topicProperties);
-					var properties:Vector.<String> = AbstractCustomObjectDefinitionComponent.commaSeparatedPropertyValueToStringVector(hm.properties);
+					var topics:Vector.<String> = ContextUtils.commaSeparatedPropertyValueToStringVector(hm.topics);
+					var topicProperties:Vector.<String> = ContextUtils.commaSeparatedPropertyValueToStringVector(hm.topicProperties);
+					var properties:Vector.<String> = ContextUtils.commaSeparatedPropertyValueToStringVector(hm.properties);
 					var configurator:EventHandlerCustomConfigurator = new EventHandlerCustomConfigurator(eventBusUserRegistry, hm.name, hm.eventName, hm.eventClass, properties, topics, topicProperties);
 					customConfiguration[customConfiguration.length] = configurator;
 				}

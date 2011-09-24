@@ -14,14 +14,13 @@
 * limitations under the License.
 */
 package org.springextensions.actionscript.ioc.config.impl.metadata.customscanner.eventbus {
-	import org.as3commons.lang.ClassUtils;
+
 	import org.as3commons.reflect.Metadata;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.config.impl.metadata.customscanner.AbstractCustomConfigurationClassScanner;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventHandlerCustomConfigurator;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.EventInterceptorCustomConfigurator;
+	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.eventbus.customconfiguration.RouteEventsCustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.ICustomConfigurator;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -29,24 +28,21 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customscanner
 
 	/**
 	 *
-	 * @author Roland Zwaga
+	 * @author rolandzwaga
 	 */
-	public class EventHandlerCustomConfigurationClassScanner extends AbstractCustomConfigurationClassScanner {
+	public class RouteEventsInterceptorCustomConfigurationClassScanner extends AbstractCustomConfigurationClassScanner {
 
-		public static const EVENT_HANDLER_NAME:String = "EventHandler";
-		private static const TOPICS_ARG:String = "topics";
-		private static const TOPIC_PROPERTIES_ARG:String = "topicProperties";
-		private static const PROPERTIES_ARG:String = "properties";
-		private static const EVENT_CLASS_ARG:String = "eventClass";
-		private static const NAME_ARG:String = "name";
-		private static const EVENT_NAME_ARG:String = "eventName";
+		public static const ROUTE_EVENTS_NAME:String = "RouteEvents";
+		public static const EVENT_NAMES_ARG:String = "eventNames";
+		public static const TOPICS_ARG:String = "topics";
+		public static const TOPIC_PROPERTIES_ARG:String = "topicProperties";
 
 		/**
-		 * Creates a new <code>EventHandlerMetadataCustomConfigurator</code> instance.
+		 * Creates a new <code>RouteEventsInterceptorCustomConfigurationClassScanner</code> instance.
 		 */
-		public function EventHandlerCustomConfigurationClassScanner() {
+		public function RouteEventsInterceptorCustomConfigurationClassScanner() {
 			super();
-			metadataNames[metadataNames.length] = EVENT_HANDLER_NAME;
+			metadataNames[metadataNames.length] = ROUTE_EVENTS_NAME;
 		}
 
 		override public function execute(metadata:Metadata, objectName:String, objectDefinition:IObjectDefinition, objectDefinitionsRegistry:IObjectDefinitionRegistry, applicationContext:IApplicationContext):void {
@@ -55,11 +51,10 @@ package org.springextensions.actionscript.ioc.config.impl.metadata.customscanner
 				eventBusUserRegistry = (applicationContext as IEventBusUserRegistryAware).eventBusUserRegistry;
 			}
 			var customConfiguration:Vector.<ICustomConfigurator> = ContextUtils.getCustomConfigurationForObjectName(objectName, applicationContext.objectDefinitionRegistry);
+			var eventNames:Vector.<String> = ContextUtils.getCommaSeparatedArgument(metadata, EVENT_NAMES_ARG);
 			var topics:Vector.<String> = ContextUtils.getCommaSeparatedArgument(metadata, TOPICS_ARG);
 			var topicProperties:Vector.<String> = ContextUtils.getCommaSeparatedArgument(metadata, TOPIC_PROPERTIES_ARG);
-			var properties:Vector.<String> = ContextUtils.getCommaSeparatedArgument(metadata, PROPERTIES_ARG);
-			var eventClass:Class = ClassUtils.forName(ContextUtils.getMetadataArgument(metadata, EVENT_CLASS_ARG), applicationContext.applicationDomain);
-			var configurator:EventHandlerCustomConfigurator = new EventHandlerCustomConfigurator(eventBusUserRegistry, ContextUtils.getMetadataArgument(metadata, NAME_ARG), ContextUtils.getMetadataArgument(metadata, EVENT_NAME_ARG), eventClass, properties, topics, topicProperties);
+			var configurator:RouteEventsCustomConfigurator = new RouteEventsCustomConfigurator(eventBusUserRegistry, eventNames, topics, topicProperties);
 			customConfiguration[customConfiguration.length] = configurator;
 			applicationContext.objectDefinitionRegistry.registerCustomConfiguration(objectName, customConfiguration);
 		}

@@ -16,7 +16,7 @@
 package org.springextensions.actionscript.context.config.impl.xml {
 
 	import org.springextensions.actionscript.context.IApplicationContext;
-	import org.springextensions.actionscript.context.config.IXMLConfigurationPackage;
+	import org.springextensions.actionscript.context.config.IConfigurationPackage;
 	import org.springextensions.actionscript.context.config.impl.FullConfigurationPackage;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.impl.xml.XMLObjectDefinitionsProvider;
@@ -31,7 +31,7 @@ package org.springextensions.actionscript.context.config.impl.xml {
 	 * <code>UtilNamespaceHandler</code>.
 	 * @author Roland Zwaga
 	 */
-	public class FullXMLConfigurationPackage extends FullConfigurationPackage implements IXMLConfigurationPackage {
+	public class FullXMLConfigurationPackage extends FullConfigurationPackage implements IConfigurationPackage {
 
 		/**
 		 *
