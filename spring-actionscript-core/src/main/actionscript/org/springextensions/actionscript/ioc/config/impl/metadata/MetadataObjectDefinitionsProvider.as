@@ -198,6 +198,18 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			for each (var className:String in classNames) {
 				scan(className);
 			}
+			resolveMembers();
+		}
+
+		protected function resolveMembers():void {
+			var names:Vector.<String> = _internalRegistry.objectDefinitionNames;
+			for each (var name:String in names) {
+				var definition:IObjectDefinition = _internalRegistry.getObjectDefinition(name);
+				var type:Type = Type.forClass(definition.clazz, _applicationContext.applicationDomain);
+				resolveConstructorArgs(type, definition, name);
+				resolveMethods(type, definition);
+				resolveProperties(type, definition, name);
+			}
 		}
 
 		/**
@@ -272,10 +284,6 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 						componentId = MetadataConfigUtils.SCANNED_COMPONENT_NAME_PREFIX + ++_numScannedComponents;
 					}
 					_internalRegistry.registerObjectDefinition(componentId, definition);
-
-					resolveConstructorArgs(type, definition, componentId);
-					resolveMethods(type, definition);
-					resolveProperties(type, definition, componentId);
 				}
 			}
 
@@ -350,7 +358,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		 */
 		protected function createResult():Object {
 			var result:Object;
-			var names:Vector.<String> = _internalRegistry.objectDefinitionNames;
+			var names:Vector.<String> = _internalRegistry.objectDefinitionNames.concat();
 			for each (var name:String in names) {
 				result ||= {};
 				var definition:IObjectDefinition = _internalRegistry.removeObjectDefinition(name);

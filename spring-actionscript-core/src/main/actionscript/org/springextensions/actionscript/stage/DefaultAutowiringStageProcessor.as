@@ -50,9 +50,9 @@ package org.springextensions.actionscript.stage {
 		/**
 		 * Creates a new <code>DefaultAutowiringStageProcessor</code> instance.
 		 */
-		public function DefaultAutowiringStageProcessor(context:IApplicationContext=null) {
+		public function DefaultAutowiringStageProcessor() {
 			super();
-			initDefaultAutowiringStageProcessor(context);
+			initDefaultAutowiringStageProcessor();
 		}
 
 		/**
@@ -170,10 +170,9 @@ package org.springextensions.actionscript.stage {
 			return "[DefaultAutowiringStageProcessor(autowireOnce=" + autowireOnce + ")]";
 		}
 
-		protected function initDefaultAutowiringStageProcessor(context:IApplicationContext):void {
+		protected function initDefaultAutowiringStageProcessor():void {
 			componentCache = new Dictionary(true);
 			autowireOnce = true;
-			applicationContext = context;
 			_objectDefinitionResolver = null;
 		}
 
