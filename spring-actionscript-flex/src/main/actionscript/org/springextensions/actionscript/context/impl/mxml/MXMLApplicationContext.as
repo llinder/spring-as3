@@ -400,5 +400,9 @@ package org.springextensions.actionscript.context.impl.mxml {
 			IEventDispatcher(_document).removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			initializeContext();
 		}
+
+		public function destroyObject(instance:*):void {
+			_applicationContext.destroyObject(instance);
+		}
 	}
 }

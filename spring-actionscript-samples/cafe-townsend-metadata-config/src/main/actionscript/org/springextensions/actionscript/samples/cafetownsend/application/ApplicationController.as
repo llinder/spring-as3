@@ -13,7 +13,7 @@ package org.springextensions.actionscript.samples.cafetownsend.application {
 	 * @author Christophe Herreman
 	 */
 	[RouteEvents]
-	[Event(name="loggedOut")]
+	[Event(name="loggedOut", type="flash.events.Event")]
 	[Component]
 	public class ApplicationController extends EventDispatcher {
 

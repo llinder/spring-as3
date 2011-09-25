@@ -7,10 +7,17 @@
 	<sect1 xml:id="graphs-main">
 		<title>Some graphical overviews of Spring Actionscript processes</title>
 
-		<sect2><title>Overview of the object creation flow</title>
-		<para>
-			<filename>getobject_flow.graphml</filename>
-		</para>
+		<sect2>
+			<title>Overview of the object creation flow</title>
+			<para>
+				<filename>getobject_flow.graphml</filename>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Overview of the object wiring flow</title>
+			<para>
+				<filename>objectwiring_flow.graphml</filename>
+			</para>
 		</sect2>
 	</sect1>
 </chapter>

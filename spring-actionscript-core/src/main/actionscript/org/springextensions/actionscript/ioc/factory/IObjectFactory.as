@@ -160,6 +160,14 @@ package org.springextensions.actionscript.ioc.factory {
 
 		/**
 		 *
+		 * @param instance
+		 */
+		function destroyObject(instance:*):void;
+
+		/**
+		 *
+		 * @param objectName
+		 * @return
 		 */
 		function getObjectDefinition(objectName:String):IObjectDefinition;
 

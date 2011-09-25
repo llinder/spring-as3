@@ -17,6 +17,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import flash.errors.IllegalOperationError;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
+
 	import org.as3commons.eventbus.IEventBus;
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.eventbus.IEventBusListener;
@@ -626,6 +627,10 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			if ((parent is IEventBusAware) && (_eventBus is IEventBusListener)) {
 				IEventBusAware(parent).eventBus.removeListener(IEventBusListener(_eventBus));
 			}
+		}
+
+		public function destroyObject(instance:*):void {
+			throw new IllegalOperationError("not implemented yet!");
 		}
 	}
 }

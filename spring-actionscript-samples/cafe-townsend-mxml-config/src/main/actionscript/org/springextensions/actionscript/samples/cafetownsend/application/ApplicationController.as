@@ -10,7 +10,6 @@ package org.springextensions.actionscript.samples.cafetownsend.application {
 
 	/**
 	 * Controller for global application actions.
-	 *
 	 * @author Christophe Herreman
 	 */
 	public class ApplicationController implements IEventBusAware {

@@ -14,9 +14,9 @@
   <body>
     <section name="Sample applications">
     	<ul>
-    		<li><a href="/samples/cafe-townsend/Main.html" target="_blank">Cafe Townsend - XML Configuration</a></li>
-    		<li><a href="/samples/cafe-townsend-mxml/Main.html" target="_blank">Cafe Townsend - MXML Configuration</a></li>
-    		<li><a href="/samples/cafe-townsend-metadata/Main.html" target="_blank">Cafe Townsend - Metadata Configuration</a></li>
+    		<li><a href="/samples/cafe-townsend/Main.html" target="_blank">Cafe Townsend - XML Configuration</a> - (<a href="/samples/cafe-townsend/srcview/index.html" target="_blank">source view</a>)</li>
+    		<li><a href="/samples/cafe-townsend-mxml/Main.html" target="_blank">Cafe Townsend - MXML Configuration</a> - (<a href="/samples/cafe-townsend-mxml/srcview/index.html" target="_blank">source view</a>)</li>
+    		<li><a href="/samples/cafe-townsend-metadata/Main.html" target="_blank">Cafe Townsend - Metadata Configuration</a> - (<a href="/samples/cafe-townsend-metadata/srcview/index.html" target="_blank">source view</a>)</li>
     	</ul>
     </section>
   </body>

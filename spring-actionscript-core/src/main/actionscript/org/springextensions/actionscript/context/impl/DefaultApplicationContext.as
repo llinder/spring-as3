@@ -18,6 +18,7 @@ package org.springextensions.actionscript.context.impl {
 	import flash.events.Event;
 
 	import org.as3commons.eventbus.impl.EventBus;
+	import org.as3commons.lang.ClassUtils;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.eventbus.process.EventBusAwareObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.autowire.impl.DefaultAutowireProcessor;
@@ -39,8 +40,12 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.process.impl.object.ObjectDefinitionRegistryAwareObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.object.ObjectFactoryAwarePostProcessor;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjector;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistry;
+	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.metadata.MetadataProcessorObjectFactoryPostProcessor;
+	import org.springextensions.actionscript.metadata.processor.LifeCycleMetadataDestroyer;
+	import org.springextensions.actionscript.metadata.processor.LifeCycleMetadataProcessor;
 	import org.springextensions.actionscript.stage.StageProcessorFactoryPostprocessor;
 
 	[Event(name="complete", type="flash.events.Event")]
@@ -76,6 +81,11 @@ package org.springextensions.actionscript.context.impl {
 			addObjectFactoryPostProcessor(new StageProcessorFactoryPostprocessor());
 			addObjectFactoryPostProcessor(new MetadataProcessorObjectFactoryPostProcessor());
 			addObjectFactoryPostProcessor(new FactoryObjectFactoryPostProcessor());
+
+			var definition:IObjectDefinition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(LifeCycleMetadataProcessor, true));
+			objectFactory.objectDefinitionRegistry.registerObjectDefinition("postConstructProcessor", definition);
+			definition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(LifeCycleMetadataDestroyer, true));
+			objectFactory.objectDefinitionRegistry.registerObjectDefinition("preDestroyProcessor", definition);
 
 			objectFactory.addObjectPostProcessor(new ApplicationContextAwareObjectPostProcessor(this));
 			objectFactory.addObjectPostProcessor(new ApplicationDomainAwarePostProcessor(this));

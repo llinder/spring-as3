@@ -228,24 +228,23 @@
 							<param name="baseDir" expression="${basedir}"/>
 						</xslt>
 						<xslt in="${basedir}/toplevel_files.xml"
-							out="${basedir}/target/site/asdoc/toplevel_classes.xml"
+							out="${basedir}/target/site/asdoc/toplevel.xml"
 							style="${basedir}/src/docbkx/resources/xsl/combine_toplevel_classes.xslt"
 							reloadstylesheet="false" processor="trax">
 							<param name="baseDir" expression="${basedir}"/>
 						</xslt>
-
 						<xslt
 							in="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-objects-1.0.xsd"
 							out="${basedir}/src/docbkx/configuration-reference.xml"
 							style="${basedir}/src/docbkx/resources/xsl/configuration-reference.xsl"
-							reloadstylesheet="false" processor="trax"/>
+							reloadstylesheet="false" processor="trax"/-->
 
-						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
 							out="${basedir}/target/site/asdoc/all-classes.html"
 							style="${basedir}/src/docbkx/resources/asdoctemplate/all-classes.xsl"
 							reloadstylesheet="false" processor="trax"/>
 
-						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
 							out="${basedir}/target/site/asdoc/delete-me.html"
 							style="${basedir}/src/docbkx/resources/asdoctemplate/all-index.xsl"
 							reloadstylesheet="false" processor="trax">
@@ -255,7 +254,7 @@
 							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
 						</xslt>
 
-						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
 							out="${basedir}/target/site/asdoc/appendixes.html"
 							style="${basedir}/src/docbkx/resources/asdoctemplate/appendixes.xsl"
 							reloadstylesheet="false" processor="trax">
@@ -263,7 +262,7 @@
 								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
 						</xslt>
 
-						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
 							out="${basedir}/target/site/asdoc/class-summary.html"
 							style="${basedir}/src/docbkx/resources/asdoctemplate/class-summary.xsl"
 							reloadstylesheet="false" processor="trax">
@@ -271,21 +270,21 @@
 								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
 						</xslt>
 
-						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
 							out="${basedir}/target/site/asdoc/delete-me2.html"
 							style="${basedir}/src/docbkx/resources/asdoctemplate/class-files.xsl"
 							reloadstylesheet="false" processor="trax">
 							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
 						</xslt>
 
-						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
 							out="${basedir}/target/site/asdoc/class-list.html"
 							style="${basedir}/src/docbkx/resources/asdoctemplate/class-list.xsl"
 							reloadstylesheet="false" processor="trax">
 							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
 						</xslt>
 
-						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
 							out="${basedir}/target/site/asdoc/delete-me3.html"
 							style="${basedir}/src/docbkx/resources/asdoctemplate/package.xsl"
 							reloadstylesheet="false" processor="trax">
@@ -294,7 +293,7 @@
 							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
 						</xslt>
 
-						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
 							out="${basedir}/target/site/asdoc/delete-me4.html"
 							style="${basedir}/src/docbkx/resources/asdoctemplate/package-detail.xsl"
 							reloadstylesheet="false" processor="trax">
@@ -303,19 +302,19 @@
 							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
 						</xslt>
 
-						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
 							out="${basedir}/target/site/asdoc/package-list.html"
 							style="${basedir}/src/docbkx/resources/asdoctemplate/package-list.xsl"
 							reloadstylesheet="false" processor="trax"> </xslt>
 
-						<xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
 							out="${basedir}/target/site/asdoc/package-summary.html"
 							style="${basedir}/src/docbkx/resources/asdoctemplate/package-summary.xsl"
 							reloadstylesheet="false" processor="trax">
 							<param name="overviewsFile"
 								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
 							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
-						</xslt-->
+						</xslt>
 
 						<delete file="${basedir}/target/site/asdoc/index.html"/>
 
@@ -485,6 +484,7 @@
 				<configuration>
 				    <aggregate>true</aggregate>
 				    <keepXml>true</keepXml>
+				    <skipXsl>true</skipXsl>
 				    <reportOutputDirectory>target/site/docs/asdoc</reportOutputDirectory>
 				    <configFile>asdoc-config.xml</configFile>
 				    <footer>Copyright 2007-2011 Spring Actionscript.</footer>

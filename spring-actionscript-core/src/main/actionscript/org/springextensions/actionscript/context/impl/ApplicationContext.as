@@ -809,5 +809,12 @@ package org.springextensions.actionscript.context.impl {
 				}
 			}, 500);
 		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function destroyObject(instance:*):void {
+			objectFactory.destroyObject(instance);
+		}
 	}
 }
