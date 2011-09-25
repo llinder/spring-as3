@@ -41,7 +41,6 @@ package org.springextensions.actionscript.samples.cafetownsend.application {
 		//
 		// --------------------------------------------------------------------
 
-		[EventHandler]
 		public function logout():void {
 			var operation:IOperation = _authenticationService.logout();
 			operation.addCompleteListener(logout_completeHandler);

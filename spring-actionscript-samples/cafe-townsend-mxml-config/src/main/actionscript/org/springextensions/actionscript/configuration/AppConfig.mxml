@@ -21,8 +21,10 @@
 		<sas:Object id="viewSelector"
 					clazz="{TownsendViewSelector}"/>
 
-		<sas:Object id="eventHandlerProcessor"
-					clazz="{EventHandlerMetadataProcessor}"/>
+		<sas:EventHandler instance="applicationController">
+			<sas:EventHandlerMethod name="logout"
+									eventName="logout"/>
+		</sas:EventHandler>
 
 		<sas:Object id="applicationController"
 					clazz="{ApplicationController}">
