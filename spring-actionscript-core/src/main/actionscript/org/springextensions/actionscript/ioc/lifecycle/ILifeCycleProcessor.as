@@ -22,6 +22,6 @@ package org.springextensions.actionscript.ioc.lifecycle {
 	 */
 	public interface ILifeCycleProcessor {
 		function process(instance:*, objectName:String, objectDefinition:IObjectDefinition):void;
-		function destroy(instance):void;
+		function destroy(instance:*):void;
 	}
 }

@@ -29,7 +29,7 @@
 		<docbkx-maven-plugin.version>2.0.10</docbkx-maven-plugin.version>
 		<docbook-xml.version>4.4</docbook-xml.version>
 		<jai_core.version>1.1.3</jai_core.version>
-		<ant-optional.version>1.5.2</ant-optional.version>
+		<ant-optional.version>1.5.3-1</ant-optional.version>
 		<flex-mojos.version>4.0-RC1</flex-mojos.version>
 		<flex-sdk.version>4.5.1.21328</flex-sdk.version>
 		<flashplayer.version.major>10</flashplayer.version.major>
@@ -203,6 +203,11 @@
 						<artifactId>ant-optional</artifactId>
 						<version>${ant-optional.version}</version>
 					</dependency>
+					<dependency>
+						<groupId>net.sf.saxon</groupId>
+						<artifactId>saxon</artifactId>
+						<version>8.7</version>
+					</dependency>
 				</dependencies>
 				<configuration>
 					<tocSectionDepth>2</tocSectionDepth>
@@ -222,100 +227,6 @@
 						</entity>
 					</entities>
 					<preProcess>
-						<!--xslt in="${basedir}/toplevel_files.xml" out="${basedir}/target/site/asdoc/toplevel.xml"
-							style="${basedir}/src/docbkx/resources/xsl/combine_toplevels.xslt"
-							reloadstylesheet="false" processor="trax">
-							<param name="baseDir" expression="${basedir}"/>
-						</xslt>
-						<xslt in="${basedir}/toplevel_files.xml"
-							out="${basedir}/target/site/asdoc/toplevel.xml"
-							style="${basedir}/src/docbkx/resources/xsl/combine_toplevel_classes.xslt"
-							reloadstylesheet="false" processor="trax">
-							<param name="baseDir" expression="${basedir}"/>
-						</xslt>
-						<xslt
-							in="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-objects-1.0.xsd"
-							out="${basedir}/src/docbkx/configuration-reference.xml"
-							style="${basedir}/src/docbkx/resources/xsl/configuration-reference.xsl"
-							reloadstylesheet="false" processor="trax"/-->
-
-						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
-							out="${basedir}/target/site/asdoc/all-classes.html"
-							style="${basedir}/src/docbkx/resources/asdoctemplate/all-classes.xsl"
-							reloadstylesheet="false" processor="trax"/>
-
-						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
-							out="${basedir}/target/site/asdoc/delete-me.html"
-							style="${basedir}/src/docbkx/resources/asdoctemplate/all-index.xsl"
-							reloadstylesheet="false" processor="trax">
-							<param name="overviewsFile"
-								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
-							<param name="basedir" expression="${basedir}/src/docbkx/resources/asdoctemplate/"/>
-							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
-						</xslt>
-
-						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
-							out="${basedir}/target/site/asdoc/appendixes.html"
-							style="${basedir}/src/docbkx/resources/asdoctemplate/appendixes.xsl"
-							reloadstylesheet="false" processor="trax">
-							<param name="overviewsFile"
-								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
-						</xslt>
-
-						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
-							out="${basedir}/target/site/asdoc/class-summary.html"
-							style="${basedir}/src/docbkx/resources/asdoctemplate/class-summary.xsl"
-							reloadstylesheet="false" processor="trax">
-							<param name="overviewsFile"
-								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
-						</xslt>
-
-						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
-							out="${basedir}/target/site/asdoc/delete-me2.html"
-							style="${basedir}/src/docbkx/resources/asdoctemplate/class-files.xsl"
-							reloadstylesheet="false" processor="trax">
-							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
-						</xslt>
-
-						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
-							out="${basedir}/target/site/asdoc/class-list.html"
-							style="${basedir}/src/docbkx/resources/asdoctemplate/class-list.xsl"
-							reloadstylesheet="false" processor="trax">
-							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
-						</xslt>
-
-						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
-							out="${basedir}/target/site/asdoc/delete-me3.html"
-							style="${basedir}/src/docbkx/resources/asdoctemplate/package.xsl"
-							reloadstylesheet="false" processor="trax">
-							<param name="overviewsFile"
-								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
-							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
-						</xslt>
-
-						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
-							out="${basedir}/target/site/asdoc/delete-me4.html"
-							style="${basedir}/src/docbkx/resources/asdoctemplate/package-detail.xsl"
-							reloadstylesheet="false" processor="trax">
-							<param name="overviewsFile"
-								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
-							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
-						</xslt>
-
-						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
-							out="${basedir}/target/site/asdoc/package-list.html"
-							style="${basedir}/src/docbkx/resources/asdoctemplate/package-list.xsl"
-							reloadstylesheet="false" processor="trax"> </xslt>
-
-						<xslt in="${basedir}/target/site/asdoc/toplevel.xml"
-							out="${basedir}/target/site/asdoc/package-summary.html"
-							style="${basedir}/src/docbkx/resources/asdoctemplate/package-summary.xsl"
-							reloadstylesheet="false" processor="trax">
-							<param name="overviewsFile"
-								expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
-							<param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
-						</xslt>
-
 						<delete file="${basedir}/target/site/asdoc/index.html"/>
 
 						<copy todir="${basedir}/target/site/asdoc/images">
@@ -483,8 +394,9 @@
 				</reports>
 				<configuration>
 				    <aggregate>true</aggregate>
-				    <keepXml>true</keepXml>
-				    <skipXsl>true</skipXsl>
+				    <templatesPath>${basedir}/src/docbkx/resources/asdoctemplate</templatesPath>
+				    <!--keepXml>true</keepXml>
+				    <skipXsl>true</skipXsl-->
 				    <reportOutputDirectory>target/site/docs/asdoc</reportOutputDirectory>
 				    <configFile>asdoc-config.xml</configFile>
 				    <footer>Copyright 2007-2011 Spring Actionscript.</footer>
