@@ -16,9 +16,6 @@
 package org.springextensions.actionscript.eventbus.process {
 	import flash.errors.IllegalOperationError;
 
-	import org.as3commons.eventbus.IEventBus;
-	import org.as3commons.eventbus.IEventBusAware;
-	import org.as3commons.lang.StringUtils;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getLogger;
 	import org.as3commons.reflect.IMetadataContainer;
@@ -27,14 +24,14 @@ package org.springextensions.actionscript.eventbus.process {
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
-	import org.springextensions.actionscript.metadata.AbstractMetadataProcessor;
 	import org.springextensions.actionscript.metadata.IMetadataDestroyer;
+	import org.springextensions.actionscript.metadata.processor.AbstractSpringMetadataProcessor;
+	import org.as3commons.lang.IDisposable;
 
-	public class AbstractEventBusMetadataProcessor extends AbstractMetadataProcessor implements IObjectFactoryAware, IMetadataDestroyer {
+	public class AbstractEventBusMetadataProcessor extends AbstractSpringMetadataProcessor implements IObjectFactoryAware, IDisposable {
 		/** The "clazz" property of the EventHandler metadata */
 		protected static const CLASS_KEY:String = "clazz";
 		protected static const COMMA:String = ",";
-
 		/** The "name" property of the EventHandler metadata */
 		protected static const NAME_KEY:String = "name";
 		/** The "topic" property of the EventHandler metadata */
@@ -42,19 +39,14 @@ package org.springextensions.actionscript.eventbus.process {
 		/** The "topicProperties" property of the EventHandler metadata */
 		protected static const TOPIC_PROPERTIES_KEY:String = "topicProperties";
 
-		// --------------------------------------------------------------------
-		//
-		// Private Static Variables
-		//
-		// --------------------------------------------------------------------
-
 		private static var logger:ILogger = getLogger(AbstractEventBusMetadataProcessor);
 
-		public function AbstractEventBusMetadataProcessor(processBefore:Boolean, metadataNames:Vector.<String>=null) {
-			super(processBefore, metadataNames);
+		public function AbstractEventBusMetadataProcessor() {
+			super();
 		}
 
 		protected var objFactory:IObjectFactory;
+		private var _isDisposed:Boolean;
 
 		/**
 		 * @inheritDoc
@@ -96,8 +88,13 @@ package org.springextensions.actionscript.eventbus.process {
 			return result;
 		}
 
-		public function destroy(instance:Object, container:IMetadataContainer, metadataName:String, objectName:String):void {
-			throw new IllegalOperationError("Not implemented in abstract base class");
+		public function get isDisposed():Boolean {
+			return _isDisposed;
 		}
+
+		public function dispose():void {
+			_isDisposed = true;
+		}
+
 	}
 }

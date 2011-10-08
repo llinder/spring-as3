@@ -75,33 +75,17 @@ package org.springextensions.actionscript.eventbus.process {
 	 * @author Christophe Herreman
 	 * @docref the_eventbus.html#eventbus_event_handling_using_metadata_annotations
 	 */
-	public class EventHandlerMetadataProcessor extends AbstractEventBusMetadataProcessor implements IDisposable {
-		/** The "clazz" property of the EventHandler metadata */
+	public class EventHandlerMetadataProcessor extends AbstractEventBusMetadataProcessor {
+
 		public static const CLASS_KEY:String = "clazz";
 		public static const COMMA:String = ",";
-
-		// --------------------------------------------------------------------
-		//
-		// Public Static Constants
-		//
-		// --------------------------------------------------------------------
-
-		/** The EventHandler metadata */
 		public static const EVENT_HANDLER_METADATA:String = "EventHandler";
-		/** The suffix optionally used in the name of an event handler. Complies to the Flex coding conventions. */
 		public static const HANDLER_SUFFIX:String = "Handler";
-		/** The "properties" property of the EventHandler metadata */
 		public static const PROPERTIES_KEY:String = "properties";
 		public static const TRUE_VALUE:String = "true";
 		public static const USEWEAK_KEY:String = "useWeakReference";
-		private static const SPACE_CHAR:String = ' ';
-		private static const EMPTY:String = '';
-
-		// --------------------------------------------------------------------
-		//
-		// Private Static Variables
-		//
-		// --------------------------------------------------------------------
+		public static const EMPTY:String = '';
+		public static const SPACE_CHAR:String = ' ';
 
 		private static var logger:ILogger = getLogger(EventHandlerMetadataProcessor);
 
@@ -115,52 +99,8 @@ package org.springextensions.actionscript.eventbus.process {
 		 * Creates a new <code>EventHandlerMetaDataPostProcessor</code> instance.
 		 */
 		public function EventHandlerMetadataProcessor() {
-			var names:Vector.<String> = new Vector.<String>();
-			names[names.length] = EVENT_HANDLER_METADATA;
-			super(false, names);
-		}
-
-		// --------------------------------------------------------------------
-		//
-		// Private Variables
-		//
-		// --------------------------------------------------------------------
-
-		private var _eventBusUserRegistry:IEventBusUserRegistry;
-
-		// --------------------------------------------------------------------
-		//
-		// Public Properties
-		//
-		// --------------------------------------------------------------------
-
-		private var _isDisposed:Boolean = false;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get isDisposed():Boolean {
-			return _isDisposed;
-		}
-
-		/**
-		 *
-		 * @param instance
-		 * @param container
-		 * @param metadataName
-		 * @param objectName
-		 */
-		override public function destroy(instance:Object, container:IMetadataContainer, metadataName:String, objectName:String):void {
-			var method:Method = (container as Method);
-
-			if (method == null) {
-				return;
-			}
-
-			var metaDatas:Array = method.getMetadata(EVENT_HANDLER_METADATA);
-			for each (var metaData:Metadata in metaDatas) {
-				destroyMetaData(instance, method, metaData);
-			}
+			super();
+			metadataNames[metadataNames.length] = EVENT_HANDLER_METADATA;
 		}
 
 		/**
@@ -168,17 +108,11 @@ package org.springextensions.actionscript.eventbus.process {
 		 * current <code>EventHandlerMetaDataPostProcessor</code>, removes them and
 		 * clears and nulls the internal cache.
 		 */
-		public function dispose():void {
-			if (!_isDisposed) {
-				_isDisposed = true;
+		override public function dispose():void {
+			if (!isDisposed) {
+				super.dispose();
 			}
 		}
-
-		// --------------------------------------------------------------------
-		//
-		// Public Methods
-		//
-		// --------------------------------------------------------------------
 
 		/**
 		 *
@@ -187,16 +121,17 @@ package org.springextensions.actionscript.eventbus.process {
 		 * @param name
 		 * @param objectName
 		 */
-		override public function process(instance:Object, container:IMetadataContainer, name:String, objectName:String):void {
+		override public function process(target:Object, metadataName:String, info:*=null):* {
+			var container:IMetadataContainer = (info as Array)[0] as IMetadataContainer;
 			var method:Method = (container as Method);
 
 			if (method == null) {
 				return;
 			}
 
-			var metaDatas:Array = method.getMetadata(EVENT_HANDLER_METADATA);
-			for each (var metaData:Metadata in metaDatas) {
-				processMetaData(instance, method, metaData);
+			var metadatas:Array = method.getMetadata(EVENT_HANDLER_METADATA);
+			for each (var metadata:Metadata in metadatas) {
+				processMetaData(target, method, metadata);
 			}
 		}
 
@@ -206,7 +141,7 @@ package org.springextensions.actionscript.eventbus.process {
 		 * @param method
 		 * @param metaData
 		 */
-		protected function destroyMetaData(object:Object, method:Method, metaData:Metadata):void {
+		protected function processMetaData(object:Object, method:Method, metaData:Metadata):void {
 			var className:String = getEventClassName(metaData);
 			var properties:Vector.<String> = getProperties(metaData);
 			var topics:Array = getTopics(metaData, object);
@@ -219,22 +154,22 @@ package org.springextensions.actionscript.eventbus.process {
 			if (className == null) {
 				var eventName:String = getEventName(method, metaData);
 				if (topics == null) {
-					eventBusUserRegistry.removeEventListenerProxy(eventName, proxy);
+					eventBusUserRegistry.addEventListenerProxy(eventName, proxy, useWeak);
 					logger.debug("Added event handler for '{0}' on the EventBus", [eventName]);
 				} else {
 					for each (topic in topics) {
-						eventBusUserRegistry.removeEventListenerProxy(eventName, proxy, topic);
+						eventBusUserRegistry.addEventListenerProxy(eventName, proxy, useWeak, topic);
 						logger.debug("Added event handler for '{0}' on the EventBus for topic {1}", [eventName, topic]);
 					}
 				}
 			} else {
 				var cls:Class = ClassUtils.forName(className, objFactory.applicationDomain);
 				if (topics == null) {
-					eventBusUserRegistry.removeEventClassListenerProxy(cls, proxy);
+					eventBusUserRegistry.addEventClassListenerProxy(cls, proxy, useWeak);
 					logger.debug("Added event class handler for '{0}' on the EventBus", [className]);
 				} else {
 					for each (topic in topics) {
-						eventBusUserRegistry.removeEventClassListenerProxy(cls, proxy, topic);
+						eventBusUserRegistry.addEventClassListenerProxy(cls, proxy, useWeak, topic);
 						logger.debug("Added event class handler for '{0}' on the EventBus for topic {1}", [eventName, topic]);
 					}
 				}
@@ -254,6 +189,37 @@ package org.springextensions.actionscript.eventbus.process {
 			}
 
 			return result;
+		}
+
+		/**
+		 *
+		 * @param metaData
+		 * @return
+		 */
+		protected function getProperties(metaData:Metadata):Vector.<String> {
+			if (metaData.hasArgumentWithKey(PROPERTIES_KEY)) {
+				var propertiesValue:String = metaData.getArgument(PROPERTIES_KEY).value;
+				var parts:Array = propertiesValue.split(SPACE_CHAR).join(EMPTY).split(COMMA);
+				var result:Vector.<String> = new Vector.<String>();
+				for each (var part:String in parts) {
+					result[result.length] = part;
+				}
+				return result;
+			}
+			return null;
+		}
+
+		/**
+		 *
+		 * @param metaData
+		 * @return
+		 */
+		protected function getUseWeak(metaData:Metadata):Boolean {
+			if (metaData.hasArgumentWithKey(USEWEAK_KEY)) {
+				var weakValue:String = metaData.getArgument(USEWEAK_KEY).value.toLowerCase();
+				return (weakValue == TRUE_VALUE);
+			}
+			return false;
 		}
 
 		/**
@@ -306,84 +272,6 @@ package org.springextensions.actionscript.eventbus.process {
 			}
 
 			return result;
-		}
-
-		/**
-		 *
-		 * @param metaData
-		 * @return
-		 */
-		protected function getProperties(metaData:Metadata):Vector.<String> {
-			if (metaData.hasArgumentWithKey(PROPERTIES_KEY)) {
-				var propertiesValue:String = metaData.getArgument(PROPERTIES_KEY).value;
-				var parts:Array = propertiesValue.split(SPACE_CHAR).join(EMPTY).split(COMMA);
-				var result:Vector.<String> = new Vector.<String>();
-				for each (var part:String in parts) {
-					result[result.length] = part;
-				}
-				return result;
-			}
-			return null;
-		}
-
-		/**
-		 *
-		 * @param metaData
-		 * @return
-		 */
-		protected function getUseWeak(metaData:Metadata):Boolean {
-			if (metaData.hasArgumentWithKey(USEWEAK_KEY)) {
-				var weakValue:String = metaData.getArgument(USEWEAK_KEY).value.toLowerCase();
-				return (weakValue == TRUE_VALUE);
-			}
-			return false;
-		}
-
-		// --------------------------------------------------------------------
-		//
-		// Protected Methods
-		//
-		// --------------------------------------------------------------------
-
-		/**
-		 *
-		 * @param object
-		 * @param method
-		 * @param metaData
-		 */
-		protected function processMetaData(object:Object, method:Method, metaData:Metadata):void {
-			var className:String = getEventClassName(metaData);
-			var properties:Vector.<String> = getProperties(metaData);
-			var topics:Array = getTopics(metaData, object);
-			topics = (topics.length > 0) ? topics : null;
-			var useWeak:Boolean = getUseWeak(metaData);
-			var proxy:EventHandlerProxy = new EventHandlerProxy(object, method, properties);
-			var topic:Object;
-			proxy.applicationDomain = objFactory.applicationDomain;
-
-			if (className == null) {
-				var eventName:String = getEventName(method, metaData);
-				if (topics == null) {
-					eventBusUserRegistry.addEventListenerProxy(eventName, proxy, useWeak);
-					logger.debug("Added event handler for '{0}' on the EventBus", [eventName]);
-				} else {
-					for each (topic in topics) {
-						eventBusUserRegistry.addEventListenerProxy(eventName, proxy, useWeak, topic);
-						logger.debug("Added event handler for '{0}' on the EventBus for topic {1}", [eventName, topic]);
-					}
-				}
-			} else {
-				var cls:Class = ClassUtils.forName(className, objFactory.applicationDomain);
-				if (topics == null) {
-					eventBusUserRegistry.addEventClassListenerProxy(cls, proxy, useWeak);
-					logger.debug("Added event class handler for '{0}' on the EventBus", [className]);
-				} else {
-					for each (topic in topics) {
-						eventBusUserRegistry.addEventClassListenerProxy(cls, proxy, useWeak, topic);
-						logger.debug("Added event class handler for '{0}' on the EventBus for topic {1}", [eventName, topic]);
-					}
-				}
-			}
 		}
 	}
 }

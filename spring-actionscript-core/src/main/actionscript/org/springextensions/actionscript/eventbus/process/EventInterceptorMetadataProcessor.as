@@ -42,12 +42,12 @@ package org.springextensions.actionscript.eventbus.process {
 		private static const EVENT_INTERCEPTOR_METADATA_NAME:String = "EventInterceptor";
 
 		public function EventInterceptorMetadataProcessor() {
-			var names:Vector.<String> = new Vector.<String>();
-			names[names.length] = EVENT_INTERCEPTOR_METADATA_NAME;
-			super(true, names);
+			super();
+			metadataNames[metadataNames.length] = EVENT_INTERCEPTOR_METADATA_NAME;
 		}
 
-		override public function process(instance:Object, container:IMetadataContainer, name:String, objectName:String):void {
+		override public function process(target:Object, metadataName:String, info:*=null):* {
+			var container:IMetadataContainer = (info as Array)[0] as IMetadataContainer;
 			var type:Type = (container as Type);
 			if (type == null) {
 				return;
@@ -58,7 +58,7 @@ package org.springextensions.actionscript.eventbus.process {
 			}
 			var metaDatas:Array = type.getMetadata(EVENT_INTERCEPTOR_METADATA_NAME);
 			for each (var metaData:Metadata in metaDatas) {
-				processMetaData(instance, type, metaData);
+				processMetaData(target, type, metaData);
 			}
 		}
 
@@ -100,58 +100,6 @@ package org.springextensions.actionscript.eventbus.process {
 				} else {
 					for each (topic in topics) {
 						eventBusUserRegistry.addEventClassInterceptor(clazz, interceptor, topic);
-					}
-				}
-			}
-		}
-
-		override public function destroy(instance:Object, container:IMetadataContainer, metadataName:String, objectName:String):void {
-			var type:Type = (container as Type);
-			if (type == null) {
-				return;
-			}
-			if (!ClassUtils.isImplementationOf(type.clazz, IEventInterceptor, objFactory.applicationDomain)) {
-				return;
-				logger.debug("{0} is not an IEventInterceptor implementation", type.clazz);
-			}
-			var metaDatas:Array = type.getMetadata(EVENT_INTERCEPTOR_METADATA_NAME);
-			for each (var metaData:Metadata in metaDatas) {
-				destroyMetaData(instance, type, metaData);
-			}
-		}
-
-		protected function destroyMetaData(instance:Object, type:Type, metaData:Metadata):void {
-			var interceptor:IEventInterceptor = IEventInterceptor(instance);
-			var className:String = getEventInterceptClassName(metaData);
-			var topics:Array = getTopics(metaData, interceptor);
-			var topic:Object;
-
-			if (className == null) {
-				var eventName:String = getEventName(metaData);
-				if (eventName == null) {
-					if ((topics == null) || (topics.length == 0)) {
-						eventBusUserRegistry.removeInterceptor(interceptor);
-					} else {
-						for each (topic in topics) {
-							eventBusUserRegistry.removeInterceptor(interceptor, topic);
-						}
-					}
-				} else {
-					if ((topics == null) || (topics.length == 0)) {
-						eventBusUserRegistry.removeEventInterceptor(eventName, interceptor);
-					} else {
-						for each (topic in topics) {
-							eventBusUserRegistry.removeEventInterceptor(eventName, interceptor, topic);
-						}
-					}
-				}
-			} else {
-				var clazz:Class = ClassUtils.forName(className, objFactory.applicationDomain);
-				if ((topics == null) || (topics.length == 0)) {
-					eventBusUserRegistry.removeEventClassInterceptor(clazz, interceptor);
-				} else {
-					for each (topic in topics) {
-						eventBusUserRegistry.removeEventClassInterceptor(clazz, interceptor, topic);
 					}
 				}
 			}

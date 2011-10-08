@@ -13,32 +13,30 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.metadata.processor {
+package org.springextensions.actionscript.eventbus.process {
 
+	import flash.events.IEventDispatcher;
+
+	import org.as3commons.lang.SoftReference;
 	import org.as3commons.reflect.IMetadataContainer;
-	import org.as3commons.reflect.Method;
-	import org.springextensions.actionscript.metadata.AbstractMetadataProcessor;
+	import org.as3commons.reflect.Metadata;
+	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.metadata.IMetadataDestroyer;
 
 	/**
 	 *
-	 * @author rolandzwaga
+	 * @author Roland Zwaga
 	 */
-	public class LifeCycleMetadataProcessor extends AbstractMetadataProcessor {
-		private static const POST_CONSTRUCT_name:String = "PostConstruct";
-
+	public class RouteEventsMetaDataDestroyer extends AbstractEventBusMetadataProcessor implements IMetadataDestroyer {
 		/**
-		 * Creates a new <code>LifeCycleMetadataProcessor</code> instance.
+		 * Creates a new <code>RouteEventsMetaDataDestroyer</code> instance.
 		 */
-		public function LifeCycleMetadataProcessor() {
-			super(true, metadataNames);
-			metadataNames[metadataNames.length] = POST_CONSTRUCT_name;
+		public function RouteEventsMetaDataDestroyer() {
+			super();
 		}
 
-		override public function process(instance:Object, container:IMetadataContainer, metadataName:String, objectName:String):void {
-			if (container is Method) {
-				instance[(container as Method).name]();
-			}
+		override public function process(target:Object, metadataName:String, info:*=null):* {
+			eventBusUserRegistry.removeEventListeners(IEventDispatcher(target));
 		}
 
 	}

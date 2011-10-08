@@ -42,6 +42,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
+	import org.springextensions.actionscript.ioc.IObjectDestroyer;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
@@ -813,8 +814,16 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function destroyObject(instance:*):void {
+		public function destroyObject(instance:Object):void {
 			objectFactory.destroyObject(instance);
+		}
+
+		public function get objectDestroyer():IObjectDestroyer {
+			return objectFactory.objectDestroyer;
+		}
+
+		public function set objectDestroyer(value:IObjectDestroyer):void {
+			objectFactory.objectDestroyer = value;
 		}
 	}
 }

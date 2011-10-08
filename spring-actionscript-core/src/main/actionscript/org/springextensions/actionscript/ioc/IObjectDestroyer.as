@@ -13,16 +13,23 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.metadata {
-
-	import org.as3commons.metadata.process.IMetadataProcessor;
+package org.springextensions.actionscript.ioc {
+	import org.as3commons.metadata.registry.IMetadataProcessorRegistry;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 
 	/**
-	 * Marker interface that indicates an <code>IMetadataProcessor</code> that needs to be invoked in the destruction
-	 * phase of an object's lifecycle.
+	 *
 	 * @author Roland Zwaga
 	 */
-	public interface IMetadataDestroyer extends IMetadataProcessor {
+	public interface IObjectDestroyer {
+		function get metadataProcessorRegistry():IMetadataProcessorRegistry;
+		function set metadataProcessorRegistry(value:IMetadataProcessorRegistry):void;
 
+		function get eventBusUserRegistry():IEventBusUserRegistry;
+		function set eventBusUserRegistry(value:IEventBusUserRegistry):void;
+
+		function registerInstance(instance:Object, objectName:String):void;
+
+		function destroy(instance:Object):void;
 	}
 }

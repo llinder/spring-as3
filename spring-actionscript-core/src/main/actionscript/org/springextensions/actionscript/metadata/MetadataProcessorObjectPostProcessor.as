@@ -20,6 +20,9 @@ package org.springextensions.actionscript.metadata {
 	import org.as3commons.lang.util.OrderedUtils;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getLogger;
+	import org.as3commons.metadata.process.IMetadataProcessor;
+	import org.as3commons.metadata.registry.IMetadataProcessorRegistry;
+	import org.as3commons.metadata.registry.impl.AS3ReflectMetadataProcessorRegistry;
 	import org.as3commons.reflect.IMetadataContainer;
 	import org.as3commons.reflect.MetadataContainer;
 	import org.as3commons.reflect.Type;
@@ -35,49 +38,22 @@ package org.springextensions.actionscript.metadata {
 	 * registry for <code>IMetaDataProcessor</code> definitions that are found in the specified <code>IObjectFactory</code>.
 	 * @author Roland Zwaga
 	 */
-	public class MetadataProcessorObjectPostProcessor implements IMetaDataProcessorObjectPostProcessor, IInitializingObject, IObjectFactoryAware, IStageObjectDestroyer {
+	public class MetadataProcessorObjectPostProcessor implements IMetaDataProcessorObjectPostProcessor, IInitializingObject, IObjectFactoryAware {
 
 		private static var LOGGER:ILogger = getLogger(MetadataProcessorObjectPostProcessor);
-
-		// --------------------------------------------------------------------
-		//
-		// Private Variables
-		//
-		// --------------------------------------------------------------------
-
-		private var _metadataProcessors:Dictionary;
-		private var _metadataDestroyers:Dictionary;
-
-		// --------------------------------------------------------------------
-		//
-		// Constructor
-		//
-		// --------------------------------------------------------------------
 
 		/**
 		 * Creates a new <code>MetadataProcessorObjectPostProcessor</code> instance.
 		 */
 		public function MetadataProcessorObjectPostProcessor() {
 			super();
-			initMetadataProcessorObjectPostProcessor();
+			_afterInitializationRegistry = new AS3ReflectMetadataProcessorRegistry();
+			_beforeInitializationRegistry = new AS3ReflectMetadataProcessorRegistry();
 		}
-
-		/**
-		 * Initializes the current <code>MetadataProcessorObjectPostProcessor</code>.
-		 *
-		 */
-		protected function initMetadataProcessorObjectPostProcessor():void {
-			_metadataProcessors = new Dictionary();
-			_metadataDestroyers = new Dictionary();
-		}
-
-		// --------------------------------------------------------------------
-		//
-		// Public Properties
-		//
-		// --------------------------------------------------------------------
 
 		private var _objectFactory:IObjectFactory;
+		private var _afterInitializationRegistry:IMetadataProcessorRegistry;
+		private var _beforeInitializationRegistry:IMetadataProcessorRegistry;
 
 		/**
 		 * @private
@@ -97,10 +73,7 @@ package org.springextensions.actionscript.metadata {
 		 * <code>processBeforeInitialization</code> property set to <code>true</code>.
 		 */
 		public function postProcessBeforeInitialization(object:*, objectName:String):* {
-			if (!(object is IMetadataProcessor)) {
-				return processObject(_metadataProcessors[true], object, objectName);
-			}
-			return object;
+			return _beforeInitializationRegistry.process(object, objectName);
 		}
 
 		/**
@@ -110,15 +83,7 @@ package org.springextensions.actionscript.metadata {
 		 * it will register it with the current <code>MetadataProcessorObjectPostProcessor</code>.</p>
 		 */
 		public function postProcessAfterInitialization(object:*, objectName:String):* {
-			if (object is IMetadataProcessor) {
-				var metaDataProcessor:IMetadataProcessor = IMetadataProcessor(object);
-				for each (var metaDataName:String in metaDataProcessor.metadataNames) {
-					addProcessor(metaDataName, metaDataProcessor);
-				}
-				return object;
-			}
-
-			return processObject(_metadataProcessors[false], object, objectName);
+			return _afterInitializationRegistry.process(object, objectName);
 		}
 
 		/**
@@ -128,66 +93,6 @@ package org.springextensions.actionscript.metadata {
 		public function afterPropertiesSet():void {
 			addMetadataProcessorsFromObjectPostProcessors();
 			addMetadataProcessorsFromObjectDefinitions();
-			addMetadataDestroyersFromObjectDefinitions();
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function addProcessor(metaDataName:String, metaDataProcessor:IMetadataProcessor):void {
-			var processorLookup:Dictionary = _metadataProcessors[metaDataProcessor.processBeforeInitialization];
-			if (processorLookup == null) {
-				processorLookup = new Dictionary();
-				_metadataProcessors[metaDataProcessor.processBeforeInitialization] = processorLookup;
-			}
-			var processorVector:Vector.<IMetadataProcessor> = processorLookup[metaDataName];
-			if (processorVector == null) {
-				processorVector = new Vector.<IMetadataProcessor>();
-			}
-			if (processorVector.indexOf(metaDataProcessor) < 0) {
-				processorVector[processorVector.length] = metaDataProcessor;
-				processorLookup[metaDataName] = processorVector.sort(OrderedUtils.orderedCompareFunction);
-			}
-		}
-
-		protected function addDestroyer(metaDataName:String, metaDataDestroyer:IMetadataDestroyer):void {
-			var destroyerVector:Vector.<IMetadataDestroyer> = _metadataDestroyers[metaDataName] ||= new Vector.<IMetadataDestroyer>();
-			if (destroyerVector.indexOf(metaDataDestroyer) < 0) {
-				destroyerVector[destroyerVector.length] = metaDataDestroyer;
-				_metadataDestroyers[metaDataName] = destroyerVector.sort(OrderedUtils.orderedCompareFunction);
-			}
-		}
-
-
-		// --------------------------------------------------------------------
-		//
-		// Protected Methods
-		//
-		// --------------------------------------------------------------------
-
-		protected function processObject(names:Dictionary, object:*, objectName:String):* {
-			if (names == null) {
-				return object;
-			}
-			var type:Type = Type.forInstance(object, _objectFactory.applicationDomain);
-			if (TypeUtils.isSimpleProperty(type)) {
-				return object;
-			}
-			for (var name:String in names) {
-				//LOGGER.debug("Invoking IMetadataProcessors for {0} metadata", name);
-				var processors:Vector.<IMetadataProcessor> = names[name] as Vector.<IMetadataProcessor>;
-				var containers:Array = type.getMetadataContainers(name);
-				containers ||= [];
-				if (type.hasMetadata(name)) {
-					containers[containers.length] = type;
-				}
-				for each (var cont:MetadataContainer in containers) {
-					for each (var proc:IMetadataProcessor in processors) {
-						proc.process(object, cont, name, objectName);
-					}
-				}
-			}
-			return object;
 		}
 
 		protected function addMetadataProcessorsFromObjectPostProcessors():void {
@@ -208,29 +113,18 @@ package org.springextensions.actionscript.metadata {
 				LOGGER.debug("{0} IMetadataProcessors found in object definitions, adding them to the current MetadataProcessorObjectPostProcessor.", [processors.length]);
 				for each (var name:String in processors) {
 					var metaDataProcessor:IMetadataProcessor = IMetadataProcessor(_objectFactory.getObject(name));
-					registerMetadataProcessor(metaDataProcessor);
+					if (!(metaDataProcessor is IMetadataDestroyer)) {
+						registerMetadataProcessor(metaDataProcessor);
+					}
 				}
 			}
-		}
-
-		protected function addMetadataDestroyersFromObjectDefinitions():void {
-			var destroyers:Vector.<String> = _objectFactory.objectDefinitionRegistry.getObjectNamesForType(IMetadataDestroyer);
-
-			if (destroyers != null) {
-				LOGGER.debug("{0} IMetadataDestroyers found in object definitions, adding them to the current MetadataProcessorObjectPostProcessor.", [destroyers.length]);
-				for each (var name:String in destroyers) {
-					var metaDataDestroyer:IMetadataDestroyer = IMetadataDestroyer(_objectFactory.getObject(name));
-					registerMetadataDestroyer(metaDataDestroyer);
-				}
-			}
-
 		}
 
 		protected function getMetadataProcessors(objectPostProcessors:Vector.<IObjectPostProcessor>):Vector.<IMetadataProcessor> {
 			var result:Vector.<IMetadataProcessor>;
 
 			for each (var objectPostProcessor:IObjectPostProcessor in objectPostProcessors) {
-				if (objectPostProcessor is IMetadataProcessor) {
+				if ((objectPostProcessor is IMetadataProcessor) && (!(objectPostProcessor is IMetadataDestroyer))) {
 					result ||= Vector.<IMetadataProcessor>();
 					result[result.length] = IMetadataProcessor(objectPostProcessor);
 				}
@@ -240,46 +134,27 @@ package org.springextensions.actionscript.metadata {
 		}
 
 		protected function registerMetadataProcessor(metadataProcessor:IMetadataProcessor):void {
-			for each (var metaDataName:String in metadataProcessor.metadataNames) {
-				LOGGER.debug("Registered metadata '[{0}]' with processor '{1}'", [metaDataName, metadataProcessor]);
-				addProcessor(metaDataName, metadataProcessor);
+			var registry:IMetadataProcessorRegistry = _afterInitializationRegistry;
+			if ((metadataProcessor is ISpringMetadaProcessor) && ((metadataProcessor as ISpringMetadaProcessor).processBeforeInitialization)) {
+				registry = _beforeInitializationRegistry;
 			}
+			registry.addProcessor(metadataProcessor);
 		}
 
-		protected function registerMetadataDestroyer(metaDataDestroyer:IMetadataDestroyer):void {
-			for each (var metaDataName:String in metaDataDestroyer.metadataNames) {
-				LOGGER.debug("Registered metadata '[{0}]' with destroyer '{1}'", [metaDataName, metaDataDestroyer]);
-				addDestroyer(metaDataName, metaDataDestroyer);
-			}
+		public function get beforeInitializationRegistry():IMetadataProcessorRegistry {
+			return _beforeInitializationRegistry;
 		}
 
-		public function destroy(displayObject:DisplayObject):DisplayObject {
-			var type:Type = Type.forInstance(displayObject, _objectFactory.applicationDomain);
-			if (TypeUtils.isSimpleProperty(type)) {
-				return displayObject;
-			}
-			for (var name:String in _metadataDestroyers) {
-				var destroyers:Vector.<IMetadataDestroyer> = _metadataDestroyers[name] as Vector.<IMetadataDestroyer>;
-				var containers:Array = [];
-				if (type.hasMetadata(name)) {
-					containers[containers.length] = type;
-				}
-				var otherContainers:Array = type.getMetadataContainers(name);
-				if (otherContainers != null) {
-					containers = containers.concat(otherContainers);
-				}
-				for each (var container:IMetadataContainer in containers) {
-					for each (var destroyer:IMetadataDestroyer in destroyers) {
-						destroyer.destroy(displayObject, container, name, null);
-					}
-				}
-
-			}
-			return displayObject;
+		public function set beforeInitializationRegistry(value:IMetadataProcessorRegistry):void {
+			_beforeInitializationRegistry = value;
 		}
 
-		public function process(displayObject:DisplayObject):DisplayObject {
-			return displayObject;
+		public function get afterInitializationRegistry():IMetadataProcessorRegistry {
+			return _afterInitializationRegistry;
+		}
+
+		public function set afterInitializationRegistry(value:IMetadataProcessorRegistry):void {
+			_afterInitializationRegistry = value;
 		}
 
 	}

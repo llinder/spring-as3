@@ -15,34 +15,29 @@
 */
 package org.springextensions.actionscript.metadata.processor {
 
+	import org.as3commons.metadata.process.impl.AbstractMetadataProcessor;
 	import org.as3commons.reflect.IMetadataContainer;
 	import org.as3commons.reflect.Method;
-	import org.springextensions.actionscript.metadata.IMetadataDestroyer;
 
 	/**
 	 *
-	 * @author rolandzwaga
+	 * @author Roland Zwaga
 	 */
-	public class LifeCycleMetadataDestroyer implements IMetadataDestroyer {
-		private static const PRE_DESTROY_NAME:String = "PreDestroy";
-		private var _metadataNames:Vector.<String>;
+	public class PostConstructMetadataProcessor extends AbstractMetadataProcessor {
+		private static const POST_CONSTRUCT_name:String = "PostConstruct";
 
 		/**
-		 * Creates a new <code>LifeCycleMetadataDestroyer</code> instance.
+		 * Creates a new <code>LifeCycleMetadataProcessor</code> instance.
 		 */
-		public function LifeCycleMetadataDestroyer() {
+		public function PostConstructMetadataProcessor() {
 			super();
-			_metadataNames = new Vector.<String>();
-			_metadataNames[_metadataNames.length] = PRE_DESTROY_NAME;
+			metadataNames[metadataNames.length] = POST_CONSTRUCT_name;
 		}
 
-		public function get metadataNames():Vector.<String> {
-			return _metadataNames;
-		}
-
-		public function destroy(instance:Object, container:IMetadataContainer, metadataName:String, objectName:String):void {
+		override public function process(target:Object, metadataName:String, info:*=null):* {
+			var container:IMetadataContainer = (info as Array)[0] as IMetadataContainer;
 			if (container is Method) {
-				instance[(container as Method).name]();
+				(container as Method).invoke(target, []);
 			}
 		}
 	}

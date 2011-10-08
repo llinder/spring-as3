@@ -17,10 +17,13 @@ package org.springextensions.actionscript.context.config {
 	import org.springextensions.actionscript.context.IApplicationContext;
 
 	/**
-	 *
+	 * Describes an object that is capable of configuring an <code>IApplicationContext</code>.
 	 * @author Roland Zwaga
 	 */
 	public interface IConfigurationPackage {
+		/**
+		 * @param applicationContext The specified <code>IApplicationContext</code> that will be configured by the current <code>IConfigurationPackage</code>.
+		 */
 		function execute(applicationContext:IApplicationContext):void;
 	}
 }

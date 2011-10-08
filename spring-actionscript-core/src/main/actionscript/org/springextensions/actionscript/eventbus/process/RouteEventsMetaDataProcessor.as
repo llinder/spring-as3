@@ -96,26 +96,17 @@ package org.springextensions.actionscript.eventbus.process {
 	 */
 	public class RouteEventsMetaDataProcessor extends AbstractEventBusMetadataProcessor implements IDisposable {
 
-		/** The events metadata argument */
 		public static const EVENTS_KEY:String = "events";
-		/** The Event metadata */
 		public static const EVENT_METADATA:String = "Event";
-		/** The name metadata argument */
 		public static const NAME_KEY:String = "name";
 		public static const ROUTE_EVENTS_METADATA:String = "RouteEvents";
 		public static const TOPICS_KEY:String = "topics";
 		public static const TOPIC_PROPERTIES_KEY:String = "topicProperties";
-
-		// --------------------------------------------------------------------
-		//
-		// Private Static Variables
-		//
-		// --------------------------------------------------------------------
+		public static const COMMA:String = ',';
+		public static const SPACE_CHAR:String = ' ';
+		public static const EMPTY:String = '';
 
 		private static const LOGGER:ILogger = getLogger(RouteEventsMetaDataProcessor);
-		private static const COMMA:String = ',';
-		private static const SPACE_CHAR:String = ' ';
-		private static const EMPTY:String = '';
 
 		// --------------------------------------------------------------------
 		//
@@ -127,43 +118,19 @@ package org.springextensions.actionscript.eventbus.process {
 		 * Creates a new <code>RouteEventsMetaDataPostProcessor</code> instance.
 		 */
 		public function RouteEventsMetaDataProcessor() {
-			var names:Vector.<String> = new Vector.<String>();
-			names[names.length] = ROUTE_EVENTS_METADATA;
-			super(false, names);
+			super();
+			metadataNames[metadataNames.length] = ROUTE_EVENTS_METADATA;
 		}
 
-		// --------------------------------------------------------------------
-		//
-		// Public Properties
-		//
-		// --------------------------------------------------------------------
 		private var _eventBusUserRegistry:IEventBusUserRegistry;
-
-		// --------------------------------------------------------------------
-		//
-		// Private Variables
-		//
-		// --------------------------------------------------------------------
-
-		private var _isDisposed:Boolean = false;
 		private var _typesLookup:Dictionary;
-
-		public function get isDisposed():Boolean {
-			return _isDisposed;
-		}
-
-		// --------------------------------------------------------------------
-		//
-		// Public Methods
-		//
-		// --------------------------------------------------------------------
 
 		/**
 		 * @inheritDoc
 		 */
-		public function dispose():void {
-			if (!_isDisposed) {
-				_isDisposed = true;
+		override public function dispose():void {
+			if (!isDisposed) {
+				super.dispose();
 			}
 		}
 
@@ -174,9 +141,10 @@ package org.springextensions.actionscript.eventbus.process {
 		 * @param name
 		 * @param objectName
 		 */
-		override public function process(instance:Object, container:IMetadataContainer, name:String, objectName:String):void {
+		override public function process(target:Object, metadataName:String, info:*=null):* {
+			var container:IMetadataContainer = (info as Array)[0] as IMetadataContainer;
 			var type:Type = container as Type;
-			if ((type != null) && (instance is IEventDispatcher)) {
+			if ((type != null) && (target is IEventDispatcher)) {
 				var metadatas:Array = type.getMetadata(ROUTE_EVENTS_METADATA);
 				for each (var metadata:Metadata in metadatas) {
 					var eventTypes:Vector.<String>;
@@ -185,7 +153,7 @@ package org.springextensions.actionscript.eventbus.process {
 					} else {
 						eventTypes = extractEventTypeNamesFromMetaData(type);
 					}
-					var topics:Array = getTopics(metadata, instance);
+					var topics:Array = getTopics(metadata, target);
 					var len:uint = topics.length;
 					for (var i:int = 0; i < len; ++i) {
 						var item:String = topics[i];
@@ -193,17 +161,10 @@ package org.springextensions.actionscript.eventbus.process {
 							topics[i] = new SoftReference(item);
 						}
 					}
-					eventBusUserRegistry.addEventListeners(IEventDispatcher(instance), eventTypes, topics);
+					eventBusUserRegistry.addEventListeners(IEventDispatcher(target), eventTypes, topics);
 				}
 			}
 		}
-
-		// --------------------------------------------------------------------
-		//
-		// Protected Methods
-		//
-		// --------------------------------------------------------------------
-
 
 		/**
 		 *

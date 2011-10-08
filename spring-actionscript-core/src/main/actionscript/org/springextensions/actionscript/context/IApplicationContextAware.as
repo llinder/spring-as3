@@ -30,7 +30,7 @@ package org.springextensions.actionscript.context {
 		function get applicationContext():IApplicationContext;
 
 		/**
-		 * @private
+		 * @param value
 		 */
 		function set applicationContext(value:IApplicationContext):void;
 	}

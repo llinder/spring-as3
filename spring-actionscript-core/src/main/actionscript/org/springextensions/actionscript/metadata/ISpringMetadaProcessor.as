@@ -18,11 +18,11 @@ package org.springextensions.actionscript.metadata {
 	import org.as3commons.metadata.process.IMetadataProcessor;
 
 	/**
-	 * Marker interface that indicates an <code>IMetadataProcessor</code> that needs to be invoked in the destruction
-	 * phase of an object's lifecycle.
+	 *
 	 * @author Roland Zwaga
 	 */
-	public interface IMetadataDestroyer extends IMetadataProcessor {
-
+	public interface ISpringMetadaProcessor extends IMetadataProcessor {
+		function get processBeforeInitialization():Boolean;
+		function set processBeforeInitialization(value:Boolean):void;
 	}
 }

@@ -44,8 +44,8 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.metadata.MetadataProcessorObjectFactoryPostProcessor;
-	import org.springextensions.actionscript.metadata.processor.LifeCycleMetadataDestroyer;
-	import org.springextensions.actionscript.metadata.processor.LifeCycleMetadataProcessor;
+	import org.springextensions.actionscript.metadata.processor.PreDestroyMetadataProcessor;
+	import org.springextensions.actionscript.metadata.processor.PostConstructMetadataProcessor;
 	import org.springextensions.actionscript.stage.StageProcessorFactoryPostprocessor;
 
 	[Event(name="complete", type="flash.events.Event")]
@@ -82,9 +82,9 @@ package org.springextensions.actionscript.context.impl {
 			addObjectFactoryPostProcessor(new MetadataProcessorObjectFactoryPostProcessor());
 			addObjectFactoryPostProcessor(new FactoryObjectFactoryPostProcessor());
 
-			var definition:IObjectDefinition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(LifeCycleMetadataProcessor, true));
+			var definition:IObjectDefinition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(PostConstructMetadataProcessor, true));
 			objectFactory.objectDefinitionRegistry.registerObjectDefinition("postConstructProcessor", definition);
-			definition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(LifeCycleMetadataDestroyer, true));
+			definition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(PreDestroyMetadataProcessor, true));
 			objectFactory.objectDefinitionRegistry.registerObjectDefinition("preDestroyProcessor", definition);
 
 			objectFactory.addObjectPostProcessor(new ApplicationContextAwareObjectPostProcessor(this));

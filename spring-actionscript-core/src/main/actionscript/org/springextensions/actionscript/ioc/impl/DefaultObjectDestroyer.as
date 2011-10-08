@@ -1,0 +1,113 @@
+/*
+* Copyright 2007-2011 the original author or authors.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+package org.springextensions.actionscript.ioc.impl {
+
+	import flash.utils.Dictionary;
+
+	import org.as3commons.lang.IDisposable;
+	import org.as3commons.lang.StringUtils;
+	import org.as3commons.metadata.registry.IMetadataProcessorRegistry;
+	import org.as3commons.metadata.registry.impl.AS3ReflectMetadataProcessorRegistry;
+	import org.as3commons.reflect.MethodInvoker;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
+	import org.springextensions.actionscript.ioc.IObjectDestroyer;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
+	import org.springextensions.actionscript.util.ContextUtils;
+
+	/**
+	 *
+	 * @author Roland Zwaga
+	 */
+	public class DefaultObjectDestroyer implements IObjectDestroyer, IObjectDefinitionRegistryAware, IDisposable {
+		private var _metadataProcessorRegistry:IMetadataProcessorRegistry;
+		private var _eventBusUserRegistry:IEventBusUserRegistry;
+		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
+		private var _managedObjects:Dictionary;
+		private var _isDisposed:Boolean;
+
+		/**
+		 * Creates a new <code>DefaultObjectDestroyer</code> instance.
+		 */
+		public function DefaultObjectDestroyer() {
+			super();
+			_managedObjects = new Dictionary(true);
+		}
+
+		public function get metadataProcessorRegistry():IMetadataProcessorRegistry {
+			return _metadataProcessorRegistry ||= new AS3ReflectMetadataProcessorRegistry();
+		}
+
+		public function set metadataProcessorRegistry(value:IMetadataProcessorRegistry):void {
+			_metadataProcessorRegistry = value;
+		}
+
+		public function get eventBusUserRegistry():IEventBusUserRegistry {
+			return _eventBusUserRegistry;
+		}
+
+		public function set eventBusUserRegistry(value:IEventBusUserRegistry):void {
+			_eventBusUserRegistry = value;
+		}
+
+		public function destroy(instance:Object):void {
+			var objectName:String = _managedObjects[instance];
+			metadataProcessorRegistry.process(instance, objectName);
+			if (objectName != null) {
+				var definition:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(objectName);
+				if (StringUtils.hasText(definition.destroyMethod)) {
+					var mi:MethodInvoker = new MethodInvoker();
+					mi.target = instance;
+					mi.method = definition.destroyMethod;
+					mi.invoke();
+				}
+			}
+			if (instance is IDisposable) {
+				(instance as IDisposable).dispose();
+			}
+		}
+
+		public function get objectDefinitionRegistry():IObjectDefinitionRegistry {
+			return _objectDefinitionRegistry;
+		}
+
+		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
+			_objectDefinitionRegistry = value;
+		}
+
+		public function registerInstance(instance:Object, objectName:String):void {
+			if ((instance != null) && (StringUtils.hasText(objectName))) {
+				_managedObjects[instance] = objectName;
+			}
+		}
+
+		public function get isDisposed():Boolean {
+			return _isDisposed;
+		}
+
+		public function dispose():void {
+			if (!_isDisposed) {
+				_isDisposed = true;
+				_managedObjects = null;
+				ContextUtils.disposeInstance(_metadataProcessorRegistry);
+				_metadataProcessorRegistry = null;
+				_eventBusUserRegistry = null;
+				_objectDefinitionRegistry = null;
+			}
+		}
+	}
+}

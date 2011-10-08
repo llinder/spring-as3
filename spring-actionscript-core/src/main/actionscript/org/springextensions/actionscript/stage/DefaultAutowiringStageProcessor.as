@@ -36,7 +36,7 @@ package org.springextensions.actionscript.stage {
 	 * @docref container-documentation.html#autowiring_stage_components
 	 * @sampleref stagewiring
 	 */
-	public class DefaultAutowiringStageProcessor implements IApplicationContextAware, IStageObjectProcessor, IStageObjectDestroyer, IDisposable, IInitializingObject {
+	public class DefaultAutowiringStageProcessor implements IApplicationContextAware, IStageObjectProcessor, IDisposable, IInitializingObject {
 		{
 			DefaultObjectDefinitionResolver;
 		}
@@ -120,17 +120,6 @@ package org.springextensions.actionscript.stage {
 			_objectDefinitionResolver = value;
 		}
 
-		public function destroy(displayObject:DisplayObject):DisplayObject {
-			delete componentCache[displayObject];
-			var objectDefinition:IObjectDefinition = (_objectDefinitionResolver ? _objectDefinitionResolver.resolveObjectDefinition(displayObject) : null);
-			if ((objectDefinition != null) && (StringUtils.hasText(objectDefinition.destroyMethod))) {
-				displayObject[objectDefinition.destroyMethod].apply(displayObject);
-			} else if (displayObject is IDisposable) {
-				IDisposable(displayObject).dispose();
-			}
-			return displayObject;
-		}
-
 		public function dispose():void {
 			if (!_isDisposed) {
 				componentCache = null;
@@ -161,6 +150,10 @@ package org.springextensions.actionscript.stage {
 					componentCache[displayObject] = true;
 					var objectDefinition:IObjectDefinition = (_objectDefinitionResolver ? _objectDefinitionResolver.resolveObjectDefinition(displayObject) : null);
 					_applicationContext.dependencyInjector.wire(displayObject, _applicationContext, objectDefinition);
+					var objectName:String = (objectDefinition != null) ? _applicationContext.objectDefinitionRegistry.getObjectDefinitionName(objectDefinition) : null;
+					if (_applicationContext.objectDestroyer != null) {
+						_applicationContext.objectDestroyer.registerInstance(displayObject, objectName);
+					}
 				}
 			}
 			return displayObject;

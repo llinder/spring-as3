@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.metadata {
+	import org.as3commons.metadata.registry.IMetadataProcessorRegistry;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 
 	/**
@@ -22,11 +23,9 @@ package org.springextensions.actionscript.metadata {
 	 * @author Roland Zwaga
 	 */
 	public interface IMetaDataProcessorObjectPostProcessor extends IObjectPostProcessor {
-		/**
-		 * Associates the specified <code>IMetadataProcessor</code> instance with the specified <code>metaDataName</code>.
-		 * @param metaDataName The specified <code>metaDataName</code>.
-		 * @param metaDataProcessor The specified <code>IMetadataProcessor</code>.
-		 */
-		function addProcessor(metaDataName:String, metaDataProcessor:IMetadataProcessor):void;
+		function get beforeInitializationRegistry():IMetadataProcessorRegistry;
+		function set beforeInitializationRegistry(value:IMetadataProcessorRegistry):void;
+		function get afterInitializationRegistry():IMetadataProcessorRegistry;
+		function set afterInitializationRegistry(value:IMetadataProcessorRegistry):void;
 	}
 }

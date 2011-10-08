@@ -35,6 +35,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.eventbus.impl.DefaultEventBusUserRegistry;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
+	import org.springextensions.actionscript.ioc.IObjectDestroyer;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
 	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessorAware;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
@@ -50,6 +51,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
+	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistryAware;
 	import org.springextensions.actionscript.ioc.objectdefinition.error.ObjectDefinitionNotFoundError;
 	import org.springextensions.actionscript.util.ContextUtils;
 
@@ -65,12 +67,12 @@ package org.springextensions.actionscript.ioc.factory.impl {
 
 		/**
 		 * Creates a new <code>DefaultObjectFactory</code> instance.
-		 * @param parent optional other <code>IObjectFactory</code> to be used as this <code>ObjectFactory's</code> parent.
+		 * @param parentFactory optional other <code>IObjectFactory</code> to be used as this <code>ObjectFactory's</code> parent.
 		 *
 		 */
-		public function DefaultObjectFactory(parent:IObjectFactory=null) {
+		public function DefaultObjectFactory(parentFactory:IObjectFactory=null) {
 			super();
-			initObjectFactory(parent);
+			parent = parentFactory;
 		}
 
 		private var _applicationDomain:ApplicationDomain;
@@ -82,6 +84,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		private var _isDisposed:Boolean;
 		private var _isReady:Boolean;
 		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
+		private var _objectDestroyer:IObjectDestroyer;
 		private var _objectPostProcessors:Vector.<IObjectPostProcessor>;
 		private var _parent:IObjectFactory;
 		private var _properties:Properties;
@@ -99,7 +102,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @private
 		 */
 		public function set applicationDomain(value:ApplicationDomain):void {
-			value ||= ApplicationDomain.currentDomain;
+			value ||= Type.currentApplicationDomain;
 			_applicationDomain = value;
 			var appDomainAware:IApplicationDomainAware = (_objectDefinitionRegistry as IApplicationDomainAware);
 			if (appDomainAware != null) {
@@ -224,6 +227,25 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		/**
 		 * @inheritDoc
 		 */
+		public function get objectDestroyer():IObjectDestroyer {
+			return _objectDestroyer;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set objectDestroyer(value:IObjectDestroyer):void {
+			_objectDestroyer = value;
+			if ((_objectDestroyer != null) && (_objectDestroyer is IObjectDefinitionRegistryAware)) {
+				if ((_objectDestroyer as IObjectDefinitionRegistryAware).objectDefinitionRegistry == null) {
+					(_objectDestroyer as IObjectDefinitionRegistryAware).objectDefinitionRegistry = objectDefinitionRegistry;
+				}
+			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function get objectPostProcessors():Vector.<IObjectPostProcessor> {
 			if (_objectPostProcessors == null) {
 				_objectPostProcessors = new Vector.<IObjectPostProcessor>();
@@ -281,7 +303,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				objectPostProcessors[objectPostProcessors.length] = objectPostProcessor;
 				_objectPostProcessors.sort(OrderedUtils.orderedCompareFunction);
 			} else {
-				//TODO: log error
+				//TODO: log error?
 			}
 			return this;
 		}
@@ -290,8 +312,12 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @inheritDoc
 		 */
 		public function addReferenceResolver(referenceResolver:IReferenceResolver):IObjectFactory {
-			referenceResolvers[referenceResolvers.length] = referenceResolver;
-			_referenceResolvers.sort(OrderedUtils.orderedCompareFunction);
+			if (referenceResolver != null) {
+				referenceResolvers[referenceResolvers.length] = referenceResolver;
+				_referenceResolvers.sort(OrderedUtils.orderedCompareFunction);
+			} else {
+				//TODO: log error?
+			}
 			return this;
 		}
 
@@ -311,14 +337,37 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			if (dependencyInjector != null) {
 				result = dependencyInjector.wire(result, this);
 			}
+			if (_objectDestroyer != null) {
+				_objectDestroyer.registerInstance(result, null);
+			}
 			return result;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function destroyObject(instance:Object):void {
+			if (_objectDestroyer != null) {
+				_objectDestroyer.destroy(instance);
+			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function dispose():void {
 			if (!_isDisposed) {
 				_applicationDomain = null;
 				ContextUtils.disposeInstance(_autowireProcessor);
 				_autowireProcessor = null;
+				if (_objectDestroyer != null) {
+					var names:Vector.<String> = _cache.getCachedNames();
+					for each (var name:String in names) {
+						_objectDestroyer.destroy(_cache.getInstance(name));
+					}
+				}
+				ContextUtils.disposeInstance(_objectDestroyer);
+				_objectDestroyer = null;
 				ContextUtils.disposeInstance(_cache);
 				_cache = null;
 				ContextUtils.disposeInstance(_dependencyInjector);
@@ -387,8 +436,8 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @inheritDoc
 		 */
 		public function resolveReference(reference:*):* {
-			if (reference == null) { // note: don't change this to !reference since we might pass in empty strings here
-				return null;
+			if (!reference) {
+				return reference;
 			}
 			for each (var referenceResolver:IReferenceResolver in referenceResolvers) {
 				if (referenceResolver.canResolve(reference)) {
@@ -402,16 +451,16 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @inheritDoc
 		 */
 		public function resolveReferences(references:Array):Array {
-			if ((!references) || (references.length == 0)) {
-				return null;
-			}
-			var result:Array = [];
+			var result:Array = (references && references.length > 0) ? [] : null;
 			for each (var ref:* in references) {
 				result[result.length] = resolveReference(ref);
 			}
 			return result;
 		}
 
+		/**
+		 *
+		 */
 		protected function addParentEventBusListener():void {
 			if ((parent is IEventBusAware) && (_eventBus is IEventBusListener)) {
 				IEventBusAware(parent).eventBus.addListener(IEventBusListener(_eventBus));
@@ -422,17 +471,17 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			var result:* = null;
 			try {
 				result = instantiateClass(objectDefinition, (!constructorArguments) ? objectDefinition.constructorArguments : constructorArguments);
-				var evt1:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_CREATED, result, name, constructorArguments);
-				dispatchEvent(evt1);
-				dispatchEventThroughEventBus(evt1);
+				var objectCreatedEvent:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_CREATED, result, name, constructorArguments);
+				dispatchEvent(objectCreatedEvent);
+				dispatchEventThroughEventBus(objectCreatedEvent);
 				if (dependencyInjector != null) {
 					var wiredResult:* = dependencyInjector.wire(result, this, objectDefinition, objectName);
 					if (wiredResult != null) {
 						result = wiredResult;
 					}
-					var evt2:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_WIRED, result, name, constructorArguments);
-					dispatchEvent(evt2);
-					dispatchEventThroughEventBus(evt2);
+					var objectWiredEvent:ObjectFactoryEvent = new ObjectFactoryEvent(ObjectFactoryEvent.OBJECT_WIRED, result, name, constructorArguments);
+					dispatchEvent(objectWiredEvent);
+					dispatchEventThroughEventBus(objectWiredEvent);
 				}
 			} catch (e:ClassNotFoundError) {
 				throw new ObjectContainerError(e.message, objectName);
@@ -463,15 +512,15 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				result = getInstanceFromCache(objectName);
 			}
 
-			// Only do dependency guarantee loop when the object hasn't been retrieved from
-			// the cache, when the object is in the early cache, do the dependency check. (Not sure if this is necessary though).
 			checkDependencies(result, objectName, objectDefinition);
 
-			// the object was not found in the cache or in the prepared cache
-			// create a new object from its definition
 			if (!result) {
 				result = attemptToInstantiate(objectDefinition, constructorArguments, name, objectName);
+				if (_objectDestroyer != null) {
+					_objectDestroyer.registerInstance(result, name);
+				}
 			}
+
 			return result;
 		}
 
@@ -482,6 +531,8 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @param objectDefinition
 		 */
 		protected function checkDependencies(result:*, objectName:String, objectDefinition:IObjectDefinition):void {
+			// Only do dependency guarantee loop when the object hasn't been retrieved from
+			// the cache, when the object is in the early cache, do the dependency check. (Not sure if this is necessary though).
 			if ((!result) || (_cache.isPrepared(objectName))) {
 				// guarantee creation of objects that the current object depends on
 				var dependsOn:Vector.<String> = objectDefinition.dependsOn;
@@ -588,14 +639,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		}
 
 		/**
-		 * Initializes the current <code>DefaultObjectFactory</code>.
-		 * @param parent
-		 */
-		protected function initObjectFactory(parentFactory:IObjectFactory):void {
-			parent = parentFactory;
-		}
-
-		/**
 		 *
 		 * @param objectDefinition
 		 * @param constructorArguments
@@ -627,10 +670,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 			if ((parent is IEventBusAware) && (_eventBus is IEventBusListener)) {
 				IEventBusAware(parent).eventBus.removeListener(IEventBusListener(_eventBus));
 			}
-		}
-
-		public function destroyObject(instance:*):void {
-			throw new IllegalOperationError("not implemented yet!");
 		}
 	}
 }

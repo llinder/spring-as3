@@ -20,12 +20,21 @@ package org.springextensions.actionscript.context.config.impl {
 	import org.springextensions.actionscript.ioc.factory.process.impl.factory.ClassScannerObjectFactoryPostProcessor;
 
 
+	/**
+	 * @author Roland Zwaga
+	 */
 	public class FullConfigurationPackage implements IConfigurationPackage {
 
+		/**
+		 * Creates a new <code>FullConfigurationPackage</code> instance.
+		 */
 		public function FullConfigurationPackage() {
 			super();
 		}
 
+		/**
+		 * @param applicationContext The specified <code>IApplicationContext</code> that will be configured by the current <code>FullConfigurationPackage</code>.
+		 */
 		public function execute(applicationContext:IApplicationContext):void {
 			applicationContext.addObjectFactoryPostProcessor(new ClassScannerObjectFactoryPostProcessor());
 		}

@@ -35,17 +35,17 @@ package org.springextensions.actionscript.context {
 		 */
 		function get childContexts():Vector.<IApplicationContext>;
 		/**
-		 *
+		 * Returns all the <code>IObjectDefinitionsProviders</code> that have been added to the current <code>IApplicationCntext</code>.
 		 */
 		function get definitionProviders():Vector.<IObjectDefinitionsProvider>;
 
 		/**
-		 *
+		 * Returns all the <code>IObjectFactoryPostProcessors</code> that have been added to the current <code>IApplicationCntext</code>.
 		 */
 		function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor>;
 
 		/**
-		 *
+		 * An <code>IPropertiesParser</code> instance that is used to turn textfiles into property key/value pairs.
 		 */
 		function get propertiesParser():IPropertiesParser;
 		/**
@@ -53,14 +53,8 @@ package org.springextensions.actionscript.context {
 		 */
 		function set propertiesParser(value:IPropertiesParser):void;
 
-		/**
-		 *
-		 */
 		function get rootView():DisplayObject;
 
-		/**
-		 *
-		 */
 		function get textFilesLoader():ITextFilesLoader;
 		/**
 		 * @private
@@ -68,8 +62,10 @@ package org.springextensions.actionscript.context {
 		function set textFilesLoader(value:ITextFilesLoader):void;
 
 		/**
-		 *
-		 * @param objectFactory
+		 * @param childContext the childContext
+		 * @param shareDefinitions share definitions
+		 * @param shareSingletons share singletons
+		 * @param shareEventBus share eventbus
 		 */
 		function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:Boolean=true):IApplicationContext;
 
@@ -90,9 +86,6 @@ package org.springextensions.actionscript.context {
 		 */
 		function configure(configurationPackage:IConfigurationPackage):IApplicationContext;
 
-		/**
-		 *
-		 */
 		function load():void;
 	}
 }

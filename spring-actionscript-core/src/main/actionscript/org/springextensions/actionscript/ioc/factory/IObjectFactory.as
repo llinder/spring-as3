@@ -16,8 +16,8 @@
 package org.springextensions.actionscript.ioc.factory {
 	import flash.events.IEventDispatcher;
 	import flash.system.ApplicationDomain;
-
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
+	import org.springextensions.actionscript.ioc.IObjectDestroyer;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesProvider;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
@@ -67,6 +67,16 @@ package org.springextensions.actionscript.ioc.factory {
 		/**
 		 *
 		 */
+		function get objectDestroyer():IObjectDestroyer;
+
+		/**
+		 * @private
+		 */
+		function set objectDestroyer(value:IObjectDestroyer):void;
+
+		/**
+		 *
+		 */
 		function get objectPostProcessors():Vector.<IObjectPostProcessor>;
 
 		/**
@@ -104,6 +114,8 @@ package org.springextensions.actionscript.ioc.factory {
 		 */
 		function addReferenceResolver(referenceResolver:IReferenceResolver):IObjectFactory;
 
+		function canCreate(objectName:String):Boolean;
+
 		/**
 		 * Creates an instance of the specified <code>Class</code>, wires the instance and returns it.
 		 * Useful for creating objects that have only been annotated with [Autowired] metadata and need
@@ -113,6 +125,12 @@ package org.springextensions.actionscript.ioc.factory {
 		 * @return The created and wired instance of the specified <code>Class</code>.
 		 */
 		function createInstance(clazz:Class, constructorArguments:Array=null):*;
+
+		/**
+		 *
+		 * @param instance
+		 */
+		function destroyObject(instance:Object):void;
 		/**
 		 * Will retrieve an object by it's name/id If the definition is a singleton it will be retrieved from
 		 * cache if possible. If the definition defines an init method, the init method will be called after
@@ -160,12 +178,6 @@ package org.springextensions.actionscript.ioc.factory {
 
 		/**
 		 *
-		 * @param instance
-		 */
-		function destroyObject(instance:*):void;
-
-		/**
-		 *
 		 * @param objectName
 		 * @return
 		 */
@@ -185,7 +197,5 @@ package org.springextensions.actionscript.ioc.factory {
 		 * @return
 		 */
 		function resolveReferences(references:Array):Array;
-
-		function canCreate(objectName:String):Boolean;
 	}
 }

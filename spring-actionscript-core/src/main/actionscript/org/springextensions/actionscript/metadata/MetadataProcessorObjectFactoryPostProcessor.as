@@ -19,6 +19,7 @@ package org.springextensions.actionscript.metadata {
 	import org.as3commons.lang.Assert;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getLogger;
+	import org.as3commons.metadata.process.IMetadataProcessor;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
 
