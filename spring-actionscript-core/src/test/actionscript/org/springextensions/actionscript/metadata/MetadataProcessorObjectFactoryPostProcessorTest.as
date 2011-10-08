@@ -19,6 +19,7 @@ package org.springextensions.actionscript.metadata {
 	import mockolate.runner.MockolateRule;
 	import mockolate.verify;
 
+	import org.as3commons.metadata.process.IMetadataProcessor;
 	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;

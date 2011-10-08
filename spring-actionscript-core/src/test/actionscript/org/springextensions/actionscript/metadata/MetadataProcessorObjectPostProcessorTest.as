@@ -20,6 +20,7 @@ package org.springextensions.actionscript.metadata {
 	import mockolate.stub;
 	import mockolate.verify;
 
+	import org.as3commons.metadata.process.IMetadataProcessor;
 	import org.hamcrest.core.anything;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -36,7 +37,7 @@ package org.springextensions.actionscript.metadata {
 		[Mock]
 		public var objectDefinitionRegistry:IObjectDefinitionRegistry;
 		[Mock]
-		public var metadataProcessor:IMetadataProcessor;
+		public var metadataProcessor:ISpringMetadaProcessor;
 
 		public function MetadataProcessorObjectPostProcessorTest() {
 			super();
@@ -46,7 +47,7 @@ package org.springextensions.actionscript.metadata {
 		public function testAfterPropertiesSetWithIMetadataProcessorObjectDefinition():void {
 			objectFactory = nice(IObjectFactory);
 			objectDefinitionRegistry = nice(IObjectDefinitionRegistry);
-			metadataProcessor = nice(IMetadataProcessor);
+			metadataProcessor = nice(ISpringMetadaProcessor);
 
 			mock(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionRegistry);
 			var vec:Vector.<String> = new Vector.<String>();
