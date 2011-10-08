@@ -29,6 +29,7 @@ package org.springextensions.actionscript.context.impl.mxml {
 	import org.springextensions.actionscript.context.config.IConfigurationPackage;
 	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
+	import org.springextensions.actionscript.ioc.IObjectDestroyer;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.impl.mxml.MXMLObjectDefinitionsProvider;
@@ -401,8 +402,16 @@ package org.springextensions.actionscript.context.impl.mxml {
 			initializeContext();
 		}
 
-		public function destroyObject(instance:*):void {
+		public function destroyObject(instance:Object):void {
 			_applicationContext.destroyObject(instance);
+		}
+
+		public function get objectDestroyer():IObjectDestroyer {
+			return _applicationContext.objectDestroyer;
+		}
+
+		public function set objectDestroyer(value:IObjectDestroyer):void {
+			_applicationContext.objectDestroyer = value;
 		}
 	}
 }
