@@ -20,13 +20,13 @@ package org.springextensions.actionscript.mvc.processor {
 	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.logging.api.ILogger;
 	import org.as3commons.logging.api.getClassLogger;
+	import org.as3commons.metadata.process.impl.AbstractMetadataProcessor;
 	import org.as3commons.reflect.IMetadataContainer;
 	import org.as3commons.reflect.Metadata;
 	import org.as3commons.reflect.MetadataArgument;
 	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
-	import org.springextensions.actionscript.metadata.AbstractMetadataProcessor;
 	import org.springextensions.actionscript.mvc.event.MVCEvent;
 
 	/**
@@ -53,7 +53,8 @@ package org.springextensions.actionscript.mvc.processor {
 		protected static const NAME_KEY:String = "name";
 
 		public function MVCRouteEventsMetaDataProcessor() {
-			super(true, new Vector.<String>[ROUTE_MVC_EVENTS_METADATA]);
+			super();
+			metadataNames[metadataNames.length] = ROUTE_MVC_EVENTS_METADATA;
 		}
 
 		// ----------------------------
@@ -73,9 +74,10 @@ package org.springextensions.actionscript.mvc.processor {
 		/**
 		 * @inheritDoc
 		 */
-		override public function process(instance:Object, container:IMetadataContainer, name:String, objectName:String):void {
+		override public function process(target:Object, metadataName:String, info:*=null):* {
+			var container:IMetadataContainer = (info as Array)[0] as IMetadataContainer;
 			var type:Type = container as Type;
-			if ((type != null) && (instance is IEventDispatcher)) {
+			if ((type != null) && (target is IEventDispatcher)) {
 				var metadata:Metadata = type.getMetadata(ROUTE_MVC_EVENTS_METADATA)[0];
 				var eventTypes:Array;
 				if (metadata.hasArgumentWithKey(EVENTS_KEY)) {
@@ -83,7 +85,7 @@ package org.springextensions.actionscript.mvc.processor {
 				} else {
 					eventTypes = extractEventTypeNamesFromMetaData(type);
 				}
-				addEventListeners(instance as IEventDispatcher, eventTypes);
+				addEventListeners(target as IEventDispatcher, eventTypes);
 			}
 		}
 
