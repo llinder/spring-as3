@@ -19,6 +19,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 	import flash.system.ApplicationDomain;
 
 	import org.as3commons.lang.ClassUtils;
+	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.XMLObjectDefinitionsParser;
 
@@ -73,7 +74,7 @@ package org.springextensions.actionscript.ioc.config.impl.xml.parser.impl.nodepa
 		 * @return <code>True</code> if the <code>mx.collections.ArrayCollection</code> class is available.
 		 */
 		public static function canCreate(applicationDomain:ApplicationDomain=null):Boolean {
-			applicationDomain ||= ApplicationDomain.currentDomain;
+			applicationDomain ||= Type.currentApplicationDomain;
 			try {
 				var cls:Class = ClassUtils.forName(MXCOLLECTIONS_ARRAY_COLLECTION_CLASS_NAME, applicationDomain);
 				_arrrayCollectionClass = cls;

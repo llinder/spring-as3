@@ -82,10 +82,12 @@ package org.springextensions.actionscript.context.impl {
 			addObjectFactoryPostProcessor(new MetadataProcessorObjectFactoryPostProcessor());
 			addObjectFactoryPostProcessor(new FactoryObjectFactoryPostProcessor());
 
-			var definition:IObjectDefinition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(PostConstructMetadataProcessor, true));
-			objectFactory.objectDefinitionRegistry.registerObjectDefinition("postConstructProcessor", definition);
-			definition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(PreDestroyMetadataProcessor, true));
-			objectFactory.objectDefinitionRegistry.registerObjectDefinition("preDestroyProcessor", definition);
+			if (objectFactory.objectDefinitionRegistry != null) {
+				var definition:IObjectDefinition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(PostConstructMetadataProcessor, true));
+				objectFactory.objectDefinitionRegistry.registerObjectDefinition("postConstructProcessor", definition);
+				definition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(PreDestroyMetadataProcessor, true));
+				objectFactory.objectDefinitionRegistry.registerObjectDefinition("preDestroyProcessor", definition);
+			}
 
 			objectFactory.addObjectPostProcessor(new ApplicationContextAwareObjectPostProcessor(this));
 			objectFactory.addObjectPostProcessor(new ApplicationDomainAwarePostProcessor(this));

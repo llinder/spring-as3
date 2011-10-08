@@ -35,6 +35,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.as3commons.lang.ICloneable;
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.util.OrderedUtils;
+	import org.as3commons.reflect.Type;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistry;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
@@ -107,7 +108,7 @@ package org.springextensions.actionscript.context.impl {
 		 * @inheritDoc
 		 */
 		public function get applicationDomain():ApplicationDomain {
-			return (objectFactory != null) ? objectFactory.applicationDomain : ApplicationDomain.currentDomain;
+			return (objectFactory != null) ? objectFactory.applicationDomain : Type.currentApplicationDomain;
 		}
 
 		/**
@@ -782,7 +783,7 @@ package org.springextensions.actionscript.context.impl {
 				} catch (e:Error) {
 				}
 			}
-			return ApplicationDomain.currentDomain;
+			return Type.currentApplicationDomain;
 		}
 
 		//TODO: check is rootView is a module, or part of a module and resolve its loaderInfo from that.
