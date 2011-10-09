@@ -36,7 +36,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.springextensions.actionscript.ioc.config.impl.metadata.WaitingOperation;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
-	import org.springextensions.actionscript.metadata.classscanner.IClassScanner;
+	import org.springextensions.actionscript.metadata.IClassScanner;
 	import org.springextensions.actionscript.util.ContextUtils;
 	import org.springextensions.actionscript.util.Environment;
 
@@ -49,24 +49,12 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	 */
 	public class ClassScannerObjectFactoryPostProcessor implements IObjectFactoryPostProcessor, IApplicationDomainAware, IOrdered, IDisposable {
 
-		// --------------------------------------------------------------------
-		//
-		// Constructor
-		//
-		// --------------------------------------------------------------------
-
 		/**
 		 * Creates a new <code>ClassScannerObjectFactoryPostProcessor</code>.
 		 */
 		public function ClassScannerObjectFactoryPostProcessor() {
 			super();
 		}
-
-		// --------------------------------------------------------------------
-		//
-		// Private Variables
-		//
-		// --------------------------------------------------------------------
 
 		private var _applicationDomain:ApplicationDomain;
 		private var _isDisposed:Boolean;
@@ -75,12 +63,6 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		private var _scanners:Vector.<IClassScanner>;
 		private var _timeOutToken:uint = 0;
 		private var _waitingOperation:WaitingOperation;
-
-		// --------------------------------------------------------------------
-		//
-		// Public Properties
-		//
-		// --------------------------------------------------------------------
 
 		/**
 		 * @inheritDoc
@@ -124,12 +106,6 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			_scanners = value;
 		}
 
-		// --------------------------------------------------------------------
-		//
-		// Public Methods
-		//
-		// --------------------------------------------------------------------
-
 		/**
 		 *
 		 * @param scanner
@@ -146,17 +122,18 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 		 */
 		public function dispose():void {
 			if (!_isDisposed) {
+				_isDisposed = true;
 				_applicationDomain = null;
 				for each (var scanner:IClassScanner in _scanners) {
 					ContextUtils.disposeInstance(scanner);
 				}
+				_scanners = null;
 				if (_timeOutToken > 0) {
 					clearTimeout(_timeOutToken);
 				}
 				ContextUtils.disposeInstance(_waitingOperation);
 				_waitingOperation = null;
 				_objectFactory = null;
-				_isDisposed = true;
 			}
 		}
 
@@ -242,19 +219,13 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			if (scanner is IApplicationContextAware) {
 				IApplicationContextAware(scanner).applicationContext = _objectFactory as IApplicationContext;
 			}
-			for each (var name:String in scanner.metaDataNames) {
+			for each (var name:String in scanner.metadataNames) {
 				var classNames:Array = typeCache.getClassesWithMetadata(name);
 				for each (var className:String in classNames) {
-					scanner.scan(className);
+					scanner.process(className, name);
 				}
 			}
 		}
-
-		// --------------------------------------------------------------------
-		//
-		// Protected Methods
-		//
-		// --------------------------------------------------------------------
 
 		/**
 		 *

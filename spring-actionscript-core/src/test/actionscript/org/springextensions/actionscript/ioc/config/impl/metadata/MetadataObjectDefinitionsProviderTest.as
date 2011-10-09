@@ -106,7 +106,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponent():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponent");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponent"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			assertTrue(StringUtils.startsWith(String(names[0]), MetadataConfigUtils.SCANNED_COMPONENT_NAME_PREFIX));
@@ -114,7 +114,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedNamedComponent():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedNamedComponent");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedNamedComponent"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			assertEquals("annotatedNamedComponent", String(names[0]));
@@ -122,7 +122,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedNamedComponentWithExplicitIDKey():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedNamedComponent2");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedNamedComponent2"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			assertEquals("annotatedNamedComponent2", String(names[0]));
@@ -130,7 +130,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedScopedComponent():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedScopedComponent");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedScopedComponent"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -139,7 +139,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponentWithInitMethod():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentInOtherPackage");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentInOtherPackage"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -148,7 +148,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponentWithDependencyCheck():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithDependencyCheck");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithDependencyCheck"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -157,7 +157,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponentWithAutowired():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithAutowired");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithAutowired"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -166,7 +166,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponentWithPrimaryLazyInitAndFactoryMethod():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithPrimaryLazyInitAndFactoryMethod");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithPrimaryLazyInitAndFactoryMethod"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -178,7 +178,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponentWithDestroyMethod():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithDestroyMethod");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithDestroyMethod"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -187,7 +187,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponentWithSkips():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithSkips");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithSkips"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -197,7 +197,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponentWithDependsOn():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithDependsOn");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithDependsOn"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -208,7 +208,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponentWithExplicitProperties():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithPropertiesWithExplicitValues");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithPropertiesWithExplicitValues"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -218,7 +218,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponentWithRefProperties():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithPropertiesWithRefs");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithPropertiesWithRefs"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -232,7 +232,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponentWithMethodInvocations():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithMethodInvocations");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithMethodInvocations"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -263,7 +263,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testAnnotatedComponentWithConstructor():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithConstructor");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.AnnotatedComponentWithConstructor"]);
 			assertEquals(1, _provider.internalRegistry.numObjectDefinitions);
 			var names:Vector.<String> = _provider.internalRegistry.objectDefinitionNames;
 			var objDef:IObjectDefinition = _provider.internalRegistry.getObjectDefinition(names[0]);
@@ -274,7 +274,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 
 		[Test]
 		public function testScan_shouldResolveConstructorArgumentsViaReflection():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithConstructorArguments");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithConstructorArguments"]);
 
 			var registry:IObjectDefinitionRegistry = _provider.internalRegistry;
 
@@ -302,7 +302,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 		}
 
 		/*public function testScan_shouldResolvePropertiesViaReflection():void {
-			_provider.scan("org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithProperties");
+			_provider.scanClassNames(["org.springextensions.actionscript.test.testtypes.metadatascan.ComponentWithProperties");
 
 			var appContext:IApplicationContext = _scanner.applicationContext;
 
@@ -348,7 +348,7 @@ package org.springextensions.actionscript.ioc.config.impl.metadata {
 			var registry:IObjectDefinitionRegistry = _provider.internalRegistry;
 
 
-			assertEquals(4, registry.numObjectDefinitions);
+			assertEquals(3, registry.numObjectDefinitions);
 
 			var names:Vector.<String> = registry.objectDefinitionNames;
 			var objectDefinitions:Vector.<IObjectDefinition> = registry.getObjectDefinitionsForType(ComponentWithConstructorArgumentsTypedToInterface);
