@@ -33,8 +33,8 @@ package org.springextensions.actionscript.context.impl.metadata {
 		/**
 		 * Creates a new <code>MetadataApplicationContext</code> instance.
 		 */
-		public function MetadataApplicationContext(rootView:DisplayObject, parent:IApplicationContext=null, objFactory:IObjectFactory=null) {
-			super(parent, rootView, objFactory);
+		public function MetadataApplicationContext(rootViews:Vector.<DisplayObject>, parent:IApplicationContext=null, objFactory:IObjectFactory=null) {
+			super(parent, rootViews, objFactory);
 			var provider:MetadataObjectDefinitionsProvider = new MetadataObjectDefinitionsProvider();
 			addDefinitionProvider(provider);
 		}

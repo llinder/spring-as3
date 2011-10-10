@@ -80,9 +80,9 @@ package org.springextensions.actionscript.stage {
 				return null;
 			}
 
-			var rootView:DisplayObject;
+			var rootViews:Vector.<DisplayObject>;
 			if (objectFactory is IApplicationContext) {
-				rootView = IApplicationContext(objectFactory).rootView;
+				rootViews = IApplicationContext(objectFactory).rootViews;
 			}
 			var stageProcessorRegistry:IStageObjectProcessorRegistry = (objectFactory is IStageObjectProcessorRegistryAware) ? IStageObjectProcessorRegistryAware(objectFactory).stageProcessorRegistry : null;
 
@@ -96,10 +96,12 @@ package org.springextensions.actionscript.stage {
 				}
 			}
 
-			if (stageProcessorRegistry) {
+			if (stageProcessorRegistry != null) {
 				for each (var name:String in stageProcessorNames) {
 					var objectSelector:IObjectSelector = resolveObjectSelector(objectFactory, name);
-					registerProcessor(stageProcessorRegistry, IStageObjectProcessor(objectFactory.getObject(name)), rootView, objectSelector);
+					for each (var rootView:DisplayObject in rootViews) {
+						registerProcessor(stageProcessorRegistry, IStageObjectProcessor(objectFactory.getObject(name)), rootView, objectSelector);
+					}
 				}
 				stageProcessorRegistry.initialize();
 			}

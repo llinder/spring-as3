@@ -36,6 +36,8 @@ package org.springextensions.actionscript.context.impl {
 	import org.as3commons.lang.IDisposable;
 	import org.as3commons.lang.util.OrderedUtils;
 	import org.as3commons.reflect.Type;
+	import org.as3commons.stageprocessing.IObjectSelector;
+	import org.as3commons.stageprocessing.IStageObjectProcessor;
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistry;
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
@@ -73,9 +75,9 @@ package org.springextensions.actionscript.context.impl {
 	 * @author Roland Zwaga
 	 */
 	public class ApplicationContext extends EventDispatcher implements IApplicationContext, IDisposable, IAutowireProcessorAware, IEventBusAware, IEventBusUserRegistryAware, ILoaderInfoAware {
+
 		private static const APPLICATION_CONTEXT_PROPERTIES_LOADER_NAME:String = "applicationContextTextFilesLoader";
 		private static const DEFINITION_PROVIDER_QUEUE_NAME:String = "definitionProviderQueue";
-
 		private static const GET_ASSOCIATED_FACTORY_METHOD_NAME:String = "getAssociatedFactory";
 		private static const MXMODULES_MODULE_MANAGER_CLASS_NAME:String = "mx.modules.ModuleManager";
 		private static const NEWLINE_CHAR:String = "\n";
@@ -84,14 +86,17 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * Creates a new <code>ApplicationContext</code> instance.
 		 */
-		public function ApplicationContext(parent:IApplicationContext=null, rootView:DisplayObject=null, objFactory:IObjectFactory=null) {
+		public function ApplicationContext(parent:IApplicationContext=null, rootViews:Vector.<DisplayObject>=null, objFactory:IObjectFactory=null) {
 			super();
-			initApplicationContext(parent, rootView, objFactory);
+			objectFactory = objFactory;
+			_definitionProviders = new Vector.<IObjectDefinitionsProvider>();
+			_rootViews = rootViews ||= new Vector.<DisplayObject>();
+			applicationDomain = resolveRootViewApplicationDomain(_rootViews);
+			loaderInfo = resolveRootViewLoaderInfo(_rootViews);
 		}
 
 		protected var objectFactory:IObjectFactory;
 		private var _childContexts:Vector.<IApplicationContext>;
-
 		private var _definitionProviders:Vector.<IObjectDefinitionsProvider>;
 		private var _eventBus:IEventBus;
 		private var _isDisposed:Boolean;
@@ -99,7 +104,7 @@ package org.springextensions.actionscript.context.impl {
 		private var _objectFactoryPostProcessors:Vector.<IObjectFactoryPostProcessor>;
 		private var _operationQueue:IOperationQueue;
 		private var _propertiesParser:IPropertiesParser;
-		private var _rootView:DisplayObject;
+		private var _rootViews:Vector.<DisplayObject>;
 		private var _stageProcessorRegistry:IStageObjectProcessorRegistry;
 		private var _textFilesLoader:ITextFilesLoader;
 		private var _token:uint;
@@ -260,6 +265,20 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * @inheritDoc
 		 */
+		public function get objectDestroyer():IObjectDestroyer {
+			return objectFactory.objectDestroyer;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set objectDestroyer(value:IObjectDestroyer):void {
+			objectFactory.objectDestroyer = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor> {
 			return _objectFactoryPostProcessors ||= new Vector.<IObjectFactoryPostProcessor>();
 		}
@@ -323,8 +342,8 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function get rootView():DisplayObject {
-			return _rootView;
+		public function get rootViews():Vector.<DisplayObject> {
+			return _rootViews;
 		}
 
 		/**
@@ -412,6 +431,22 @@ package org.springextensions.actionscript.context.impl {
 			return objectFactory.addReferenceResolver(referenceResolver);
 		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function addRootView(rootView:DisplayObject):void {
+			rootViews[rootViews.length] = rootView;
+			if ((objectFactory.isReady) && (rootViews.length > 1) && (stageProcessorRegistry != null)) {
+				var processors:Vector.<IStageObjectProcessor> = stageProcessorRegistry.getStageProcessorsByRootView(rootViews[0]);
+				for each (var processor:IStageObjectProcessor in processors) {
+					var selectors:Vector.<IObjectSelector> = stageProcessorRegistry.getObjectSelectorsForStageProcessor(processor);
+					for each (var selector:IObjectSelector in selectors) {
+						stageProcessorRegistry.registerStageObjectProcessor(processor, selector, rootView);
+					}
+				}
+			}
+		}
+
 		public function canCreate(objectName:String):Boolean {
 			return objectFactory.canCreate(objectName);
 		}
@@ -429,6 +464,13 @@ package org.springextensions.actionscript.context.impl {
 		 */
 		public function createInstance(clazz:Class, constructorArguments:Array=null):* {
 			return objectFactory.createInstance(clazz, constructorArguments);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function destroyObject(instance:Object):void {
+			objectFactory.destroyObject(instance);
 		}
 
 		/**
@@ -452,7 +494,7 @@ package org.springextensions.actionscript.context.impl {
 					_eventBus = null;
 
 					_operationQueue = null;
-					_rootView = null;
+					_rootViews = null;
 
 					if (_stageProcessorRegistry != null) {
 						_stageProcessorRegistry.clear();
@@ -504,6 +546,23 @@ package org.springextensions.actionscript.context.impl {
 				} else {
 					_operationQueue = null;
 					cleanUpObjectDefinitionCreation();
+				}
+			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function removeRootView(rootView:DisplayObject):void {
+			var idx:int = rootViews.indexOf(rootView);
+			if (idx > -1) {
+				rootViews.splice(idx, 1);
+				var processors:Vector.<IStageObjectProcessor> = stageProcessorRegistry.getStageProcessorsByRootView(rootView);
+				for each (var processor:IStageObjectProcessor in processors) {
+					var selectors:Vector.<IObjectSelector> = stageProcessorRegistry.getObjectSelectorsForStageProcessor(processor);
+					for each (var selector:IObjectSelector in selectors) {
+						stageProcessorRegistry.unregisterStageObjectProcessor(processor, selector, rootView);
+					}
 				}
 			}
 		}
@@ -691,14 +750,6 @@ package org.springextensions.actionscript.context.impl {
 		protected function handleObjectFactoriesError(error:*):void {
 		}
 
-		protected function initApplicationContext(parent:IApplicationContext, rootView:DisplayObject, objFactory:IObjectFactory):void {
-			objectFactory = objFactory;
-			_definitionProviders = new Vector.<IObjectDefinitionsProvider>();
-			_rootView = rootView;
-			applicationDomain = resolveRootViewApplicationDomain(_rootView);
-			loaderInfo = resolveRootViewLoaderInfo(_rootView);
-		}
-
 		/**
 		 *
 		 */
@@ -772,11 +823,11 @@ package org.springextensions.actionscript.context.impl {
 			}
 		}
 
-		protected function resolveRootViewApplicationDomain(view:DisplayObject):ApplicationDomain {
-			if (view != null) {
+		protected function resolveRootViewApplicationDomain(views:Vector.<DisplayObject>):ApplicationDomain {
+			if ((views != null) && (views.length > 0)) {
 				try {
 					var cls:Class = ClassUtils.forName(MXMODULES_MODULE_MANAGER_CLASS_NAME, applicationDomain);
-					var factory:Object = cls[GET_ASSOCIATED_FACTORY_METHOD_NAME](view);
+					var factory:Object = cls[GET_ASSOCIATED_FACTORY_METHOD_NAME](views[0]);
 					if (factory != null) {
 						return ApplicationDomain(factory.info().currentDomain);
 					}
@@ -786,16 +837,15 @@ package org.springextensions.actionscript.context.impl {
 			return Type.currentApplicationDomain;
 		}
 
-		//TODO: check is rootView is a module, or part of a module and resolve its loaderInfo from that.
-		protected function resolveRootViewLoaderInfo(view:DisplayObject):LoaderInfo {
+		protected function resolveRootViewLoaderInfo(views:Vector.<DisplayObject>):LoaderInfo {
 			var loaderInfo:LoaderInfo;
-			if (view == null) {
+			if ((views == null) || (views.length == 0)) {
 				var stage:Stage = Environment.getCurrentStage();
 				if (stage != null) {
 					loaderInfo = stage.loaderInfo;
 				}
 			} else {
-				loaderInfo = view.loaderInfo;
+				loaderInfo = views[0].loaderInfo;
 			}
 			if (loaderInfo == null) {
 				waitForLoaderInfo();
@@ -807,24 +857,9 @@ package org.springextensions.actionscript.context.impl {
 			_token = setTimeout(function():void {
 				if (_loaderInfo == null) {
 					clearTimeout(_token);
-					_loaderInfo = resolveRootViewLoaderInfo(_rootView);
+					_loaderInfo = resolveRootViewLoaderInfo(_rootViews);
 				}
 			}, 500);
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function destroyObject(instance:Object):void {
-			objectFactory.destroyObject(instance);
-		}
-
-		public function get objectDestroyer():IObjectDestroyer {
-			return objectFactory.objectDestroyer;
-		}
-
-		public function set objectDestroyer(value:IObjectDestroyer):void {
-			objectFactory.objectDestroyer = value;
 		}
 	}
 }

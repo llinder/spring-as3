@@ -18,15 +18,17 @@ package org.springextensions.actionscript.stage {
 	import flash.display.DisplayObject;
 
 	import org.as3commons.stageprocessing.IStageObjectDestroyer;
+	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
 
 	/**
 	 *
-	 * @author rolandzwaga
+	 * @author Roland Zwaga
 	 */
-	public class DefaultStageObjectDestroyer implements IObjectFactoryAware, IStageObjectDestroyer {
-		private var _objectFactory:IObjectFactory;
+	public class DefaultStageObjectDestroyer implements IApplicationContextAware, IStageObjectDestroyer {
+		private var _applicationContext:IApplicationContext;
 
 		/**
 		 * Creates a new <code>DefaultStageObjectDestroyer</code> instance.
@@ -35,19 +37,24 @@ package org.springextensions.actionscript.stage {
 			super();
 		}
 
-		public function set objectFactory(objectFactory:IObjectFactory):void {
-			_objectFactory = objectFactory;
-		}
-
 		public function destroy(displayObject:DisplayObject):DisplayObject {
-			if (_objectFactory != null) {
-				_objectFactory.destroyObject(displayObject);
+			if (_applicationContext != null) {
+				_applicationContext.destroyObject(displayObject);
+				_applicationContext.removeRootView(displayObject);
 			}
 			return displayObject;
 		}
 
 		public function process(displayObject:DisplayObject):DisplayObject {
 			return displayObject;
+		}
+
+		public function get applicationContext():IApplicationContext {
+			return _applicationContext;
+		}
+
+		public function set applicationContext(value:IApplicationContext):void {
+			_applicationContext = value;
 		}
 	}
 }

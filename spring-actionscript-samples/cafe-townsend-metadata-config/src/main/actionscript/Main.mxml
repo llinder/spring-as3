@@ -46,7 +46,8 @@
 			}
 
 			protected function application1_preinitializeHandler(event:FlexEvent):void {
-				_appContext = new MetadataApplicationContext(this);
+				var rootViews:Vector.<DisplayObject> = new <DisplayObject>[this];
+				_appContext = new MetadataApplicationContext(rootViews);
 				_appContext.addEventListener(Event.COMPLETE, applicationContext_completeHandler);
 				_appContext.addEventListener(IOErrorEvent.IO_ERROR, applicationContext_ioErrorHandler);
 				_appContext.load();

@@ -122,7 +122,7 @@ package org.springextensions.actionscript.mvc.processor {
 		 * @see org.springextensions.actionscript.core.event.IEventBus IEventBus
 		 */
 		protected function rerouteToEventBus(event:Event):void {
-			IEventBusAware(applicationContext).eventBus.dispatchEvent(new MVCEvent(_applicationContext.rootView, event));
+			IEventBusAware(applicationContext).eventBus.dispatchEvent(new MVCEvent(_applicationContext.rootViews[0], event));
 		}
 
 	}

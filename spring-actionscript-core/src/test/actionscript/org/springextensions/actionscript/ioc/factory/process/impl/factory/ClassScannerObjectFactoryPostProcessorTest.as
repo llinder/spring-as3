@@ -25,7 +25,7 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 	import org.flexunit.asserts.assertNull;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
-	import org.springextensions.actionscript.metadata.classscanner.IClassScanner;
+	import org.springextensions.actionscript.metadata.IClassScanner;
 
 	/**
 	 *

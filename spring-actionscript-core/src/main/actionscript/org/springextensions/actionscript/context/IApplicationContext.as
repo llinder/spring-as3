@@ -15,7 +15,6 @@
 */
 package org.springextensions.actionscript.context {
 	import flash.display.DisplayObject;
-
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
 	import org.springextensions.actionscript.context.config.IConfigurationPackage;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
@@ -53,8 +52,14 @@ package org.springextensions.actionscript.context {
 		 */
 		function set propertiesParser(value:IPropertiesParser):void;
 
-		function get rootView():DisplayObject;
+		/**
+		 *
+		 */
+		function get rootViews():Vector.<DisplayObject>;
 
+		/**
+		 *
+		 */
 		function get textFilesLoader():ITextFilesLoader;
 		/**
 		 * @private
@@ -82,10 +87,25 @@ package org.springextensions.actionscript.context {
 
 		/**
 		 *
+		 * @param rootView
+		 */
+		function addRootView(rootView:DisplayObject):void;
+
+		/**
+		 *
+		 * @param rootView
+		 */
+		function removeRootView(rootView:DisplayObject):void;
+
+		/**
+		 *
 		 * @param configurationPackage
 		 */
 		function configure(configurationPackage:IConfigurationPackage):IApplicationContext;
 
+		/**
+		 *
+		 */
 		function load():void;
 	}
 }

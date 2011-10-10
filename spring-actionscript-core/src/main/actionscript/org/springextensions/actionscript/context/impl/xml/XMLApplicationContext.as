@@ -28,8 +28,8 @@ package org.springextensions.actionscript.context.impl.xml {
 
 	public class XMLApplicationContext extends DefaultApplicationContext {
 
-		public function XMLApplicationContext(configLocation:*=null, parent:IApplicationContext=null, rootView:DisplayObject=null, objFactory:IObjectFactory=null) {
-			super(parent, rootView, objFactory);
+		public function XMLApplicationContext(configLocation:*=null, parent:IApplicationContext=null, rootViews:Vector.<DisplayObject>=null, objFactory:IObjectFactory=null) {
+			super(parent, rootViews, objFactory);
 			var provider:XMLObjectDefinitionsProvider = new XMLObjectDefinitionsProvider((configLocation != null) ? [configLocation] : null);
 			addDefinitionProvider(provider);
 		}

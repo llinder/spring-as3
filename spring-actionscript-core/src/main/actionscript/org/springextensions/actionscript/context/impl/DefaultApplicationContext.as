@@ -44,8 +44,8 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.metadata.MetadataProcessorObjectFactoryPostProcessor;
-	import org.springextensions.actionscript.metadata.processor.PreDestroyMetadataProcessor;
 	import org.springextensions.actionscript.metadata.processor.PostConstructMetadataProcessor;
+	import org.springextensions.actionscript.metadata.processor.PreDestroyMetadataProcessor;
 	import org.springextensions.actionscript.stage.StageProcessorFactoryPostprocessor;
 
 	[Event(name="complete", type="flash.events.Event")]
@@ -60,9 +60,10 @@ package org.springextensions.actionscript.context.impl {
 		 * @param parent
 		 * @param objFactory
 		 */
-		public function DefaultApplicationContext(parent:IApplicationContext=null, rootView:DisplayObject=null, objFactory:IObjectFactory=null) {
-			super();
-			initApplicationContext(parent, rootView, objFactory);
+		public function DefaultApplicationContext(parent:IApplicationContext=null, rootViews:Vector.<DisplayObject>=null, objFactory:IObjectFactory=null) {
+			objectFactory = objFactory ||= createDefaultObjectFactory(parent);
+			super(parent, rootViews, objFactory);
+			initApplicationContext();
 		}
 
 		/**
@@ -71,10 +72,7 @@ package org.springextensions.actionscript.context.impl {
 		 * @param rootView
 		 * @param objFactory
 		 */
-		override protected function initApplicationContext(parent:IApplicationContext, rootView:DisplayObject, objFactory:IObjectFactory):void {
-			objectFactory = objFactory ||= createDefaultObjectFactory(parent);
-			super.initApplicationContext(parent, rootView, objFactory);
-
+		protected function initApplicationContext():void {
 			addObjectFactoryPostProcessor(new RegisterObjectPostProcessorsFactoryPostProcessor(-100));
 			addObjectFactoryPostProcessor(new RegisterObjectFactoryPostProcessorsFactoryPostProcessor(-99));
 			addObjectFactoryPostProcessor(new ObjectDefinitonFactoryPostProcessor(1000));
@@ -84,9 +82,9 @@ package org.springextensions.actionscript.context.impl {
 
 			if (objectFactory.objectDefinitionRegistry != null) {
 				var definition:IObjectDefinition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(PostConstructMetadataProcessor, true));
-				objectFactory.objectDefinitionRegistry.registerObjectDefinition("postConstructProcessor", definition);
+				objectFactory.objectDefinitionRegistry.registerObjectDefinition("springactionscript_postConstructProcessor", definition);
 				definition = new ObjectDefinition(ClassUtils.getFullyQualifiedName(PreDestroyMetadataProcessor, true));
-				objectFactory.objectDefinitionRegistry.registerObjectDefinition("preDestroyProcessor", definition);
+				objectFactory.objectDefinitionRegistry.registerObjectDefinition("springactionscript_preDestroyProcessor", definition);
 			}
 
 			objectFactory.addObjectPostProcessor(new ApplicationContextAwareObjectPostProcessor(this));

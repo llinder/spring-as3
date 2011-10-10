@@ -69,13 +69,9 @@ package org.springextensions.actionscript.context.impl.mxml {
 		private var _autoLoad:Boolean = false;
 		private var _configurationPackage:IConfigurationPackage;
 		private var _configurations:Array;
+		private var _contextInitialized:Boolean;
 		private var _document:Object;
 		private var _id:String;
-		private var _contextInitialized:Boolean;
-
-		public function get contextInitialized():Boolean {
-			return _contextInitialized;
-		}
 
 		/**
 		 * @inheritDoc
@@ -161,6 +157,10 @@ package org.springextensions.actionscript.context.impl.mxml {
 			}
 		}
 
+		public function get contextInitialized():Boolean {
+			return _contextInitialized;
+		}
+
 		public function get definitionProviders():Vector.<IObjectDefinitionsProvider> {
 			return _applicationContext.definitionProviders;
 		}
@@ -225,6 +225,14 @@ package org.springextensions.actionscript.context.impl.mxml {
 			_applicationContext.objectDefinitionRegistry = value;
 		}
 
+		public function get objectDestroyer():IObjectDestroyer {
+			return _applicationContext.objectDestroyer;
+		}
+
+		public function set objectDestroyer(value:IObjectDestroyer):void {
+			_applicationContext.objectDestroyer = value;
+		}
+
 		public function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor> {
 			return _applicationContext.objectFactoryPostProcessors;
 		}
@@ -261,8 +269,8 @@ package org.springextensions.actionscript.context.impl.mxml {
 			return _applicationContext.referenceResolvers;
 		}
 
-		public function get rootView():DisplayObject {
-			return _applicationContext.rootView;
+		public function get rootViews():Vector.<DisplayObject> {
+			return _applicationContext.rootViews;
 		}
 
 		public function get stageProcessorRegistry():IStageObjectProcessorRegistry {
@@ -301,6 +309,10 @@ package org.springextensions.actionscript.context.impl.mxml {
 			return _applicationContext.addReferenceResolver(referenceResolver);
 		}
 
+		public function addRootView(rootView:DisplayObject):void {
+			_applicationContext.addRootView(rootView);
+		}
+
 		public function canCreate(objectName:String):Boolean {
 			return _applicationContext.canCreate(objectName);
 		}
@@ -311,6 +323,10 @@ package org.springextensions.actionscript.context.impl.mxml {
 
 		public function createInstance(clazz:Class, constructorArguments:Array=null):* {
 			return _applicationContext.createInstance(clazz, constructorArguments);
+		}
+
+		public function destroyObject(instance:Object):void {
+			_applicationContext.destroyObject(instance);
 		}
 
 		public function getObject(name:String, constructorArguments:Array=null):* {
@@ -327,7 +343,7 @@ package org.springextensions.actionscript.context.impl.mxml {
 		public function initializeContext():void {
 			if (!_contextInitialized) {
 				if (_applicationContext == null) {
-					_applicationContext = new DefaultApplicationContext(null, (_document as DisplayObject));
+					_applicationContext = new DefaultApplicationContext(null, new <DisplayObject>[(_document as DisplayObject)]);
 				}
 				_applicationContext.addDefinitionProvider(new MXMLObjectDefinitionsProvider());
 				if (_configurationPackage != null) {
@@ -365,6 +381,10 @@ package org.springextensions.actionscript.context.impl.mxml {
 			doLoad();
 		}
 
+		public function removeRootView(rootView:DisplayObject):void {
+			_applicationContext.removeRootView(rootView);
+		}
+
 		public function resolveReference(reference:*):* {
 			return _applicationContext.resolveReference(reference);
 		}
@@ -400,18 +420,6 @@ package org.springextensions.actionscript.context.impl.mxml {
 		protected function onComplete(event:FlexEvent):void {
 			IEventDispatcher(_document).removeEventListener(FlexEvent.CREATION_COMPLETE, onComplete);
 			initializeContext();
-		}
-
-		public function destroyObject(instance:Object):void {
-			_applicationContext.destroyObject(instance);
-		}
-
-		public function get objectDestroyer():IObjectDestroyer {
-			return _applicationContext.objectDestroyer;
-		}
-
-		public function set objectDestroyer(value:IObjectDestroyer):void {
-			_applicationContext.objectDestroyer = value;
 		}
 	}
 }
