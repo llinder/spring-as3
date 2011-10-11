@@ -236,11 +236,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 */
 		public function set objectDestroyer(value:IObjectDestroyer):void {
 			_objectDestroyer = value;
-			if ((_objectDestroyer != null) && (_objectDestroyer is IObjectDefinitionRegistryAware)) {
-				if ((_objectDestroyer as IObjectDefinitionRegistryAware).objectDefinitionRegistry == null) {
-					(_objectDestroyer as IObjectDefinitionRegistryAware).objectDefinitionRegistry = objectDefinitionRegistry;
-				}
-			}
 		}
 
 		/**

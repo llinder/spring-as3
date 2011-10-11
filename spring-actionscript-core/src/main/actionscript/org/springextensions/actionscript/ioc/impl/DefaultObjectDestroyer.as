@@ -22,7 +22,10 @@ package org.springextensions.actionscript.ioc.impl {
 	import org.as3commons.metadata.registry.IMetadataProcessorRegistry;
 	import org.as3commons.metadata.registry.impl.AS3ReflectMetadataProcessorRegistry;
 	import org.as3commons.reflect.MethodInvoker;
+	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
+	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.IObjectDestroyer;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinitionRegistry;
@@ -33,19 +36,19 @@ package org.springextensions.actionscript.ioc.impl {
 	 *
 	 * @author Roland Zwaga
 	 */
-	public class DefaultObjectDestroyer implements IObjectDestroyer, IObjectDefinitionRegistryAware, IDisposable {
+	public class DefaultObjectDestroyer implements IObjectDestroyer, IApplicationContextAware, IDisposable {
 		private var _metadataProcessorRegistry:IMetadataProcessorRegistry;
-		private var _eventBusUserRegistry:IEventBusUserRegistry;
-		private var _objectDefinitionRegistry:IObjectDefinitionRegistry;
 		private var _managedObjects:Dictionary;
 		private var _isDisposed:Boolean;
+		private var _applicationContext:IApplicationContext;
 
 		/**
 		 * Creates a new <code>DefaultObjectDestroyer</code> instance.
 		 */
-		public function DefaultObjectDestroyer() {
+		public function DefaultObjectDestroyer(context:IApplicationContext) {
 			super();
 			_managedObjects = new Dictionary(true);
+			_applicationContext = context;
 		}
 
 		public function get metadataProcessorRegistry():IMetadataProcessorRegistry {
@@ -57,18 +60,18 @@ package org.springextensions.actionscript.ioc.impl {
 		}
 
 		public function get eventBusUserRegistry():IEventBusUserRegistry {
-			return _eventBusUserRegistry;
+			return (_applicationContext is IEventBusUserRegistryAware) ? IEventBusUserRegistryAware(_applicationContext).eventBusUserRegistry : null;
 		}
 
 		public function set eventBusUserRegistry(value:IEventBusUserRegistry):void {
-			_eventBusUserRegistry = value;
+			//not used
 		}
 
 		public function destroy(instance:Object):void {
 			var objectName:String = _managedObjects[instance];
 			metadataProcessorRegistry.process(instance, objectName);
-			if (objectName != null) {
-				var definition:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(objectName);
+			if ((objectName != null) && (_applicationContext.objectDefinitionRegistry.containsObjectDefinition(objectName))) {
+				var definition:IObjectDefinition = _applicationContext.objectDefinitionRegistry.getObjectDefinition(objectName);
 				if (StringUtils.hasText(definition.destroyMethod)) {
 					var mi:MethodInvoker = new MethodInvoker();
 					mi.target = instance;
@@ -81,16 +84,8 @@ package org.springextensions.actionscript.ioc.impl {
 			}
 		}
 
-		public function get objectDefinitionRegistry():IObjectDefinitionRegistry {
-			return _objectDefinitionRegistry;
-		}
-
-		public function set objectDefinitionRegistry(value:IObjectDefinitionRegistry):void {
-			_objectDefinitionRegistry = value;
-		}
-
 		public function registerInstance(instance:Object, objectName:String):void {
-			if ((instance != null) && (StringUtils.hasText(objectName))) {
+			if (instance != null) {
 				_managedObjects[instance] = objectName;
 			}
 		}
@@ -105,9 +100,16 @@ package org.springextensions.actionscript.ioc.impl {
 				_managedObjects = null;
 				ContextUtils.disposeInstance(_metadataProcessorRegistry);
 				_metadataProcessorRegistry = null;
-				_eventBusUserRegistry = null;
-				_objectDefinitionRegistry = null;
+				_applicationContext = null;
 			}
+		}
+
+		public function get applicationContext():IApplicationContext {
+			return _applicationContext;
+		}
+
+		public function set applicationContext(value:IApplicationContext):void {
+			_applicationContext = value;
 		}
 	}
 }

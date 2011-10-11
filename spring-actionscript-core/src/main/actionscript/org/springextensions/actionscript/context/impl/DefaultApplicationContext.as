@@ -40,6 +40,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.factory.process.impl.object.ObjectDefinitionRegistryAwareObjectPostProcessor;
 	import org.springextensions.actionscript.ioc.factory.process.impl.object.ObjectFactoryAwarePostProcessor;
 	import org.springextensions.actionscript.ioc.impl.DefaultDependencyInjector;
+	import org.springextensions.actionscript.ioc.impl.DefaultObjectDestroyer;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.DefaultObjectDefinitionRegistry;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
@@ -114,6 +115,7 @@ package org.springextensions.actionscript.context.impl {
 			defaultObjectFactory.objectDefinitionRegistry = new DefaultObjectDefinitionRegistry();
 			defaultObjectFactory.eventBus = new EventBus();
 			defaultObjectFactory.dependencyInjector = new DefaultDependencyInjector();
+			defaultObjectFactory.objectDestroyer = new DefaultObjectDestroyer(this);
 			var autowireProcessor:DefaultAutowireProcessor = new DefaultAutowireProcessor(this);
 			defaultObjectFactory.autowireProcessor = autowireProcessor;
 			return defaultObjectFactory;
