@@ -615,6 +615,7 @@
 			<type>swc</type>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.adobe.flex.framework</groupId>
 			<artifactId>airglobal</artifactId>
@@ -622,6 +623,7 @@
 			<type>swc</type>
 			<scope>provided</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.adobe.flex.framework</groupId>
 			<artifactId>airframework</artifactId>
@@ -629,6 +631,7 @@
 			<type>swc</type>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.adobe.flex.framework</groupId>
 			<artifactId>framework</artifactId>
@@ -636,6 +639,7 @@
 			<type>swc</type>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.adobe.flex.framework</groupId>
 			<artifactId>mx</artifactId>
@@ -643,6 +647,7 @@
 			<type>swc</type>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.adobe.flex.framework</groupId>
 			<artifactId>textLayout</artifactId>
@@ -650,6 +655,7 @@
 			<type>swc</type>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.adobe.flex.framework</groupId>
 			<artifactId>framework</artifactId>
@@ -657,6 +663,7 @@
 			<type>rb.swc</type>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.adobe.flex.framework</groupId>
 			<artifactId>mx</artifactId>
