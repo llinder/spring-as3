@@ -1,15 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter version="5.0" xml:id="advanced-context-features" xmlns="http://docbook.org/ns/docbook"
 	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns5="http://www.w3.org/1999/xhtml"
-	xmlns:ns4="http://www.w3.org/1998/Math/MathML" xmlns:ns3="http://www.w3.org/2000/svg"
-	xmlns:ns="http://docbook.org/ns/docbook">
+	xmlns:ns4="http://www.w3.org/1998/Math/MathML" xmlns:ns3="http://www.w3.org/2000/svg">
 	<title>Advanced context features</title>
 
 	<sect1 xml:id="knowing-your-parent-and-your-children">
 		<title>Knowing your parent and/or your children</title>
-		<para>...</para>
-		<sect2 xml:id="context-parents"><title>Context parents</title><para></para></sect2>
-		<sect2 xml:id="context-children"><title>Context children</title><para></para></sect2>
+		<para>There two ways of linking contexts. Both dictate how information is shared between these
+			contexts.</para>
+		<para>The following sections describe the differences and the ways to set these scenario's
+			up.</para>
+		<sect2 xml:id="context-parents">
+			<title>Context parents</title>
+			<para>In the first case a context is assigned a parent. In this case the child knows about the
+				parent, yet the parent knows nothing about the child context. By assigning another
+					<literal>IApplicationContext</literal> instance to this parent property the getObject()
+				method will first see if the current context can create the requested object instance, if no
+				appropriate <literal>ObjectDefinition</literal> can be found it will request it from its
+				parent factory.</para>
+			<para>When a context gets assigned a parent it will automatically add its eventbus as a
+				listener to its parent's eventbus. That way all regular events dispatched by the parent will
+				also be received by the child.</para>
+			<sect3 xml:id="a-simple-example-of-a-child-parent-hierarchy"><title>A simple example of a child/parent hierarchy</title><para> Imagine a scenario with two application contexts. One is created by the main application and
+					the other is created inside a module that is loaded at a later time.</para>
+				<para> We will refer to the first as  <emphasis role="bold">application context</emphasis>
+					 and the latter as  <emphasis role="bold">child context</emphasis> . </para>
+				<para> Now imagine the configuration of the <emphasis role="bold">application
+						context</emphasis> to look like
+					this:<programlisting language="xml">&lt;objects>
+
+ &lt;object class="com.myclasses.MyObject" id="myObject" scope="singleton"/>
+ 
+ &lt;object class="com.myclasses.MyOtherObject" id="myOtherObject" scope="prototype"/>
+
+&lt;/objects></programlisting></para>
+				<para>And the <emphasis role="bold">child context</emphasis> looking like
+					this:<programlisting language="xml">&lt;objects>
+
+ &lt;object class="com.myclasses.moduleimplementations.MyOtherObject" id="myOtherObject" scope="prototype"/>
+
+&lt;/objects></programlisting></para>
+				<para>When the <emphasis role="bold">child context</emphasis> is created, we will set the
+						<emphasis role="bold">application context</emphasis> as its
+					parent:<programlisting language="actionscript">var childContext:DefaultApplicationContext = new DefaultApplicationContext("module-context.xml");
+childContext.parent = applicationContext;</programlisting></para>
+				<para>The result of this is that, when an object with id <emphasis role="bold"
+						>myOtherObject</emphasis> is requested from the <emphasis role="bold">application
+						context</emphasis>, you will receive an instance of type <emphasis role="italic"
+						>com.myclasses.MyOtherObject</emphasis>. However, when you request the same object id
+					from the <emphasis role="bold">child context</emphasis>, you will receive an instance of
+					type <emphasis role="italic"
+					>com.myclasses.moduleimplementations.MyOtherObject</emphasis>.</para>
+				<para> Next, we change both configurations slightly, add some dependencies and show how to
+					override those dependencies in the child configuration.</para>
+				<para> Here's how the <emphasis role="bold">application context</emphasis>'s configuration
+					looks:<programlisting language="xml">&lt;objects>
+
+ &lt;object class="com.myclasses.MyObject" id="myObject" scope="singleton"/>
+ 
+ &lt;object class="com.myclasses.MyOtherObject" id="myOtherObject" scope="prototype">
+  &lt;property name="dependency" ref="myDependency"/>
+ &lt;/object>
+ 
+ &lt;object class="com.dependencies.MyDependency" id="myDependency"/>
+
+&lt;/objects></programlisting></para>
+				<para> Now requesting an object with id  <emphasis role="bold">myOtherObject</emphasis>
+					 from the <emphasis role="bold">application context</emphasis> will yield you an instance
+					of type  <emphasis role="italic">com.myclasses.MyOtherObject</emphasis>  with a  <emphasis
+						role="italic">dependency</emphasis>  property value set to an instance of type 
+						<emphasis role="italic">com.dependencies.MyDependency</emphasis>.</para>
+				<para>After that we change the <emphasis role="bold">child context</emphasis> configuration
+					to look like
+					this:<programlisting language="xml">&lt;objects>
+
+ &lt;object class="com.moduledependencies.MyDependency" id="myDependency"/>
+
+&lt;/objects></programlisting></para>
+				<para>When we subsequently request an object with id <emphasis role="bold"
+						>myOtherObject</emphasis> from the <emphasis role="bold">child context</emphasis> the
+					result will be an instance of type  <emphasis role="italic"
+						>com.myclasses.MyOtherObject</emphasis>  with a  <emphasis role="italic"
+						>dependency</emphasis>  property value set to an instance of type <emphasis
+						role="italic">com.moduledependencies.MyDependency</emphasis>.<note>
+						<para> Overriding references like this will only work on objects that are scoped as 
+								<emphasis role="italic">prototype</emphasis> , this is because its very probable
+							that the object has already been cached by the parent context when requested, and
+							injecting singletons created by the parent with  <emphasis role="italic"
+								>dependencies</emphasis>  created by the  <emphasis role="italic">child</emphasis>
+							 context will suddenly put a dependency from the application context on the child
+							context, which is undesirable.</para>
+					</note></para></sect3>
+		</sect2>
+		<sect2 xml:id="context-children">
+			<title>Context children</title>
+			<para/>
+		</sect2>
 	</sect1>
 
 	<sect1 xml:id="contexts-and-modules">
