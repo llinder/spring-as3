@@ -13,23 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.springextensions.actionscript.ioc {
-	import org.as3commons.metadata.registry.IMetadataProcessorRegistry;
-	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
+package org.springextensions.actionscript.test.testtypes.eventbus {
+
+	import org.as3commons.eventbus.IEventBus;
+	import org.as3commons.eventbus.IEventBusListener;
 
 	/**
 	 *
 	 * @author Roland Zwaga
 	 */
-	public interface IObjectDestroyer {
-		function get metadataProcessorRegistry():IMetadataProcessorRegistry;
-		function set metadataProcessorRegistry(value:IMetadataProcessorRegistry):void;
+	public interface IEventBusAndListener extends IEventBusListener, IEventBus {
 
-		function get eventBusUserRegistry():IEventBusUserRegistry;
-		function set eventBusUserRegistry(value:IEventBusUserRegistry):void;
-
-		function registerInstance(instance:Object, objectName:String=null):void;
-
-		function destroy(instance:Object):void;
 	}
 }

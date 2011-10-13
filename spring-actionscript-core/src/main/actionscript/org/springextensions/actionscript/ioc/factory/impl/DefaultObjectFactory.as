@@ -284,10 +284,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 * @inheritDoc
 		 */
 		public function get referenceResolvers():Vector.<IReferenceResolver> {
-			if (_referenceResolvers == null) {
-				_referenceResolvers = new Vector.<IReferenceResolver>();
-			}
-			return _referenceResolvers;
+			return _referenceResolvers ||= new Vector.<IReferenceResolver>();
 		}
 
 		/**
@@ -295,8 +292,10 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 */
 		public function addObjectPostProcessor(objectPostProcessor:IObjectPostProcessor):IObjectFactory {
 			if (objectPostProcessor != null) {
-				objectPostProcessors[objectPostProcessors.length] = objectPostProcessor;
-				_objectPostProcessors.sort(OrderedUtils.orderedCompareFunction);
+				if (objectPostProcessors.indexOf(objectPostProcessor) < 0) {
+					objectPostProcessors[objectPostProcessors.length] = objectPostProcessor;
+					_objectPostProcessors.sort(OrderedUtils.orderedCompareFunction);
+				}
 			} else {
 				//TODO: log error?
 			}
@@ -333,7 +332,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 				result = dependencyInjector.wire(result, this);
 			}
 			if (_objectDestroyer != null) {
-				_objectDestroyer.registerInstance(result, null);
+				_objectDestroyer.registerInstance(result);
 			}
 			return result;
 		}
@@ -352,6 +351,9 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 */
 		public function dispose():void {
 			if (!_isDisposed) {
+				if ((parent is IEventBusAware) && (_eventBus is IEventBusListener)) {
+					IEventBusAware(parent).eventBus.removeListener(IEventBusListener(_eventBus));
+				}
 				_applicationDomain = null;
 				ContextUtils.disposeInstance(_autowireProcessor);
 				_autowireProcessor = null;

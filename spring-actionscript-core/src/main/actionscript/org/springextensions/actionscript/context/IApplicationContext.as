@@ -15,8 +15,10 @@
 */
 package org.springextensions.actionscript.context {
 	import flash.display.DisplayObject;
+
 	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
 	import org.springextensions.actionscript.context.config.IConfigurationPackage;
+	import org.springextensions.actionscript.eventbus.EventBusShareKind;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
 	import org.springextensions.actionscript.ioc.config.property.IPropertiesParser;
@@ -71,8 +73,16 @@ package org.springextensions.actionscript.context {
 		 * @param shareDefinitions share definitions
 		 * @param shareSingletons share singletons
 		 * @param shareEventBus share eventbus
+		 * @return
 		 */
-		function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:Boolean=true):IApplicationContext;
+		function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:EventBusShareKind=null):IApplicationContext;
+
+		/**
+		 *
+		 * @param childContext
+		 * @return
+		 */
+		function removeChildContext(childContext:IApplicationContext):IApplicationContext;
 
 		/**
 		 *

@@ -84,7 +84,7 @@ package org.springextensions.actionscript.ioc.impl {
 			}
 		}
 
-		public function registerInstance(instance:Object, objectName:String):void {
+		public function registerInstance(instance:Object, objectName:String=null):void {
 			if (instance != null) {
 				_managedObjects[instance] = objectName;
 			}

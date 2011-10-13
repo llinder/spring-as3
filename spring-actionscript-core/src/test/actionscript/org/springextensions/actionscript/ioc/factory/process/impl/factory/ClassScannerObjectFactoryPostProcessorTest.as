@@ -100,10 +100,10 @@ package org.springextensions.actionscript.ioc.factory.process.impl.factory {
 			cache = nice(ByteCodeTypeCache);
 			var names:Vector.<String> = new Vector.<String>();
 			names[names.length] = "metadata1";
-			mock(classScanner).getter("metaDataNames").returns(names).once();
+			mock(classScanner).getter("metadataNames").returns(names).once();
 			var classNames:Array = ["com.classes.MyClass", "com.classes.MyClass2"];
-			mock(classScanner).method("scan").args(classNames[0]).once();
-			mock(classScanner).method("scan").args(classNames[1]).once();
+			mock(classScanner).method("process").args(classNames[0], "metadata1").once();
+			mock(classScanner).method("process").args(classNames[1], "metadata1").once();
 			mock(cache).method("getClassesWithMetadata").args("metadata1").returns(classNames).once();
 			_processor.doScan(classScanner, cache);
 			verify(classScanner);

@@ -25,11 +25,14 @@ package org.springextensions.actionscript.context.impl {
 	import mockolate.verify;
 
 	import org.as3commons.async.operation.event.OperationEvent;
+	import org.as3commons.eventbus.IEventBus;
 	import org.flexunit.asserts.assertEquals;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertStrictlyEquals;
 	import org.flexunit.async.Async;
 	import org.hamcrest.core.anything;
+	import org.springextensions.actionscript.context.IApplicationContext;
+	import org.springextensions.actionscript.eventbus.EventBusShareKind;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
 	import org.springextensions.actionscript.ioc.config.ITextFilesLoader;
@@ -47,6 +50,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinition;
 	import org.springextensions.actionscript.test.testtypes.IAutowireProcessorAwareObjectFactory;
 	import org.springextensions.actionscript.test.testtypes.MockDefinitionProviderResultOperation;
+	import org.springextensions.actionscript.test.testtypes.eventbus.IEventBusAndListener;
 
 
 	public class ApplicationContextTest {
@@ -68,8 +72,16 @@ package org.springextensions.actionscript.context.impl {
 		public var propertiesParser:IPropertiesParser;
 		[Mock]
 		public var objectFactoryPostProcessor:IObjectFactoryPostProcessor;
+		[Mock]
+		public var eventBus:IEventBus;
+		[Mock]
+		public var cache:IInstanceCache;
+		[Mock]
+		public var normalObjectFactory:IObjectFactory;
+		[Mock]
+		public var eventBusAndListener:IEventBusAndListener;
 
-		private var _context:DefaultApplicationContext;
+		private var _context:ApplicationContext;
 
 		public function ApplicationContextTest() {
 			super();
@@ -84,7 +96,7 @@ package org.springextensions.actionscript.context.impl {
 
 		[Test]
 		public function testAddDefinitionProvider():void {
-			var context:DefaultApplicationContext = new DefaultApplicationContext(null, null, objectFactory);
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
 			context.addDefinitionProvider(objectDefinitionProvider);
 			assertEquals(1, context.definitionProviders.length);
 			verify(objectFactory);
@@ -108,7 +120,7 @@ package org.springextensions.actionscript.context.impl {
 			mock(objectFactory).method("resolveReference").args("test").returns(null).once();
 			mock(objectFactory).getter("objectDefinitionRegistry").returns(null).once();
 
-			var context:DefaultApplicationContext = new DefaultApplicationContext(null, null, objectFactory);
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
 			context.addObjectPostProcessor(null);
 			context.addReferenceResolver(null);
 			var applicationDomain:ApplicationDomain = context.applicationDomain;
@@ -149,7 +161,7 @@ package org.springextensions.actionscript.context.impl {
 			};
 			stub(objectDefinitionsRegistry).method("registerObjectDefinition").args("testName", def).calls(reg, ["testName", def]);
 			mock(objectFactory).setter("isReady").arg(true).once();
-			var context:DefaultApplicationContext = new DefaultApplicationContext(null, null, objectFactory);
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
 			context.addDefinitionProvider(objectDefinitionProvider);
 			context.load();
 			assertStrictlyEquals(def, context.getObjectDefinition("testName"));
@@ -180,7 +192,7 @@ package org.springextensions.actionscript.context.impl {
 			stub(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
 			stub(objectDefinitionsRegistry).getter("objectDefinitions").returns(defs);
 
-			var context:DefaultApplicationContext = new DefaultApplicationContext(null, null, objectFactory);
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
 			context.addDefinitionProvider(objectDefinitionProvider);
 			context.textFilesLoader = textFilesLoader;
 			context.propertiesParser = propertiesParser;
@@ -217,7 +229,7 @@ package org.springextensions.actionscript.context.impl {
 			stub(objectDefinitionsRegistry).method("registerObjectDefinition").args("testName", def).calls(reg, ["testName", def]);
 			mock(objectFactory).setter("isReady").arg(true).once();
 
-			_context = new DefaultApplicationContext(null, null, objectFactory);
+			_context = new ApplicationContext(null, null, objectFactory);
 			_context.addDefinitionProvider(objectDefinitionProvider);
 			_context.addEventListener(Event.COMPLETE, Async.asyncHandler(this, handleAsyncProvider, 500, def, handleAsyncProviderTimeOut), false, 0, true);
 			_context.load();
@@ -228,7 +240,7 @@ package org.springextensions.actionscript.context.impl {
 
 		[Test]
 		public function testAddObjectFactoryPostProcessor():void {
-			var context:DefaultApplicationContext = new DefaultApplicationContext(null, null, objectFactory);
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
 			var processor:IObjectFactoryPostProcessor = nice(IObjectFactoryPostProcessor);
 			var originalLength:uint = context.objectFactoryPostProcessors.length;
 			context.addObjectFactoryPostProcessor(processor);
@@ -243,6 +255,178 @@ package org.springextensions.actionscript.context.impl {
 		protected function handleAsyncProviderTimeOut(passThroughData:Object):void {
 			verify(objectFactory);
 			verify(objectDefinitionProvider);
+		}
+
+		[Test]
+		public function testAddChildContextWithoutAnySharing():void {
+			var childObjectFactory:IObjectFactory = nice(IObjectFactory);
+			var childObjectDefinitionRegistry:IObjectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			mock(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
+			mock(objectFactory).getter("cache").returns(cache);
+			mock(childObjectFactory).getter("objectDefinitionRegistry").returns(childObjectDefinitionRegistry);
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var childContext:ApplicationContext = new ApplicationContext(null, null, childObjectFactory);
+			eventBus = nice(IEventBus);
+			var childEventBus:IEventBus = nice(IEventBus);
+
+			context.eventBus = eventBus;
+			childContext.eventBus = childEventBus;
+
+			mock(objectDefinitionsRegistry).getter("objectDefinitionNames").never();
+			mock(cache).getter("getCachedNames").never();
+			mock(eventBus).method("addListener").never();
+
+			context.addChildContext(childContext, false, false, EventBusShareKind.NONE);
+
+			verify(objectDefinitionProvider);
+			verify(cache);
+			verify(eventBus);
+			assertEquals(1, context.childContexts.length);
+		}
+
+		[Test]
+		public function testAddChildContextWithDefinitionSharing():void {
+			var childObjectFactory:IObjectFactory = nice(IObjectFactory);
+			var childObjectDefinitionRegistry:IObjectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			mock(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
+			mock(objectFactory).getter("cache").returns(cache);
+			mock(childObjectFactory).getter("objectDefinitionRegistry").returns(childObjectDefinitionRegistry);
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var childContext:ApplicationContext = new ApplicationContext(null, null, childObjectFactory);
+			eventBus = nice(IEventBus);
+			var childEventBus:IEventBus = nice(IEventBus);
+
+			context.eventBus = eventBus;
+			childContext.eventBus = childEventBus;
+
+			mock(objectDefinitionsRegistry).getter("objectDefinitionNames").returns(null).once();
+			mock(cache).getter("getCachedNames").never();
+			mock(eventBus).method("addListener").never();
+			mock(childEventBus).method("addListener").never();
+
+			context.addChildContext(childContext, true, false, EventBusShareKind.NONE);
+
+			verify(objectDefinitionProvider);
+			verify(cache);
+			verify(eventBus);
+			verify(childEventBus);
+			assertEquals(1, context.childContexts.length);
+		}
+
+		[Test]
+		public function testAddChildContextWithSingletonSharing():void {
+			var childObjectFactory:IObjectFactory = nice(IObjectFactory);
+			var childObjectDefinitionRegistry:IObjectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			mock(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
+			mock(objectFactory).getter("cache").returns(cache);
+			mock(childObjectFactory).getter("objectDefinitionRegistry").returns(childObjectDefinitionRegistry);
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var childContext:ApplicationContext = new ApplicationContext(null, null, childObjectFactory);
+			eventBus = nice(IEventBus);
+			var childEventBus:IEventBus = nice(IEventBus);
+
+			context.eventBus = eventBus;
+			childContext.eventBus = childEventBus;
+
+			mock(objectDefinitionsRegistry).getter("objectDefinitionNames").never();
+			mock(cache).method("getCachedNames").returns(null).once();
+			mock(eventBus).method("addListener").never();
+			mock(childEventBus).method("addListener").never();
+
+			context.addChildContext(childContext, false, true, EventBusShareKind.NONE);
+
+			verify(objectDefinitionProvider);
+			verify(cache);
+			verify(eventBus);
+			verify(childEventBus);
+			assertEquals(1, context.childContexts.length);
+		}
+
+		[Test]
+		public function testAddChildContextWithParentListensToChildEventBusSharing():void {
+			var childObjectFactory:IObjectFactory = nice(IObjectFactory);
+			var childObjectDefinitionRegistry:IObjectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			mock(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
+			mock(objectFactory).getter("cache").returns(cache);
+			mock(childObjectFactory).getter("objectDefinitionRegistry").returns(childObjectDefinitionRegistry);
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var childContext:ApplicationContext = new ApplicationContext(null, null, childObjectFactory);
+			eventBus = nice(IEventBusAndListener);
+			var childEventBus:IEventBusAndListener = nice(IEventBusAndListener);
+
+			context.eventBus = eventBus;
+			childContext.eventBus = childEventBus;
+
+			mock(objectDefinitionsRegistry).getter("objectDefinitionNames").never();
+			mock(cache).method("getCachedNames").never();
+			mock(eventBus).method("addListener").never();
+			mock(childEventBus).method("addListener").args(eventBus).once();
+
+			context.addChildContext(childContext, false, false, EventBusShareKind.PARENT_LISTENS_TO_CHILD);
+
+			verify(objectDefinitionProvider);
+			verify(cache);
+			verify(eventBus);
+			verify(childEventBus);
+			assertEquals(1, context.childContexts.length);
+		}
+
+		[Test]
+		public function testAddChildContextWithChildListensToParentEventBusSharing():void {
+			var childObjectFactory:IObjectFactory = nice(IObjectFactory);
+			var childObjectDefinitionRegistry:IObjectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			mock(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
+			mock(objectFactory).getter("cache").returns(cache);
+			mock(childObjectFactory).getter("objectDefinitionRegistry").returns(childObjectDefinitionRegistry);
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var childContext:ApplicationContext = new ApplicationContext(null, null, childObjectFactory);
+			eventBus = nice(IEventBusAndListener);
+			var childEventBus:IEventBusAndListener = nice(IEventBusAndListener);
+
+			context.eventBus = eventBus;
+			childContext.eventBus = childEventBus;
+
+			mock(objectDefinitionsRegistry).getter("objectDefinitionNames").never();
+			mock(cache).method("getCachedNames").never();
+			mock(eventBus).method("addListener").args(childEventBus).once();
+			mock(childEventBus).method("addListener").never();
+
+			context.addChildContext(childContext, false, false, EventBusShareKind.CHILD_LISTENS_TO_PARENT);
+
+			verify(objectDefinitionProvider);
+			verify(cache);
+			verify(eventBus);
+			verify(childEventBus);
+			assertEquals(1, context.childContexts.length);
+		}
+
+		[Test]
+		public function testAddChildContextWithBothWaysEventBusSharing():void {
+			var childObjectFactory:IObjectFactory = nice(IObjectFactory);
+			var childObjectDefinitionRegistry:IObjectDefinitionRegistry = nice(IObjectDefinitionRegistry);
+			mock(objectFactory).getter("objectDefinitionRegistry").returns(objectDefinitionsRegistry);
+			mock(objectFactory).getter("cache").returns(cache);
+			mock(childObjectFactory).getter("objectDefinitionRegistry").returns(childObjectDefinitionRegistry);
+			var context:ApplicationContext = new ApplicationContext(null, null, objectFactory);
+			var childContext:ApplicationContext = new ApplicationContext(null, null, childObjectFactory);
+			eventBus = nice(IEventBusAndListener);
+			var childEventBus:IEventBusAndListener = nice(IEventBusAndListener);
+
+			context.eventBus = eventBus;
+			childContext.eventBus = childEventBus;
+
+			mock(objectDefinitionsRegistry).getter("objectDefinitionNames").never();
+			mock(cache).method("getCachedNames").never();
+			mock(eventBus).method("addListener").args(childEventBus).once();
+			mock(childEventBus).method("addListener").args(eventBus).once();
+
+			context.addChildContext(childContext, false, false, EventBusShareKind.BOTH_WAYS);
+
+			verify(objectDefinitionProvider);
+			verify(cache);
+			verify(eventBus);
+			verify(childEventBus);
+			assertEquals(1, context.childContexts.length);
 		}
 	}
 }

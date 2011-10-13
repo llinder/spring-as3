@@ -42,6 +42,7 @@ package org.springextensions.actionscript.context.impl {
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.IApplicationContextAware;
 	import org.springextensions.actionscript.context.config.IConfigurationPackage;
+	import org.springextensions.actionscript.eventbus.EventBusShareKind;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistry;
 	import org.springextensions.actionscript.eventbus.IEventBusUserRegistryAware;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
@@ -377,18 +378,21 @@ package org.springextensions.actionscript.context.impl {
 		/**
 		 * @inheritDoc
 		 */
-		public function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:Boolean=true):IApplicationContext {
-			_childContexts ||= new Vector.<IApplicationContext>();
-			if (_childContexts.indexOf(childContext) < 0) {
-				childContexts[childContexts.length] = childContext;
-				if (shareEventBus) {
-					addChildContextEventBusListener(childContext, eventBus);
-				}
-				if (shareDefinitions) {
-					addDefinitionsToChildContext(childContext, objectDefinitionRegistry);
-				}
-				if (shareSingletons) {
-					addSingletonsToChildContext(childContext, cache, objectDefinitionRegistry);
+		public function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:EventBusShareKind=null):IApplicationContext {
+			if (childContext !== this) {
+				shareEventBus ||= EventBusShareKind.BOTH_WAYS;
+				_childContexts ||= new Vector.<IApplicationContext>();
+				if (_childContexts.indexOf(childContext) < 0) {
+					childContexts[childContexts.length] = childContext;
+					if (shareEventBus !== EventBusShareKind.NONE) {
+						addChildContextEventBusListener(childContext, eventBus, shareEventBus);
+					}
+					if (shareDefinitions) {
+						addDefinitionsToChildContext(childContext, objectDefinitionRegistry);
+					}
+					if (shareSingletons) {
+						addSingletonsToChildContext(childContext, cache, objectDefinitionRegistry);
+					}
 				}
 			}
 			return this;
@@ -398,13 +402,15 @@ package org.springextensions.actionscript.context.impl {
 		 * @inheritDoc
 		 */
 		public function addDefinitionProvider(provider:IObjectDefinitionsProvider):IApplicationContext {
-			if (provider is IApplicationDomainAware) {
-				IApplicationDomainAware(provider).applicationDomain = applicationDomain;
+			if (definitionProviders.indexOf(provider < 0)) {
+				if (provider is IApplicationDomainAware) {
+					IApplicationDomainAware(provider).applicationDomain = applicationDomain;
+				}
+				if (provider is IApplicationContextAware) {
+					IApplicationContextAware(provider).applicationContext = this;
+				}
+				definitionProviders[definitionProviders.length] = provider;
 			}
-			if (provider is IApplicationContextAware) {
-				IApplicationContextAware(provider).applicationContext = this;
-			}
-			definitionProviders[definitionProviders.length] = provider;
 			return this;
 		}
 
@@ -412,8 +418,13 @@ package org.springextensions.actionscript.context.impl {
 		 * @inheritDoc
 		 */
 		public function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):IApplicationContext {
-			objectFactoryPostProcessors[objectFactoryPostProcessors.length] = objectFactoryPostProcessor;
-			_objectFactoryPostProcessors.sort(OrderedUtils.orderedCompareFunction);
+			if (objectFactoryPostProcessors.indexOf(objectFactoryPostProcessor) < 0) {
+				if (objectFactoryPostProcessor is IApplicationDomainAware) {
+					IApplicationDomainAware(objectFactoryPostProcessor).applicationDomain = applicationDomain;
+				}
+				objectFactoryPostProcessors[objectFactoryPostProcessors.length] = objectFactoryPostProcessor;
+				_objectFactoryPostProcessors.sort(OrderedUtils.orderedCompareFunction);
+			}
 			return this;
 		}
 
@@ -550,6 +561,20 @@ package org.springextensions.actionscript.context.impl {
 			}
 		}
 
+		public function removeChildContext(childContext:IApplicationContext):IApplicationContext {
+			var idx:int = _childContexts.indexOf(childContext);
+			if (idx > -1) {
+				_childContexts.splice(idx, 1);
+				if ((eventBus is IEventBusListener) && (childContext is IEventBusAware) && (IEventBusAware(childContext).eventBus != null)) {
+					IEventBusAware(childContext).eventBus.removeListener(eventBus as IEventBusListener);
+				}
+				if ((childContext is IEventBusAware) && (IEventBusAware(childContext).eventBus is IEventBusListener) && (eventBus != null)) {
+					eventBus.removeListener(IEventBusAware(childContext).eventBus as IEventBusListener);
+				}
+			}
+			return this;
+		}
+
 		/**
 		 * @inheritDoc
 		 */
@@ -588,10 +613,20 @@ package org.springextensions.actionscript.context.impl {
 		 * @param childContext
 		 * @param parentEventBus
 		 */
-		protected function addChildContextEventBusListener(childContext:IApplicationContext, parentEventBus:IEventBus):void {
+		protected function addChildContextEventBusListener(childContext:IApplicationContext, parentEventBus:IEventBus, kind:EventBusShareKind):void {
 			if ((childContext is IEventBusAware) && (IEventBusAware(childContext).eventBus is IEventBusListener)) {
-				if (parentEventBus != null) {
-					parentEventBus.addListener(IEventBusListener(IEventBusAware(childContext).eventBus));
+				var childEventBus:IEventBus = IEventBusAware(childContext).eventBus;
+				switch (kind) {
+					case EventBusShareKind.BOTH_WAYS:
+						linkEventBuses(parentEventBus, childEventBus);
+						linkEventBuses(childEventBus, parentEventBus);
+						break;
+					case EventBusShareKind.PARENT_LISTENS_TO_CHILD:
+						linkEventBuses(childEventBus, parentEventBus);
+						break;
+					case EventBusShareKind.CHILD_LISTENS_TO_PARENT:
+						linkEventBuses(parentEventBus, childEventBus);
+						break;
 				}
 			}
 		}
@@ -627,7 +662,7 @@ package org.springextensions.actionscript.context.impl {
 				var share:Boolean = true;
 				if (objectDefinitionRegistry.containsObjectDefinition(objectName)) {
 					var od:IObjectDefinition = objectDefinitionRegistry.getObjectDefinition(objectName);
-					share = ((od.childContextAccess === ChildContextObjectDefinitionAccess.DEFINITION) || (od.childContextAccess === ChildContextObjectDefinitionAccess.FULL));
+					share = ((od.childContextAccess === ChildContextObjectDefinitionAccess.SINGLETON) || (od.childContextAccess === ChildContextObjectDefinitionAccess.FULL));
 				}
 				if ((share) && (!childContext.cache.hasInstance(objectName))) {
 					childContext.cache.addInstance(objectName, cache.getInstance(objectName));
@@ -762,6 +797,12 @@ package org.springextensions.actionscript.context.impl {
 			}
 		}
 
+		protected function linkEventBuses(source:IEventBus, destination:IEventBus):void {
+			if (destination is IEventBusListener) {
+				source.addListener(destination as IEventBusListener);
+			}
+		}
+
 		/**
 		 *
 		 * @param propertyURIs
@@ -859,7 +900,7 @@ package org.springextensions.actionscript.context.impl {
 					clearTimeout(_token);
 					_loaderInfo = resolveRootViewLoaderInfo(_rootViews);
 				}
-			}, 500);
+			}, 100);
 		}
 	}
 }

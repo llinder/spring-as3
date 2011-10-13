@@ -28,6 +28,7 @@ package org.springextensions.actionscript.context.impl.mxml {
 	import org.springextensions.actionscript.context.IApplicationContext;
 	import org.springextensions.actionscript.context.config.IConfigurationPackage;
 	import org.springextensions.actionscript.context.impl.DefaultApplicationContext;
+	import org.springextensions.actionscript.eventbus.EventBusShareKind;
 	import org.springextensions.actionscript.ioc.IDependencyInjector;
 	import org.springextensions.actionscript.ioc.IObjectDestroyer;
 	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
@@ -289,7 +290,7 @@ package org.springextensions.actionscript.context.impl.mxml {
 			_applicationContext.textFilesLoader = value;
 		}
 
-		public function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:Boolean=true):IApplicationContext {
+		public function addChildContext(childContext:IApplicationContext, shareDefinitions:Boolean=true, shareSingletons:Boolean=true, shareEventBus:EventBusShareKind=null):IApplicationContext {
 			return _applicationContext.addChildContext(childContext, shareDefinitions, shareSingletons, shareEventBus);
 		}
 
@@ -379,6 +380,13 @@ package org.springextensions.actionscript.context.impl.mxml {
 				initializeContext();
 			}
 			doLoad();
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function removeChildContext(childContext:IApplicationContext):IApplicationContext {
+			return _applicationContext.removeChildContext(childContext);
 		}
 
 		public function removeRootView(rootView:DisplayObject):void {
