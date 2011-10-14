@@ -266,6 +266,11 @@ The file attribute will take precedence over the name and value attributes.
 				<xs:documentation xml:lang="en">A namespace URI.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="requires-dependencies" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Method may only be invoked when all of the object's dependencies have been satisfied.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 
 	<xs:complexType mixed="true" name="argType">
