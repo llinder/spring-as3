@@ -46,8 +46,8 @@ package org.springextensions.actionscript.eventbus.process {
 			metadataNames[metadataNames.length] = EVENT_INTERCEPTOR_METADATA_NAME;
 		}
 
-		override public function process(target:Object, metadataName:String, info:*=null):* {
-			var container:IMetadataContainer = (info as Array)[0] as IMetadataContainer;
+		override public function process(target:Object, metadataName:String, params:Array=null):* {
+			var container:IMetadataContainer = params[0];
 			var type:Type = (container as Type);
 			if (type == null) {
 				return;

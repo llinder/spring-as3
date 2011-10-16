@@ -35,7 +35,7 @@ package org.springextensions.actionscript.eventbus.process {
 			super();
 		}
 
-		override public function process(target:Object, metadataName:String, info:*=null):* {
+		override public function process(target:Object, metadataName:String, params:Array=null):* {
 			eventBusUserRegistry.removeEventListeners(IEventDispatcher(target));
 		}
 

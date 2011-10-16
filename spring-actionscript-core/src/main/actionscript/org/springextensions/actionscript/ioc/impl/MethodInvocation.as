@@ -23,10 +23,6 @@ package org.springextensions.actionscript.ioc.impl {
 	 */
 	public class MethodInvocation implements ICloneable {
 
-		private var _methodName:String;
-		private var _namespaceURI:String;
-		private var _arguments:Array;
-
 		/**
 		 * Creates a new <code>MethodInvocation</code> instance.
 		 * @param methodName The name of the method that needs to be invoked.
@@ -35,25 +31,21 @@ package org.springextensions.actionscript.ioc.impl {
 		 */
 		public function MethodInvocation(methodName:String, args:Array=null, ns:String=null) {
 			super();
-			initMethodInvocation(methodName, args, ns);
-		}
-
-
-		public function get namespaceURI():String {
-			return _namespaceURI;
-		}
-
-		/**
-		 * Initializes the current <code>MethodInvocation</code>.
-		 * @param methodName The name of the method that needs to be invoked.
-		 * @param args Optional array of arguments for the method invocation.
-		 * @param ns A namespace URI
-		 * @param isStatic Determines if the method is static
-		 */
-		protected function initMethodInvocation(methodName:String, args:Array, ns:String):void {
 			_methodName = methodName;
 			_arguments = args;
 			_namespaceURI = ns;
+		}
+
+		private var _arguments:Array;
+		private var _methodName:String;
+		private var _namespaceURI:String;
+		private var _requiresDependencies:Boolean = true;
+
+		/**
+		 * Optional array of arguments for the method invocation.
+		 */
+		public function get arguments():Array {
+			return _arguments;
 		}
 
 		/**
@@ -63,11 +55,16 @@ package org.springextensions.actionscript.ioc.impl {
 			return _methodName;
 		}
 
-		/**
-		 * Optional array of arguments for the method invocation.
-		 */
-		public function get arguments():Array {
-			return _arguments;
+		public function get namespaceURI():String {
+			return _namespaceURI;
+		}
+
+		public function get requiresDependencies():Boolean {
+			return _requiresDependencies;
+		}
+
+		public function set requiresDependencies(value:Boolean):void {
+			_requiresDependencies = value;
 		}
 
 		public function clone():* {

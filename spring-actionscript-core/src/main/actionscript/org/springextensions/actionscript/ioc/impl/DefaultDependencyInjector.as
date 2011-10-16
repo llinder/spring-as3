@@ -16,6 +16,7 @@
 package org.springextensions.actionscript.ioc.impl {
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
+
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.lang.IApplicationDomainAware;
 	import org.as3commons.lang.StringUtils;
@@ -132,10 +133,11 @@ package org.springextensions.actionscript.ioc.impl {
 		 * @param instance
 		 * @param objectName
 		 */
-		protected function checkDependencies(objectDefinition:IObjectDefinition, instance:*, objectName:String):void {
+		protected function checkDependencies(objectDefinition:IObjectDefinition, instance:*, objectName:String):Boolean {
 			if (objectDefinition.dependencyCheck !== DependencyCheckMode.NONE) {
 				performDependencyCheck(instance, objectDefinition, objectName);
 			}
+			return true;
 		}
 
 		/**

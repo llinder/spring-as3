@@ -74,8 +74,8 @@ package org.springextensions.actionscript.mvc.processor {
 		/**
 		 * @inheritDoc
 		 */
-		override public function process(target:Object, metadataName:String, info:*=null):* {
-			var container:IMetadataContainer = (info as Array)[0] as IMetadataContainer;
+		override public function process(target:Object, metadataName:String, params:Array=null):* {
+			var container:IMetadataContainer = params[0];
 			var type:Type = container as Type;
 			if ((type != null) && (target is IEventDispatcher)) {
 				var metadata:Metadata = type.getMetadata(ROUTE_MVC_EVENTS_METADATA)[0];

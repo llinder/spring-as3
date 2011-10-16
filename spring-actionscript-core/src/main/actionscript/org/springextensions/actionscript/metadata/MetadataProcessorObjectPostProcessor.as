@@ -73,7 +73,7 @@ package org.springextensions.actionscript.metadata {
 		 * <code>processBeforeInitialization</code> property set to <code>true</code>.
 		 */
 		public function postProcessBeforeInitialization(object:*, objectName:String):* {
-			return _beforeInitializationRegistry.process(object, objectName);
+			return _beforeInitializationRegistry.process(object, [objectName]);
 		}
 
 		/**
@@ -83,7 +83,7 @@ package org.springextensions.actionscript.metadata {
 		 * it will register it with the current <code>MetadataProcessorObjectPostProcessor</code>.</p>
 		 */
 		public function postProcessAfterInitialization(object:*, objectName:String):* {
-			return _afterInitializationRegistry.process(object, objectName);
+			return _afterInitializationRegistry.process(object, [objectName]);
 		}
 
 		/**

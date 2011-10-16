@@ -21,8 +21,11 @@
 			<para>When a context gets assigned a parent it will automatically add its eventbus as a
 				listener to its parent's eventbus. That way all regular events dispatched by the parent will
 				also be received by the child.</para>
-			<sect3 xml:id="a-simple-example-of-a-child-parent-hierarchy"><title>A simple example of a child/parent hierarchy</title><para> Imagine a scenario with two application contexts. One is created by the main application and
-					the other is created inside a module that is loaded at a later time.</para>
+			<sect3 xml:id="a-simple-example-of-a-child-parent-hierarchy">
+				<title>A simple example of a child/parent hierarchy</title>
+				<para> Imagine a scenario with two application contexts. One is created by the main
+					application and the other is created inside a module that is loaded at a later
+					time.</para>
 				<para> We will refer to the first as  <emphasis role="bold">application context</emphasis>
 					 and the latter as  <emphasis role="bold">child context</emphasis> . </para>
 				<para> Now imagine the configuration of the <emphasis role="bold">application
@@ -90,7 +93,8 @@ childContext.parent = applicationContext;</programlisting></para>
 								>dependencies</emphasis>  created by the  <emphasis role="italic">child</emphasis>
 							 context will suddenly put a dependency from the application context on the child
 							context, which is undesirable.</para>
-					</note></para></sect3>
+					</note></para>
+			</sect3>
 		</sect2>
 		<sect2 xml:id="context-children">
 			<title>Context children</title>

@@ -69,7 +69,7 @@ package org.springextensions.actionscript.ioc.impl {
 
 		public function destroy(instance:Object):void {
 			var objectName:String = _managedObjects[instance];
-			metadataProcessorRegistry.process(instance, objectName);
+			metadataProcessorRegistry.process(instance, [objectName]);
 			if ((objectName != null) && (_applicationContext.objectDefinitionRegistry.containsObjectDefinition(objectName))) {
 				var definition:IObjectDefinition = _applicationContext.objectDefinitionRegistry.getObjectDefinition(objectName);
 				if (StringUtils.hasText(definition.destroyMethod)) {

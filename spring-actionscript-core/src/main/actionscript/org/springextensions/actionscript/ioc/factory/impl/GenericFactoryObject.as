@@ -19,7 +19,7 @@ package org.springextensions.actionscript.ioc.factory.impl {
 	import org.springextensions.actionscript.ioc.factory.IFactoryObject;
 
 	/**
-	 *
+	 * <code>IFactoryObject</code> implementation that serves as a proxy for a factory object instance that doesn't implement the <code>IFactoryObject</code> interface.
 	 * @author Roland Zwaga
 	 */
 	public class GenericFactoryObject implements IFactoryObject {
@@ -34,10 +34,6 @@ package org.springextensions.actionscript.ioc.factory.impl {
 		 */
 		public function GenericFactoryObject(wrappedFactory:Object, methodName:String, singleton:Boolean=true) {
 			super();
-			initGenericFactoryObject(wrappedFactory, methodName, singleton);
-		}
-
-		protected function initGenericFactoryObject(wrappedFactory:Object, methodName:String, singleton:Boolean):void {
 			_methodInvoker = new MethodInvoker();
 			_methodInvoker.target = wrappedFactory;
 			_methodInvoker.method = methodName;
