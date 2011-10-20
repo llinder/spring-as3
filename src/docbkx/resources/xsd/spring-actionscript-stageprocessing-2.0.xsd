@@ -34,7 +34,8 @@
 	<xsd:complexType name="stageProcessorType" mixed="true">
 		<xsd:complexContent>
 	      <xsd:extension base="objects:objectType">
-	         <xsd:attribute name="object-selector" type="xsd:string" />
+	      		<xsd:attribute name="object-selector" type="xsd:string" />
+	      		<xsd:attribute name="objectdefinition-resolver" type="xsd:string" />
 	      </xsd:extension>
 	   	</xsd:complexContent>
 	</xsd:complexType>
