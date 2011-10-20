@@ -751,7 +751,10 @@ package org.springextensions.actionscript.context.impl {
 			}
 			_objectFactoryPostProcessors.length = 0;
 			_objectFactoryPostProcessors = null;
-			var names:Vector.<String> = objectFactory.cache.getCachedNames();
+			var names:Vector.<String>;
+			if ((objectFactory != null) && (objectFactory.cache != null)) {
+				names = objectFactory.cache.getCachedNames();
+			}
 			instantiateSingletons();
 			wireExplicitSingletons(names);
 			completeContextInitialization();
