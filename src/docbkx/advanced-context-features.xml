@@ -98,7 +98,8 @@ childContext.parent = applicationContext;</programlisting></para>
 		</sect2>
 		<sect2 xml:id="context-children">
 			<title>Context children</title>
-			<para/>
+			<para>The second case describes a scenario where the parent knows about the child, yet the
+				child has no knowledge of its parent.</para>
 		</sect2>
 	</sect1>
 

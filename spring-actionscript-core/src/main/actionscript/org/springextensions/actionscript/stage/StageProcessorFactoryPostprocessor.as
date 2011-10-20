@@ -111,7 +111,7 @@ package org.springextensions.actionscript.stage {
 		protected function resolveObjectSelector(objectFactory:IObjectFactory, processorName:String):IObjectSelector {
 			var selector:* = objectFactory.getObjectDefinition(processorName).customConfiguration;
 			if (selector is String) {
-				var selectorName:String = String(selector);
+				var selectorName:String = selector;
 				if (objectFactory.canCreate(selectorName)) {
 					return objectFactory.getObject(selectorName);
 				}

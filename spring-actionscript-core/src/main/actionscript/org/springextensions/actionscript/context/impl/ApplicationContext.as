@@ -751,7 +751,9 @@ package org.springextensions.actionscript.context.impl {
 			}
 			_objectFactoryPostProcessors.length = 0;
 			_objectFactoryPostProcessors = null;
+			var names:Vector.<String> = objectFactory.cache.getCachedNames();
 			instantiateSingletons();
+			wireExplicitSingletons(names);
 			completeContextInitialization();
 		}
 
@@ -783,6 +785,20 @@ package org.springextensions.actionscript.context.impl {
 		 * @param error
 		 */
 		protected function handleObjectFactoriesError(error:*):void {
+		}
+
+		/**
+		 *
+		 * @param names
+		 *
+		 */
+		protected function wireExplicitSingletons(names:Vector.<String>):void {
+			if (objectFactory.dependencyInjector != null) {
+				for each (var name:String in names) {
+					var definition:IObjectDefinition = (objectFactory.objectDefinitionRegistry.containsObjectDefinition(name)) ? objectFactory.objectDefinitionRegistry.getObjectDefinition(name) : null;
+					objectFactory.dependencyInjector.wire(objectFactory.cache.getInstance(name), objectFactory, definition, name);
+				}
+			}
 		}
 
 		/**

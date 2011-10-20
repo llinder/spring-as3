@@ -20,10 +20,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	import org.as3commons.lang.ClassUtils;
 	import org.as3commons.stageprocessing.IStageObjectProcessor;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
-	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.ParsingUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_stageprocessing;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
-	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
 	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
 	import org.springextensions.actionscript.ioc.objectdefinition.impl.ObjectDefinitionBuilder;
 
@@ -64,8 +62,8 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			context.registerObjectDefinition(objectName, result.objectDefinition);
 
 			if (node.attribute(OBJECT_SELECTOR_ATTR).length() > 0) {
-				var objectSelectorName:String = String(node.attribute(OBJECT_SELECTOR_ATTR)[0]);
-				result.objectDefinition.customConfiguration = objectSelectorName
+				var objectSelectorName:String = node.attribute(OBJECT_SELECTOR_ATTR);
+				result.objectDefinition.customConfiguration = objectSelectorName;
 			}
 
 			return result.objectDefinition;

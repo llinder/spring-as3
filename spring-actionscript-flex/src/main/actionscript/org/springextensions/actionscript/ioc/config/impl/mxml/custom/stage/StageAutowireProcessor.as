@@ -30,7 +30,10 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.stage {
 	 * @author Roland Zwaga
 	 */
 	public class StageAutowireProcessor extends AbstractCustomObjectDefinitionComponent {
+
 		public static const OBJECTSELECTOR_CHANGED_EVENT:String = "objectSelectorChanged";
+		public static const OBJECTDEFINITIONRESOLVER_CHANGED_EVENT:String = "objectDefinitionResolverChanged";
+		public static const AUTOWIREONCE_CHANGED_EVENT:String = "autowireOnceChanged";
 
 		/**
 		 * Creates a new <code>StageAutowireProcessor</code> instance.
@@ -40,6 +43,20 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.stage {
 		}
 
 		private var _objectSelector:Object;
+		private var _objectDefinitionResolver:String;
+		private var _autowireOnce:Boolean = true;
+
+		[Bindable(event="autowireOnceChanged")]
+		public function get autowireOnce():Boolean {
+			return _autowireOnce;
+		}
+
+		public function set autowireOnce(value:Boolean):void {
+			if (_autowireOnce != value) {
+				_autowireOnce = value;
+				dispatchEvent(new Event(AUTOWIREONCE_CHANGED_EVENT));
+			}
+		}
 
 		[Bindable(event="objectSelectorChanged")]
 		public function get objectSelector():Object {
@@ -53,9 +70,25 @@ package org.springextensions.actionscript.ioc.config.impl.mxml.custom.stage {
 			}
 		}
 
+		[Bindable(event="objectDefinitionResolverChanged")]
+		public function get objectDefinitionResolver():String {
+			return _objectDefinitionResolver;
+		}
+
+		public function set objectDefinitionResolver(value:String):void {
+			if (_objectDefinitionResolver != value) {
+				_objectDefinitionResolver = value;
+				dispatchEvent(new Event(OBJECTDEFINITIONRESOLVER_CHANGED_EVENT));
+			}
+		}
+
 		override public function execute(applicationContext:IApplicationContext, objectDefinitions:Object):void {
 			var result:ObjectDefinitionBuilder = ObjectDefinitionBuilder.objectDefinitionForClass(DefaultAutowiringStageProcessor);
 			result.objectDefinition.customConfiguration = resolveObjectSelectorName();
+			if (StringUtils.hasText(_objectDefinitionResolver)) {
+				result.addPropertyReference("objectDefinitionResolver", _objectDefinitionResolver);
+			}
+			result.addPropertyValue("autowireOnce", _autowireOnce);
 			objectDefinitions[this.id] = result.objectDefinition;
 		}
 

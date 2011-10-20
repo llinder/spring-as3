@@ -15,6 +15,7 @@
 */
 package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.stageprocessing.nodeparser {
 
+	import org.as3commons.lang.StringUtils;
 	import org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.impl.AbstractObjectDefinitionParser;
 	import org.springextensions.actionscript.ioc.config.impl.xml.ns.spring_actionscript_stageprocessing;
 	import org.springextensions.actionscript.ioc.config.impl.xml.parser.IXMLObjectDefinitionsParser;
@@ -26,6 +27,10 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 	use namespace spring_actionscript_stageprocessing;
 
 	public class AutowiringStageProcessorNodeParser extends StageProcessorNodeParser {
+
+		public static const OBJECTDEFINITION_RESOLVER_ATTR:String = "objectdefinition-resolver";
+		public static const AUTOWIRE_ONCE_ATTR:String = "autowire-once";
+		public static const TRUE_VALUE:String = "true";
 
 		public function AutowiringStageProcessorNodeParser() {
 			super();
@@ -44,6 +49,18 @@ package org.springextensions.actionscript.ioc.config.impl.xml.namespacehandler.i
 			if (node.attribute(OBJECT_SELECTOR_ATTR).length() > 0) {
 				var objectSelectorName:String = String(node.attribute(OBJECT_SELECTOR_ATTR)[0]);
 				result.objectDefinition.customConfiguration = objectSelectorName;
+			}
+			if (node.attribute(OBJECTDEFINITION_RESOLVER_ATTR).length() > 0) {
+				var objectDefinitionResolverName:String = node.attribute(OBJECTDEFINITION_RESOLVER_ATTR);
+				if (StringUtils.hasText(objectDefinitionResolverName)) {
+					result.addPropertyReference("objectDefinitionResolver", objectDefinitionResolverName);
+				}
+			}
+			if (node.attribute(AUTOWIRE_ONCE_ATTR).length() > 0) {
+				var autowireOnce:String = node.attribute(AUTOWIRE_ONCE_ATTR);
+				if (StringUtils.hasText(objectDefinitionResolverName)) {
+					result.addPropertyValue("autowireOnce", (autowireOnce.toLowerCase() == TRUE_VALUE));
+				}
 			}
 
 			return result.objectDefinition;

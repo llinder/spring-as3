@@ -52,7 +52,9 @@ package org.springextensions.actionscript.stage {
 		 */
 		public function DefaultAutowiringStageProcessor() {
 			super();
-			initDefaultAutowiringStageProcessor();
+			componentCache = new Dictionary(true);
+			autowireOnce = true;
+			_objectDefinitionResolver = null;
 		}
 
 		/**
@@ -161,12 +163,6 @@ package org.springextensions.actionscript.stage {
 
 		public function toString():String {
 			return "[DefaultAutowiringStageProcessor(autowireOnce=" + autowireOnce + ")]";
-		}
-
-		protected function initDefaultAutowiringStageProcessor():void {
-			componentCache = new Dictionary(true);
-			autowireOnce = true;
-			_objectDefinitionResolver = null;
 		}
 
 		public function get isDisposed():Boolean {
